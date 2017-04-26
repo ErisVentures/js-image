@@ -1,0 +1,42 @@
+{
+  "name": "@ouranos/image",
+  "version": "0.0.0-development",
+  "description": "Collection of image manipulation libraries for node and the browser.",
+  "main": "./lib/index.js",
+  "scripts": {
+    "test": "npm run test:lint && npm run test:unit",
+    "test:unit": "mocha --reporter spec --require test/bootstrap 'test/**/*.test.js'",
+    "test:lint": "lint",
+    "test:coverage": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- --require test/bootstrap 'test/**/*.test.js'",
+    "test:watch": "mocha --watch --reporter dot --require test/bootstrap 'test/**/*.test.js'",
+    "semantic-release": "semantic-release pre && npm publish --access public && semantic-release post"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ouranos-oss/js-image.git"
+  },
+  "author": "Patrick Hulce <patrick.hulce@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ouranos-oss/js-image/issues"
+  },
+  "homepage": "https://github.com/ouranos-oss/js-image#readme",
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "dependencies": {
+    "lodash": "^4.17.4"
+  },
+  "devDependencies": {
+    "@patrickhulce/lint": "^1.0.0",
+    "chai": "^3.5.0",
+    "cz-conventional-changelog": "^2.0.0",
+    "istanbul": "^0.4.5",
+    "mocha": "^3.3.0",
+    "semantic-release": "^6.3.2",
+    "sinon": "^2.1.0",
+    "sinon-chai": "^2.9.0"
+  }
+}
