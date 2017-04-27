@@ -1,12 +1,22 @@
-/* globals fixture */
 const jpeg = require('jpeg-js')
 const convolve = require('../lib/convolve')
+const {expect, fixture} = require('./utils')
 
 const toPixels = arrs => new Uint8Array(arrs.reduce((acc, arr) => acc.concat(arr), []))
 
 describe('lib/convolve.js', () => {
-  const headshot = jpeg.decode(fixture('headshot.jpg'))
+  const headshot = fixture('headshot.jpg')
   const headshotBlur = fixture('headshot-blur.jpg')
+
+  const gaussianBlur = [
+    /* eslint-disable max-len */
+    [0.0073068827452812644, 0.03274717653776802, 0.05399096651318985, 0.03274717653776802, 0.0073068827452812644],
+    [0.03274717653776802, 0.14676266317374237, 0.2419707245191454, 0.14676266317374237, 0.03274717653776802],
+    [0.05399096651318985, 0.2419707245191454, 0.3989422804014327, 0.2419707245191454, 0.05399096651318985],
+    [0.03274717653776802, 0.14676266317374237, 0.2419707245191454, 0.14676266317374237, 0.03274717653776802],
+    [0.0073068827452812644, 0.03274717653776802, 0.05399096651318985, 0.03274717653776802, 0.0073068827452812644],
+    /* eslint-enable max-len */
+  ]
 
   const pixel = value => [value, value, value, 255]
 
@@ -36,17 +46,10 @@ describe('lib/convolve.js', () => {
     })
   })
 
-  it('should blur', () => {
-    const output = convolve(headshot, [
-      /* eslint-disable max-len */
-      0.0073068827452812644, 0.03274717653776802, 0.05399096651318985, 0.03274717653776802, 0.0073068827452812644,
-      0.03274717653776802, 0.14676266317374237, 0.2419707245191454, 0.14676266317374237, 0.03274717653776802,
-      0.05399096651318985, 0.2419707245191454, 0.3989422804014327, 0.2419707245191454, 0.05399096651318985,
-      0.03274717653776802, 0.14676266317374237, 0.2419707245191454, 0.14676266317374237, 0.03274717653776802,
-      0.0073068827452812644, 0.03274717653776802, 0.05399096651318985, 0.03274717653776802, 0.0073068827452812644,
-    ])
-
+  it('should blur', function () {
+    this.timeout(10000)
+    const output = convolve(jpeg.decode(headshot), gaussianBlur)
     const jpegOutput = jpeg.encode(output, 90)
-    expect(jpegOutput.data).to.eql(headshotBlur)
+    expect(jpegOutput.data.byteLength).to.eql(headshotBlur.byteLength)
   })
 })
