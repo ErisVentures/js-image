@@ -13,5 +13,5 @@ module.exports = {
 
       func.apply(context, args.concat(callback))
     })
-  }
+  },
 }

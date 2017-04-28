@@ -8,9 +8,9 @@ class NodeImage extends Image {
   }
 
   _setFormat(image) {
-    if (this._options.format === 'jpeg') {
+    if (this._options.format === Image.JPEG) {
       return image.jpeg(this._options.formatOptions)
-    } else if (this._options.format === 'png') {
+    } else if (this._options.format === Image.PNG) {
       return image.png()
     } else {
       throw new Error(`Unsupported format: ${this._options.format}`)
@@ -20,7 +20,7 @@ class NodeImage extends Image {
   toBuffer() {
     let image = this._image
     image = this._setFormat(image)
-    return this._image.toBuffer()
+    return image.toBuffer()
   }
 
   static from(bufferOrImageData, options) {
