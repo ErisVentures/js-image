@@ -7,6 +7,22 @@ class NodeImage extends Image {
     this._image = image
   }
 
+  _setFormat(image) {
+    if (this._options.format === 'jpeg') {
+      return image.jpeg(this._options.formatOptions)
+    } else if (this._options.format === 'png') {
+      return image.png()
+    } else {
+      throw new Error(`Unsupported format: ${this._options.format}`)
+    }
+  }
+
+  toBuffer() {
+    let image = this._image
+    image = this._setFormat(image)
+    return this._image.toBuffer()
+  }
+
   static from(bufferOrImageData, options) {
     let image
     if (Image.isImageData(bufferOrImageData)) {
@@ -18,7 +34,7 @@ class NodeImage extends Image {
         },
       })
     } else if (Buffer.isBuffer(bufferOrImageData)) {
-      image = bufferOrImageData
+      image = sharp(bufferOrImageData)
     } else {
       throw new TypeError('Must be Buffer of image data')
     }
