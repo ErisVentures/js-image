@@ -1,3 +1,7 @@
+const fs = require('fs')
+const {promisify} = require('./utils')
+const writeFileAsync = promisify(fs.writeFile, fs)
+
 class Image {
   constructor(options) {
     this._options = Object.assign({
@@ -10,6 +14,14 @@ class Image {
     this._options.format = format
     this._options.formatOptions = Object.assign({}, options)
     return this
+  }
+
+  toBuffer() {
+    throw new Error('unimplemented')
+  }
+
+  toFile(path) {
+    return this.toBuffer().then(buffer => writeFileAsync(path, buffer))
   }
 
   static isImageData(obj) {

@@ -1,7 +1,24 @@
+const fs = require('fs')
+const sinon = require('sinon')
 const Image = require('../lib/image')
-const {expect, fixture} = require('./utils')
+const {expect, fixture, fixturePath} = require('./utils')
 
+const unimplemented = func => () => {
+  it('should error', () => expect(func).to.throw('unimplemented'))
+}
+
+const skater = fixture('skater.jpg')
 describe('Image', () => {
+  let sandbox
+
+  beforeEach(() => {
+    sandbox = sinon.sandbox.create()
+  })
+
+  afterEach(() => {
+    sandbox.reset()
+  })
+
   describe('#constructor', () => {
     it('should default options', () => {
       const options = new Image()._options
@@ -27,6 +44,22 @@ describe('Image', () => {
     it('should set formatOptions', () => {
       image = image.format('jpeg', {quality: 70})
       expect(image._options).to.have.property('formatOptions').eql({quality: 70})
+    })
+  })
+
+  describe('.toFile', () => {
+    let image
+    beforeEach(() => {
+      image = new Image()
+      sandbox.stub(image, 'toBuffer').returns(Promise.resolve(skater))
+    })
+
+    it('should write buffer to file', () => {
+      const path = fixturePath('actual-to-file.jpg')
+      return image.toFile(path).then(() => {
+        const result = fs.readFileSync(path)
+        expect(result.length).to.equal(skater.length)
+      })
     })
   })
 
@@ -57,9 +90,6 @@ describe('Image', () => {
     })
   })
 
-  describe('#from', () => {
-    it('should error', () => {
-      expect(() => Image.from(fixture('skater.jpg'))).to.throw('unimplemented')
-    })
-  })
+  describe('.toBuffer', unimplemented(() => new Image().toBuffer()))
+  describe('#from', unimplemented(() => Image.from(skater)))
 })
