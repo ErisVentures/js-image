@@ -1,7 +1,35 @@
 const Image = require('../lib/image')
 const expect = require('./utils').expect
 
-describe('lib/image.js', () => {
+describe('Image', () => {
+  describe('#constructor', () => {
+    it('should default options', () => {
+      const options = new Image()._options
+      expect(options).to.eql({
+        format: 'jpeg',
+        formatOptions: {quality: 90}
+      })
+    })
+  })
+
+  describe('.format', () => {
+    let image
+
+    beforeEach(() => {
+      image = new Image()
+    })
+
+    it('should set format', () => {
+      image = image.format('png')
+      expect(image._options).to.have.property('format', 'png')
+    })
+
+    it('should set formatOptions', () => {
+      image = image.format('jpeg', {quality: 70})
+      expect(image._options).to.have.property('formatOptions').eql({quality: 70})
+    })
+  })
+
   describe('#isImageData', () => {
     const pixel = value => [value, value, value, 255]
 
