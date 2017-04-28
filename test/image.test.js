@@ -37,13 +37,18 @@ describe('Image', () => {
     })
 
     it('should set format', () => {
-      image = image.format('png')
-      expect(image._options).to.have.property('format', 'png')
+      image = image.format(Image.PNG)
+      expect(image._options).to.have.property('format', Image.PNG)
     })
 
     it('should set formatOptions', () => {
-      image = image.format('jpeg', {quality: 70})
+      image = image.format(Image.JPEG, {quality: 70})
       expect(image._options).to.have.property('formatOptions').eql({quality: 70})
+    })
+
+    it('should throw on unexpected formats', () => {
+      expect(() => image.format('jpg')).to.throw
+      expect(() => image.format('gif')).to.throw
     })
   })
 
