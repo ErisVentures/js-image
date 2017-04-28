@@ -1,5 +1,5 @@
 const Image = require('../lib/image')
-const expect = require('./utils').expect
+const {expect, fixture} = require('./utils')
 
 describe('Image', () => {
   describe('#constructor', () => {
@@ -7,7 +7,7 @@ describe('Image', () => {
       const options = new Image()._options
       expect(options).to.eql({
         format: 'jpeg',
-        formatOptions: {quality: 90}
+        formatOptions: {quality: 90},
       })
     })
   })
@@ -54,6 +54,12 @@ describe('Image', () => {
 
     it('should enforce pixel length', () => {
       expect(Image.isImageData({width: 10, height: 10, data: new Uint8Array(100)})).to.be.false
+    })
+  })
+
+  describe('#from', () => {
+    it('should error', () => {
+      expect(() => Image.from(fixture('skater.jpg'))).to.throw('unimplemented')
     })
   })
 })
