@@ -10,6 +10,7 @@ before_install:
   - npm install -g coveralls
 script:
   - npm run test:lint
+  - npm run test:download
   - npm run test:coverage
 after_success:
   - cat ./coverage/lcov.info | coveralls || echo 'Failed to upload to coveralls...'
