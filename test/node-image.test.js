@@ -21,6 +21,40 @@ describe('NodeImage', () => {
     })
   })
 
+  describe('.toImageData', () => {
+    it('should handle image data without alpha', () => {
+      const pixels = Buffer.from([
+        0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0,
+      ])
+
+      const imageData = {
+        width: 2,
+        height: 2,
+        channels: 3,
+        hasAlpha: false,
+        data: pixels,
+      }
+
+      return NodeImage.from(imageData).toImageData().then(data => {
+        expect(data).to.eql(imageData)
+      })
+    })
+
+    it('should be fast', () => {
+      let promise = Promise.resolve(skater)
+      for (let i = 0; i < 100; i++) {
+        promise = promise.then(image => NodeImage.from(image).toImageData())
+      }
+
+      return promise.then(imageData => {
+        const srcImageData = Object.assign(jpeg.decode(skater), {channels: 4, hasAlpha: true})
+        const decoded = NodeImage.removeAlphaChannel(srcImageData)
+        expect(imageData.data.length).to.equal(decoded.data.length)
+      })
+    })
+  })
+
   describe('.toBuffer', () => {
     it('should output the buffer', () => {
       const image = NodeImage.from(skater)
