@@ -8,7 +8,7 @@ const skater = fixture('skater.jpg')
 describe('NodeImage', () => {
   describe('._setFormat', () => {
     it('should support jpeg', () => {
-      const image = NodeImage.from(skater).format('jpeg', {quality: 50})
+      const image = NodeImage.from(skater).format({type: 'jpeg', quality: 50})
       return image.toBuffer().then(buffer => {
         compareToFixture(buffer, 'skater-poor.jpg')
       })

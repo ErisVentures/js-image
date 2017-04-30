@@ -23,8 +23,7 @@ describe('Image', () => {
     it('should default output', () => {
       const output = new Image()._output
       expect(output).to.eql({
-        format: 'jpeg',
-        formatOptions: {quality: 90},
+        format: {type: 'jpeg'},
       })
     })
   })
@@ -38,12 +37,13 @@ describe('Image', () => {
 
     it('should set format', () => {
       image = image.format(Image.PNG)
-      expect(image._output).to.have.property('format', Image.PNG)
+      expect(image._output).to.have.property('format').eql({type: Image.PNG})
     })
 
-    it('should set formatOptions', () => {
-      image = image.format(Image.JPEG, {quality: 70})
-      expect(image._output).to.have.property('formatOptions').eql({quality: 70})
+    it('should set format options', () => {
+      const opts = {type: Image.JPEG, quality: 70}
+      image = image.format(opts)
+      expect(image._output).to.have.property('format').eql(opts)
     })
 
     it('should throw on unexpected formats', () => {
