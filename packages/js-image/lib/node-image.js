@@ -22,6 +22,20 @@ class SharpImage {
       throw new TypeError('Must be Buffer or image data')
     }
   }
+
+  static toImageData(image) {
+    const metadata = image.metadata()
+    const pixels = image.clone().raw().toBuffer()
+    return Promise.all([metadata, pixels]).then(([metadata, pixels]) => {
+      return {
+        channels: 3,
+        format: ImageData.RGB,
+        width: metadata.width,
+        height: metadata.height,
+        data: pixels,
+      }
+    })
+  }
 }
 
 class NodeImage extends Image {
@@ -41,17 +55,7 @@ class NodeImage extends Image {
   }
 
   toImageData() {
-    const metadata = this._image.metadata()
-    const pixels = this._image.clone().raw().toBuffer()
-    return Promise.all([metadata, pixels]).then(([metadata, pixels]) => {
-      return {
-        channels: 3,
-        format: ImageData.RGB,
-        width: metadata.width,
-        height: metadata.height,
-        data: pixels,
-      }
-    })
+    return SharpImage.toImageData(this._image)
   }
 
   toBuffer() {
