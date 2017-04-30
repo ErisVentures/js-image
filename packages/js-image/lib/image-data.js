@@ -20,7 +20,7 @@ class ImageData {
   static normalize(imageData) {
     return Object.assign({
       channels: 4,
-      format: ImageData.RGBA,
+      format: imageData.channels === 3 ? ImageData.RGB : ImageData.RGBA,
     }, imageData)
   }
 
@@ -33,18 +33,20 @@ class ImageData {
   }
 
   static removeAlphaChannel(srcImageData) {
-    const dstImageData = Object.assign({}, srcImageData, {hasAlpha: false})
+    ImageData.assert(srcImageData)
+    const dstImageData = Object.assign({}, srcImageData)
 
-    if (srcImageData.hasAlpha) {
+    if (srcImageData.format === ImageData.RGBA) {
       const numPixels = srcImageData.width * srcImageData.height
-      const numChannels = srcImageData.channels - 1
-      const rawData = new Uint8Array(numPixels * numChannels)
+      const rawData = new Uint8Array(numPixels * 3)
       for (let i = 0; i < numPixels; i++) {
-        for (let j = 0; j < numChannels; j++) {
-          rawData[i + j] = srcImageData.data[(i * srcImageData.channels) + j]
-        }
+        rawData[i + 0] = srcImageData.data[(i * srcImageData.channels) + 0]
+        rawData[i + 1] = srcImageData.data[(i * srcImageData.channels) + 1]
+        rawData[i + 2] = srcImageData.data[(i * srcImageData.channels) + 2]
       }
 
+      dstImageData.format = ImageData.RGB
+      dstImageData.channels = 3
       dstImageData.data = rawData
     }
 

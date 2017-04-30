@@ -23,7 +23,7 @@ describe('NodeImage', () => {
   })
 
   describe('.toImageData', () => {
-    it('should handle image data without alpha', () => {
+    it('should handle RGB image data', () => {
       const pixels = Buffer.from([
         0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0,
@@ -33,7 +33,7 @@ describe('NodeImage', () => {
         width: 2,
         height: 2,
         channels: 3,
-        hasAlpha: false,
+        format: ImageData.RGB,
         data: pixels,
       }
 
@@ -49,7 +49,7 @@ describe('NodeImage', () => {
       }
 
       return promise.then(imageData => {
-        const srcImageData = Object.assign(jpeg.decode(skater), {channels: 4, hasAlpha: true})
+        const srcImageData = ImageData.normalize(jpeg.decode(skater))
         const decoded = ImageData.removeAlphaChannel(srcImageData)
         expect(imageData.data.length).to.equal(decoded.data.length)
       })
