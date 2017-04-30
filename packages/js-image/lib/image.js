@@ -7,18 +7,21 @@ class Image {
   constructor(options) {
     this._options = options
     this._output = {
-      format: 'jpeg',
-      formatOptions: {quality: 90},
+      format: {type: 'jpeg'},
     }
   }
 
-  format(format, options) {
-    if (format !== Image.JPEG && format !== Image.PNG) {
-      throw new Error(`Unrecognized format: ${format}`)
+  format(options) {
+    if (typeof options === 'string') {
+      options = {type: options}
     }
 
-    this._output.format = format
-    this._output.formatOptions = Object.assign({}, options)
+    if (options.type !== Image.JPEG && options.type !== Image.PNG) {
+      throw new Error(`Unrecognized format: ${options.type}`)
+    }
+
+    const defaultOpts = options.type === Image.JPEG ? {quality: 90} : {}
+    this._output.format = Object.assign(defaultOpts, options)
     return this
   }
 
