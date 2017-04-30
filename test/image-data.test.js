@@ -45,7 +45,7 @@ describe('ImageData', () => {
       expect(ImageData.is({data: undefined})).to.be.false
       expect(ImageData.is({width: '2', height: 1, data: []})).to.be.false
       expect(ImageData.is({width: 1, height: 1, data: [0]})).to.be.false
-      expect(ImageData.is({width: 1, height: 1, data: [0], channels: 1, format: 'jpeg'})).to.be.false
+      expect(ImageData.is({width: 1, height: 1, data: [0], channels: 1})).to.be.false
     })
 
     it('should enforce format', () => {
@@ -54,7 +54,7 @@ describe('ImageData', () => {
         height: 10,
         channels: 3,
         format: 'jpeg',
-        data: new Uint8Array(300)
+        data: new Uint8Array(300),
       }
 
       expect(ImageData.is(imageData)).to.be.false
@@ -67,7 +67,7 @@ describe('ImageData', () => {
         height: 10,
         channels: 3,
         format: 'rgb',
-        data: new Uint8Array(100)
+        data: new Uint8Array(100),
       }
 
       expect(ImageData.is(imageData)).to.be.false
