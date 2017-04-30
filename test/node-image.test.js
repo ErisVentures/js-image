@@ -1,5 +1,6 @@
 const jpeg = require('jpeg-js')
 
+const ImageData = require('../lib/image-data')
 const NodeImage = require('../lib/node-image')
 const {expect, fixture, compareToFixture} = require('./utils')
 
@@ -49,7 +50,7 @@ describe('NodeImage', () => {
 
       return promise.then(imageData => {
         const srcImageData = Object.assign(jpeg.decode(skater), {channels: 4, hasAlpha: true})
-        const decoded = NodeImage.removeAlphaChannel(srcImageData)
+        const decoded = ImageData.removeAlphaChannel(srcImageData)
         expect(imageData.data.length).to.equal(decoded.data.length)
       })
     })
