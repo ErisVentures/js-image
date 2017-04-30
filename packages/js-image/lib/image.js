@@ -25,6 +25,15 @@ class Image {
     return this
   }
 
+  resize(options) {
+    if (typeof options.width !== 'number' && typeof options.height !== 'number') {
+      throw new TypeError('Must specify a width or height')
+    }
+
+    this._output.resize = Object.assign({method: Image.CROP}, options)
+    return this
+  }
+
   toImageData() {
     throw new Error('unimplemented')
   }
@@ -42,6 +51,15 @@ class Image {
   }
 }
 
+// Image formats
 Image.JPEG = 'jpeg'
 Image.PNG = 'png'
+
+// Image resize methods
+Image.AUTO_SIZE = undefined
+Image.CONTAIN = 'contain'
+Image.COVER = 'cover'
+Image.EXACT = 'exact'
+Image.CROP = 'crop'
+
 module.exports = Image

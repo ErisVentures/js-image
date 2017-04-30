@@ -5,8 +5,10 @@ const NodeImage = require('../lib/node-image')
 const {expect, fixture, compareToFixture} = require('./utils')
 
 const skater = fixture('skater.jpg')
+const yosemite = fixture('yosemite-portrait.jpg')
+const opera = fixture('opera-landscape.jpg')
 describe('NodeImage', () => {
-  describe('._setFormat', () => {
+  describe('._applyFormat', () => {
     it('should support jpeg', () => {
       const image = NodeImage.from(skater).format({type: 'jpeg', quality: 50})
       return image.toBuffer().then(buffer => {
@@ -18,6 +20,53 @@ describe('NodeImage', () => {
       const image = NodeImage.from(skater).format('png')
       return image.toBuffer().then(buffer => {
         compareToFixture(buffer, 'skater.png')
+      })
+    })
+  })
+
+  describe('._applyResize', () => {
+    it('should support cover', () => {
+      const image = NodeImage.from(yosemite).resize({
+        width: 200,
+        height: 200,
+        method: NodeImage.COVER,
+      })
+
+      return image.toBuffer().then(buffer => {
+        compareToFixture(buffer, 'yosemite-square-cover.jpg')
+      })
+    })
+
+    it('should support contain', () => {
+      const image = NodeImage.from(yosemite).resize({
+        width: 200,
+        height: 200,
+        method: NodeImage.CONTAIN,
+      })
+      return image.toBuffer().then(buffer => {
+        compareToFixture(buffer, 'yosemite-square-contain.jpg')
+      })
+    })
+
+    it('should support crop', () => {
+      const image = NodeImage.from(opera).resize({
+        width: 200,
+        height: 200,
+        method: NodeImage.CROP,
+      })
+      return image.toBuffer().then(buffer => {
+        compareToFixture(buffer, 'opera-square-crop.jpg')
+      })
+    })
+
+    it('should support exact', () => {
+      const image = NodeImage.from(opera).resize({
+        width: 200,
+        height: 200,
+        method: NodeImage.EXACT,
+      })
+      return image.toBuffer().then(buffer => {
+        compareToFixture(buffer, 'opera-square-exact.jpg')
       })
     })
   })
