@@ -31,12 +31,12 @@ class NodeImage extends Image {
   }
 
   _setFormat(image) {
-    if (this._options.format === Image.JPEG) {
-      return image.jpeg(this._options.formatOptions)
-    } else if (this._options.format === Image.PNG) {
+    if (this._output.format === Image.JPEG) {
+      return image.jpeg(this._output.formatOptions)
+    } else if (this._output.format === Image.PNG) {
       return image.png()
     } else {
-      throw new Error(`Unsupported format: ${this._options.format}`)
+      throw new Error(`Unsupported format: ${this._output.format}`)
     }
   }
 
