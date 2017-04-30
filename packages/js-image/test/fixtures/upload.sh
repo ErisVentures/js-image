@@ -9,9 +9,11 @@ echo "" > files.txt
 
 for file in *.jpg *.png;
 do
+  FULL_URL="https://s3.amazonaws.com/$S3PATH/$file"
+
   echo "$file" >> files.txt
 
-  if [[ "$FORCE" == true || $(curl "https://s3.amazonaws.com/$S3PATH/$file" 2>/dev/null | grep 'Not Found') ]]; then
+  if [[ "$FORCE" == true ]] || curl -I "$FULL_URL" 2>/dev/null | grep 'Not Found' >/dev/null ; then
     echo "Uploading $file..."
     aws s3 cp "$file" "s3://$S3PATH/$file"
   else
