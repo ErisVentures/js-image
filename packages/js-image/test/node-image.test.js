@@ -71,6 +71,15 @@ describe('NodeImage', () => {
     })
   })
 
+  describe('._applyGreyscale', () => {
+    it('should covert to greyscale', () => {
+      const image = NodeImage.from(yosemite).greyscale()
+      return image.toBuffer().then(buffer => {
+        compareToFixture(buffer, 'yosemite-greyscale.jpg')
+      })
+    })
+  })
+
   describe('.toImageData', () => {
     it('should handle RGB image data', () => {
       const pixels = Buffer.from([

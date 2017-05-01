@@ -34,6 +34,11 @@ class Image {
     return this
   }
 
+  greyscale() {
+    this._output.greyscale = true
+    return this
+  }
+
   toImageData() {
     throw new Error('unimplemented')
   }

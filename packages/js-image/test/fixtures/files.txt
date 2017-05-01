@@ -4,6 +4,7 @@ actual-opera-square-exact.jpg
 actual-skater-blur.jpg
 actual-skater-poor.jpg
 actual-to-file.jpg
+actual-yosemite-greyscale.jpg
 actual-yosemite-square-contain.jpg
 actual-yosemite-square-cover.jpg
 opera-landscape.jpg
@@ -12,6 +13,7 @@ opera-square-exact.jpg
 skater-blur.jpg
 skater-poor.jpg
 skater.jpg
+yosemite-greyscale.jpg
 yosemite-portrait.jpg
 yosemite-square-contain.jpg
 yosemite-square-cover.jpg
