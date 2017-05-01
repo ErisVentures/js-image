@@ -18,6 +18,10 @@ module.exports = {
     }
 
     const expectedData = fixture(path)
-    chai.expect(buffer.length).to.equal(expectedData.length)
+    if (process.env.LOOSE_COMPARISON === 'true') {
+      expect(buffer.length).to.be.within(expectedData.length - 1000, expectedData.length + 1000)
+    } else {
+      expect(buffer.length).to.equal(expectedData.length)
+    }
   }
 }
