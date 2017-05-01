@@ -1,6 +1,9 @@
 dist: trusty
 language: node_js
-cache: yarn
+cache:
+  yarn: true
+  directories:
+    - test/fixtures/
 notifications:
   email: false
 node_js:
@@ -11,7 +14,7 @@ before_install:
 script:
   - npm run test:lint
   - npm run test:download
-  - npm run test:coverage
+  - LOOSE_COMPARISON=true npm run test:coverage
 after_success:
   - cat ./coverage/lcov.info | coveralls || echo 'Failed to upload to coveralls...'
   # - npm run semantic-release
