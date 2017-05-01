@@ -52,6 +52,37 @@ describe('Image', () => {
     })
   })
 
+  describe('.resize', () => {
+    let image
+
+    beforeEach(() => {
+      image = new Image()
+    })
+
+    it('should set resize', () => {
+      const options = {width: 200, height: 300, method: Image.COVER}
+      image = image.resize(options)
+      expect(image._output).to.have.property('resize').eql(options)
+    })
+
+    it('should accept just width', () => {
+      const options = {width: 200, height: Image.AUTO_SIZE, method: Image.CONTAIN}
+      image = image.resize(options)
+      expect(image._output).to.have.property('resize').eql(options)
+    })
+
+    it('should accept just height', () => {
+      const options = {width: Image.AUTO_SIZE, height: 300, method: Image.CROP}
+      image = image.resize(options)
+      expect(image._output).to.have.property('resize').eql(options)
+    })
+
+    it('should throw if width and height are missing', () => {
+      const options = {method: Image.COVER}
+      expect(() => image.resize(options)).to.throw('Must specify a width or height')
+    })
+  })
+
   describe('.toFile', () => {
     let image
     beforeEach(() => {
