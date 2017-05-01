@@ -2,81 +2,71 @@ const jpeg = require('jpeg-js')
 
 const ImageData = require('../lib/image-data')
 const NodeImage = require('../lib/node-image')
-const {expect, fixture, compareToFixture} = require('./utils')
+const {expect, fixture, testImage} = require('./utils')
 
 const skater = fixture('skater.jpg')
-const yosemite = fixture('yosemite-portrait.jpg')
-const opera = fixture('opera-landscape.jpg')
+const testSkater = (...args) => testImage(NodeImage, 'skater.jpg', ...args)
+const testYosemite = (...args) => testImage(NodeImage, 'yosemite-portrait.jpg', ...args)
+const testOpera = (...args) => testImage(NodeImage, 'opera-landscape.jpg', ...args)
 describe('NodeImage', () => {
   describe('._applyFormat', () => {
     it('should support jpeg', () => {
-      const image = NodeImage.from(skater).format({type: 'jpeg', quality: 50})
-      return image.toBuffer().then(buffer => {
-        compareToFixture(buffer, 'skater-poor.jpg')
-      })
+      const modify = img => img.format({type: 'jpeg', quality: 50})
+      return testSkater('skater-poor.jpg', modify)
     })
 
     it('should support png', () => {
-      const image = NodeImage.from(skater).format('png')
-      return image.toBuffer().then(buffer => {
-        compareToFixture(buffer, 'skater.png')
-      })
+      const modify = img => img.format('png')
+      return testSkater('skater.png', modify)
     })
   })
 
   describe('._applyResize', () => {
     it('should support cover', () => {
-      const image = NodeImage.from(yosemite).resize({
+      const modify = img => img.resize({
         width: 200,
         height: 200,
         method: NodeImage.COVER,
       })
 
-      return image.toBuffer().then(buffer => {
-        compareToFixture(buffer, 'yosemite-square-cover.jpg')
-      })
+      return testYosemite('yosemite-square-cover.jpg', modify)
     })
 
     it('should support contain', () => {
-      const image = NodeImage.from(yosemite).resize({
+      const modify = img => img.resize({
         width: 200,
         height: 200,
         method: NodeImage.CONTAIN,
       })
-      return image.toBuffer().then(buffer => {
-        compareToFixture(buffer, 'yosemite-square-contain.jpg')
-      })
+
+      return testYosemite('yosemite-square-contain.jpg', modify)
     })
 
     it('should support crop', () => {
-      const image = NodeImage.from(opera).resize({
+      const modify = img => img.resize({
         width: 200,
         height: 200,
         method: NodeImage.CROP,
       })
-      return image.toBuffer().then(buffer => {
-        compareToFixture(buffer, 'opera-square-crop.jpg')
-      })
+
+      return testOpera('opera-square-crop.jpg', modify)
     })
 
     it('should support exact', () => {
-      const image = NodeImage.from(opera).resize({
+      const modify = img => img.resize({
         width: 200,
         height: 200,
         method: NodeImage.EXACT,
       })
-      return image.toBuffer().then(buffer => {
-        compareToFixture(buffer, 'opera-square-exact.jpg')
-      })
+
+      return testOpera('opera-square-exact.jpg', modify)
     })
   })
 
   describe('._applyGreyscale', () => {
     it('should covert to greyscale', () => {
-      const image = NodeImage.from(yosemite).greyscale()
-      return image.toBuffer().then(buffer => {
-        compareToFixture(buffer, 'yosemite-greyscale.jpg')
-      })
+      const modify = img => img.greyscale()
+      return testYosemite('yosemite-greyscale.jpg', modify)
     })
   })
 
