@@ -3,7 +3,6 @@ const debug = require('debug')('raw-decoder:decoder')
 const Reader = require('./reader')
 const IfdParser = require('./ifd-parser')
 
-
 class Decoder {
   constructor(buffer) {
     this._reader = new Reader(buffer)
@@ -15,7 +14,7 @@ class Decoder {
     if (byteOrder === 0x4949) {
       debug('interpreting as little endian')
       this._reader.setEndianess(Reader.LITTLE_ENDIAN)
-    } else if (byteOrder === 0x4d4d){
+    } else if (byteOrder === 0x4D4D) {
       debug('interpreting as big endian')
       this._reader.setEndianess(Reader.BIG_ENDIAN)
     } else {

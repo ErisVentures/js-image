@@ -22,7 +22,7 @@ class IfdParser {
     const length = reader.read(4)
     const lengthInBytes = dataTypeSize * length
     let data = reader.readAsReader(4)
-    let dataOffset = undefined
+    let dataOffset
     if (lengthInBytes > 4) {
       dataOffset = data.read(4)
       data = undefined
@@ -44,7 +44,9 @@ class IfdParser {
   }
 
   static getEntryData(reader, entry) {
-    if (entry.data) return entry.data
+    if (entry.data) {
+      return entry.data
+    }
     return reader.use(() => {
       reader.seek(entry.dataOffset)
       return reader.readAsReader(entry.lengthInBytes)
@@ -54,7 +56,9 @@ class IfdParser {
   static getSubIfdOffsets(reader, entries) {
     const offsets = []
     entries.forEach(entry => {
-      if (entry.tag !== 330) return
+      if (entry.tag !== 330) {
+        return
+      }
       const entryReader = IfdParser.getEntryData(reader, entry)
       while (entryReader.hasNext()) {
         offsets.push(entryReader.read(4))
