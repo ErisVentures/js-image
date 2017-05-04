@@ -1,0 +1,22 @@
+{
+  "extends": "tslint:recommended",
+  "rules": {
+    // Personal configuration from eslint
+    "max-line-length": {"options": [100]},
+    "semicolon": [true, "never"],
+    "trailing-comma": [true, {"multiline": "always", "singleline": "never"}],
+    "variable-name": [true, "ban-keywords", "check-format", "allow-leading-underscore"],
+    "quotemark": [true, "single"],
+
+    // Personal typescript options
+    "typedef": [true, "call-signature", "parameter", "property-declaration", "member-variable-declaration"],
+
+    // Undecided but probably will keep
+    "no-parameter-properties": false,
+    "arrow-parens": false,
+
+    // Should eventually enable
+    "member-ordering": false,
+    "completed-docs": false
+  }
+}

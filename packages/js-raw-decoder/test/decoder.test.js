@@ -1,4 +1,4 @@
-const Decoder = require('../lib/decoder')
+const Decoder = require('../dist/decoder').Decoder
 const {fixture, compareToFixture} = require('./utils')
 
 describe('Decoder', () => {

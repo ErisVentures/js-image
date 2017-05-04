@@ -10,11 +10,12 @@ node_js:
   - v7
   - v6
 before_install:
-  - npm install -g coveralls
+  - npm install -g coveralls nyc
 script:
+  - npm run build
   - npm run test:lint
   - npm run test:download
   - npm run test:coverage
 after_success:
-  - cat ./coverage/lcov.info | coveralls || echo 'Failed to upload to coveralls...'
+  - nyc report --reporter=text-lcov | coveralls || echo 'Failed to upload to coveralls...'
   # - npm run semantic-release
