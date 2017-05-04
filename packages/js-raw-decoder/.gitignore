@@ -1,0 +1,8 @@
+node_modules/
+coverage/
+npm-debug.log
+
+test/fixtures/*.jpg
+test/fixtures/*.nef
+test/fixtures/*.cr2
+test/fixtures/*.arw

@@ -1,0 +1,47 @@
+{
+  "name": "raw-decoder",
+  "version": "0.0.0",
+  "description": "Decodes data from RAW camera files.",
+  "main": "./lib/decoder.js",
+  "scripts": {
+    "test": "npm run test:lint && npm run test:unit",
+    "test:unit": "mocha --reporter spec 'test/**/*.test.js'",
+    "test:lint": "lint",
+    "test:update-expectations": "UPDATE_EXPECTATIONS=true npm run test:unit",
+    "test:upload": "bash test/fixtures/upload.sh",
+    "test:update-all": "npm run test:update-expectations && npm run test:upload",
+    "test:download": "bash test/fixtures/download.sh",
+    "test:coverage": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- 'test/**/*.test.js'",
+    "test:watch": "mocha --watch --reporter dot 'test/**/*.test.js'",
+    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ouranos-oss/js-raw-decoder.git"
+  },
+  "author": "Patrick Hulce <patrick.hulce@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ouranos-oss/js-raw-decoder/issues"
+  },
+  "homepage": "https://github.com/ouranos-oss/js-raw-decoder#readme",
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "devDependencies": {
+    "@patrickhulce/lint": "^1.0.0",
+    "chai": "^3.5.0",
+    "cz-conventional-changelog": "^2.0.0",
+    "istanbul": "^0.4.5",
+    "mocha": "^3.3.0",
+    "semantic-release": "^6.3.2",
+    "sinon": "^2.1.0",
+    "sinon-chai": "^2.10.0"
+  },
+  "dependencies": {
+    "debug": "^2.6.6",
+    "lodash": "^4.17.4"
+  }
+}
