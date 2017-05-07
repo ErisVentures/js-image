@@ -7,6 +7,21 @@
 
 Decodes data from RAW camera files.
 
+## Usage
+
+`yarn add raw-decoder`
+
+### Node
+
+```js
+const fs = require('fs')
+const RAWDecoder = require('raw-decoder').Decoder
+
+const myFile = fs.readFileSync('./DSC_0001.nef')
+const myFileDecoder = new RAWDecoder(myFile)
+const myFileAsJpeg = myFileDecoder.extractThumbnail()
+fs.writeFileSync('./DSC_0001.jpg', myFileAsJpeg)
+```
 
 ## Documention and Resources for Various Formats
 
