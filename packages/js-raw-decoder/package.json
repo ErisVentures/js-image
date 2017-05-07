@@ -2,7 +2,7 @@
   "name": "raw-decoder",
   "version": "0.0.0-development",
   "description": "Decodes data from RAW camera files.",
-  "main": "./lib/decoder.js",
+  "main": "./dist/decoder.js",
   "scripts": {
     "build": "tsc",
     "test": "npm run build && npm run test:lint && npm run test:unit",
