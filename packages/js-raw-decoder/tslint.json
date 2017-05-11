@@ -2,7 +2,7 @@
   "extends": "tslint:all",
   "rules": {
     // Personal configuration from eslint
-    "max-line-length": {"options": [100]},
+    "max-line-length": [true, 100],
     "semicolon": [true, "never"],
     "trailing-comma": [true, {"multiline": "always", "singleline": "never"}],
     "variable-name": [true, "ban-keywords", "check-format", "allow-leading-underscore"],
