@@ -50,7 +50,7 @@ export class IfdParser {
   public static parseIfd(reader: Reader, startPosition: number): IfdResult {
     reader.seek(startPosition)
     const numEntries = reader.read(2)
-    const entries: IfdEntry[] = []
+    const entries = []
     for (let i = 0; i < numEntries; i++) {
       entries.push(IfdParser.parseEntry(reader))
     }
@@ -63,6 +63,7 @@ export class IfdParser {
     if (entry.data) {
       return entry.data
     }
+
     return reader.use(() => {
       reader.seek(entry.dataOffset!)
       return reader.readAsReader(entry.lengthInBytes)

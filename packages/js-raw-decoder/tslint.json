@@ -1,5 +1,5 @@
 {
-  "extends": "tslint:recommended",
+  "extends": "tslint:all",
   "rules": {
     // Personal configuration from eslint
     "max-line-length": {"options": [100]},
@@ -10,12 +10,18 @@
 
     // Personal typescript options
     "typedef": [true, "call-signature", "parameter", "property-declaration", "member-variable-declaration"],
+    "comment-format": [true, "check-space"],
 
     // Undecided but probably will keep
     "no-parameter-properties": false,
     "arrow-parens": false,
+    "no-magic-numbers": false,
+    "strict-boolean-expressions": false,
+    "prefer-switch": false,
+    "newline-before-return": false,
 
     // Should eventually enable
+    "no-non-null-assertion": false,
     "member-ordering": false,
     "completed-docs": false
   }
