@@ -23,6 +23,6 @@
 
     // Should eventually enable
     "no-non-null-assertion": false,
-    "completed-docs": false
+    "completed-docs": [false]
   }
 }
