@@ -12,7 +12,7 @@
     "test:upload": "bash test/fixtures/upload.sh",
     "test:update-all": "npm run test:update-expectations && npm run test:upload",
     "test:download": "bash test/fixtures/download.sh",
-    "test:coverage": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- 'test/**/*.test.js'",
+    "test:coverage": "nyc npm run test:unit",
     "test:watch": "mocha --watch --reporter dot 'test/**/*.test.js'",
     "semantic-release": "semantic-release pre && npm publish --access public && semantic-release post"
   },
