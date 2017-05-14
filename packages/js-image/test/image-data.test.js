@@ -1,6 +1,6 @@
 const jpeg = require('jpeg-js')
 const ImageData = require('../lib/image-data').ImageData
-const {expect, fixture} = require('./utils')
+const {expect, fixtureDecode, compareToFixture} = require('./utils')
 
 describe('ImageData', () => {
   const pixel = value => [value, value, value, 255]
@@ -75,9 +75,113 @@ describe('ImageData', () => {
     })
   })
 
+  describe('#toGreyscale', () => {
+    it('should be no-op for greyscale images', () => {
+      const imageData = {
+        width: 10,
+        height: 10,
+        channels: 1,
+        format: 'b',
+        data: new Uint8Array(100),
+      }
+
+      expect(ImageData.toGreyscale(imageData)).to.equal(imageData)
+    })
+
+    it('should use luminance for RGB images', () => {
+      const imageData = {
+        width: 2,
+        height: 2,
+        channels: 3,
+        format: 'rgb',
+        data: [
+          100, 100, 100,
+          0, 100, 0,
+          100, 0, 0,
+          0, 0, 100
+        ],
+      }
+
+      expect(ImageData.toGreyscale(imageData)).to.eql({
+        width: 2,
+        height: 2,
+        channels: 1,
+        format: 'b',
+        data: new Uint8Array([100, 59, 30, 11]),
+      })
+    })
+
+    it('should cycle through back to RGBA', () => {
+      const imageData = ImageData.normalize(fixtureDecode('skater.jpg'))
+      const greyscale = ImageData.toGreyscale(imageData)
+      const rgba = ImageData.toRGBA(greyscale)
+      compareToFixture(jpeg.encode(rgba, 90).data, 'skater-greyscale.jpg')
+    })
+  })
+
+  describe('#toRGB', () => {
+    it('should inflate greyscale images', () => {
+      const imageData = {
+        width: 2,
+        height: 2,
+        channels: 1,
+        format: 'b',
+        data: new Uint8Array([100, 50, 200, 30]),
+      }
+
+      expect(ImageData.toRGB(imageData)).to.eql({
+        width: 2,
+        height: 2,
+        channels: 3,
+        format: 'rgb',
+        data: new Uint8Array([
+          100, 100, 100,
+          50, 50, 50,
+          200, 200, 200,
+          30, 30, 30,
+        ]),
+      })
+    })
+  })
+
+  describe('#toRGBA', () => {
+    it('should be no-op on rgba images', () => {
+      const imageData = ImageData.normalize(fixtureDecode('skater.jpg'))
+      expect(ImageData.toRGBA(imageData)).to.equal(imageData)
+    })
+
+    it('should add full alpha channel to RGB', () => {
+      const imageData = {
+        width: 2,
+        height: 2,
+        channels: 3,
+        format: 'rgb',
+        data: [
+          100, 100, 100,
+          0, 100, 0,
+          100, 0, 0,
+          0, 0, 100
+        ],
+      }
+
+      expect(ImageData.toRGBA(imageData)).to.eql({
+        width: 2,
+        height: 2,
+        channels: 4,
+        format: 'rgba',
+        data: new Uint8Array([
+          100, 100, 100, 255,
+          0, 100, 0, 255,
+          100, 0, 0, 255,
+          0, 0, 100, 255,
+        ]),
+      })
+    })
+  })
+
   describe('#removeAlphaChannel', () => {
     it('should convert RGBA to RGB', () => {
-      const imageData = ImageData.normalize(jpeg.decode(fixture('skater.jpg')))
+      const imageData = ImageData.normalize(fixtureDecode('skater.jpg'))
       const result = ImageData.removeAlphaChannel(imageData)
 
       expect(result).to.have.property('format', ImageData.RGB)

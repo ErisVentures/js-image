@@ -29,6 +29,7 @@
   "config": {
     "tslint": {
       "rules": {
+        "only-arrow-functions": false,
         "no-unsafe-any": false,
         "no-any": false
       }
