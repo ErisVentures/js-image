@@ -1,5 +1,5 @@
 const jpeg = require('jpeg-js')
-const ImageData = require('../lib/image-data')
+const ImageData = require('../lib/image-data').ImageData
 const {expect, fixture} = require('./utils')
 
 describe('ImageData', () => {
