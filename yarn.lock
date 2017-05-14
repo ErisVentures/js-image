@@ -2,9 +2,9 @@
 # yarn lockfile v1
 
 
-"@patrickhulce/lint@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@patrickhulce/lint/-/lint-1.1.0.tgz#66f90c7073e9b5cd1d81b3da8689b7a35063674e"
+"@patrickhulce/lint@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@patrickhulce/lint/-/lint-1.1.1.tgz#468bd0b4c60002ac5bafec7f2b518ca163647913"
   dependencies:
     babel-eslint "^7.2.1"
     debug "^2.6.3"

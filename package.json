@@ -38,13 +38,12 @@
     }
   },
   "dependencies": {
-    "bluebird": "^3.5.0",
     "jpeg-js": "^0.2.0",
     "lodash": "^4.17.4",
     "sharp": "^0.17.3"
   },
   "devDependencies": {
-    "@patrickhulce/lint": "^1.1.0",
+    "@patrickhulce/lint": "^1.1.1",
     "@types/bluebird": "^3.5.3",
     "@types/node": "^7.0.18",
     "@types/sharp": "^0.17.1",

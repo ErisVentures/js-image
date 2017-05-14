@@ -12,6 +12,7 @@ node_js:
 before_install:
   - npm install -g coveralls
 script:
+  - npm run build
   - npm run test:lint
   - npm run test:download
   - LOOSE_COMPARISON=true npm run test:coverage

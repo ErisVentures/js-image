@@ -1,10 +1,10 @@
-import {promisify} from 'bluebird'
 import {writeFile} from 'fs'
 
 import {BufferLike, ImageData} from './image-data'
+import {promisify} from './utils'
 
 // tslint:disable-next-line
-const writeFileAsync: any = promisify(writeFile)
+const writeFileAsync = promisify(writeFile)
 
 export interface IFormatOptions {
   type: ImageFormat,

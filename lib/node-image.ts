@@ -24,7 +24,7 @@ class SharpImage {
     }
   }
 
-  public static async toImageData(image: sharp.SharpInstance): Promise<ImageData> {
+  public static toImageData(image: sharp.SharpInstance): Promise<ImageData> {
     const metadata = image.metadata()
     const pixels = image.clone().raw().toBuffer()
     return Promise.all([metadata, pixels]).then(([metadata, pixels]) => ({
