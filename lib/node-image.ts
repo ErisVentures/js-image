@@ -1,9 +1,10 @@
-const sharp = require('sharp')
-const Image = require('./image')
-const ImageData = require('./image-data')
+import * as sharp from 'sharp'
+
+import {Image} from './image'
+import {BufferLike, ImageData} from './image-data'
 
 class SharpImage {
-  static from(bufferOrImageData) {
+  public static from(bufferOrImageData: BufferLike|ImageData): sharp.SharpInstance {
     if (ImageData.probablyIs(bufferOrImageData)) {
       let imageData = ImageData.normalize(bufferOrImageData)
       ImageData.assert(imageData)
@@ -23,28 +24,28 @@ class SharpImage {
     }
   }
 
-  static toImageData(image) {
+  public static toImageData(image: sharp.SharpInstance): Promise<ImageData> {
     const metadata = image.metadata()
     const pixels = image.clone().raw().toBuffer()
-    return Promise.all([metadata, pixels]).then(([metadata, pixels]) => {
-      return {
-        channels: 3,
-        format: ImageData.RGB,
-        width: metadata.width,
-        height: metadata.height,
-        data: pixels,
-      }
-    })
+    return Promise.all([metadata, pixels]).then(([metadata, pixels]) => ({
+      channels: 3,
+      format: ImageData.RGB,
+      width: metadata.width!,
+      height: metadata.height!,
+      data: pixels,
+    }))
   }
 }
 
-class NodeImage extends Image {
-  constructor(image, options) {
-    super(options)
+export class NodeImage extends Image {
+  private _image: sharp.SharpInstance
+
+  public constructor(image: sharp.SharpInstance) {
+    super()
     this._image = image
   }
 
-  _applyFormat(image) {
+  private _applyFormat(image: sharp.SharpInstance): sharp.SharpInstance {
     if (this._output.format.type === Image.JPEG) {
       return image.jpeg(this._output.format)
     } else if (this._output.format.type === Image.PNG) {
@@ -54,7 +55,7 @@ class NodeImage extends Image {
     }
   }
 
-  _applyResize(image) {
+  private _applyResize(image: sharp.SharpInstance): sharp.SharpInstance {
     if (!this._output.resize) {
       return image
     }
@@ -79,7 +80,7 @@ class NodeImage extends Image {
     return image
   }
 
-  _applyGreyscale(image) {
+  private _applyGreyscale(image: sharp.SharpInstance): sharp.SharpInstance {
     if (this._output.greyscale) {
       return image.greyscale()
     } else {
@@ -87,24 +88,22 @@ class NodeImage extends Image {
     }
   }
 
-  _applyAll(image) {
+  private _applyAll(image: sharp.SharpInstance): Promise<sharp.SharpInstance> {
     return Promise.resolve(image)
       .then(image => this._applyFormat(image))
       .then(image => this._applyResize(image))
       .then(image => this._applyGreyscale(image))
   }
 
-  toImageData() {
+  public toImageData(): Promise<ImageData> {
     return this._applyAll(this._image).then(SharpImage.toImageData)
   }
 
-  toBuffer() {
+  public toBuffer(): Promise<Buffer> {
     return this._applyAll(this._image).then(image => image.toBuffer())
   }
 
-  static from(bufferOrImageData, options) {
-    return new NodeImage(SharpImage.from(bufferOrImageData), options)
+  public static from(bufferOrImageData: BufferLike|ImageData): Image {
+    return new NodeImage(SharpImage.from(bufferOrImageData))
   }
 }
-
-module.exports = NodeImage

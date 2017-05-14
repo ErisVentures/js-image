@@ -1,8 +1,8 @@
 const jpeg = require('jpeg-js')
 
-const ImageData = require('../lib/image-data')
-const NodeImage = require('../lib/node-image')
-const {expect, fixture, testImage} = require('./utils')
+const ImageData = require('../lib/image-data').ImageData
+const NodeImage = require('../lib/node-image').NodeImage
+const {expect, fixture, testImage, TIMEOUT} = require('./utils')
 
 const skater = fixture('skater.jpg')
 const testSkater = (...args) => testImage(NodeImage, 'skater.jpg', ...args)
@@ -90,7 +90,8 @@ describe('NodeImage', () => {
       })
     })
 
-    it('should be fast', () => {
+    it('should be fast', function () {
+      this.timeout(TIMEOUT)
       let promise = Promise.resolve(skater)
       for (let i = 0; i < 100; i++) {
         promise = promise.then(image => NodeImage.from(image).toImageData())

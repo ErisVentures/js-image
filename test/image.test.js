@@ -1,6 +1,6 @@
 const fs = require('fs')
 const sinon = require('sinon')
-const Image = require('../lib/image')
+const Image = require('../lib/image').Image
 const {expect, fixture, fixturePath} = require('./utils')
 
 const unimplemented = func => () => {
@@ -87,7 +87,7 @@ describe('Image', () => {
     let image
     beforeEach(() => {
       image = new Image()
-      sandbox.stub(image, 'toBuffer').returns(Promise.resolve(skater))
+      image.toBuffer = () => Promise.resolve(skater)
     })
 
     it('should write buffer to file', () => {
@@ -98,7 +98,4 @@ describe('Image', () => {
       })
     })
   })
-
-  describe('.toBuffer', unimplemented(() => new Image().toBuffer()))
-  describe('#from', unimplemented(() => Image.from(skater)))
 })

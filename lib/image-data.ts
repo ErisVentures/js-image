@@ -1,5 +1,19 @@
-class ImageData {
-  static probablyIs(obj) {
+export type ImageDataFormat = 'rgb' | 'rgba'
+export type BufferLike = Buffer|Uint8Array|number[]
+
+export interface ImageData {
+  channels: number,
+  format: ImageDataFormat,
+  width: number,
+  height: number,
+  data: BufferLike,
+}
+
+export class ImageData implements ImageData {
+  public static RGB: ImageDataFormat = 'rgb'
+  public static RGBA: ImageDataFormat = 'rgba'
+
+  public static probablyIs(obj: any): boolean {
     if (!obj ||
       !obj.data ||
       typeof obj.width !== 'number' ||
@@ -10,21 +24,21 @@ class ImageData {
     return obj.data.length % obj.width * obj.height === 0
   }
 
-  static is(obj) {
+  public static is(obj: any): obj is ImageData {
     return ImageData.probablyIs(obj) &&
       typeof obj.channels === 'number' &&
-      ImageData.FORMATS.includes(obj.format) &&
+      (obj.format === ImageData.RGB || obj.format === ImageData.RGBA) &&
       obj.data.length === obj.width * obj.height * obj.channels
   }
 
-  static normalize(imageData) {
+  public static normalize(imageData: any): any {
     return Object.assign({
       channels: 4,
       format: imageData.channels === 3 ? ImageData.RGB : ImageData.RGBA,
     }, imageData)
   }
 
-  static assert(imageData) {
+  public static assert(imageData: any): ImageData {
     if (!ImageData.is(imageData)) {
       throw new TypeError('Unexpected image data format')
     }
@@ -32,7 +46,7 @@ class ImageData {
     return imageData
   }
 
-  static removeAlphaChannel(srcImageData) {
+  public static removeAlphaChannel(srcImageData: ImageData): ImageData {
     ImageData.assert(srcImageData)
     const dstImageData = Object.assign({}, srcImageData)
 
@@ -53,9 +67,3 @@ class ImageData {
     return dstImageData
   }
 }
-
-ImageData.RGB = 'rgb'
-ImageData.RGBA = 'rgba'
-ImageData.FORMATS = [ImageData.RGB, ImageData.RGBA]
-
-module.exports = ImageData
