@@ -33,4 +33,5 @@ module.exports = {
   fixturePath,
   compareToFixture,
   testImage,
+  TIMEOUT: process.env.CI ? 20000 : 1000
 }

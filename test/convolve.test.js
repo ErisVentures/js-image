@@ -1,6 +1,6 @@
 const jpeg = require('jpeg-js')
 const convolve = require('../lib/convolve').default
-const {expect, fixture, compareToFixture} = require('./utils')
+const {expect, fixture, compareToFixture, TIMEOUT} = require('./utils')
 
 const toPixels = arrs => new Uint8Array(arrs.reduce((acc, arr) => acc.concat(arr), []))
 
@@ -46,7 +46,7 @@ describe('#convolve', () => {
   })
 
   it('should blur', function () {
-    this.timeout(10000)
+    this.timeout(TIMEOUT)
     const output = convolve(jpeg.decode(skater), gaussianBlur)
     const jpegOutput = jpeg.encode(output, 90)
     compareToFixture(jpegOutput.data, 'skater-blur.jpg')
