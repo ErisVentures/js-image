@@ -1,11 +1,11 @@
-/* eslint-disable no-var, no-mixed-operators */
-function ensureFlatMatrix(matrix) {
+/* tslint:disable */
+function ensureFlatMatrix(matrix: any): any {
   if (!matrix.length) {
     throw new Error('Matrix must have length')
   }
 
   if (Array.isArray(matrix[0])) {
-    matrix = matrix.reduce((acc, arr) => acc.concat(arr), [])
+    matrix = matrix.reduce((acc: any, arr: any) => acc.concat(arr), [])
   }
 
   const matrixSize = Math.sqrt(matrix.length)
@@ -16,7 +16,7 @@ function ensureFlatMatrix(matrix) {
   return matrix
 }
 
-function convolve(imageData, matrix) {
+export default function convolve(imageData: any, matrix: any) {
   matrix = ensureFlatMatrix(matrix)
 
   const srcPixels = imageData.data
@@ -63,5 +63,3 @@ function convolve(imageData, matrix) {
 
   return Object.assign({}, imageData, {data: new Uint8Array(dstPixels)})
 }
-
-module.exports = convolve

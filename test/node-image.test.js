@@ -1,7 +1,7 @@
 const jpeg = require('jpeg-js')
 
-const ImageData = require('../lib/image-data')
-const NodeImage = require('../lib/node-image')
+const ImageData = require('../lib/image-data').ImageData
+const NodeImage = require('../lib/node-image').NodeImage
 const {expect, fixture, testImage} = require('./utils')
 
 const skater = fixture('skater.jpg')

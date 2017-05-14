@@ -1,5 +1,5 @@
 const jpeg = require('jpeg-js')
-const convolve = require('../lib/convolve')
+const convolve = require('../lib/convolve').default
 const {expect, fixture, compareToFixture} = require('./utils')
 
 const toPixels = arrs => new Uint8Array(arrs.reduce((acc, arr) => acc.concat(arr), []))

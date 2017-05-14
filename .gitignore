@@ -2,5 +2,9 @@ node_modules/
 coverage/
 npm-debug.log
 
+lib/**/*.js
+lib/**/*.js.map
+lib/**/*.d.ts
+
 test/fixtures/*.jpg
 test/fixtures/*.png
