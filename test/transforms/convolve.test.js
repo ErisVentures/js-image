@@ -1,6 +1,6 @@
 const jpeg = require('jpeg-js')
-const convolve = require('../lib/convolve').default
-const {expect, fixture, compareToFixture, TIMEOUT} = require('./utils')
+const convolve = require('../../lib/transforms/convolve').default
+const {expect, fixture, compareToFixture, TIMEOUT} = require('../utils')
 
 const toPixels = arrs => new Uint8Array(arrs.reduce((acc, arr) => acc.concat(arr), []))
 

@@ -2,7 +2,7 @@ const jpeg = require('jpeg-js')
 
 const ImageData = require('../lib/image-data').ImageData
 const NodeImage = require('../lib/node-image').NodeImage
-const {expect, fixture, testImage, TIMEOUT} = require('./utils')
+const {expect, fixture, compareToFixture, testImage, TIMEOUT} = require('./utils')
 
 const skater = fixture('skater.jpg')
 const testSkater = (...args) => testImage(NodeImage, 'skater.jpg', ...args)
@@ -70,6 +70,13 @@ describe('NodeImage', () => {
     })
   })
 
+  describe('._applyEdges', () => {
+    it('should find sobel edges', () => {
+      const modify = img => img.edges()
+      return testSkater('skater-edges-sobel.jpg', modify)
+    })
+  })
+
   describe('.toImageData', () => {
     it('should handle RGB image data', () => {
       const pixels = Buffer.from([
@@ -101,6 +108,13 @@ describe('NodeImage', () => {
         const srcImageData = ImageData.normalize(jpeg.decode(skater))
         const decoded = ImageData.removeAlphaChannel(srcImageData)
         expect(imageData.data.length).to.equal(decoded.data.length)
+      })
+    })
+
+    it('should generate a valid image data', () => {
+      return NodeImage.from(skater).toImageData().then(data => {
+        const buffer = jpeg.encode(ImageData.toRGBA(data), 90).data
+        compareToFixture(buffer, 'skater-image-data.jpg')
       })
     })
   })

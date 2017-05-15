@@ -1,23 +1,34 @@
 /* tslint:disable */
-function ensureFlatMatrix(matrix: any): any {
+import {ImageData} from '../image-data'
+
+export type FlatMatrix = number[]
+export type DeepMatrix = number[][]
+export type Matrix = FlatMatrix|DeepMatrix
+
+function isDeepMatrix(matrix: Matrix): matrix is DeepMatrix {
+  return Array.isArray(matrix[0])
+}
+
+export function ensureFlatMatrix(matrix: Matrix): FlatMatrix {
   if (!matrix.length) {
     throw new Error('Matrix must have length')
   }
 
-  if (Array.isArray(matrix[0])) {
-    matrix = matrix.reduce((acc: any, arr: any) => acc.concat(arr), [])
+  let flatMatrix: FlatMatrix = matrix as FlatMatrix
+  if (isDeepMatrix(matrix)) {
+    flatMatrix = matrix.reduce((acc: any, arr: any) => acc.concat(arr), [])
   }
 
-  const matrixSize = Math.sqrt(matrix.length)
+  const matrixSize = Math.sqrt(flatMatrix.length)
   if (matrixSize !== Math.round(matrixSize)) {
     throw new Error('Matrix must be square')
   }
 
-  return matrix
+  return flatMatrix
 }
 
-export default function convolve(imageData: any, matrix: any) {
-  matrix = ensureFlatMatrix(matrix)
+export default function convolve(imageData: ImageData, flatOrDeepMatrix: Matrix): ImageData {
+  const matrix = ensureFlatMatrix(flatOrDeepMatrix)
 
   const srcPixels = imageData.data
   const dstPixels = []

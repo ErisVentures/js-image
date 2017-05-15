@@ -17,14 +17,21 @@ export interface IResizeOptions {
   method: ImageResizeMethod,
 }
 
+export interface IEdgeOptions {
+  method: EdgeMethod,
+  kernelSize?: number,
+}
+
 export interface IImageOutputOptions {
   format: IFormatOptions,
   resize?: IResizeOptions,
   greyscale?: boolean,
+  edges?: IEdgeOptions,
 }
 
 export type ImageFormat = 'jpeg' | 'png'
 export type ImageResizeMethod = 'auto' | 'contain' | 'cover' | 'exact' | 'crop'
+export type EdgeMethod = 'sobel'
 
 export abstract class Image {
   // Image formats
@@ -37,6 +44,8 @@ export abstract class Image {
   public static COVER: ImageResizeMethod = 'cover'
   public static EXACT: ImageResizeMethod = 'exact'
   public static CROP: ImageResizeMethod = 'crop'
+
+  public static SOBEL: EdgeMethod = 'sobel'
 
   protected _output: IImageOutputOptions
 
@@ -71,6 +80,11 @@ export abstract class Image {
 
   public greyscale(): Image {
     this._output.greyscale = true
+    return this
+  }
+
+  public edges(options: EdgeMethod = Image.SOBEL): Image {
+    this._output.edges = {method: options, kernelSize: 3}
     return this
   }
 

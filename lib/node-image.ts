@@ -2,13 +2,14 @@ import * as sharp from 'sharp'
 
 import {Image} from './image'
 import {BufferLike, ImageData} from './image-data'
+import {sobel} from './transforms/sobel'
 
 class SharpImage {
   public static from(bufferOrImageData: BufferLike|ImageData): sharp.SharpInstance {
     if (ImageData.probablyIs(bufferOrImageData)) {
       let imageData = ImageData.normalize(bufferOrImageData)
       ImageData.assert(imageData)
-      imageData = ImageData.removeAlphaChannel(imageData)
+      imageData = ImageData.toRGB(imageData)
 
       return sharp(Buffer.from(imageData.data), {
         raw: {
@@ -81,18 +82,31 @@ export class NodeImage extends Image {
   }
 
   private _applyGreyscale(image: sharp.SharpInstance): sharp.SharpInstance {
-    if (this._output.greyscale) {
-      return image.greyscale()
-    } else {
+    if (!this._output.greyscale || this._output.edges) {
       return image
     }
+
+    return image.greyscale()
+  }
+
+  private _applyEdges(image: sharp.SharpInstance): Promise<sharp.SharpInstance> {
+    if (!this._output.edges) {
+      return Promise.resolve(image)
+    }
+
+    const blurred = image.clone().blur(2)
+    return SharpImage.toImageData(blurred).then(imageData => {
+      const edges = sobel(imageData)
+      return SharpImage.from(edges)
+    })
   }
 
   private _applyAll(image: sharp.SharpInstance): Promise<sharp.SharpInstance> {
     return Promise.resolve(image)
-      .then(image => this._applyFormat(image))
       .then(image => this._applyResize(image))
+      .then(image => this._applyEdges(image))
       .then(image => this._applyGreyscale(image))
+      .then(image => this._applyFormat(image))
   }
 
   public toImageData(): Promise<ImageData> {
