@@ -1,11 +1,13 @@
 const fs = require('fs')
 const memoize = require('lodash/memoize')
 const chai = require('chai')
+const jpeg = require('jpeg-js')
 chai.use(require('sinon-chai'))
 
 const expect = chai.expect
 const fixturePath = path => `${__dirname}/fixtures/${path}`
 const fixture = memoize(path => fs.readFileSync(fixturePath(path)))
+const fixtureDecode = memoize(path => jpeg.decode(fixture(path)))
 
 function compareToFixture(buffer, path) {
   fs.writeFileSync(fixturePath(`actual-${path}`), buffer)
@@ -31,6 +33,7 @@ module.exports = {
   expect,
   fixture,
   fixturePath,
+  fixtureDecode,
   compareToFixture,
   testImage,
   TIMEOUT: process.env.CI ? 20000 : 1000
