@@ -31,7 +31,7 @@ export interface IImageOutputOptions {
 
 export type ImageFormat = 'jpeg' | 'png'
 export type ImageResizeMethod = 'auto' | 'contain' | 'cover' | 'exact' | 'crop'
-export type EdgeMethod = 'sobel'
+export type EdgeMethod = 'sobel' | 'canny'
 
 export abstract class Image {
   // Image formats
@@ -46,6 +46,7 @@ export abstract class Image {
   public static CROP: ImageResizeMethod = 'crop'
 
   public static SOBEL: EdgeMethod = 'sobel'
+  public static CANNY: EdgeMethod = 'canny'
 
   protected _output: IImageOutputOptions
 
