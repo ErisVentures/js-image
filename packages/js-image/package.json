@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc",
     "test": "npm run test:lint && npm run test:unit",
-    "test:unit": "mocha --reporter spec 'test/**/*.test.js'",
+    "test:unit": "mocha --require source-map-support/register --reporter spec 'test/**/*.test.js'",
     "test:lint": "lint -t typescript --ignore 'lib/**/*.d.ts' 'lib/**/*.ts'",
     "test:update-expectations": "UPDATE_EXPECTATIONS=true npm run test:unit",
     "test:upload": "bash test/fixtures/upload.sh",
@@ -29,6 +29,8 @@
   "config": {
     "tslint": {
       "rules": {
+        "ordered-imports": false,
+        "interface-name": false,
         "only-arrow-functions": false,
         "no-unsafe-any": false,
         "no-any": false
@@ -56,6 +58,7 @@
     "semantic-release": "^6.3.2",
     "sinon": "^2.1.0",
     "sinon-chai": "^2.9.0",
+    "source-map-support": "^0.4.15",
     "tslint": "^5.2.0",
     "typescript": "^2.3.2"
   }

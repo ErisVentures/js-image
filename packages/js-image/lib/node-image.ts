@@ -3,6 +3,7 @@ import * as sharp from 'sharp'
 import {Image} from './image'
 import {BufferLike, ImageData} from './image-data'
 import {sobel} from './transforms/sobel'
+import {canny} from './transforms/canny'
 
 class SharpImage {
   public static from(bufferOrImageData: BufferLike|ImageData): sharp.SharpInstance {
@@ -96,7 +97,10 @@ export class NodeImage extends Image {
 
     const blurred = image.clone().blur(2)
     return SharpImage.toImageData(blurred).then(imageData => {
-      const edges = sobel(imageData)
+      let edges = sobel(imageData)
+      if (this._output.edges!.method === Image.CANNY) {
+        edges = canny(edges, undefined)
+      }
       return SharpImage.from(edges)
     })
   }

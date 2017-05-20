@@ -4,7 +4,7 @@ const {expect, fixture, compareToFixture, TIMEOUT} = require('../utils')
 
 const toPixels = arrs => new Uint8Array(arrs.reduce((acc, arr) => acc.concat(arr), []))
 
-describe('#convolve', () => {
+describe('#transforms/convolve', () => {
   const skater = fixture('skater.jpg')
 
   const gaussianBlur = [
