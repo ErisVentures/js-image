@@ -9,6 +9,10 @@ echo "" > files.txt
 
 for file in *.jpg *.png;
 do
+  if [[ $file == "actual"* ]]; then
+    continue
+  fi
+
   FULL_URL="https://s3.amazonaws.com/$S3PATH/$file"
 
   echo "$file" >> files.txt
