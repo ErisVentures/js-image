@@ -75,6 +75,11 @@ describe('NodeImage', () => {
       const modify = img => img.edges()
       return testSkater('skater-edges-sobel.jpg', modify)
     })
+
+    it('should find canny edges', () => {
+      const modify = img => img.edges(NodeImage.CANNY)
+      return testSkater('skater-edges-canny.jpg', modify)
+    })
   })
 
   describe('.toImageData', () => {
