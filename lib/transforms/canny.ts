@@ -6,6 +6,8 @@ export interface ICannyOptions {
   lowThreshold: number,
 }
 
+const sumArray = (arr: number[]) => arr.reduce((a, b) => a + b, 0)
+
 function nonMaximalSuppresion(imageData: SobelImageData): SobelImageData {
   const dstPixels: number[] = []
 
@@ -101,6 +103,46 @@ function hysteresis(imageData: SobelImageData, options: ICannyOptions): SobelIma
   return Object.assign({}, imageData, {data: dstPixels})
 }
 
+function autoThreshold(imageData: ImageData): number {
+  const buckets = []
+  for (let i = 0; i < 256; i++) {
+    buckets[i] = 0;
+  }
+
+  for (let i = 0; i < imageData.data.length; i++) {
+    buckets[imageData.data[i]]++
+  }
+
+  let variance = -Infinity
+  let threshold = 100
+  const left = buckets.slice(0, 20)
+  const right = buckets.slice(20)
+
+  let leftSum = sumArray(left.map((x, i) => x * i))
+  let rightSum = sumArray(right.map((x, i) => x * (i + 20)))
+  let leftCount = sumArray(left)
+  let rightCount = sumArray(right)
+  for (let i = 20; i < 240; i++) {
+    const bucketVal = buckets[i]
+    leftSum += (bucketVal * i)
+    rightSum -= (bucketVal * i)
+    leftCount += bucketVal
+    rightCount -= bucketVal
+
+    const leftMean = leftSum / leftCount
+    const rightMean = rightSum / rightCount
+    const bucketVariance = Math.pow(leftMean - rightMean, 2) *
+      (leftCount / imageData.data.length) *
+      (rightCount / imageData.data.length)
+    if (bucketVariance > variance) {
+      variance = bucketVariance
+      threshold = i
+    }
+  }
+
+  return threshold
+}
+
 export function canny(
   origImageData: ImageData|SobelImageData,
   options?: ICannyOptions,
@@ -110,6 +152,11 @@ export function canny(
     sobelData = sobel(origImageData)
   }
 
+  if (!options) {
+    const threshold = autoThreshold(sobelData)
+    options = {lowThreshold: threshold / 2, highThreshold: threshold}
+  }
+
   const suppressed = nonMaximalSuppresion(sobelData)
-  return hysteresis(suppressed, options || {lowThreshold: 40, highThreshold: 100})
+  return hysteresis(suppressed, options)
 }
