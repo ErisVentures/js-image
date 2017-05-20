@@ -9,6 +9,13 @@ export interface ImageData {
   data: BufferLike,
 }
 
+export interface Pixel {
+  value?: number,
+  index?: number,
+  x: number,
+  y: number,
+}
+
 export class ImageData implements ImageData {
   public static GREYSCALE: ImageDataFormat = 'b'
   public static RGB: ImageDataFormat = 'rgb'
@@ -47,6 +54,13 @@ export class ImageData implements ImageData {
     }
 
     return imageData
+  }
+
+  public static isBorder(imageData: ImageData, x: number, y: number, radius: number = 1): boolean {
+    return x - radius < 0 ||
+      y - radius < 0 ||
+      x + radius >= imageData.width ||
+      y + radius >= imageData.height
   }
 
   public static toGreyscale(srcImageData: ImageData): ImageData {
