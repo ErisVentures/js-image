@@ -106,7 +106,7 @@ function hysteresis(imageData: SobelImageData, options: ICannyOptions): SobelIma
 function autoThreshold(imageData: ImageData): number {
   const buckets = []
   for (let i = 0; i < 256; i++) {
-    buckets[i] = 0;
+    buckets[i] = 0
   }
 
   for (let i = 0; i < imageData.data.length; i++) {
