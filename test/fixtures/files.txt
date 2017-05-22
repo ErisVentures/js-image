@@ -6,6 +6,7 @@ skater-blur.jpg
 skater-canny-auto.jpg
 skater-canny-fixed.jpg
 skater-canny.jpg
+skater-edges-canny.jpg
 skater-edges-sobel.jpg
 skater-greyscale.jpg
 skater-image-data.jpg

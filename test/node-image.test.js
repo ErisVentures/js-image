@@ -71,9 +71,16 @@ describe('NodeImage', () => {
   })
 
   describe('._applyEdges', () => {
-    it('should find sobel edges', () => {
+    it('should find sobel edges', function () {
+      this.timeout(TIMEOUT)
       const modify = img => img.edges()
       return testSkater('skater-edges-sobel.jpg', modify)
+    })
+
+    it('should find canny edges', function () {
+      this.timeout(TIMEOUT)
+      const modify = img => img.edges(NodeImage.CANNY)
+      return testSkater('skater-edges-canny.jpg', modify)
     })
   })
 
