@@ -28,14 +28,6 @@ export type EdgeMethod = 'sobel' | 'canny'
 export type ImageDataFormat = 'rgb' | 'rgba' | 'b'
 export type BufferLike = Buffer|Uint8Array|number[]
 
-export interface ImageData {
-  channels: number,
-  format: ImageDataFormat,
-  width: number,
-  height: number,
-  data: BufferLike,
-}
-
 export interface Pixel {
   value?: number,
   index?: number,

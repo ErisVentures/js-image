@@ -62,7 +62,7 @@ export abstract class Image {
     return this
   }
 
-  public abstract toImageData(): Promise<types.ImageData>
+  public abstract toImageData(): Promise<ImageData>
 
   public abstract toBuffer(): Promise<Buffer>
 
@@ -70,7 +70,7 @@ export abstract class Image {
     return this.toBuffer().then(buffer => writeFileAsync(path, buffer))
   }
 
-  public static from(bufferOrImageData: types.BufferLike|types.ImageData): Image {
+  public static from(bufferOrImageData: types.BufferLike|ImageData): Image {
     throw new Error('unimplemented')
   }
 }
