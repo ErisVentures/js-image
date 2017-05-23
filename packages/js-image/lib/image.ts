@@ -1,54 +1,28 @@
 import {writeFile} from 'fs'
 
-import {BufferLike, ImageData} from './image-data'
+import * as types from './types'
+import {ImageData} from './image-data'
 import {promisify} from './utils'
 
 // tslint:disable-next-line
 const writeFileAsync = promisify(writeFile)
 
-export interface IFormatOptions {
-  type: ImageFormat,
-  quality?: number,
-}
-
-export interface IResizeOptions {
-  width?: number,
-  height?: number,
-  method: ImageResizeMethod,
-}
-
-export interface IEdgeOptions {
-  method: EdgeMethod,
-  kernelSize?: number,
-}
-
-export interface IImageOutputOptions {
-  format: IFormatOptions,
-  resize?: IResizeOptions,
-  greyscale?: boolean,
-  edges?: IEdgeOptions,
-}
-
-export type ImageFormat = 'jpeg' | 'png'
-export type ImageResizeMethod = 'auto' | 'contain' | 'cover' | 'exact' | 'crop'
-export type EdgeMethod = 'sobel' | 'canny'
-
 export abstract class Image {
   // Image formats
-  public static JPEG: ImageFormat = 'jpeg'
-  public static PNG: ImageFormat = 'png'
+  public static JPEG: types.ImageFormat = 'jpeg'
+  public static PNG: types.ImageFormat = 'png'
 
   // Image resize methods
-  public static AUTO_SIZE: ImageResizeMethod = 'auto'
-  public static CONTAIN: ImageResizeMethod = 'contain'
-  public static COVER: ImageResizeMethod = 'cover'
-  public static EXACT: ImageResizeMethod = 'exact'
-  public static CROP: ImageResizeMethod = 'crop'
+  public static AUTO_SIZE: types.ImageResizeMethod = 'auto'
+  public static CONTAIN: types.ImageResizeMethod = 'contain'
+  public static COVER: types.ImageResizeMethod = 'cover'
+  public static EXACT: types.ImageResizeMethod = 'exact'
+  public static CROP: types.ImageResizeMethod = 'crop'
 
-  public static SOBEL: EdgeMethod = 'sobel'
-  public static CANNY: EdgeMethod = 'canny'
+  public static SOBEL: types.EdgeMethod = 'sobel'
+  public static CANNY: types.EdgeMethod = 'canny'
 
-  protected _output: IImageOutputOptions
+  protected _output: types.IImageOutputOptions
 
   public constructor() {
     this._output = {
@@ -56,7 +30,7 @@ export abstract class Image {
     }
   }
 
-  public format(options: ImageFormat|IFormatOptions): Image {
+  public format(options: types.ImageFormat|types.IFormatOptions): Image {
     if (typeof options === 'string') {
       options = {type: options}
     }
@@ -70,7 +44,7 @@ export abstract class Image {
     return this
   }
 
-  public resize(options: IResizeOptions): Image {
+  public resize(options: types.IResizeOptions): Image {
     if (typeof options.width !== 'number' && typeof options.height !== 'number') {
       throw new TypeError('Must specify a width or height')
     }
@@ -84,7 +58,7 @@ export abstract class Image {
     return this
   }
 
-  public edges(options: EdgeMethod = Image.SOBEL): Image {
+  public edges(options: types.EdgeMethod = Image.SOBEL): Image {
     this._output.edges = {method: options, kernelSize: 3}
     return this
   }
@@ -97,7 +71,7 @@ export abstract class Image {
     return this.toBuffer().then(buffer => writeFileAsync(path, buffer))
   }
 
-  public static from(bufferOrImageData: BufferLike|ImageData): Image {
+  public static from(bufferOrImageData: types.BufferLike|ImageData): Image {
     throw new Error('unimplemented')
   }
 }

@@ -1,25 +1,15 @@
-export type ImageDataFormat = 'rgb' | 'rgba' | 'b'
-export type BufferLike = Buffer|Uint8Array|number[]
+import {ImageDataFormat, BufferLike} from './types'
 
-export interface ImageData {
-  channels: number,
-  format: ImageDataFormat,
-  width: number,
-  height: number,
-  data: BufferLike,
-}
-
-export interface Pixel {
-  value?: number,
-  index?: number,
-  x: number,
-  y: number,
-}
-
-export class ImageData implements ImageData {
+export class ImageData {
   public static GREYSCALE: ImageDataFormat = 'b'
   public static RGB: ImageDataFormat = 'rgb'
   public static RGBA: ImageDataFormat = 'rgba'
+
+  public channels: number
+  public format: ImageDataFormat
+  public width: number
+  public height: number
+  public data: BufferLike
 
   public static probablyIs(obj: any): boolean {
     if (!obj ||
