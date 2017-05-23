@@ -1,6 +1,7 @@
 import {writeFile} from 'fs'
 
 import * as types from './types'
+import {ImageData} from './image-data'
 import {promisify} from './utils'
 
 // tslint:disable-next-line
