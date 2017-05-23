@@ -1,7 +1,8 @@
 import * as sharp from 'sharp'
 
+import {BufferLike} from './types'
 import {Image} from './image'
-import {BufferLike, ImageData} from './image-data'
+import {ImageData} from './image-data'
 import {sobel} from './transforms/sobel'
 import {canny} from './transforms/canny'
 
