@@ -1,3 +1,4 @@
+import * as jpeg from 'jpeg-js'
 import {ImageDataFormat, BufferLike} from './types'
 
 export class ImageData {
@@ -142,5 +143,13 @@ export class ImageData {
     dstImageData.data = rawData
 
     return dstImageData
+  }
+
+  public static fromBuffer(bufferLike: BufferLike): ImageData {
+    return ImageData.normalize(jpeg.decode(bufferLike, true))
+  }
+
+  public static toBuffer(imageData: ImageData): BufferLike {
+    return jpeg.encode(ImageData.toRGBA(imageData), 90).data
   }
 }
