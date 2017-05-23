@@ -1,4 +1,5 @@
-import {ImageData, Pixel} from '../image-data'
+import {Pixel} from '../types'
+import {ImageData} from '../image-data'
 
 function toNearestAngle(xVal: number, yVal: number): number {
   const angle = Math.atan2(yVal, xVal) * 180 / Math.PI

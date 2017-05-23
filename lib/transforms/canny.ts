@@ -1,4 +1,5 @@
-import {ImageData, Pixel} from '../image-data'
+import {Pixel} from '../types'
+import {ImageData} from '../image-data'
 import {sobel, SobelImageData, getPixelsForAngle} from './sobel'
 
 export interface ICannyOptions {
