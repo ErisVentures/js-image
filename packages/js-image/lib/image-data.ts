@@ -1,4 +1,7 @@
-import {ImageDataFormat, BufferLike} from './types'
+import {ImageDataFormat, BufferLike, IFormatOptions} from './types'
+
+/* tslint:disable-next-line */
+const jpeg = require('jpeg-js')
 
 export class ImageData {
   public static GREYSCALE: ImageDataFormat = 'b'
@@ -142,5 +145,14 @@ export class ImageData {
     dstImageData.data = rawData
 
     return dstImageData
+  }
+
+  public static from(bufferLike: BufferLike): ImageData {
+    return ImageData.normalize(jpeg.decode(bufferLike, true))
+  }
+
+  public static toBuffer(imageData: ImageData, options?: IFormatOptions): BufferLike {
+    const quality = (options && options.quality) || 90
+    return jpeg.encode(ImageData.toRGBA(imageData), quality).data
   }
 }
