@@ -1,11 +1,12 @@
 const jpeg = require('jpeg-js')
 const convolve = require('../../lib/transforms/convolve').default
-const {expect, fixture, compareToFixture, TIMEOUT} = require('../utils')
+const {ImageData} = require('../../lib/image-data')
+const {expect, fixtureDecode, compareToFixture, TIMEOUT} = require('../utils')
 
 const toPixels = arrs => new Uint8Array(arrs.reduce((acc, arr) => acc.concat(arr), []))
 
 describe('#transforms/convolve', () => {
-  const skater = fixture('skater.jpg')
+  const skater = ImageData.normalize(fixtureDecode('skater.jpg'))
 
   const gaussianBlur = [
     /* eslint-disable max-len */
@@ -47,8 +48,8 @@ describe('#transforms/convolve', () => {
 
   it('should blur', function () {
     this.timeout(TIMEOUT)
-    const output = convolve(jpeg.decode(skater), gaussianBlur)
-    const jpegOutput = jpeg.encode(output, 90)
-    compareToFixture(jpegOutput.data, 'skater-blur.jpg')
+    const output = convolve(skater, gaussianBlur)
+    const jpegOutput = ImageData.toBuffer(output)
+    compareToFixture(jpegOutput, 'skater-blur.jpg')
   })
 })

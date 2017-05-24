@@ -115,7 +115,7 @@ describe('ImageData', () => {
       const imageData = ImageData.normalize(fixtureDecode('skater.jpg'))
       const greyscale = ImageData.toGreyscale(imageData)
       const rgba = ImageData.toRGBA(greyscale)
-      compareToFixture(jpeg.encode(rgba, 90).data, 'skater-greyscale.jpg')
+      compareToFixture(ImageData.toBuffer(rgba), 'skater-greyscale.jpg')
     })
   })
 
