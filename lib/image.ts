@@ -13,11 +13,11 @@ export abstract class Image {
   public static PNG: types.ImageFormat = 'png'
 
   // Image resize methods
-  public static AUTO_SIZE: types.ImageResizeMethod = 'auto'
-  public static CONTAIN: types.ImageResizeMethod = 'contain'
-  public static COVER: types.ImageResizeMethod = 'cover'
-  public static EXACT: types.ImageResizeMethod = 'exact'
-  public static CROP: types.ImageResizeMethod = 'crop'
+  public static AUTO_SIZE: types.ImageResizeFit = 'auto'
+  public static CONTAIN: types.ImageResizeFit = 'contain'
+  public static COVER: types.ImageResizeFit = 'cover'
+  public static EXACT: types.ImageResizeFit = 'exact'
+  public static CROP: types.ImageResizeFit = 'crop'
 
   public static SOBEL: types.EdgeMethod = 'sobel'
   public static CANNY: types.EdgeMethod = 'canny'

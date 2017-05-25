@@ -6,7 +6,7 @@ export interface IFormatOptions {
 export interface IResizeOptions {
   width?: number,
   height?: number,
-  method: ImageResizeMethod,
+  fit: ImageResizeFit,
 }
 
 export interface IEdgeOptions {
@@ -22,7 +22,7 @@ export interface IImageOutputOptions {
 }
 
 export type ImageFormat = 'jpeg' | 'png'
-export type ImageResizeMethod = 'auto' | 'contain' | 'cover' | 'exact' | 'crop'
+export type ImageResizeFit = 'auto' | 'contain' | 'cover' | 'exact' | 'crop'
 export type EdgeMethod = 'sobel' | 'canny'
 
 export type ImageDataFormat = 'rgb' | 'rgba' | 'b'

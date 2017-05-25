@@ -63,9 +63,9 @@ export class NodeImage extends Image {
       return image
     }
 
-    const {width, height, method} = this._output.resize
+    const {width, height, fit} = this._output.resize
     image = image.resize(width, height)
-    switch (method) {
+    switch (fit) {
       case Image.CONTAIN:
         image = image.max()
         break
