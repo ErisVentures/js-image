@@ -21,6 +21,11 @@ export interface IImageOutputOptions {
   edges?: IEdgeOptions,
 }
 
+export interface ICannyOptions {
+  highThreshold: number,
+  lowThreshold: number,
+}
+
 export type ImageFormat = 'jpeg' | 'png'
 export type ImageResizeFit = 'auto' | 'contain' | 'cover' | 'exact' | 'crop'
 export type EdgeMethod = 'sobel' | 'canny'
