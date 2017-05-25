@@ -26,7 +26,7 @@ describe('NodeImage', () => {
       const modify = img => img.resize({
         width: 200,
         height: 200,
-        method: NodeImage.COVER,
+        fit: NodeImage.COVER,
       })
 
       return testYosemite('yosemite-square-cover.jpg', modify)
@@ -36,7 +36,7 @@ describe('NodeImage', () => {
       const modify = img => img.resize({
         width: 200,
         height: 200,
-        method: NodeImage.CONTAIN,
+        fit: NodeImage.CONTAIN,
       })
 
       return testYosemite('yosemite-square-contain.jpg', modify)
@@ -46,7 +46,7 @@ describe('NodeImage', () => {
       const modify = img => img.resize({
         width: 200,
         height: 200,
-        method: NodeImage.CROP,
+        fit: NodeImage.CROP,
       })
 
       return testOpera('opera-square-crop.jpg', modify)
@@ -56,7 +56,7 @@ describe('NodeImage', () => {
       const modify = img => img.resize({
         width: 200,
         height: 200,
-        method: NodeImage.EXACT,
+        fit: NodeImage.EXACT,
       })
 
       return testOpera('opera-square-exact.jpg', modify)
