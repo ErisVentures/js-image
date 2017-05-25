@@ -1,11 +1,6 @@
-import {Pixel} from '../types'
+import {Pixel, ICannyOptions} from '../types'
 import {ImageData} from '../image-data'
 import {sobel, SobelImageData, getPixelsForAngle} from './sobel'
-
-export interface ICannyOptions {
-  highThreshold: number,
-  lowThreshold: number,
-}
 
 const sumArray = (arr: number[]) => arr.reduce((a, b) => a + b, 0)
 
