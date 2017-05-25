@@ -10,6 +10,7 @@ skater-edges-canny.jpg
 skater-edges-sobel.jpg
 skater-greyscale.jpg
 skater-image-data.jpg
+skater-nearest-neighbor.jpg
 skater-poor.jpg
 skater-sobel.jpg
 skater.jpg

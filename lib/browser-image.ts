@@ -62,7 +62,7 @@ export class BrowserImage extends Image {
     if (ImageData.probablyIs(bufferOrImageData)) {
       return new BrowserImage(ImageData.normalize(bufferOrImageData))
     }
-
-    return new BrowserImage(ImageData.from(bufferOrImageData))
+    const buffer = bufferOrImageData as BufferLike
+    return new BrowserImage(ImageData.from(buffer))
   }
 }
