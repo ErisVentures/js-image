@@ -1,4 +1,3 @@
-const jpeg = require('jpeg-js')
 const canny = require('../../lib/transforms/canny').canny
 const ImageData = require('../../lib/image-data').ImageData
 const {fixtureDecode, compareToFixture, TIMEOUT} = require('../utils')

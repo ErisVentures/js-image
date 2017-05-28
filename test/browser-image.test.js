@@ -2,12 +2,10 @@ const jpeg = require('jpeg-js')
 
 const ImageData = require('../lib/image-data').ImageData
 const BrowserImage = require('../lib/browser-image').BrowserImage
-const {expect, fixture, compareToFixture, testImage, TIMEOUT} = require('./utils')
+const {expect, fixture, testImage, TIMEOUT} = require('./utils')
 
 const skater = fixture('skater.jpg')
 const testSkater = (...args) => testImage(BrowserImage, 'skater.jpg', ...args)
-const testYosemite = (...args) => testImage(BrowserImage, 'yosemite-portrait.jpg', ...args)
-const testOpera = (...args) => testImage(BrowserImage, 'opera-landscape.jpg', ...args)
 describe('BrowserImage', () => {
   describe('._applyResize', () => {
     it('should resize exactly', () => {

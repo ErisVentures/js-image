@@ -1,4 +1,3 @@
-const jpeg = require('jpeg-js')
 const convolve = require('../../lib/transforms/convolve').default
 const {ImageData} = require('../../lib/image-data')
 const {expect, fixtureDecode, compareToFixture, TIMEOUT} = require('../utils')
