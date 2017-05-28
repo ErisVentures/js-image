@@ -29,6 +29,7 @@
   "config": {
     "tslint": {
       "rules": {
+        "restrict-plus-operands": false,
         "prefer-for-of": false,
         "ordered-imports": false,
         "interface-name": false,
