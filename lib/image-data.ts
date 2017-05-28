@@ -56,6 +56,16 @@ export class ImageData {
       y + radius >= imageData.height
   }
 
+  public static indexFor(imageData: ImageData, x: number, y: number, channel: number = 0): number {
+    x = Math.max(0, Math.min(x, imageData.width - 1))
+    y = Math.max(0, Math.min(y, imageData.height - 1))
+    return (y * imageData.width + x) * imageData.channels + channel
+  }
+
+  public static valueFor(imageData: ImageData, x: number, y: number, channel: number = 0): number {
+    return imageData.data[ImageData.indexFor(imageData, x, y, channel)]
+  }
+
   public static toGreyscale(srcImageData: ImageData): ImageData {
     if (srcImageData.format === ImageData.GREYSCALE) {
       return srcImageData

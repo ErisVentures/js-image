@@ -26,6 +26,10 @@ export interface ICannyOptions {
   lowThreshold: number,
 }
 
+export interface IBlurOptions {
+  radius: number,
+}
+
 export type ImageFormat = 'jpeg' | 'png'
 export type ImageResizeFit = 'auto' | 'contain' | 'cover' | 'exact' | 'crop'
 export type EdgeMethod = 'sobel' | 'canny'
