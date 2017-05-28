@@ -3,10 +3,6 @@ const sinon = require('sinon')
 const Image = require('../lib/image').Image
 const {expect, fixture, fixturePath} = require('./utils')
 
-const unimplemented = func => () => {
-  it('should error', () => expect(func).to.throw('unimplemented'))
-}
-
 const skater = fixture('skater.jpg')
 describe('Image', () => {
   let sandbox

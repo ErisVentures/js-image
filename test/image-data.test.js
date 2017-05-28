@@ -1,4 +1,3 @@
-const jpeg = require('jpeg-js')
 const ImageData = require('../lib/image-data').ImageData
 const {expect, fixtureDecode, compareToFixture} = require('./utils')
 
@@ -98,7 +97,7 @@ describe('ImageData', () => {
           100, 100, 100,
           0, 100, 0,
           100, 0, 0,
-          0, 0, 100
+          0, 0, 100,
         ],
       }
 
@@ -160,7 +159,7 @@ describe('ImageData', () => {
           100, 100, 100,
           0, 100, 0,
           100, 0, 0,
-          0, 0, 100
+          0, 0, 100,
         ],
       }
 
