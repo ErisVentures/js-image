@@ -30,7 +30,13 @@ function getImageDiff(actual, expectation, increment = 1) {
   return diff
 }
 
-function compareToFixture(bufferOrImageData, path, looseTolerance, increment = 1) {
+function compareToFixture(bufferOrImageData, path, options) {
+  options = Object.assign({
+    strict: true,
+    tolerance: 5,
+    increment: 1,
+  }, options)
+
   let buffer = bufferOrImageData
   let imageData = bufferOrImageData
   if (ImageData.probablyIs(bufferOrImageData)) {
@@ -45,11 +51,13 @@ function compareToFixture(bufferOrImageData, path, looseTolerance, increment = 1
   }
 
   const expectedImageData = fixtureDecode(path)
-  const diff = getImageDiff(imageData, expectedImageData, increment)
-  if (looseTolerance || process.env.LOOSE_COMPARISON) {
-    expect(diff).to.be.lessThan(5 * imageData.width * imageData.height / increment)
-  } else {
+  const diff = getImageDiff(imageData, expectedImageData, options.increment)
+  if (options.strict) {
     expect(diff).to.equal(0)
+  } else {
+    const tolerance = Number(process.env.LOOSE_COMPARISON_TOLERANCE) || options.tolerance
+    const area = imageData.width * imageData.height
+    expect(diff).to.be.lessThan(tolerance * area / options.increment)
   }
 }
 
