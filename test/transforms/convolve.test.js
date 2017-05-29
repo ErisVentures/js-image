@@ -1,4 +1,4 @@
-const convolve = require('../../lib/transforms/convolve').default
+const convolve = require('../../lib/transforms/convolve').convolve
 const {ImageData} = require('../../lib/image-data')
 const {expect, fixtureDecode, compareToFixture, TIMEOUT} = require('../utils')
 

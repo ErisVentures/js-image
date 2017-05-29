@@ -1,6 +1,7 @@
 import {BufferLike} from './types'
 import {Image} from './image'
 import {ImageData} from './image-data'
+import {gaussianBlur} from './transforms/blur'
 import {nearestNeighbor} from './transforms/resize'
 import {sobel} from './transforms/sobel'
 import {canny} from './transforms/canny'
@@ -34,7 +35,7 @@ export class BrowserImage extends Image {
       return image
     }
 
-    let edges = sobel(image)
+    let edges = sobel(gaussianBlur(image, {sigma: 2}))
     if (this._output.edges!.method === Image.CANNY) {
       edges = canny(edges, undefined)
     }

@@ -2,7 +2,7 @@
 import {ensureFlatMatrix, Matrix} from '../matrix'
 import {ImageData} from '../image-data'
 
-export default function convolve(imageData: ImageData, flatOrDeepMatrix: Matrix): ImageData {
+export function convolve(imageData: ImageData, flatOrDeepMatrix: Matrix): ImageData {
   const matrix = ensureFlatMatrix(flatOrDeepMatrix)
 
   const srcPixels = imageData.data

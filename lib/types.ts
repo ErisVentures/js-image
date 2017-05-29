@@ -27,7 +27,9 @@ export interface ICannyOptions {
 }
 
 export interface IBlurOptions {
-  radius: number,
+  radius?: number,
+  sigma?: number,
+  approximate?: boolean,
 }
 
 export type ImageFormat = 'jpeg' | 'png'
