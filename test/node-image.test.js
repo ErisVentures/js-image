@@ -15,7 +15,7 @@ describe('NodeImage', () => {
       return testSkater('skater-poor.jpg', modify, {strict: false})
     })
 
-    it.skip('should support png', () => {
+    it('should support png', () => {
       const modify = img => img.format('png')
       return testSkater('skater.png', modify, {strict: false})
     })

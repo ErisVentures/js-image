@@ -56,7 +56,7 @@ export class BrowserImage extends Image {
 
   public toBuffer(): Promise<Buffer> {
     return this._applyAll(this._image)
-        .then(imageData => ImageData.toBuffer(imageData))
+        .then(imageData => ImageData.toBuffer(imageData, this._output.format))
   }
 
   public static from(bufferOrImageData: BufferLike|ImageData): Image {
