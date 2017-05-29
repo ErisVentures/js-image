@@ -8,7 +8,7 @@ chai.use(require('sinon-chai'))
 const expect = chai.expect
 const fixturePath = path => `${__dirname}/fixtures/${path}`
 const fixture = memoize(path => fs.readFileSync(fixturePath(path)))
-const fixtureDecode = memoize(path => jpeg.decode(fixture(path)))
+const fixtureDecode = memoize(path => ImageData.from(fixture(path)))
 
 function getImageDiff(actual, expectation, increment = 1) {
   if (actual.data) {
