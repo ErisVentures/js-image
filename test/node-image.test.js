@@ -2,7 +2,7 @@ const jpeg = require('@ouranos/jpeg-js')
 
 const ImageData = require('../lib/image-data').ImageData
 const NodeImage = require('../lib/node-image').NodeImage
-const {expect, fixture, compareToFixture, testImage, TIMEOUT} = require('./utils')
+const {expect, fixture, compareToFixture, testImage} = require('./utils')
 
 const skater = fixture('skater.jpg')
 const testSkater = (...args) => testImage(NodeImage, 'skater.jpg', ...args)
@@ -74,14 +74,12 @@ describe('NodeImage', () => {
   })
 
   describe('._applyEdges', () => {
-    it('should find sobel edges', function () {
-      this.timeout(TIMEOUT)
+    it('should find sobel edges', () => {
       const modify = img => img.edges()
       return testSkater('skater-edges-sobel.jpg', modify, {strict: false})
     })
 
-    it('should find canny edges', function () {
-      this.timeout(TIMEOUT)
+    it('should find canny edges', () => {
       const modify = img => img.edges(NodeImage.CANNY)
       return testSkater('skater-edges-canny.jpg', modify, {strict: false})
     })
@@ -107,8 +105,7 @@ describe('NodeImage', () => {
       })
     })
 
-    it('should be fast', function () {
-      this.timeout(TIMEOUT)
+    it('should be fast', () => {
       let promise = Promise.resolve(skater)
       for (let i = 0; i < 100; i++) {
         promise = promise.then(image => NodeImage.from(image).toImageData())

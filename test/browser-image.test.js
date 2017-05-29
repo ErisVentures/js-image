@@ -2,7 +2,7 @@ const jpeg = require('@ouranos/jpeg-js')
 
 const ImageData = require('../lib/image-data').ImageData
 const BrowserImage = require('../lib/browser-image').BrowserImage
-const {expect, fixture, testImage, TIMEOUT} = require('./utils')
+const {expect, fixture, testImage} = require('./utils')
 
 const skater = fixture('skater.jpg')
 const testSkater = (...args) => testImage(BrowserImage, 'skater.jpg', ...args)
@@ -33,14 +33,12 @@ describe('BrowserImage', () => {
   })
 
   describe('._applyEdges', () => {
-    it('should find sobel edges', function () {
-      this.timeout(TIMEOUT)
+    it('should find sobel edges', () => {
       const modify = img => img.edges()
       return testSkater('skater-browser-edges-sobel.jpg', modify)
     })
 
-    it('should find canny edges', function () {
-      this.timeout(TIMEOUT)
+    it('should find canny edges', () => {
       const modify = img => img.edges(BrowserImage.CANNY)
       return testSkater('skater-browser-edges-canny.jpg', modify)
     })
@@ -66,8 +64,7 @@ describe('BrowserImage', () => {
       })
     })
 
-    it('should be fast', function () {
-      this.timeout(TIMEOUT)
+    it('should be fast', () => {
       let promise = Promise.resolve(skater)
       for (let i = 0; i < 100; i++) {
         promise = promise.then(image => BrowserImage.from(image).toImageData())
