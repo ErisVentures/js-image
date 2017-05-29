@@ -7,6 +7,9 @@ describe('#transforms/blur', () => {
 
   it('should blur using box blur', () => {
     const output = blur.boxBlur(skater, {radius: 2})
-    compareToFixture(ImageData.toBuffer(output), 'skater-box-blur.jpg')
+    compareToFixture(ImageData.toBuffer(output), 'skater-box-blur.jpg', {
+      strict: false,
+      increment: 2,
+    })
   })
 })
