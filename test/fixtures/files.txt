@@ -5,11 +5,15 @@ opera-square-crop.jpg
 opera-square-exact.jpg
 skater-blur.jpg
 skater-box-blur.jpg
+skater-browser-edges-canny.jpg
+skater-browser-edges-sobel.jpg
 skater-canny-auto.jpg
 skater-canny-fixed.jpg
 skater-canny.jpg
 skater-edges-canny.jpg
 skater-edges-sobel.jpg
+skater-gaussian-blur-approx.jpg
+skater-gaussian-blur.jpg
 skater-greyscale.jpg
 skater-image-data.jpg
 skater-nearest-neighbor.jpg

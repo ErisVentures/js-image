@@ -2,7 +2,7 @@ import {IBlurOptions, BufferLike} from '../types'
 import {ImageData} from '../image-data'
 import {convolve} from './convolve'
 
-function weightsForGauss(sigma: number) {
+function weightsForGauss(sigma: number): number[][] {
   let width = 4 * (sigma - 1)
   if (width % 2 === 0) {
     width++
@@ -24,21 +24,22 @@ function weightsForGauss(sigma: number) {
 }
 
 // Taken from http://www.peterkovesi.com/matlabfns/Spatial/solveinteg.m
-function approximateWidthsForGauss(sigma: number, n: number) {
+function approximateWidthsForGauss(sigma: number, n: number): number[] {
   // Ideal averaging filter width
-  var idealWidth = Math.sqrt((12 * sigma * sigma / n) + 1)
-  var lowerWidth = Math.floor(idealWidth)
+  const idealWidth = Math.sqrt((12 * sigma * sigma / n) + 1)
+  let lowerWidth = Math.floor(idealWidth)
   if (lowerWidth % 2 === 0) {
     lowerWidth--
   }
 
-  var upperWidth = lowerWidth + 2
-  var mIdeal = (12 * sigma * sigma - n * lowerWidth * lowerWidth - 4 * n * lowerWidth - 3 * n) / (-4 * lowerWidth - 4)
-  var m = Math.round(mIdeal)
+  const upperWidth = lowerWidth + 2
+  const sigma12 = 12 * sigma * sigma
+  const totalArea = n * lowerWidth * lowerWidth
+  const mIdeal = (sigma12 - totalArea - 4 * n * lowerWidth - 3 * n) / (-4 * lowerWidth - 4)
 
-  var sizes = []
-  for (var i = 0; i < n; i++) {
-    sizes.push(i < m ? lowerWidth : upperWidth)
+  const sizes = []
+  for (let i = 0; i < n; i++) {
+    sizes.push(i < mIdeal ? lowerWidth : upperWidth)
   }
   return sizes
 }
@@ -128,11 +129,11 @@ export function boxBlur(imageData: ImageData, options: IBlurOptions): ImageData 
 export function gaussianBlur(imageData: ImageData, options: IBlurOptions): ImageData {
   let sigma = options.sigma!
   if (!sigma) {
-    let radius = options.radius || 2
+    const radius = options.radius || 2
     sigma = 1 + radius / 2
   }
 
-  let approximate = typeof options.approximate === 'boolean' ?
+  const approximate = typeof options.approximate === 'boolean' ?
     options.approximate :
     sigma >= 5
 
