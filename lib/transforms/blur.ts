@@ -1,5 +1,47 @@
 import {IBlurOptions, BufferLike} from '../types'
 import {ImageData} from '../image-data'
+import {convolve} from './convolve'
+
+function weightsForGauss(sigma: number) {
+  let width = 4 * (sigma - 1)
+  if (width % 2 === 0) {
+    width++
+  }
+
+  const center = Math.floor(width / 2)
+  const denominator = 2 * sigma * sigma
+  const weights = []
+  for (let y = 0; y < width; y++) {
+    const row = []
+    for (let x = 0; x < width; x++) {
+      const xComponent = Math.pow(y - center, 2) / denominator
+      const yComponent = Math.pow(x - center, 2) / denominator
+      row[x] = Math.exp(-1 * (xComponent + yComponent))
+    }
+    weights.push(row)
+  }
+  return weights
+}
+
+// Taken from http://www.peterkovesi.com/matlabfns/Spatial/solveinteg.m
+function approximateWidthsForGauss(sigma: number, n: number) {
+  // Ideal averaging filter width
+  var idealWidth = Math.sqrt((12 * sigma * sigma / n) + 1)
+  var lowerWidth = Math.floor(idealWidth)
+  if (lowerWidth % 2 === 0) {
+    lowerWidth--
+  }
+
+  var upperWidth = lowerWidth + 2
+  var mIdeal = (12 * sigma * sigma - n * lowerWidth * lowerWidth - 4 * n * lowerWidth - 3 * n) / (-4 * lowerWidth - 4)
+  var m = Math.round(mIdeal)
+
+  var sizes = []
+  for (var i = 0; i < n; i++) {
+    sizes.push(i < m ? lowerWidth : upperWidth)
+  }
+  return sizes
+}
 
 function boxBlur1D(
   firstMax: number,
@@ -53,13 +95,18 @@ function boxBlur1D(
 }
 
 export function boxBlur(imageData: ImageData, options: IBlurOptions): ImageData {
+  let radius = options.radius!
+  if (!radius) {
+    radius = Math.ceil(imageData.width / 1000)
+  }
+
   const intermediate = boxBlur1D(
     imageData.width,
     imageData.height,
     imageData.channels,
     (i: number, j: number, c: number) => ImageData.indexFor(imageData, i, j, c),
     imageData.data,
-    options.radius,
+    radius,
   )
 
   const outPixels = boxBlur1D(
@@ -68,7 +115,7 @@ export function boxBlur(imageData: ImageData, options: IBlurOptions): ImageData 
     imageData.channels,
     (j: number, i: number, c: number) => ImageData.indexFor(imageData, i, j, c),
     intermediate,
-    options.radius,
+    radius,
   )
 
   for (let i = 0; i < outPixels.length; i++) {
@@ -76,4 +123,29 @@ export function boxBlur(imageData: ImageData, options: IBlurOptions): ImageData 
   }
 
   return Object.assign({}, imageData, {data: outPixels})
+}
+
+export function gaussianBlur(imageData: ImageData, options: IBlurOptions): ImageData {
+  let sigma = options.sigma!
+  if (!sigma) {
+    let radius = options.radius || 2
+    sigma = 1 + radius / 2
+  }
+
+  let approximate = typeof options.approximate === 'boolean' ?
+    options.approximate :
+    sigma >= 5
+
+  if (approximate) {
+    const widths = approximateWidthsForGauss(sigma, 3)
+    let blurred = imageData
+    widths.forEach(width => {
+      blurred = boxBlur(blurred, {radius: (width - 1) / 2})
+    })
+
+    return blurred
+  } else {
+    const weights = weightsForGauss(sigma)
+    return convolve(imageData, weights)
+  }
 }
