@@ -59,7 +59,7 @@ export function boxBlur(imageData: ImageData, options: IBlurOptions): ImageData 
     imageData.channels,
     (i: number, j: number, c: number) => ImageData.indexFor(imageData, i, j, c),
     imageData.data,
-    options.radius
+    options.radius,
   )
 
   const outPixels = boxBlur1D(
@@ -68,7 +68,7 @@ export function boxBlur(imageData: ImageData, options: IBlurOptions): ImageData 
     imageData.channels,
     (j: number, i: number, c: number) => ImageData.indexFor(imageData, i, j, c),
     intermediate,
-    options.radius
+    options.radius,
   )
 
   for (let i = 0; i < outPixels.length; i++) {
