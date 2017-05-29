@@ -1,7 +1,7 @@
 import {ImageDataFormat, BufferLike, IFormatOptions} from './types'
 
 /* tslint:disable-next-line */
-const jpeg = require('jpeg-js')
+const jpeg = require('@ouranos/jpeg-js')
 
 export class ImageData {
   public static GREYSCALE: ImageDataFormat = 'b'

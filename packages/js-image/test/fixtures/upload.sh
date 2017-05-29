@@ -2,7 +2,7 @@
 
 cd $(dirname "$0")
 
-VERSION=v1
+VERSION=v2
 S3PATH="npm-fixtures/@ouranos/image/$VERSION"
 
 echo "" > files.txt

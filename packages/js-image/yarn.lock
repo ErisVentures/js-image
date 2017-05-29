@@ -2,6 +2,10 @@
 # yarn lockfile v1
 
 
+"@ouranos/jpeg-js@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@ouranos/jpeg-js/-/jpeg-js-1.0.0.tgz#ac90f2fe94494a704bda541e58934d84d88321d4"
+
 "@patrickhulce/lint@^1.1.1":
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/@patrickhulce/lint/-/lint-1.1.1.tgz#468bd0b4c60002ac5bafec7f2b518ca163647913"
@@ -2049,10 +2053,6 @@ jodid25519@^1.0.0:
   resolved "https://registry.yarnpkg.com/jodid25519/-/jodid25519-1.0.2.tgz#06d4912255093419477d425633606e0e90782967"
   dependencies:
     jsbn "~0.1.0"
-
-jpeg-js@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/jpeg-js/-/jpeg-js-0.2.0.tgz#53e448ec9d263e683266467e9442d2c5a2ef5482"
 
 js-tokens@^3.0.0:
   version "3.0.1"
