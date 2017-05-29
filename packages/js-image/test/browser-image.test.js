@@ -29,13 +29,13 @@ describe('BrowserImage', () => {
     it('should find sobel edges', function () {
       this.timeout(TIMEOUT)
       const modify = img => img.edges()
-      return testSkater('skater-sobel.jpg', modify)
+      return testSkater('skater-browser-edges-sobel.jpg', modify)
     })
 
     it('should find canny edges', function () {
       this.timeout(TIMEOUT)
       const modify = img => img.edges(BrowserImage.CANNY)
-      return testSkater('skater-canny-auto.jpg', modify)
+      return testSkater('skater-browser-edges-canny.jpg', modify)
     })
   })
 
