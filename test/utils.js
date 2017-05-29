@@ -1,7 +1,7 @@
 const fs = require('fs')
 const memoize = require('lodash/memoize')
 const chai = require('chai')
-const jpeg = require('jpeg-js')
+const jpeg = require('@ouranos/jpeg-js')
 const ImageData = require('../lib/image-data').ImageData
 chai.use(require('sinon-chai'))
 
