@@ -2,6 +2,10 @@ import {ImageDataFormat, BufferLike, IFormatOptions} from './types'
 
 /* tslint:disable-next-line */
 const jpeg = require('@ouranos/jpeg-js')
+/* tslint:disable-next-line */
+const PNG = require('pngjs').PNG
+/* tslint:disable-next-line */
+const imageType = require('image-type')
 
 export class ImageData {
   public static GREYSCALE: ImageDataFormat = 'b'
@@ -158,11 +162,33 @@ export class ImageData {
   }
 
   public static from(bufferLike: BufferLike): ImageData {
-    return ImageData.normalize(jpeg.decode(bufferLike, true))
+    const type = imageType(bufferLike)
+
+    let imageData
+    switch (type.mime) {
+      case 'image/jpeg':
+        imageData = jpeg.decode(bufferLike, true)
+        break
+      case 'image/png':
+        imageData = PNG.sync.read(bufferLike)
+        break
+      default:
+        throw new TypeError(`Unrecognized mime type: ${type.mime}`)
+    }
+
+    return ImageData.normalize(imageData)
   }
 
   public static toBuffer(imageData: ImageData, options?: IFormatOptions): BufferLike {
-    const quality = (options && options.quality) || 90
-    return jpeg.encode(ImageData.toRGBA(imageData), quality).data
+    const type = (options && options.type) || 'jpeg'
+    switch (type) {
+      case 'jpeg':
+        const quality = (options && options.quality) || 90
+        return jpeg.encode(ImageData.toRGBA(imageData), quality).data
+      case 'png':
+        return PNG.sync.write(ImageData.toRGBA(imageData))
+      default:
+        throw new TypeError(`Unrecognized output type: ${type}`)
+    }
   }
 }

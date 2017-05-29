@@ -7,14 +7,21 @@ const {expect, fixture, testImage, TIMEOUT} = require('./utils')
 const skater = fixture('skater.jpg')
 const testSkater = (...args) => testImage(BrowserImage, 'skater.jpg', ...args)
 describe('BrowserImage', () => {
-  describe('._applyResize', () => {
-    it('should resize exactly', () => {
-      const modify = img => img.resize({
-        width: 100,
-        height: 100,
+  describe('._applyFormat', () => {
+    it('should support jpeg', () => {
+      const modify = img => img.format({type: 'jpeg', quality: 50})
+      return testSkater('skater-poor.jpg', modify, {
+        strict: false,
+        tolerance: 10,
       })
+    })
 
-      return testSkater('browser-skater-square.jpg', modify)
+    it('should support png', () => {
+      const modify = img => img.format('png')
+      return testSkater('skater.png', modify, {
+        strict: false,
+        tolerance: 5,
+      })
     })
   })
 
