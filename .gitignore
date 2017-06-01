@@ -8,3 +8,5 @@ lib/**/*.d.ts
 
 test/fixtures/*.jpg
 test/fixtures/*.png
+
+dist/
