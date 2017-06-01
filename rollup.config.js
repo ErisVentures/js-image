@@ -3,6 +3,7 @@ const resolve = require('rollup-plugin-node-resolve')
 const alias = require('rollup-plugin-alias')
 const commonjs = require('rollup-plugin-commonjs')
 const babili = require('rollup-plugin-babili')
+const sourcemaps = require('rollup-plugin-sourcemaps')
 
 const fsshim = path.join(__dirname, 'lib/shims/fs.js')
 const pngshim = path.join(__dirname, 'lib/shims/png-js.js')
@@ -16,6 +17,7 @@ module.exports = {
   sourceMap: true,
   exports: 'named',
   plugins: [
+    sourcemaps(),
     alias({
       fs: fsshim,
       pngjs: pngshim,
