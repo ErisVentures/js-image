@@ -6,6 +6,12 @@ cache:
     - test/fixtures/
 notifications:
   email: false
+deploy:
+  provider: pages
+  skip_cleanup: true
+  github_token: $GH_TOKEN
+  on:
+    branch: master
 node_js:
   - v7
   - v6
