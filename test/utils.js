@@ -37,33 +37,39 @@ function compareToFixture(bufferOrImageData, path, options) {
     increment: 1,
   }, options)
 
-  let buffer = bufferOrImageData
-  let imageData = bufferOrImageData
-  if (ImageData.probablyIs(bufferOrImageData)) {
-    buffer = ImageData.toBuffer(bufferOrImageData)
-  } else {
-    imageData = ImageData.from(bufferOrImageData)
-  }
+  return Promise.resolve(bufferOrImageData)
+    .then(buffer => {
+      let imageData = buffer
+      const expectedImageData = fixtureDecode(path)
+      if (ImageData.probablyIs(bufferOrImageData)) {
+        buffer = ImageData.toBuffer(imageData)
+      } else {
+        imageData = ImageData.from(buffer)
+      }
 
-  fs.writeFileSync(fixturePath(`actual-${path}`), buffer)
-  if (process.env.UPDATE_EXPECTATIONS) {
-    fs.writeFileSync(fixturePath(path), buffer)
-  }
+      return Promise.all([buffer, imageData, expectedImageData])
+    })
+    .then(([buffer, imageData, expectedImageData]) => {
+      fs.writeFileSync(fixturePath(`actual-${path}`), buffer)
+      if (process.env.UPDATE_EXPECTATIONS) {
+        fs.writeFileSync(fixturePath(path), buffer)
+      }
 
-  const expectedImageData = fixtureDecode(path)
-  const diff = getImageDiff(imageData, expectedImageData, options.increment)
-  if (options.strict) {
-    expect(diff).to.equal(0)
-  } else {
-    const tolerance = Number(process.env.LOOSE_COMPARISON_TOLERANCE) || options.tolerance
-    const area = imageData.width * imageData.height
-    expect(diff).to.be.lessThan(tolerance * area / options.increment)
-  }
+
+      const diff = getImageDiff(imageData, expectedImageData, options.increment)
+      if (options.strict) {
+        expect(diff).to.equal(0)
+      } else {
+        const tolerance = Number(process.env.LOOSE_COMPARISON_TOLERANCE) || options.tolerance
+        const area = imageData.width * imageData.height
+        expect(diff).to.be.lessThan(tolerance * area / options.increment)
+      }
+    })
 }
 
 function testImage(Image, srcPath, fixturePath, modify, ...args) {
   return modify(Image.from(fixture(srcPath))).toBuffer().then(buffer => {
-    compareToFixture(buffer, fixturePath, ...args)
+    return compareToFixture(buffer, fixturePath, ...args)
   })
 }
 

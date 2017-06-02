@@ -161,7 +161,7 @@ export class ImageData {
     return dstImageData
   }
 
-  public static from(bufferLike: BufferLike): ImageData {
+  public static from(bufferLike: BufferLike): Promise<ImageData> {
     const type = imageType(bufferLike)
 
     let imageData
@@ -173,22 +173,28 @@ export class ImageData {
         imageData = PNG.sync.read(bufferLike)
         break
       default:
-        throw new TypeError(`Unrecognized mime type: ${type.mime}`)
+        return Promise.reject(new TypeError(`Unrecognized mime type: ${type.mime}`))
     }
 
-    return ImageData.normalize(imageData)
+    return Promise.resolve(ImageData.normalize(imageData))
   }
 
-  public static toBuffer(imageData: ImageData, options?: IFormatOptions): BufferLike {
+  public static toBuffer(imageData: ImageData, options?: IFormatOptions): Promise<BufferLike> {
     const type = (options && options.type) || 'jpeg'
+
+    let buffer
     switch (type) {
       case 'jpeg':
         const quality = (options && options.quality) || 90
-        return jpeg.encode(ImageData.toRGBA(imageData), quality).data
+        buffer = jpeg.encode(ImageData.toRGBA(imageData), quality).data
+        break
       case 'png':
-        return PNG.sync.write(ImageData.toRGBA(imageData))
+        buffer = PNG.sync.write(ImageData.toRGBA(imageData))
+        break
       default:
-        throw new TypeError(`Unrecognized output type: ${type}`)
+        return Promise.reject(new TypeError(`Unrecognized output type: ${type}`))
     }
+
+    return Promise.resolve(buffer)
   }
 }

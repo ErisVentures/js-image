@@ -111,10 +111,12 @@ describe('ImageData', () => {
     })
 
     it('should cycle through back to RGBA', () => {
-      const imageData = ImageData.normalize(fixtureDecode('skater.jpg'))
-      const greyscale = ImageData.toGreyscale(imageData)
-      const rgba = ImageData.toRGBA(greyscale)
-      compareToFixture(ImageData.toBuffer(rgba), 'skater-greyscale.jpg')
+      return fixtureDecode('skater.jpg').then(skaterData => {
+        const imageData = ImageData.normalize(skaterData)
+        const greyscale = ImageData.toGreyscale(imageData)
+        const rgba = ImageData.toRGBA(greyscale)
+        return compareToFixture(ImageData.toBuffer(rgba), 'skater-greyscale.jpg')
+      })
     })
   })
 
@@ -145,8 +147,10 @@ describe('ImageData', () => {
 
   describe('#toRGBA', () => {
     it('should be no-op on rgba images', () => {
-      const imageData = ImageData.normalize(fixtureDecode('skater.jpg'))
-      expect(ImageData.toRGBA(imageData)).to.equal(imageData)
+      return fixtureDecode('skater.jpg').then(skaterData => {
+        const imageData = ImageData.normalize(skaterData)
+        expect(ImageData.toRGBA(imageData)).to.equal(imageData)
+      })
     })
 
     it('should add full alpha channel to RGB', () => {
@@ -180,12 +184,14 @@ describe('ImageData', () => {
 
   describe('#removeAlphaChannel', () => {
     it('should convert RGBA to RGB', () => {
-      const imageData = ImageData.normalize(fixtureDecode('skater.jpg'))
-      const result = ImageData.removeAlphaChannel(imageData)
+      return fixtureDecode('skater.jpg').then(skaterData => {
+        const imageData = ImageData.normalize(skaterData)
+        const result = ImageData.removeAlphaChannel(imageData)
 
-      expect(result).to.have.property('format', ImageData.RGB)
-      expect(result).to.have.property('channels', 3)
-      expect(result.data.length).to.equal(imageData.data.length / 4 * 3)
+        expect(result).to.have.property('format', ImageData.RGB)
+        expect(result).to.have.property('channels', 3)
+        expect(result.data.length).to.equal(imageData.data.length / 4 * 3)
+      })
     })
   })
 })
