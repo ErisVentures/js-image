@@ -6,3 +6,9 @@
 [![Dependencies](https://david-dm.org/ouranos-oss/js-image.svg)](https://david-dm.org/ouranos-oss/js-image)
 
 Collection of image manipulation libraries for node and the browser.
+
+## Usage
+
+### Installation
+
+`npm install --save @ouranos/image`
