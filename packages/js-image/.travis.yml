@@ -10,6 +10,7 @@ deploy:
   provider: pages
   skip_cleanup: true
   github_token: $GH_TOKEN
+  local_dir: demo
   on:
     branch: master
 node_js:
@@ -26,4 +27,5 @@ script:
   - LOOSE_COMPARISON_TOLERANCE=15 npm run test:coverage
 after_success:
   - nyc report --reporter=text-lcov | coveralls || echo 'Failed to upload to coveralls...'
+  - cp dist/* demo/
   # - npm run semantic-release

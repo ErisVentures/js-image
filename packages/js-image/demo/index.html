@@ -20,8 +20,15 @@
       </p>
   </div>
 
-  <script src="../dist/bundle.min.js"></script>
-  <script src="demo.js"></script>
+  <script>
+    const bundleSrc = /dist=true/.test(location.search) ?
+        '../dist/bundle.js' : 'bundle.min.js'
+    for (const script of [bundleSrc, 'demo.js']) {
+      const scriptEl = document.createElement('script')
+      scriptEl.src = script
+      document.body.appendChild(scriptEl)
+    }
+  </script>
 </body>
 
 </html>
