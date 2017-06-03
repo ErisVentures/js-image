@@ -7,11 +7,11 @@ import {sobel} from './transforms/sobel'
 import {canny} from './transforms/canny'
 
 export class BrowserImage extends Image {
-  private _image: ImageData
+  private _image: Promise<ImageData>
 
-  public constructor(image: ImageData) {
+  public constructor(image: Promise<ImageData>|ImageData) {
     super()
-    this._image = image
+    this._image = Promise.resolve(image)
   }
 
   private _applyResize(image: ImageData): ImageData {
@@ -43,7 +43,7 @@ export class BrowserImage extends Image {
     return edges
   }
 
-  private _applyAll(image: ImageData): Promise<ImageData> {
+  private _applyAll(image: Promise<ImageData>): Promise<ImageData> {
     return Promise.resolve(image)
       .then(image => this._applyGreyscale(image))
       .then(image => this._applyResize(image))

@@ -121,7 +121,7 @@ describe('NodeImage', () => {
     it('should generate a valid image data', () => {
       return NodeImage.from(skater).toImageData().then(data => {
         const buffer = jpeg.encode(ImageData.toRGBA(data), 90).data
-        compareToFixture(buffer, 'skater-image-data.jpg', {strict: false})
+        return compareToFixture(buffer, 'skater-image-data.jpg', {strict: false})
       })
     })
   })
