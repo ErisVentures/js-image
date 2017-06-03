@@ -3,10 +3,12 @@ const ImageData = require('../../lib/image-data').ImageData
 const {fixtureDecode, compareToFixture} = require('../utils')
 
 describe('#transforms/resize', () => {
-  const skater = ImageData.normalize(fixtureDecode('skater.jpg'))
+  const skaterPromise = fixtureDecode('skater.jpg').then(ImageData.normalize)
 
   it('should resize using nearest neighbor', () => {
-    const output = resize.nearestNeighbor(skater, {width: 100, height: 100})
-    compareToFixture(ImageData.toBuffer(output), 'skater-nearest-neighbor.jpg')
+    return skaterPromise.then(skater => {
+      const output = resize.nearestNeighbor(skater, {width: 100, height: 100})
+      return compareToFixture(ImageData.toBuffer(output), 'skater-nearest-neighbor.jpg')
+    })
   })
 })

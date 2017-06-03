@@ -5,7 +5,7 @@ const {expect, fixtureDecode, compareToFixture} = require('../utils')
 const toPixels = arrs => new Uint8Array(arrs.reduce((acc, arr) => acc.concat(arr), []))
 
 describe('#transforms/convolve', () => {
-  const skater = ImageData.normalize(fixtureDecode('skater.jpg'))
+  const skaterPromise = fixtureDecode('skater.jpg').then(ImageData.normalize)
 
   const gaussianBlur = [
     /* eslint-disable max-len */
@@ -46,8 +46,10 @@ describe('#transforms/convolve', () => {
   })
 
   it('should blur', () => {
-    const output = convolve(skater, gaussianBlur)
-    const jpegOutput = ImageData.toBuffer(output)
-    compareToFixture(jpegOutput, 'skater-blur.jpg')
+    return skaterPromise.then(skater => {
+      const output = convolve(skater, gaussianBlur)
+      const jpegOutput = ImageData.toBuffer(output)
+      return compareToFixture(jpegOutput, 'skater-blur.jpg')
+    })
   })
 })
