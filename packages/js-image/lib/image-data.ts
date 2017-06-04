@@ -176,7 +176,7 @@ export class ImageData {
         return Promise.reject(new TypeError(`Unrecognized mime type: ${type.mime}`))
     }
 
-    return Promise.resolve(ImageData.normalize(imageData))
+    return Promise.resolve(imageData).then(ImageData.normalize)
   }
 
   public static toBuffer(imageData: ImageData, options?: IFormatOptions): Promise<BufferLike> {
