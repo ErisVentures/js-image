@@ -10,3 +10,5 @@ test/fixtures/*.jpg
 test/fixtures/*.png
 
 dist/
+demo/bundle.js
+demo/bundle.min.js

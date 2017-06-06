@@ -27,7 +27,11 @@ export function decode(buffer: Uint8Array|string): Promise<ImageData> {
         canvas.height = img.height
         context!.drawImage(img, 0, 0)
         const imageData = context!.getImageData(0, 0, img.width, img.height)
-        resolve(imageData)
+        resolve({
+          width: imageData.width,
+          height: imageData.height,
+          data: imageData.data,
+        })
       } catch (err) {
         reject(err)
       }
