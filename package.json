@@ -6,8 +6,8 @@
   "scripts": {
     "build": "npm run build:ts && npm run build:rollup && npm run build:rollup:minify",
     "build:ts": "tsc",
-    "build:rollup": "rollup -c rollup.config.js",
-    "build:rollup:minify": "MINIFY=true rollup -c rollup.config.js",
+    "build:rollup": "rollup -c rollup.config.js && cp dist/bundle.js demo/",
+    "build:rollup:minify": "MINIFY=true rollup -c rollup.config.js && cp dist/bundle.min.js demo/",
     "test": "npm run test:lint && npm run test:unit",
     "test:unit": "mocha --require source-map-support/register --timeout 20000 --reporter spec 'test/**/*.test.js'",
     "test:lint": "lint -t typescript --ignore 'lib/**/*.d.ts' 'lib/**/*.ts' && lint -t test 'test/**/*.test.js'",
