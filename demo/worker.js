@@ -6,7 +6,7 @@ function processImage(imageData, options) {
   const image = Image.from(imageData)
 
   image
-    .edges()
+    .edges(Image.CANNY)
     .toImageData()
     .then(ImageData.toRGBA)
     .then(imageData => {
