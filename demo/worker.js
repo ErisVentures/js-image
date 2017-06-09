@@ -1,4 +1,4 @@
-importScripts('bundle.min.js')
+importScripts('bundle.js')
 
 const {Image, ImageData} = self['@ouranos/image']
 
