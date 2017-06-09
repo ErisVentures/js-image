@@ -6,7 +6,7 @@ export function convolve(imageData: ImageData, flatOrDeepMatrix: Matrix): ImageD
   const matrix = ensureFlatMatrix(flatOrDeepMatrix)
 
   const srcPixels = imageData.data
-  const dstPixels = []
+  const dstPixels = new Uint8Array(imageData.data.length)
 
   const imageWidth = imageData.width
   const imageHeight = imageData.height
@@ -16,12 +16,12 @@ export function convolve(imageData: ImageData, flatOrDeepMatrix: Matrix): ImageD
 
   for (var y = 0; y < imageHeight; y++) {
     for (var x = 0; x < imageWidth; x++) {
-      let r = 0
-      let g = 0
-      let b = 0
-      let a = 0
+      var r = 0
+      var g = 0
+      var b = 0
+      var a = 0
 
-      let totalWeight = 0
+      var totalWeight = 0
       for (var matrixY = 0; matrixY < matrixWidth; matrixY++) {
         for (var matrixX = 0; matrixX < matrixWidth; matrixX++) {
           const srcX = x + matrixX - matrixHalfWidth
@@ -38,14 +38,13 @@ export function convolve(imageData: ImageData, flatOrDeepMatrix: Matrix): ImageD
         }
       }
 
-      dstPixels.push(
-        Math.round(r / totalWeight),
-        Math.round(g / totalWeight),
-        Math.round(b / totalWeight),
-        Math.round(a / totalWeight)
-      )
+      var outputIndex = (y * imageWidth + x) * 4
+      dstPixels[outputIndex] = Math.round(r / totalWeight)
+      dstPixels[outputIndex + 1] = Math.round(g / totalWeight)
+      dstPixels[outputIndex + 2] = Math.round(b / totalWeight)
+      dstPixels[outputIndex + 3] = Math.round(a / totalWeight)
     }
   }
 
-  return Object.assign({}, imageData, {data: new Uint8Array(dstPixels)})
+  return Object.assign({}, imageData, {data: dstPixels})
 }
