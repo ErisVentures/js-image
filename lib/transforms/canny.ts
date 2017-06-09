@@ -1,3 +1,4 @@
+/* tslint:disable */
 import {Pixel, ICannyOptions} from '../types'
 import {ImageData} from '../image-data'
 import {sobel, SobelImageData, getPixelsForAngle} from './sobel'

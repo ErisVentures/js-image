@@ -1,3 +1,4 @@
+/* tslint:disable */
 import {IBlurOptions, BufferLike} from '../types'
 import {ImageData} from '../image-data'
 import {convolve} from './convolve'

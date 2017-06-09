@@ -1,3 +1,4 @@
+/* tslint:disable */
 import {Pixel} from '../types'
 import {ImageData} from '../image-data'
 
@@ -28,11 +29,9 @@ export function getPixelsForAngle(
   angle: number,
 ): Pixel[] {
   return getOffsetsForAngle(angle).map(offset => {
-    /* tslint:disable */
     const x = srcX + offset.x
     const y = srcY + offset.y
     const index = y * imageData.width + x
-    /* tslint:enable */
     return {x, y, index, value: imageData.data[index]}
   })
 }
