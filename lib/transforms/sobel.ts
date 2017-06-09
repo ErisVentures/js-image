@@ -38,7 +38,7 @@ export function getPixelsForAngle(
 }
 
 export interface SobelImageData extends ImageData {
-  angles: number[]
+  angles: Uint8Array
 }
 
 export function sobel(origImageData: ImageData): SobelImageData {
@@ -47,8 +47,8 @@ export function sobel(origImageData: ImageData): SobelImageData {
 
   const imageData = ImageData.toGreyscale(origImageData)
   const srcPixels = imageData.data
-  const dstPixels: number[] = []
-  const dstAngles: number[] = []
+  const dstPixels = new Uint8Array(srcPixels.length)
+  const dstAngles = new Uint8Array(srcPixels.length)
 
   const imageWidth = imageData.width
   const imageHeight = imageData.height
@@ -56,21 +56,23 @@ export function sobel(origImageData: ImageData): SobelImageData {
   const matrixWidth = Math.sqrt(xMatrix.length)
   const matrixHalfWidth = Math.floor(matrixWidth / 2)
 
-  for (let y = 0; y < imageHeight; y++) {
-    for (let x = 0; x < imageWidth; x++) {
-      let xVal = 0
-      let yVal = 0
+  var dstIndex = 0
+  for (var y = 0; y < imageHeight; y++) {
+    for (var x = 0; x < imageWidth; x++) {
+      var xVal = 0
+      var yVal = 0
       if (x - matrixHalfWidth < 0 ||
           y - matrixHalfWidth < 0 ||
           x + matrixHalfWidth >= imageWidth ||
           y + matrixHalfWidth >= imageHeight) {
-        dstPixels.push(0)
-        dstAngles.push(0)
+        dstPixels[dstIndex] = 0
+        dstAngles[dstIndex] = 0
+        dstIndex++
         continue
       }
 
-      for (let matrixY = 0; matrixY < matrixWidth; matrixY++) {
-        for (let matrixX = 0; matrixX < matrixWidth; matrixX++) {
+      for (var matrixY = 0; matrixY < matrixWidth; matrixY++) {
+        for (var matrixX = 0; matrixX < matrixWidth; matrixX++) {
           const srcX = x + matrixX - matrixHalfWidth
           const srcY = y + matrixY - matrixHalfWidth
           const srcOffset = srcY * imageWidth + srcX
@@ -84,13 +86,14 @@ export function sobel(origImageData: ImageData): SobelImageData {
         }
       }
 
-      dstPixels.push(Math.round(Math.sqrt(xVal * xVal + yVal * yVal)))
-      dstAngles.push(toNearestAngle(xVal, yVal))
+      dstPixels[dstIndex] = Math.round(Math.sqrt(xVal * xVal + yVal * yVal))
+      dstAngles[dstIndex] = toNearestAngle(xVal, yVal)
+      dstIndex++
     }
   }
 
   return Object.assign({}, imageData, {
-    data: new Uint8Array(dstPixels),
+    data: dstPixels,
     angles: dstAngles,
   })
 }
