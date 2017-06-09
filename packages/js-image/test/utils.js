@@ -40,30 +40,30 @@ function compareToFixture(bufferOrImageData, path, options) {
   return Promise.resolve(bufferOrImageData)
     .then(buffer => {
       let imageData = buffer
-      const expectedImageData = fixtureDecode(path)
       if (ImageData.probablyIs(bufferOrImageData)) {
         buffer = ImageData.toBuffer(imageData)
       } else {
         imageData = ImageData.from(buffer)
       }
 
-      return Promise.all([buffer, imageData, expectedImageData])
+      return Promise.all([buffer, imageData])
     })
-    .then(([buffer, imageData, expectedImageData]) => {
+    .then(([buffer, imageData]) => {
       fs.writeFileSync(fixturePath(`actual-${path}`), buffer)
       if (process.env.UPDATE_EXPECTATIONS) {
         fs.writeFileSync(fixturePath(path), buffer)
       }
 
-
-      const diff = getImageDiff(imageData, expectedImageData, options.increment)
-      if (options.strict) {
-        expect(diff).to.equal(0)
-      } else {
-        const tolerance = Number(process.env.LOOSE_COMPARISON_TOLERANCE) || options.tolerance
-        const area = imageData.width * imageData.height
-        expect(diff).to.be.lessThan(tolerance * area / options.increment)
-      }
+      return fixtureDecode(path).then(expectedImageData => {
+        const diff = getImageDiff(imageData, expectedImageData, options.increment)
+        if (options.strict) {
+          expect(diff).to.equal(0)
+        } else {
+          const tolerance = Number(process.env.LOOSE_COMPARISON_TOLERANCE) || options.tolerance
+          const area = imageData.width * imageData.height
+          expect(diff).to.be.lessThan(tolerance * area / options.increment)
+        }
+      })
     })
 }
 

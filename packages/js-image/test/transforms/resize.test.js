@@ -3,12 +3,19 @@ const ImageData = require('../../lib/image-data').ImageData
 const {fixtureDecode, compareToFixture} = require('../utils')
 
 describe('#transforms/resize', () => {
-  const skaterPromise = fixtureDecode('skater.jpg').then(ImageData.normalize)
+  const yosemitePromise = fixtureDecode('yosemite-portrait.jpg').then(ImageData.normalize)
 
   it('should resize using nearest neighbor', () => {
-    return skaterPromise.then(skater => {
-      const output = resize.nearestNeighbor(skater, {width: 100, height: 100})
-      return compareToFixture(ImageData.toBuffer(output), 'skater-nearest-neighbor.jpg')
+    return yosemitePromise.then(yosemite => {
+      const output = resize.nearestNeighbor(yosemite, {width: 100, height: 125})
+      return compareToFixture(ImageData.toBuffer(output), 'yosemite-nearest-neighbor.jpg')
+    })
+  })
+
+  it('should resize using bilinear', () => {
+    return yosemitePromise.then(yosemite => {
+      const output = resize.bilinear(yosemite, {width: 100, height: 125})
+      return compareToFixture(ImageData.toBuffer(output), 'yosemite-bilinear.jpg')
     })
   })
 })
