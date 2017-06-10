@@ -12,7 +12,10 @@ describe('NodeImage', () => {
   describe('._applyFormat', () => {
     it('should support jpeg', () => {
       const modify = img => img.format({type: 'jpeg', quality: 50})
-      return testSkater('skater-poor.jpg', modify, {strict: false})
+      return testSkater('skater-poor.jpg', modify, {
+        strict: false,
+        tolerance: 10,
+      })
     })
 
     it('should support png', () => {
