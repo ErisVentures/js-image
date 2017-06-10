@@ -20,8 +20,12 @@ skater-nearest-neighbor.jpg
 skater-poor.jpg
 skater-sobel.jpg
 skater.jpg
+yosemite-bilinear-drastic.jpg
+yosemite-bilinear-minor.jpg
+yosemite-bilinear.jpg
 yosemite-canny.jpg
 yosemite-greyscale.jpg
+yosemite-nearest-neighbor.jpg
 yosemite-portrait.jpg
 yosemite-square-contain.jpg
 yosemite-square-cover.jpg
