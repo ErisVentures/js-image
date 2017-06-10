@@ -14,6 +14,13 @@ describe('#transforms/resize', () => {
 
   it('should resize using bilinear', () => {
     return yosemitePromise.then(yosemite => {
+      const output = resize.bilinear(yosemite, {width: 600, height: 750})
+      return compareToFixture(ImageData.toBuffer(output), 'yosemite-bilinear-minor.jpg')
+    })
+  })
+
+  it('should drastically resize using bilinear', () => {
+    return yosemitePromise.then(yosemite => {
       const output = resize.bilinear(yosemite, {width: 100, height: 125})
       return compareToFixture(ImageData.toBuffer(output), 'yosemite-bilinear.jpg')
     })
