@@ -45,6 +45,11 @@ html, body, .container {
   overflow: hidden;
 }
 
+.preview__canvas canvas {
+  max-width: 100%;
+  max-height: 100%;
+}
+
 .preview--filled .preview__canvas {
   display: flex;
 }
