@@ -28,12 +28,16 @@ export function getPixelsForAngle(
   srcY: number,
   angle: number,
 ): Pixel[] {
-  return getOffsetsForAngle(angle).map(offset => {
-    const x = srcX + offset.x
-    const y = srcY + offset.y
-    const index = y * imageData.width + x
-    return {x, y, index, value: imageData.data[index]}
-  })
+  const offsets = getOffsetsForAngle(angle)
+  const pixels: Pixel[] = []
+  for (var i = 0; i < offsets.length; i++) {
+    var x = srcX + offsets[i].x
+    var y = srcY + offsets[i].y
+    var index = y * imageData.width + x
+    pixels.push({x, y, index, value: imageData.data[index]})
+  }
+
+  return pixels
 }
 
 export interface SobelImageData extends ImageData {

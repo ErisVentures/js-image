@@ -3,7 +3,9 @@ import {Pixel, ICannyOptions} from '../types'
 import {ImageData} from '../image-data'
 import {sobel, SobelImageData, getPixelsForAngle} from './sobel'
 
-const sumArray = (arr: number[]) => arr.reduce((a, b) => a + b, 0)
+function sumArray(arr: number[]): number {
+  return arr.reduce((a, b) => a + b, 0)
+}
 
 function nonMaximalSuppresion(imageData: SobelImageData): SobelImageData {
   const dstPixels = new Uint8Array(imageData.data.length)
@@ -18,9 +20,9 @@ function nonMaximalSuppresion(imageData: SobelImageData): SobelImageData {
       }
 
       var srcIndex = y * imageData.width + x
-      const srcPixel = imageData.data[srcIndex]
-      const pixels = getPixelsForAngle(imageData, x, y, imageData.angles[srcIndex])
-      const isMaxima = pixels.every(pixel => pixel.value! <= srcPixel)
+      var srcPixel = imageData.data[srcIndex]
+      var pixels = getPixelsForAngle(imageData, x, y, imageData.angles[srcIndex])
+      var isMaxima = pixels[0].value! <= srcPixel && pixels[1].value! <= srcPixel
 
       if (isMaxima) {
         dstPixels[dstIndex] = srcPixel
@@ -37,12 +39,12 @@ function nonMaximalSuppresion(imageData: SobelImageData): SobelImageData {
 
 function hysteresis(imageData: SobelImageData, options: ICannyOptions): SobelImageData {
   const dstPixels = new Uint8Array(imageData.data.length)
+  const seen = new Uint8Array(imageData.data.length)
 
-  const seen = new Set()
   for (var y = 0; y < imageData.height; y++) {
     for (var x = 0; x < imageData.width; x++) {
       const srcIndex = y * imageData.width + x
-      if (seen.has(srcIndex)) {
+      if (seen[srcIndex]) {
         continue
       }
 
@@ -84,19 +86,19 @@ function hysteresis(imageData: SobelImageData, options: ICannyOptions): SobelIma
             queue.push(pixel)
           } else {
             dstPixels[index] = 0
-            seen.add(index)
+            seen[index] = 1
           }
         })
       }
 
       queue.forEach(pixel => {
         dstPixels[pixel.index!] = 255
-        seen.add(pixel.index!)
+        seen[pixel.index!] = 1
       })
 
       for (const seenIndex of traversed) {
         dstPixels[seenIndex] = foundStrongEdge ? 255 : 0
-        seen.add(seenIndex)
+        seen[seenIndex] = 1
       }
     }
   }
@@ -105,7 +107,7 @@ function hysteresis(imageData: SobelImageData, options: ICannyOptions): SobelIma
 }
 
 function autoThreshold(imageData: ImageData): number {
-  const buckets = []
+  var buckets = []
   for (var i = 0; i < 256; i++) {
     buckets[i] = 0
   }
@@ -116,23 +118,23 @@ function autoThreshold(imageData: ImageData): number {
 
   var variance = -Infinity
   var threshold = 100
-  const left = buckets.slice(0, 20)
-  const right = buckets.slice(20)
+  var left = buckets.slice(0, 20)
+  var right = buckets.slice(20)
 
   var leftSum = sumArray(left.map((x, i) => x * i))
   var rightSum = sumArray(right.map((x, i) => x * (i + 20)))
   var leftCount = sumArray(left)
   var rightCount = sumArray(right)
   for (var i = 20; i < 240; i++) {
-    const bucketVal = buckets[i]
+    var bucketVal = buckets[i]
     leftSum += (bucketVal * i)
     rightSum -= (bucketVal * i)
     leftCount += bucketVal
     rightCount -= bucketVal
 
-    const leftMean = leftSum / leftCount
-    const rightMean = rightSum / rightCount
-    const bucketVariance = Math.pow(leftMean - rightMean, 2) *
+    var leftMean = leftSum / leftCount
+    var rightMean = rightSum / rightCount
+    var bucketVariance = Math.pow(leftMean - rightMean, 2) *
       (leftCount / imageData.data.length) *
       (rightCount / imageData.data.length)
     if (bucketVariance > variance) {
