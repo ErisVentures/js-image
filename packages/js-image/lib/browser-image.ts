@@ -2,7 +2,7 @@ import {BufferLike} from './types'
 import {Image} from './image'
 import {ImageData} from './image-data'
 import {gaussianBlur} from './transforms/blur'
-import {nearestNeighbor} from './transforms/resize'
+import {nearestNeighbor, bilinear} from './transforms/resize'
 import {sobel} from './transforms/sobel'
 import {canny} from './transforms/canny'
 
@@ -19,7 +19,15 @@ export class BrowserImage extends Image {
       return image
     }
 
-    return nearestNeighbor(image, this._output.resize)
+    const {method} = this._output.resize
+    switch (method) {
+      case Image.NEAREST_NEIGHBOR:
+        return nearestNeighbor(image, this._output.resize)
+      case Image.BILINEAR:
+      default:
+        return bilinear(image, this._output.resize)
+    }
+
   }
 
   private _applyGreyscale(image: ImageData): ImageData {
