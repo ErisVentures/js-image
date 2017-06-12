@@ -2,24 +2,32 @@ html, body, .container {
   height: 100%;
 }
 
-.container, .container * {
+.container, .container div {
   display: flex;
   flex-direction: column;
   padding-bottom: 10px;
 }
 
-.user-message {
+div.user-message {
   display: none;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding-top: 10px;
 }
 
-.editor__controls * {
+div.editor__controls * {
   display: block;
 }
 
-.editor {
+div.editor {
   flex: 10;
   display: flex;
   flex-direction: row;
+}
+
+.editor--has-error .preview__canvas {
+  border: 2px solid #ffaeae;
 }
 
 .editor__image {
@@ -29,6 +37,7 @@ html, body, .container {
 .editor__controls {
   width: 30%;
   padding-left: 15px;
+  overflow-y: auto;
 }
 
 .preview {
@@ -36,7 +45,7 @@ html, body, .container {
   position: relative;
 }
 
-.preview__canvas {
+div.preview__canvas {
   display: none;
   flex: 10;
   align-items: center;
@@ -81,4 +90,8 @@ html, body, .container {
 .editor--loading .preview {
   transition: opacity .1s;
   opacity: .5;
+}
+
+#settings-form {
+  padding: 0 15px;
 }

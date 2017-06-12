@@ -3,11 +3,23 @@ importScripts('bundle.js')
 const {Image, ImageData} = self['@ouranos/image']
 
 function processImage(imageData, options) {
-  const image = Image.from(imageData)
+  Promise.resolve()
+    .then(() => Image.from(imageData))
+    .then(image => {
+      if (options['resize[method]']) {
+        image = image.resize({
+          width: Number(options['resize[width]']),
+          height: Number(options['resize[height]']),
+        })
+      }
 
-  image
-    .edges(Image.CANNY)
-    .toImageData()
+      if (options['edges[method]']) {
+        image = image.edges(options['edges[method]'])
+      }
+
+      return image
+    })
+    .then(image => image.toImageData())
     .then(ImageData.toRGBA)
     .then(imageData => {
       self.postMessage({
@@ -36,7 +48,7 @@ function processImage(imageData, options) {
 
 self.addEventListener('message', message => {
   if (message.data.type === 'process') {
-    processImage(message.data.payload.data, message.data.payload.options)
+    processImage(message.data.payload.data, message.data.payload.settings)
   } else {
     throw new Error(`Unrecognized message: ${message.data}`)
   }

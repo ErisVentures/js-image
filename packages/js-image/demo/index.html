@@ -32,8 +32,43 @@
           </div>
         </div>
         <div class="editor__controls">
+          <h2>Image Info</h2>
+          <div class="image-info">
+            Coming soon...
+          </div>
           <h2>Settings</h2>
-          <span>Coming soon...</span>
+          <form id="settings-form" class="form-horizontal">
+            <div class="form-group">
+              <h3>Resize</h3>
+              <label for="resize[method]" class="col-sm-4 control-label">Method</label>
+              <div class="col-sm-8">
+                <select class="form-control" name="resize[method]">
+                  <option value="" selected>None</option>
+                  <option value="nearestNeighbor">Nearest Neighbor</option>
+                  <option value="bilinear">Bilinear</option>
+                </select>
+              </div>
+              <label for="resize[width]" class="col-sm-4 control-label">Width</label>
+              <div class="col-sm-8">
+                <input type="number" class="form-control" name="resize[width]">
+              </div>
+              <label for="resize[height]" class="col-sm-4 control-label">Height</label>
+              <div class="col-sm-8">
+                <input type="number" class="form-control" name="resize[height]">
+              </div>
+            </div>
+            <div class="form-group">
+              <h3>Edge Detection</h3>
+              <label for="edges[method]" class="col-sm-4 control-label">Method</label>
+              <div class="col-sm-8">
+                <select class="form-control" name="edges[method]">
+                  <option value="" selected>None</option>
+                  <option value="sobel">Sobel</option>
+                  <option value="canny">Canny</option>
+                </select>
+              </div>
+            </div>
+          </form>
         </div>
       </div>
   </div>
