@@ -6,6 +6,7 @@ const {expect, fixture, testImage} = require('./utils')
 
 const skater = fixture('skater.jpg')
 const testSkater = (...args) => testImage(BrowserImage, 'skater.jpg', ...args)
+const testYosemite = (...args) => testImage(BrowserImage, 'yosemite-portrait.jpg', ...args)
 describe('BrowserImage', () => {
   describe('._applyFormat', () => {
     it('should support jpeg', () => {
@@ -22,6 +23,17 @@ describe('BrowserImage', () => {
         strict: false,
         tolerance: 5,
       })
+    })
+  })
+
+  describe('._applyResize', () => {
+    it('should resize with bilinear', () => {
+      const modify = img => img.resize({
+        width: 600,
+        height: 750,
+        method: BrowserImage.BILINEAR,
+      })
+      return testYosemite('yosemite-bilinear-minor.jpg', modify)
     })
   })
 

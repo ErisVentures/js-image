@@ -56,25 +56,44 @@ describe('Image', () => {
     })
 
     it('should set resize', () => {
-      const options = {width: 200, height: 300, method: Image.COVER}
+      const options = {
+        width: 200,
+        height: 300,
+        fit: Image.COVER,
+        method: Image.NEAREST_NEIGHBOR,
+      }
       image = image.resize(options)
       expect(image._output).to.have.property('resize').eql(options)
     })
 
     it('should accept just width', () => {
-      const options = {width: 200, height: Image.AUTO_SIZE, method: Image.CONTAIN}
+      const options = {
+        width: 200,
+        height: Image.AUTO_SIZE,
+        fit: Image.CONTAIN,
+        method: Image.BILINEAR,
+      }
       image = image.resize(options)
       expect(image._output).to.have.property('resize').eql(options)
     })
 
     it('should accept just height', () => {
-      const options = {width: Image.AUTO_SIZE, height: 300, method: Image.CROP}
+      const options = {
+        width: Image.AUTO_SIZE,
+        height: 300,
+        fit: Image.CROP,
+      }
       image = image.resize(options)
-      expect(image._output).to.have.property('resize').eql(options)
+      expect(image._output).to.have.property('resize').eql({
+        width: Image.AUTO_SIZE,
+        height: 300,
+        fit: Image.CROP,
+        method: Image.BILINEAR,
+      })
     })
 
     it('should throw if width and height are missing', () => {
-      const options = {method: Image.COVER}
+      const options = {fit: Image.COVER}
       expect(() => image.resize(options)).to.throw('Must specify a width or height')
     })
   })

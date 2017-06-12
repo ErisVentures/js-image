@@ -6,7 +6,8 @@ export interface IFormatOptions {
 export interface IResizeOptions {
   width?: number,
   height?: number,
-  fit: ImageResizeFit,
+  fit?: ImageResizeFit,
+  method?: ImageResizeMethod,
 }
 
 export interface IEdgeOptions {
@@ -34,6 +35,7 @@ export interface IBlurOptions {
 
 export type ImageFormat = 'jpeg' | 'png'
 export type ImageResizeFit = 'auto' | 'contain' | 'cover' | 'exact' | 'crop'
+export type ImageResizeMethod = 'nearest-neighbor' | 'bilinear' | 'bicubic'
 export type EdgeMethod = 'sobel' | 'canny'
 
 export type ImageDataFormat = 'rgb' | 'rgba' | 'b'
