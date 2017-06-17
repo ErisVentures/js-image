@@ -7,39 +7,6 @@ function toNearestAngle(xVal: number, yVal: number): number {
   return (Math.round(angle / 45) * 45 + 180) % 180
 }
 
-function getOffsetsForAngle(angle: number): Pixel[] {
-  switch (angle) {
-    case 0:
-      return [{x: -1, y: 0}, {x: 1, y: 0}]
-    case 45:
-      return [{x: -1, y: 1}, {x: 1, y: -1}]
-    case 90:
-      return [{x: 0, y: -1}, {x: 0, y: 1}]
-    case 135:
-      return [{x: 1, y: 1}, {x: -1, y: -1}]
-    default:
-      throw new Error(`invalid angle: ${angle}`)
-  }
-}
-
-export function getPixelsForAngle(
-  imageData: ImageData,
-  srcX: number,
-  srcY: number,
-  angle: number,
-): Pixel[] {
-  const offsets = getOffsetsForAngle(angle)
-  const pixels: Pixel[] = []
-  for (var i = 0; i < offsets.length; i++) {
-    var x = srcX + offsets[i].x
-    var y = srcY + offsets[i].y
-    var index = y * imageData.width + x
-    pixels.push({x, y, index, value: imageData.data[index]})
-  }
-
-  return pixels
-}
-
 export interface SobelImageData extends ImageData {
   angles: Uint8Array
 }

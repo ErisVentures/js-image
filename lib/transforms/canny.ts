@@ -1,7 +1,7 @@
 /* tslint:disable */
 import {Pixel, ICannyOptions} from '../types'
 import {ImageData} from '../image-data'
-import {sobel, SobelImageData, getPixelsForAngle} from './sobel'
+import {sobel, SobelImageData} from './sobel'
 
 function sumArray(arr: number[]): number {
   return arr.reduce((a, b) => a + b, 0)
@@ -21,7 +21,7 @@ function nonMaximalSuppresion(imageData: SobelImageData): SobelImageData {
 
       var srcIndex = y * imageData.width + x
       var srcPixel = imageData.data[srcIndex]
-      var pixels = getPixelsForAngle(imageData, x, y, imageData.angles[srcIndex])
+      var pixels = ImageData.getPixelsForAngle(imageData, x, y, imageData.angles[srcIndex])
       var isMaxima = pixels[0].value! <= srcPixel && pixels[1].value! <= srcPixel
 
       if (isMaxima) {
@@ -77,7 +77,7 @@ function hysteresis(imageData: SobelImageData, options: ICannyOptions): SobelIma
         }
 
         const edgeAngle = (imageData.angles[location.index!] + 90) % 180
-        const pixels = getPixelsForAngle(imageData, x, y, edgeAngle)
+        const pixels = ImageData.getPixelsForAngle(imageData, x, y, edgeAngle)
         pixels.forEach(pixel => {
           const index = pixel.index!
           if (traversed.has(index)) {
