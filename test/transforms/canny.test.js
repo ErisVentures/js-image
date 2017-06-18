@@ -17,7 +17,9 @@ describe('#transforms/canny', () => {
     return imageDataPromise.then(imageData => {
       const output = canny(imageData, {lowThreshold: 75, highThreshold: 150})
       const jpegOutput = ImageData.toBuffer(output)
-      return compareToFixture(jpegOutput, 'skater-canny-fixed.jpg')
+      return compareToFixture(jpegOutput, 'skater-canny-fixed.jpg', {
+        strict: false,
+      })
     })
   })
 })
