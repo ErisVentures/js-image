@@ -38,16 +38,14 @@ function compareToFixture(bufferOrImageData, path, options) {
   }, options)
 
   return Promise.resolve(bufferOrImageData)
-    .then(buffer => {
-      let imageData = buffer
+    .then(bufferOrImageData => {
       if (ImageData.probablyIs(bufferOrImageData)) {
-        buffer = ImageData.toBuffer(imageData)
+        return ImageData.toBuffer(bufferOrImageData)
       } else {
-        imageData = ImageData.from(buffer)
+        return bufferOrImageData
       }
-
-      return Promise.all([buffer, imageData])
     })
+    .then(buffer => Promise.all([buffer, ImageData.from(buffer)]))
     .then(([buffer, imageData]) => {
       fs.writeFileSync(fixturePath(`actual-${path}`), buffer)
       if (process.env.UPDATE_EXPECTATIONS) {
@@ -73,6 +71,50 @@ function testImage(Image, srcPath, fixturePath, modify, ...args) {
   })
 }
 
+function printImageData(imageData) {
+  for (let y = 0; y < imageData.height; y++) {
+    const start = y * imageData.width
+    const end = start + imageData.width
+    console.log(imageData.data.slice(start, end))
+  }
+}
+
+function buildLine(width, height, lineRow, value) {
+  const pixels = new Uint8Array(width * height)
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      pixels[y * width + x] = y === lineRow ? value : 0
+    }
+  }
+  return pixels
+}
+
+function mergeLines(...dataObjects) {
+  const pixels = new Uint8Array(dataObjects[0].length)
+  dataObjects.forEach(data => {
+    for (let i = 0; i < pixels.length; i++) {
+      pixels[i] = Math.max(pixels[i], data[i])
+    }
+  })
+  return pixels
+}
+
+function buildLinesImageData(width, height, lines) {
+  const linesData = lines.map(line => {
+    const row = typeof line === 'number' ? line : line.row
+    const value = line.value || 255
+    return buildLine(width, height, row, value)
+  })
+
+  return {
+    width,
+    height,
+    channels: 1,
+    format: ImageData.GREYSCALE,
+    data: mergeLines(...linesData),
+  }
+}
+
 module.exports = {
   expect,
   fixture,
@@ -81,4 +123,8 @@ module.exports = {
   compareToFixture,
   getImageDiff,
   testImage,
+  printImageData,
+  buildLine,
+  mergeLines,
+  buildLinesImageData,
 }

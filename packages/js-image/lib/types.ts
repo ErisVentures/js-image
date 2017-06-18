@@ -33,6 +33,11 @@ export interface IBlurOptions {
   approximate?: boolean,
 }
 
+export interface ISharpnessOptions {
+  radius?: number,
+  threshold?: number,
+}
+
 export type ImageFormat = 'jpeg' | 'png'
 export type ImageResizeFit = 'auto' | 'contain' | 'cover' | 'exact' | 'crop'
 export type ImageResizeMethod = 'nearest-neighbor' | 'bilinear' | 'bicubic'
