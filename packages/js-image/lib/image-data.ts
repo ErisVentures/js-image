@@ -39,10 +39,21 @@ export class ImageData {
   }
 
   public static normalize(imageData: any): any {
-    return Object.assign({
-      channels: imageData.data.length / (imageData.width * imageData.height),
-      format: imageData.channels === 3 ? ImageData.RGB : ImageData.RGBA,
-    }, imageData)
+    const channels = imageData.data.length / (imageData.width * imageData.height)
+
+    let format
+    switch (channels) {
+      case 3:
+        format = ImageData.RGB
+        break
+      case 1:
+        format = ImageData.GREYSCALE
+        break
+      default:
+        format = ImageData.RGBA
+    }
+
+    return Object.assign({channels, format}, imageData)
   }
 
   public static assert(imageData: any): ImageData {
@@ -70,19 +81,25 @@ export class ImageData {
     return imageData.data[ImageData.indexFor(imageData, x, y, channel)]
   }
 
-  public static getOffsetsForAngle(angle: number): Pixel[] {
+  public static getOffsetForAngle(angle: number): Pixel {
     switch (angle) {
       case 0:
-        return [{x: -1, y: 0}, {x: 1, y: 0}]
+        return {x: 1, y: 0}
       case 45:
-        return [{x: -1, y: 1}, {x: 1, y: -1}]
+        return {x: -1, y: 1}
       case 90:
-        return [{x: 0, y: -1}, {x: 0, y: 1}]
+        return {x: 0, y: 1}
       case 135:
-        return [{x: 1, y: 1}, {x: -1, y: -1}]
+        return {x: 1, y: 1}
       default:
         throw new Error(`invalid angle: ${angle}`)
     }
+  }
+
+  public static getOffsetsForAngle(angle: number): Pixel[] {
+    const offset = ImageData.getOffsetForAngle(angle)
+    const reverseOffset = {x: offset.x * -1, y: offset.y * -1}
+    return [offset, reverseOffset]
   }
 
   public static getPixelsForAngle(
@@ -93,10 +110,10 @@ export class ImageData {
   ): Pixel[] {
     const offsets = ImageData.getOffsetsForAngle(angle)
     const pixels: Pixel[] = []
-    for (var i = 0; i < offsets.length; i++) {
-      var x = srcX + offsets[i].x
-      var y = srcY + offsets[i].y
-      var index = y * imageData.width + x
+    for (let i = 0; i < offsets.length; i++) {
+      const x = srcX + offsets[i].x
+      const y = srcY + offsets[i].y
+      const index = y * imageData.width + x
       pixels.push({x, y, index, value: imageData.data[index]})
     }
 
@@ -104,6 +121,7 @@ export class ImageData {
   }
 
   public static toGreyscale(srcImageData: ImageData): ImageData {
+    ImageData.assert(srcImageData)
     if (srcImageData.format === ImageData.GREYSCALE) {
       return srcImageData
     }
@@ -126,6 +144,7 @@ export class ImageData {
   }
 
   public static toRGB(srcImageData: ImageData): ImageData {
+    ImageData.assert(srcImageData)
     if (srcImageData.format === ImageData.RGB) {
       return srcImageData
     } else if (srcImageData.format === ImageData.RGBA) {
@@ -149,6 +168,7 @@ export class ImageData {
   }
 
   public static toRGBA(srcImageData: ImageData): ImageData {
+    ImageData.assert(srcImageData)
     if (srcImageData.format === ImageData.RGBA) {
       return srcImageData
     } else if (srcImageData.format === ImageData.GREYSCALE) {
@@ -174,6 +194,7 @@ export class ImageData {
   }
 
   public static removeAlphaChannel(srcImageData: ImageData): ImageData {
+    ImageData.assert(srcImageData)
     if (srcImageData.format !== ImageData.RGBA) {
       return srcImageData
     }
@@ -195,7 +216,7 @@ export class ImageData {
   }
 
   public static from(bufferLike: BufferLike): Promise<ImageData> {
-    const type = imageType(bufferLike)
+    const type = imageType(bufferLike) || {mime: 'unknown'}
 
     let imageData
     switch (type.mime) {
