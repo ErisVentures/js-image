@@ -8,6 +8,7 @@ function toNearestAngle(xVal: number, yVal: number): number {
 }
 
 export interface SobelImageData extends ImageData {
+  // contains the angles of the direction of the gradient (i.e. the difference in luminance)
   angles: Uint8Array
 }
 
