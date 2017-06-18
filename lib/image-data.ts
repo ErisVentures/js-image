@@ -120,6 +120,42 @@ export class ImageData {
     return pixels
   }
 
+  public static rotate(srcImageData: ImageData, angle: number): ImageData {
+    const dstImageData = Object.assign({}, srcImageData)
+    const numPixels = srcImageData.width * srcImageData.height
+    const dstData = new Uint8Array(numPixels * srcImageData.channels)
+
+    const cosAngle = Math.cos((360 - angle) * Math.PI / 180)
+    const sinAngle = Math.sin((360 - angle) * Math.PI / 180)
+
+    const originX = (srcImageData.width - 1) / 2
+    const originY = (dstImageData.height - 1) / 2
+    for (let y = 0; y < srcImageData.height; y++) {
+      for (let x = 0; x < srcImageData.width; x++) {
+        const xRelative = x - originX
+        const yRelative = y - originY
+        const xPrimeRelative = xRelative * cosAngle - yRelative * sinAngle
+        const yPrimeRelative = xRelative * sinAngle + yRelative * cosAngle
+
+        const xPrime = Math.round(xPrimeRelative + originX)
+        const yPrime = Math.round(yPrimeRelative + originY)
+        if (ImageData.isBorder(dstImageData, xPrime, yPrime, 0)) {
+          continue
+        }
+
+        const srcIndex = ImageData.indexFor(srcImageData, x, y)
+        const dstIndex = ImageData.indexFor(dstImageData, xPrime, yPrime)
+        for (let channel = 0; channel < dstImageData.channels; channel++) {
+          const value = srcImageData.data[srcIndex + channel]
+          dstData[dstIndex + channel] = value
+        }
+      }
+    }
+
+    dstImageData.data = dstData
+    return dstImageData
+  }
+
   public static toGreyscale(srcImageData: ImageData): ImageData {
     ImageData.assert(srcImageData)
     if (srcImageData.format === ImageData.GREYSCALE) {

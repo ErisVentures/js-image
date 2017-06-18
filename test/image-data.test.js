@@ -74,6 +74,110 @@ describe('ImageData', () => {
     })
   })
 
+  describe('#rotate', () => {
+    const simpleLineOdd = {
+      width: 3,
+      height: 3,
+      channels: 1,
+      format: ImageData.GREYSCALE,
+      data: [
+        0, 0, 0,
+        1, 1, 1,
+        0, 0, 0,
+      ],
+    }
+
+    const simpleLineEven = {
+      width: 4,
+      height: 4,
+      channels: 1,
+      format: ImageData.GREYSCALE,
+      data: [
+        0, 0, 0, 0,
+        0, 0, 0, 0,
+        1, 1, 1, 1,
+        0, 0, 0, 0,
+      ],
+    }
+
+    it('should rotate an odd-size image 45 degrees', () => {
+      const result = ImageData.rotate(simpleLineOdd, 45)
+      expect(result).to.eql({
+        width: 3,
+        height: 3,
+        channels: 1,
+        format: ImageData.GREYSCALE,
+        data: new Uint8Array([
+          0, 0, 1,
+          0, 1, 0,
+          1, 0, 0,
+        ]),
+      })
+    })
+
+    it('should rotate an odd-size image 90 degrees', () => {
+      const result = ImageData.rotate(simpleLineOdd, 90)
+      expect(result).to.eql({
+        width: 3,
+        height: 3,
+        channels: 1,
+        format: ImageData.GREYSCALE,
+        data: new Uint8Array([
+          0, 1, 0,
+          0, 1, 0,
+          0, 1, 0,
+        ]),
+      })
+    })
+
+    it('should rotate an odd-size image 135 degrees', () => {
+      const result = ImageData.rotate(simpleLineOdd, 135)
+      expect(result).to.eql({
+        width: 3,
+        height: 3,
+        channels: 1,
+        format: ImageData.GREYSCALE,
+        data: new Uint8Array([
+          1, 0, 0,
+          0, 1, 0,
+          0, 0, 1,
+        ]),
+      })
+    })
+
+    it('should rotate an even-size image 90 degrees', () => {
+      const result = ImageData.rotate(simpleLineEven, 90)
+      expect(result).to.eql({
+        width: 4,
+        height: 4,
+        channels: 1,
+        format: ImageData.GREYSCALE,
+        data: new Uint8Array([
+          0, 0, 1, 0,
+          0, 0, 1, 0,
+          0, 0, 1, 0,
+          0, 0, 1, 0,
+        ]),
+      })
+    })
+
+    it('should rotate an even-size image 270 degrees', () => {
+      const result = ImageData.rotate(simpleLineEven, 270)
+      expect(result).to.eql({
+        width: 4,
+        height: 4,
+        channels: 1,
+        format: ImageData.GREYSCALE,
+        data: new Uint8Array([
+          0, 1, 0, 0,
+          0, 1, 0, 0,
+          0, 1, 0, 0,
+          0, 1, 0, 0,
+        ]),
+      })
+    })
+  })
+
   describe('#toGreyscale', () => {
     it('should be no-op for greyscale images', () => {
       const imageData = {
