@@ -18,6 +18,7 @@ skater-greyscale.jpg
 skater-image-data.jpg
 skater-nearest-neighbor.jpg
 skater-poor.jpg
+skater-sharpness-v0.jpg
 skater-sobel.jpg
 skater.jpg
 yosemite-bilinear-drastic.jpg
