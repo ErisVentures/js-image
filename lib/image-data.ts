@@ -127,6 +127,7 @@ export class ImageData {
     angle: number,
     channels: number = 1,
   ): void {
+    // tslint:disable-next-line
     const fakeImageData = {width, height, channels} as ImageData
     const cosAngle = Math.cos((360 - angle) * Math.PI / 180)
     const sinAngle = Math.sin((360 - angle) * Math.PI / 180)

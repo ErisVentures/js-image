@@ -61,8 +61,13 @@ export abstract class Image {
     return this
   }
 
-  public edges(options: types.EdgeMethod = Image.SOBEL): Image {
-    this._output.edges = {method: options, radius: 1}
+  public edges(method: types.EdgeMethod|types.IEdgeOptions = Image.SOBEL): Image {
+    let options = method as types.IEdgeOptions
+    if (typeof method === 'string') {
+      options = {method, radius: 1}
+    }
+
+    this._output.edges = options
     return this
   }
 
