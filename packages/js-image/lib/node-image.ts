@@ -96,11 +96,13 @@ export class NodeImage extends Image {
       return Promise.resolve(image)
     }
 
+    const edgeOptions = this._output.edges
+
     const blurred = image.clone().blur(2)
     return SharpImage.toImageData(blurred).then(imageData => {
-      let edges = sobel(imageData)
-      if (this._output.edges!.method === Image.CANNY) {
-        edges = canny(edges, undefined)
+      let edges = sobel(imageData, edgeOptions)
+      if (edgeOptions.method === Image.CANNY) {
+        edges = canny(edges, edgeOptions)
       }
       return SharpImage.from(edges)
     })
