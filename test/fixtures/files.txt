@@ -9,6 +9,7 @@ skater-browser-edges-canny.jpg
 skater-browser-edges-sobel.jpg
 skater-canny-auto.jpg
 skater-canny-fixed.jpg
+skater-canny-radius-3.jpg
 skater-canny.jpg
 skater-edges-canny.jpg
 skater-edges-sobel.jpg
@@ -19,6 +20,7 @@ skater-image-data.jpg
 skater-nearest-neighbor.jpg
 skater-poor.jpg
 skater-sharpness-v0.jpg
+skater-sobel-radius-3.jpg
 skater-sobel.jpg
 skater.jpg
 yosemite-bilinear-drastic.jpg

@@ -62,7 +62,7 @@ export abstract class Image {
   }
 
   public edges(options: types.EdgeMethod = Image.SOBEL): Image {
-    this._output.edges = {method: options, kernelSize: 3}
+    this._output.edges = {method: options, radius: 1}
     return this
   }
 

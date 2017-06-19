@@ -13,9 +13,17 @@ describe('#transforms/canny', () => {
     })
   })
 
+  it('should find edges with radius', () => {
+    return imageDataPromise.then(imageData => {
+      const output = canny(imageData, {radius: 3})
+      const jpegOutput = ImageData.toBuffer(output)
+      return compareToFixture(jpegOutput, 'skater-canny-radius-3.jpg')
+    })
+  })
+
   it('should find edges with fixed threshold', () => {
     return imageDataPromise.then(imageData => {
-      const output = canny(imageData, {lowThreshold: 75, highThreshold: 150})
+      const output = canny(imageData, {lowThreshold: 15, highThreshold: 50})
       const jpegOutput = ImageData.toBuffer(output)
       return compareToFixture(jpegOutput, 'skater-canny-fixed.jpg', {
         strict: false,
