@@ -12,7 +12,9 @@ export interface IResizeOptions {
 
 export interface IEdgeOptions {
   method: EdgeMethod,
-  kernelSize?: number,
+  radius?: number,
+  highThreshold?: number,
+  lowThreshold?: number,
 }
 
 export interface IImageOutputOptions {
@@ -22,9 +24,14 @@ export interface IImageOutputOptions {
   edges?: IEdgeOptions,
 }
 
+export interface ISobelOptions {
+  radius?: number,
+}
+
 export interface ICannyOptions {
-  highThreshold: number,
-  lowThreshold: number,
+  radius?: number,
+  highThreshold?: number,
+  lowThreshold?: number,
 }
 
 export interface IBlurOptions {
@@ -34,8 +41,8 @@ export interface IBlurOptions {
 }
 
 export interface ISharpnessOptions {
-  radius?: number,
-  threshold?: number,
+  radius: number,
+  edgeMaskThreshold?: number,
 }
 
 export type ImageFormat = 'jpeg' | 'png'

@@ -7,7 +7,7 @@ function sumArray(arr: number[]): number {
   return arr.reduce((a, b) => a + b, 0)
 }
 
-function nonMaximalSuppresion(imageData: SobelImageData): SobelImageData {
+function nonMaximalSuppresion(imageData: SobelImageData, radius?: number): SobelImageData {
   const dstPixels = new Uint8Array(imageData.data.length)
 
   var dstIndex = 0
@@ -21,8 +21,14 @@ function nonMaximalSuppresion(imageData: SobelImageData): SobelImageData {
 
       var srcIndex = y * imageData.width + x
       var srcPixel = imageData.data[srcIndex]
-      var pixels = ImageData.getPixelsForAngle(imageData, x, y, imageData.angles[srcIndex])
-      var isMaxima = pixels[0].value! <= srcPixel && pixels[1].value! <= srcPixel
+      var pixels = ImageData.getPixelsForAngle(imageData, x, y, imageData.angles[srcIndex], radius)
+      var isMaxima = true
+      for (var i = 0; i < pixels.length; i++) {
+        if (pixels[i].value! > srcPixel) {
+          isMaxima = false
+          break
+        }
+      }
 
       if (isMaxima) {
         dstPixels[dstIndex] = srcPixel
@@ -54,12 +60,12 @@ function hysteresis(imageData: SobelImageData, options: ICannyOptions): SobelIma
       }
 
       const srcPixel = imageData.data[srcIndex]
-      if (srcPixel < options.lowThreshold) {
+      if (srcPixel < options.lowThreshold!) {
         dstPixels[srcIndex] = 0
         continue
       }
 
-      if (srcPixel >= options.highThreshold) {
+      if (srcPixel >= options.highThreshold!) {
         dstPixels[srcIndex] = 255
         continue
       }
@@ -71,7 +77,7 @@ function hysteresis(imageData: SobelImageData, options: ICannyOptions): SobelIma
         const location = queue.shift()!
         traversed.add(location.index!)
 
-        if (location.value! >= options.highThreshold) {
+        if (location.value! >= options.highThreshold!) {
           foundStrongEdge = true
           break
         }
@@ -82,7 +88,7 @@ function hysteresis(imageData: SobelImageData, options: ICannyOptions): SobelIma
           const index = pixel.index!
           if (traversed.has(index)) {
             return
-          } else if (pixel.value! >= options.lowThreshold) {
+          } else if (pixel.value! >= options.lowThreshold!) {
             queue.push(pixel)
           } else {
             dstPixels[index] = 0
@@ -150,16 +156,24 @@ export function canny(
   origImageData: ImageData|SobelImageData,
   options?: ICannyOptions,
 ): SobelImageData {
+  options = options || {}
+  options.radius = options.radius || 1
+
   var sobelData: SobelImageData = origImageData as SobelImageData
   if (!sobelData.angles) {
-    sobelData = sobel(origImageData)
+    sobelData = sobel(origImageData, options)
   }
 
-  if (!options) {
+  if (!options.lowThreshold && !options.highThreshold) {
     const threshold = autoThreshold(sobelData)
-    options = {lowThreshold: threshold / 2, highThreshold: threshold}
+    options.highThreshold = threshold
+    options.lowThreshold = threshold / 2
+  } else if (!options.lowThreshold) {
+    options.lowThreshold = options.highThreshold! / 2
+  } else if (!options.highThreshold) {
+    options.highThreshold = options.lowThreshold * 2
   }
 
-  const suppressed = nonMaximalSuppresion(sobelData)
+  const suppressed = nonMaximalSuppresion(sobelData, options.radius)
   return hysteresis(suppressed, options)
 }
