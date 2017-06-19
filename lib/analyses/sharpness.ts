@@ -49,7 +49,7 @@ function evaluateSharpnessAt(
   return Math.round(totalChannelDifference / imageData.channels)
 }
 
-export function sharpness(imageData: ImageData, edgeMask: SobelImageData, options: ISharpnessOptions): SharpnessData {
+export function sharpness(imageData: ImageData, edgeMask: SobelImageData, options?: ISharpnessOptions): SharpnessData {
   imageData = ImageData.toGreyscale(imageData)
 
   const edgeMaskScale = imageData.width / edgeMask.width
@@ -57,8 +57,8 @@ export function sharpness(imageData: ImageData, edgeMask: SobelImageData, option
     throw new Error('Edge mask must have the same ratio')
   }
 
-  const threshold = options.threshold || 20
-  const radius = options.radius || 1
+  const threshold = options && options.edgeMaskThreshold || 20
+  const radius = options && options.radius || 1
 
   const sharpnessArray = new Uint8Array(edgeMask.data.length)
   for (var maskY = 0; maskY < edgeMask.height; maskY++) {
