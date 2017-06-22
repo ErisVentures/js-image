@@ -44,8 +44,13 @@ export class BrowserImage extends Image {
     }
 
     const edgeOptions = this._output.edges
-    const blurRadius = (edgeOptions.radius || 1) * 2
-    let edges = sobel(gaussianBlur(image, {radius: blurRadius}), edgeOptions)
+
+    let edges = image
+    if (edgeOptions.blurSigma) {
+      edges = gaussianBlur(image, {sigma: edgeOptions.blurSigma})
+    }
+
+    edges = sobel(edges, edgeOptions)
     if (edgeOptions.method === Image.CANNY) {
       edges = canny(edges, edgeOptions)
     }
