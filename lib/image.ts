@@ -64,10 +64,13 @@ export abstract class Image {
   public edges(method: types.EdgeMethod|types.IEdgeOptions = Image.SOBEL): Image {
     let options = method as types.IEdgeOptions
     if (typeof method === 'string') {
-      options = {method, radius: 1}
+      options = {method}
     }
 
-    this._output.edges = options
+    this._output.edges = Object.assign({
+      radius: 1,
+      blurSigma: 2,
+    }, options)
     return this
   }
 

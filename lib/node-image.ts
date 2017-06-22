@@ -97,9 +97,12 @@ export class NodeImage extends Image {
     }
 
     const edgeOptions = this._output.edges
+    let blurredIfNecessary = image
+    if (edgeOptions.blurSigma) {
+      blurredIfNecessary = image.clone().blur(edgeOptions.blurSigma)
+    }
 
-    const blurred = image.clone().blur(2)
-    return SharpImage.toImageData(blurred).then(imageData => {
+    return SharpImage.toImageData(blurredIfNecessary).then(imageData => {
       let edges = sobel(imageData, edgeOptions)
       if (edgeOptions.method === Image.CANNY) {
         edges = canny(edges, edgeOptions)

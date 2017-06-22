@@ -54,6 +54,15 @@ describe('BrowserImage', () => {
       const modify = img => img.edges(BrowserImage.CANNY)
       return testSkater('skater-browser-edges-canny.jpg', modify)
     })
+
+    it('should support options', () => {
+      const modify = img => img.edges({
+        method: BrowserImage.CANNY,
+        radius: 3,
+        blurSigma: 0,
+      })
+      return testSkater('skater-canny-radius-3.jpg', modify)
+    })
   })
 
   describe('.toImageData', () => {
