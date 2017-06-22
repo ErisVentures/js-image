@@ -13,6 +13,7 @@ export interface IResizeOptions {
 export interface IEdgeOptions {
   method: EdgeMethod,
   radius?: number,
+  blurSigma?: number,
   highThreshold?: number,
   lowThreshold?: number,
 }
