@@ -92,6 +92,11 @@ div.preview__canvas {
   opacity: .5;
 }
 
+.metadata__key {
+  font-weight: bold;
+  font-style: italic;
+}
+
 #settings-form {
   padding: 0 15px;
 }

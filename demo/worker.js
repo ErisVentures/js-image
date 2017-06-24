@@ -24,12 +24,15 @@ function processImage(imageData, options) {
 
       return image
     })
-    .then(image => image.toImageData())
-    .then(ImageData.toRGBA)
-    .then(imageData => {
+    .then(image => Promise.all([
+      image.toMetadata(),
+      image.toImageData().then(ImageData.toRGBA),
+    ]))
+    .then(([metadata, imageData]) => {
       self.postMessage({
         type: 'processed',
         payload: {
+          metadata,
           imageData: {
             width: imageData.width,
             height: imageData.height,
