@@ -33,6 +33,7 @@
   "config": {
     "tslint": {
       "rules": {
+        "arrow-return-shorthand": false,
         "no-floating-promises": false,
         "no-void-expression": false,
         "restrict-plus-operands": false,
