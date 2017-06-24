@@ -7,6 +7,12 @@ const PNG = require('pngjs').PNG
 /* tslint:disable-next-line */
 const imageType = require('image-type')
 
+export interface BrowserImageData {
+  width: number,
+  height: number,
+  data: Uint8ClampedArray,
+}
+
 export class ImageData {
   public static GREYSCALE: ImageDataFormat = 'b'
   public static RGB: ImageDataFormat = 'rgb'
@@ -305,5 +311,14 @@ export class ImageData {
     }
 
     return Promise.resolve(buffer)
+  }
+
+  public static toBrowserImageData(imageData: ImageData): BrowserImageData {
+    if (typeof window !== 'object' || typeof (window as any).ImageData !== 'function') {
+      throw new Error('toBrowserImageData must be called in browser context')
+    }
+
+    const clamped = new Uint8ClampedArray(imageData.data)
+    return new (window as any).ImageData(clamped, imageData.width, imageData.height)
   }
 }

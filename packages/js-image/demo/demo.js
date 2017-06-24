@@ -37,8 +37,7 @@ function updateCanvasContext(rawImageData) {
   const context = canvas.getContext('2d')
   canvas.width = rawImageData.width
   canvas.height = rawImageData.height
-  const clamped = new Uint8ClampedArray(rawImageData.data)
-  const imageData = new window.ImageData(clamped, rawImageData.width, rawImageData.height)
+  const imageData = ImageData.toBrowserImageData(rawImageData)
   context.putImageData(imageData, 0, 0)
 }
 
