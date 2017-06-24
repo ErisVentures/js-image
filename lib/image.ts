@@ -74,6 +74,8 @@ export abstract class Image {
     return this
   }
 
+  public abstract toMetadata(): Promise<types.IMetadata>
+
   public abstract toImageData(): Promise<ImageData>
 
   public abstract toBuffer(): Promise<Buffer>

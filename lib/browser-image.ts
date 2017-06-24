@@ -1,4 +1,4 @@
-import {BufferLike} from './types'
+import {BufferLike, IMetadata} from './types'
 import {Image} from './image'
 import {ImageData} from './image-data'
 import {gaussianBlur} from './transforms/blur'
@@ -63,6 +63,16 @@ export class BrowserImage extends Image {
       .then(image => this._applyGreyscale(image))
       .then(image => this._applyResize(image))
       .then(image => this._applyEdges(image))
+  }
+
+  public toMetadata(): Promise<IMetadata> {
+    return this._image.then(imageData => {
+      return {
+        width: imageData.width,
+        height: imageData.height,
+        aspectRatio: imageData.width / imageData.height,
+      }
+    })
   }
 
   public toImageData(): Promise<ImageData> {

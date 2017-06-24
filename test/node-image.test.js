@@ -5,6 +5,7 @@ const NodeImage = require('../lib/node-image').NodeImage
 const {expect, fixture, compareToFixture, testImage} = require('./utils')
 
 const skater = fixture('skater.jpg')
+const yosemite = fixture('yosemite-portrait.jpg')
 const testSkater = (...args) => testImage(NodeImage, 'skater.jpg', ...args)
 const testYosemite = (...args) => testImage(NodeImage, 'yosemite-portrait.jpg', ...args)
 const testOpera = (...args) => testImage(NodeImage, 'opera-landscape.jpg', ...args)
@@ -85,6 +86,28 @@ describe('NodeImage', () => {
     it('should find canny edges', () => {
       const modify = img => img.edges(NodeImage.CANNY)
       return testSkater('skater-edges-canny.jpg', modify, {strict: false})
+    })
+  })
+
+  describe('.toMetadata', () => {
+    it('should compute the metadata of an image', () => {
+      return NodeImage.from(skater).toMetadata().then(metadata => {
+        expect(metadata).to.eql({
+          width: 256,
+          height: 256,
+          aspectRatio: 1,
+        })
+      })
+    })
+
+    it('should compute the metadata of a portrait image', () => {
+      return NodeImage.from(yosemite).toMetadata().then(metadata => {
+        expect(metadata).to.eql({
+          width: 1080,
+          height: 1350,
+          aspectRatio: 0.8,
+        })
+      })
     })
   })
 
