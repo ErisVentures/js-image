@@ -1,6 +1,6 @@
 import * as sharp from 'sharp'
 
-import {BufferLike} from './types'
+import {BufferLike, IMetadata} from './types'
 import {Image} from './image'
 import {ImageData} from './image-data'
 import {sobel} from './transforms/sobel'
@@ -25,6 +25,16 @@ class SharpImage {
     } else {
       throw new TypeError('Must be Buffer or image data')
     }
+  }
+
+  public static toMetadata(image: sharp.SharpInstance): Promise<IMetadata> {
+    return image.metadata().then(metadata => {
+      return {
+        width: metadata.width,
+        height: metadata.height,
+        aspectRatio: metadata.width! / metadata.height!,
+      }
+    })
   }
 
   public static toImageData(image: sharp.SharpInstance): Promise<ImageData> {
@@ -117,6 +127,10 @@ export class NodeImage extends Image {
       .then(image => this._applyEdges(image))
       .then(image => this._applyGreyscale(image))
       .then(image => this._applyFormat(image))
+  }
+
+  public toMetadata(): Promise<IMetadata> {
+    return SharpImage.toMetadata(this._image)
   }
 
   public toImageData(): Promise<ImageData> {

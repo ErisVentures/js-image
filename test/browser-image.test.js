@@ -5,6 +5,7 @@ const BrowserImage = require('../lib/browser-image').BrowserImage
 const {expect, fixture, testImage} = require('./utils')
 
 const skater = fixture('skater.jpg')
+const yosemite = fixture('yosemite-portrait.jpg')
 const testSkater = (...args) => testImage(BrowserImage, 'skater.jpg', ...args)
 const testYosemite = (...args) => testImage(BrowserImage, 'yosemite-portrait.jpg', ...args)
 describe('BrowserImage', () => {
@@ -62,6 +63,28 @@ describe('BrowserImage', () => {
         blurSigma: 0,
       })
       return testSkater('skater-canny-radius-3.jpg', modify)
+    })
+  })
+
+  describe('.toMetadata', () => {
+    it('should compute the metadata of an image', () => {
+      return BrowserImage.from(skater).toMetadata().then(metadata => {
+        expect(metadata).to.eql({
+          width: 256,
+          height: 256,
+          aspectRatio: 1,
+        })
+      })
+    })
+
+    it('should compute the metadata of a portrait image', () => {
+      return BrowserImage.from(yosemite).toMetadata().then(metadata => {
+        expect(metadata).to.eql({
+          width: 1080,
+          height: 1350,
+          aspectRatio: 0.8,
+        })
+      })
     })
   })
 

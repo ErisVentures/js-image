@@ -46,6 +46,12 @@ export interface ISharpnessOptions {
   edgeMaskThreshold?: number,
 }
 
+export interface IMetadata {
+  width: number,
+  height: number,
+  aspectRatio: number,
+}
+
 export type ImageFormat = 'jpeg' | 'png'
 export type ImageResizeFit = 'auto' | 'contain' | 'cover' | 'exact' | 'crop'
 export type ImageResizeMethod = 'nearest-neighbor' | 'bilinear' | 'bicubic'
