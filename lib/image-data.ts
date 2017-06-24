@@ -314,6 +314,7 @@ export class ImageData {
   }
 
   public static toBrowserImageData(imageData: ImageData): BrowserImageData {
+    // tslint:disable-next-line
     if (typeof window !== 'object' || typeof (window as any).ImageData !== 'function') {
       throw new Error('toBrowserImageData must be called in browser context')
     }

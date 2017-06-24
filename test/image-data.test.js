@@ -298,4 +298,12 @@ describe('ImageData', () => {
       })
     })
   })
+
+  describe('#toBrowserImageData', () => {
+    it('should throw in node', () => {
+      expect(() => {
+        ImageData.toBrowserImageData({data: []})
+      }).to.throw(/must be called in browser/)
+    })
+  })
 })
