@@ -6,6 +6,7 @@ function processImage(imageData, options) {
   Promise.resolve()
     .then(() => Image.from(imageData))
     .then(image => {
+      console.log('Processing with options', options)
       if (options['resize[method]']) {
         image = image.resize({
           width: Number(options['resize[width]']),
@@ -14,7 +15,11 @@ function processImage(imageData, options) {
       }
 
       if (options['edges[method]']) {
-        image = image.edges(options['edges[method]'])
+        image = image.edges({
+          method: options['edges[method]'],
+          radius: Number(options['edges[radius]']),
+          blurSigma: Number(options['edges[blurSigma]']),
+        })
       }
 
       return image
