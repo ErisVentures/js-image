@@ -6,6 +6,13 @@ const settings = {}
 const worker = new Worker('worker.js')
 const settingInputs = [...document.querySelectorAll('input, select')]
 
+function createElement(parent, tagName, classNames = []) {
+  const element = document.createElement(tagName)
+  parent.appendChild(element)
+  classNames.forEach(name => element.classList.add(name))
+  return element
+}
+
 function setLoading(isLoading) {
   document.querySelector('.editor').classList.toggle('editor--loading', !!isLoading)
 }
@@ -28,6 +35,20 @@ function setNotifier(text, isError, persist) {
 
 function setFormsDisabledState(areDisabled) {
   settingInputs.forEach(input => input.disabled = areDisabled)
+}
+
+function renderImageMetadata(metadata) {
+  const metadataEl = document.querySelector('.image-info')
+  while (metadataEl.firstChild) {
+    metadataEl.removeChild(metadataEl.firstChild)
+  }
+
+  for (const property in metadata) {
+    const propertyEl = createElement(metadataEl, 'div', ['col-sm-6', 'metadata__key'])
+    propertyEl.textContent = property
+    const valueEl = createElement(metadataEl, 'div', ['col-sm-6', 'metadata__value'])
+    valueEl.textContent = String(metadata[property])
+  }
 }
 
 function updateCanvasContext(rawImageData) {
@@ -97,6 +118,7 @@ function listenForSettingsChange() {
 function listenForWorkerMessages() {
   worker.addEventListener('message', message => {
     if (message.data.type === 'processed') {
+      renderImageMetadata(message.data.payload.metadata)
       updateCanvasContext(message.data.payload.imageData)
       const time = Math.ceil(performance.now() - processStartTs)
       setNotifier(`Processing image took ${time} ms`)
