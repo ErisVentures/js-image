@@ -15,7 +15,7 @@ export abstract class Image {
   public static CROP: types.ImageResizeFit = 'crop'
 
   // Image resize methods
-  public static NEAREST_NEIGHBOR: types.ImageResizeMethod = 'nearest-neighbor'
+  public static NEAREST_NEIGHBOR: types.ImageResizeMethod = 'nearestNeighbor'
   public static BILINEAR: types.ImageResizeMethod = 'bilinear'
 
   // Edge detection methods

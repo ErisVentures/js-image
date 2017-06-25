@@ -54,7 +54,7 @@ export interface IMetadata {
 
 export type ImageFormat = 'jpeg' | 'png'
 export type ImageResizeFit = 'auto' | 'contain' | 'cover' | 'exact' | 'crop'
-export type ImageResizeMethod = 'nearest-neighbor' | 'bilinear' | 'bicubic'
+export type ImageResizeMethod = 'nearestNeighbor' | 'bilinear' | 'bicubic'
 export type EdgeMethod = 'sobel' | 'canny'
 
 export type ImageDataFormat = 'rgb' | 'rgba' | 'b'

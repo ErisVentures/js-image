@@ -9,6 +9,7 @@ function processImage(imageData, options) {
       console.log('Processing with options', options)
       if (options['resize[method]']) {
         image = image.resize({
+          method: options['resize[method]'],
           width: Number(options['resize[width]']),
           height: Number(options['resize[height]']),
         })
