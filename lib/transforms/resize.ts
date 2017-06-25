@@ -9,18 +9,15 @@ export function nearestNeighbor(imageData: ImageData, options: IResizeOptions): 
 
   const targetWidth = options.width!
   const targetHeight = options.height!
-  const scaleFactor = imageData.width / targetWidth
-  const scaledHeight = Math.round(imageData.height / scaleFactor)
-  if (targetHeight !== scaledHeight) {
-    throw new Error('Can only resize exactly')
-  }
+  const widthScaleFactor = imageData.width / targetWidth
+  const heightScaleFactor = imageData.height / targetHeight
 
   const outPixels = new Uint8Array(targetWidth * targetHeight * imageData.channels)
 
   for (var i = 0; i < targetWidth; i++) {
     for (var j = 0; j < targetHeight; j++) {
-      const origX = Math.floor(i * scaleFactor)
-      const origY = Math.floor(j * scaleFactor)
+      const origX = Math.floor(i * widthScaleFactor)
+      const origY = Math.floor(j * heightScaleFactor)
 
       const origPos = (origY * imageData.width + origX) * imageData.channels
       var outPos = (j * targetWidth + i) * imageData.channels
@@ -45,25 +42,24 @@ export function bilinear(imageData: ImageData, options: IResizeOptions): ImageDa
     throw new Error('Missing width or height')
   }
 
-  let targetWidth = options.width!
-  let targetHeight = options.height!
-  let scaleFactor = imageData.width / targetWidth
-  const scaledHeight = Math.round(imageData.height / scaleFactor)
-  if (targetHeight !== scaledHeight) {
-    throw new Error('Can only resize exactly')
-  }
+  var targetWidth = options.width!
+  var targetHeight = options.height!
+  var widthScaleFactor = imageData.width / targetWidth
+  var heightScaleFactor = imageData.height / targetHeight
 
-  let boxResizeData: ImageData|null = null
-  let boxResizeOptions: IResizeOptions|null = null
-  if (scaleFactor >= 2) {
-    const boxScaleFactor = Math.floor(scaleFactor)
-    if (scaleFactor === boxScaleFactor) {
+  var boxResizeData: ImageData|null = null
+  var boxResizeOptions: IResizeOptions|null = null
+  if (widthScaleFactor >= 2 || heightScaleFactor >= 2) {
+    const boxWidthScaleFactor = Math.max(Math.floor(widthScaleFactor), 1)
+    const boxHeightScaleFactor = Math.max(Math.floor(heightScaleFactor), 1)
+    if (widthScaleFactor === boxWidthScaleFactor && heightScaleFactor === boxHeightScaleFactor) {
       return box(imageData, options)
     }
 
-    targetWidth = targetWidth * boxScaleFactor
-    targetHeight = targetHeight * boxScaleFactor
-    scaleFactor = imageData.width / targetWidth
+    targetWidth = targetWidth * boxWidthScaleFactor
+    targetHeight = targetHeight * boxHeightScaleFactor
+    widthScaleFactor = imageData.width / targetWidth
+    heightScaleFactor = imageData.height / targetHeight
 
     boxResizeOptions = options
     boxResizeData = {
@@ -75,33 +71,33 @@ export function bilinear(imageData: ImageData, options: IResizeOptions): ImageDa
     }
   }
 
-  let outPixels = new Uint8Array(targetWidth * targetHeight * imageData.channels)
+  var outPixels = new Uint8Array(targetWidth * targetHeight * imageData.channels)
 
   for (var i = 0; i < targetWidth; i++) {
     for (var j = 0; j < targetHeight; j++) {
-      const srcX = i * scaleFactor
-      const srcY = j * scaleFactor
+      var srcX = i * widthScaleFactor
+      var srcY = j * heightScaleFactor
 
       var outPos = (j * targetWidth + i) * imageData.channels
 
-      const srcXOffset = Math.floor(srcX)
-      const srcYOffset = Math.floor(srcY) * imageData.width
+      var srcXOffset = Math.floor(srcX)
+      var srcYOffset = Math.floor(srcY) * imageData.width
 
       var srcPosA = (srcYOffset + srcXOffset) * imageData.channels
       var srcPosB = srcPosA + imageData.channels
       var srcPosC = (srcYOffset + imageData.width + srcXOffset) * imageData.channels
       var srcPosD = srcPosC + imageData.channels
 
-      const xDistance = Math.abs(Math.floor(srcX) - srcX)
-      const yDistance = Math.abs(Math.floor(srcY) - srcY)
-      const weightPosA = Math.sqrt(xDistance * xDistance + yDistance * yDistance)
-      const weightPosB = Math.sqrt((1 - xDistance) * (1 - xDistance) + yDistance * yDistance)
-      const weightPosC = Math.sqrt(xDistance * xDistance + (1 - yDistance) * (1 - yDistance))
-      const weightPosD = Math.sqrt(Math.pow(1 - xDistance, 2) + Math.pow(1 - yDistance, 2))
-      const totalWeight = weightPosA + weightPosB + weightPosC + weightPosD
+      var xDistance = Math.abs(Math.floor(srcX) - srcX)
+      var yDistance = Math.abs(Math.floor(srcY) - srcY)
+      var weightPosA = Math.sqrt(xDistance * xDistance + yDistance * yDistance)
+      var weightPosB = Math.sqrt((1 - xDistance) * (1 - xDistance) + yDistance * yDistance)
+      var weightPosC = Math.sqrt(xDistance * xDistance + (1 - yDistance) * (1 - yDistance))
+      var weightPosD = Math.sqrt(Math.pow(1 - xDistance, 2) + Math.pow(1 - yDistance, 2))
+      var totalWeight = weightPosA + weightPosB + weightPosC + weightPosD
 
       for (var channel = 0; channel < imageData.channels; channel++) {
-        const value = imageData.data[srcPosA + channel] * weightPosA / totalWeight +
+        var value = imageData.data[srcPosA + channel] * weightPosA / totalWeight +
           imageData.data[srcPosB + channel] * weightPosB / totalWeight +
           imageData.data[srcPosC + channel] * weightPosC / totalWeight +
           imageData.data[srcPosD + channel] * weightPosD / totalWeight
@@ -133,33 +129,34 @@ export function box(imageData: ImageData, options: IResizeOptions): ImageData {
 
   const targetWidth = options.width!
   const targetHeight = options.height!
-  const scaleFactor = imageData.width / targetWidth
-  if (scaleFactor <= 1) {
+  const widthScaleFactor = imageData.width / targetWidth
+  const heightScaleFactor = imageData.height / targetHeight
+  if (widthScaleFactor < 1 || heightScaleFactor < 1) {
     throw new Error('Box resize can only shrink images')
-  } else if (targetHeight !== imageData.height / scaleFactor ||
-      Math.floor(scaleFactor) !== scaleFactor) {
-    throw new Error('Can only resize exactly')
+  } else if (Math.floor(widthScaleFactor) !== widthScaleFactor ||
+      Math.floor(heightScaleFactor) !== heightScaleFactor) {
+    throw new Error('Can only box resize in integer increments')
   }
 
   const outPixels = new Uint8Array(targetWidth * targetHeight * imageData.channels)
 
-  for (let i = 0; i < targetWidth; i++) {
-    for (let j = 0; j < targetHeight; j++) {
-      const origX = Math.floor(i * scaleFactor)
-      const origY = Math.floor(j * scaleFactor)
+  for (var i = 0; i < targetWidth; i++) {
+    for (var j = 0; j < targetHeight; j++) {
+      var origX = Math.floor(i * widthScaleFactor)
+      var origY = Math.floor(j * heightScaleFactor)
 
-      const outPos = (j * targetWidth + i) * imageData.channels
+      var outPos = (j * targetWidth + i) * imageData.channels
 
-      for (let channel = 0; channel < imageData.channels; channel++) {
-        let value = 0
-        for (let dx = 0; dx < scaleFactor; dx++) {
-          for (let dy = 0; dy < scaleFactor; dy++) {
-            const origPos = ((origY + dy) * imageData.width + (origX + dx)) * imageData.channels
+      for (var channel = 0; channel < imageData.channels; channel++) {
+        var value = 0
+        for (var dx = 0; dx < widthScaleFactor; dx++) {
+          for (var dy = 0; dy < heightScaleFactor; dy++) {
+            var origPos = ((origY + dy) * imageData.width + (origX + dx)) * imageData.channels
             value += imageData.data[origPos + channel]
           }
         }
 
-        outPixels[outPos + channel] = value / (scaleFactor * scaleFactor)
+        outPixels[outPos + channel] = value / (widthScaleFactor * heightScaleFactor)
       }
 
     }
