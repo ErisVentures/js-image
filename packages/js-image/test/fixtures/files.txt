@@ -23,6 +23,8 @@ skater-sharpness-v0.jpg
 skater-sobel-radius-3.jpg
 skater-sobel.jpg
 skater.jpg
+sydney-in-focus.jpg
+sydney-out-focus.jpg
 yosemite-bilinear-drastic.jpg
 yosemite-bilinear-minor.jpg
 yosemite-bilinear.jpg
