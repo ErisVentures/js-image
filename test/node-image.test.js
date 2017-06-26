@@ -89,6 +89,20 @@ describe('NodeImage', () => {
     })
   })
 
+  describe('.toAnalysis', () => {
+    it('should hash an image', () => {
+      return NodeImage.from(skater)
+        .analyze({
+          hash: {method: NodeImage.PHASH},
+        })
+        .toAnalysis()
+        .then(analysis => {
+          const result = Buffer.from(analysis.hash).toString('hex')
+          expect(result).to.equal('ea26561bb48918d5')
+        })
+    })
+  })
+
   describe('.toMetadata', () => {
     it('should compute the metadata of an image', () => {
       return NodeImage.from(skater).toMetadata().then(metadata => {

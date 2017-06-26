@@ -1,6 +1,7 @@
 import * as types from './types'
 import {ImageData} from './image-data'
 import {writeFileAsync} from './fs-utils'
+import {phash} from './analyses/hash'
 
 export abstract class Image {
   // Image formats
@@ -22,7 +23,11 @@ export abstract class Image {
   public static SOBEL: types.EdgeMethod = 'sobel'
   public static CANNY: types.EdgeMethod = 'canny'
 
+  // Hash methods
+  public static PHASH: types.HashMethod = 'phash'
+
   protected _output: types.IImageOutputOptions
+  protected _analyze?: types.IAnalysisOptions
 
   public constructor() {
     this._output = {
@@ -72,6 +77,31 @@ export abstract class Image {
       blurSigma: 2,
     }, options)
     return this
+  }
+
+  public analyze(options: types.IAnalysisOptions): Image {
+    this._analyze = options
+    return this
+  }
+
+  public toAnalysis(): Promise<types.IAnalysis> {
+    if (!this._analyze) {
+      return Promise.resolve({})
+    }
+
+    const {hash} = this._analyze
+    return this.toImageData().then(imageData => {
+      const analysis: types.IAnalysis = {}
+      if (hash) {
+        switch (hash.method) {
+          case Image.PHASH:
+          default:
+            analysis.hash = phash(imageData, hash.hashSize)
+        }
+      }
+
+      return analysis
+    })
   }
 
   public abstract toMetadata(): Promise<types.IMetadata>
