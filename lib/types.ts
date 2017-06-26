@@ -45,20 +45,29 @@ export interface IBlurOptions {
   approximate?: boolean,
 }
 
-export interface ISharpnessOptions {
-  radius: number,
-  edgeMaskThreshold?: number,
-}
-
 export interface IHashOptions {
   method: HashMethod,
   hashSize?: number,
+}
+
+export interface ISharpnessOptions {
+  threshold?: number,
 }
 
 export interface IMetadata {
   width: number,
   height: number,
   aspectRatio: number,
+}
+
+export interface ISharpness {
+  percentEdges: number,
+  lowerQuartile: number,
+  median: number,
+  upperQuartile: number,
+  lowerVentileAverage: number,
+  average: number,
+  upperVentileAverage: number,
 }
 
 export interface IAnalysis {
