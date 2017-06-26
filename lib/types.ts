@@ -25,6 +25,10 @@ export interface IImageOutputOptions {
   edges?: IEdgeOptions,
 }
 
+export interface IAnalysisOptions {
+  hash?: IHashOptions,
+}
+
 export interface ISobelOptions {
   radius?: number,
 }
@@ -46,16 +50,26 @@ export interface ISharpnessOptions {
   edgeMaskThreshold?: number,
 }
 
+export interface IHashOptions {
+  method: HashMethod,
+  hashSize?: number,
+}
+
 export interface IMetadata {
   width: number,
   height: number,
   aspectRatio: number,
 }
 
+export interface IAnalysis {
+  hash?: BufferLike
+}
+
 export type ImageFormat = 'jpeg' | 'png'
 export type ImageResizeFit = 'auto' | 'contain' | 'cover' | 'exact' | 'crop'
 export type ImageResizeMethod = 'nearestNeighbor' | 'bilinear' | 'bicubic'
 export type EdgeMethod = 'sobel' | 'canny'
+export type HashMethod = 'phash'
 
 export type ImageDataFormat = 'rgb' | 'rgba' | 'b'
 export type BufferLike = Buffer|Uint8Array|number[]

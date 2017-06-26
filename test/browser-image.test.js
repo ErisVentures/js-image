@@ -66,6 +66,20 @@ describe('BrowserImage', () => {
     })
   })
 
+  describe('.toAnalysis', () => {
+    it('should hash an image', () => {
+      return BrowserImage.from(skater)
+        .analyze({
+          hash: {method: BrowserImage.PHASH},
+        })
+        .toAnalysis()
+        .then(analysis => {
+          const result = Buffer.from(analysis.hash).toString('hex')
+          expect(result).to.equal('ea26561bb48918d5')
+        })
+    })
+  })
+
   describe('.toMetadata', () => {
     it('should compute the metadata of an image', () => {
       return BrowserImage.from(skater).toMetadata().then(metadata => {
