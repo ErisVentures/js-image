@@ -215,7 +215,7 @@ describe('ImageData', () => {
     })
 
     it('should cycle through back to RGBA', () => {
-      return fixtureDecode('skater.jpg').then(skaterData => {
+      return fixtureDecode('source-skater.jpg').then(skaterData => {
         const imageData = ImageData.normalize(skaterData)
         const greyscale = ImageData.toGreyscale(imageData)
         const rgba = ImageData.toRGBA(greyscale)
@@ -251,7 +251,7 @@ describe('ImageData', () => {
 
   describe('#toRGBA', () => {
     it('should be no-op on rgba images', () => {
-      return fixtureDecode('skater.jpg').then(skaterData => {
+      return fixtureDecode('source-skater.jpg').then(skaterData => {
         const imageData = ImageData.normalize(skaterData)
         expect(ImageData.toRGBA(imageData)).to.equal(imageData)
       })
@@ -288,7 +288,7 @@ describe('ImageData', () => {
 
   describe('#removeAlphaChannel', () => {
     it('should convert RGBA to RGB', () => {
-      return fixtureDecode('skater.jpg').then(skaterData => {
+      return fixtureDecode('source-skater.jpg').then(skaterData => {
         const imageData = ImageData.normalize(skaterData)
         const result = ImageData.removeAlphaChannel(imageData)
 

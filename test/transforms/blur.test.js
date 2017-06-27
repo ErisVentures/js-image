@@ -3,7 +3,7 @@ const ImageData = require('../../lib/image-data').ImageData
 const {fixtureDecode, compareToFixture} = require('../utils')
 
 describe('#transforms/blur', () => {
-  const skaterPromise = fixtureDecode('skater.jpg').then(ImageData.normalize)
+  const skaterPromise = fixtureDecode('source-skater.jpg').then(ImageData.normalize)
 
   it('should blur using box blur', () => {
     return skaterPromise.then(skater => {
