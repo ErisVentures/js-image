@@ -4,10 +4,10 @@ const ImageData = require('../lib/image-data').ImageData
 const BrowserImage = require('../lib/browser-image').BrowserImage
 const {expect, fixture, testImage} = require('./utils')
 
-const skater = fixture('skater.jpg')
-const yosemite = fixture('yosemite-portrait.jpg')
-const testSkater = (...args) => testImage(BrowserImage, 'skater.jpg', ...args)
-const testYosemite = (...args) => testImage(BrowserImage, 'yosemite-portrait.jpg', ...args)
+const skater = fixture('source-skater.jpg')
+const yosemite = fixture('source-yosemite.jpg')
+const testSkater = (...args) => testImage(BrowserImage, 'source-skater.jpg', ...args)
+const testYosemite = (...args) => testImage(BrowserImage, 'source-yosemite.jpg', ...args)
 describe('BrowserImage', () => {
   describe('._applyFormat', () => {
     it('should support jpeg', () => {

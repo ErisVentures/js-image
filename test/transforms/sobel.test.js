@@ -3,7 +3,7 @@ const ImageData = require('../../lib/image-data').ImageData
 const {expect, fixtureDecode, compareToFixture} = require('../utils')
 
 describe('#transforms/sobel', () => {
-  const skaterPromise = fixtureDecode('skater.jpg').then(ImageData.normalize)
+  const skaterPromise = fixtureDecode('source-skater.jpg').then(ImageData.normalize)
 
   describe('#generateWeightMatrix', () => {
     it('should generate a 5x5 y-matrix', () => {
