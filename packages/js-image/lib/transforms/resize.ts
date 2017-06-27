@@ -88,12 +88,12 @@ export function bilinear(imageData: ImageData, options: IResizeOptions): ImageDa
       var srcPosC = (srcYOffset + imageData.width + srcXOffset) * imageData.channels
       var srcPosD = srcPosC + imageData.channels
 
-      var xDistance = Math.abs(Math.floor(srcX) - srcX)
-      var yDistance = Math.abs(Math.floor(srcY) - srcY)
-      var weightPosA = Math.sqrt(xDistance * xDistance + yDistance * yDistance)
-      var weightPosB = Math.sqrt((1 - xDistance) * (1 - xDistance) + yDistance * yDistance)
-      var weightPosC = Math.sqrt(xDistance * xDistance + (1 - yDistance) * (1 - yDistance))
-      var weightPosD = Math.sqrt(Math.pow(1 - xDistance, 2) + Math.pow(1 - yDistance, 2))
+      var xWeight = Math.max(1 - Math.abs(Math.floor(srcX) - srcX), 0)
+      var yWeight = Math.max(1 - Math.abs(Math.floor(srcY) - srcY), 0)
+      var weightPosA = xWeight * yWeight
+      var weightPosB = (1 - xWeight) * yWeight
+      var weightPosC = xWeight * (1 - yWeight)
+      var weightPosD = (1 - xWeight) * (1 - yWeight)
       var totalWeight = weightPosA + weightPosB + weightPosC + weightPosD
 
       for (var channel = 0; channel < imageData.channels; channel++) {

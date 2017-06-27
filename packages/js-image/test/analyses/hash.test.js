@@ -113,7 +113,7 @@ describe('#analyses/hash', () => {
         const hashB = hash.phash(imageB)
 
         const resultA = Buffer.from(hashA).toString('hex')
-        expect(resultA).to.equal('2d12eb4f0e33b37e')
+        expect(resultA).to.equal('2d12eb4f0e33b17e')
 
         const resultB = Buffer.from(hashB).toString('hex')
         expect(resultB).to.equal('ad12234f0e53b37f')
