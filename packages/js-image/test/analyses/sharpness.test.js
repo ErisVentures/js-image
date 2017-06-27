@@ -5,7 +5,7 @@ const ImageData = require('../../lib/image-data').ImageData
 const {expect, fixtureDecode, compareToFixture, buildLinesImageData} = require('../utils')
 
 describe('#analyses/sharpness', () => {
-  const skaterPromise = fixtureDecode('skater.jpg')
+  const skaterPromise = fixtureDecode('source-skater.jpg')
 
   it('should compute the sharpness of a sharp horizontal line', () => {
     const originalData = buildLinesImageData(21, 21, [9, 10, 11])

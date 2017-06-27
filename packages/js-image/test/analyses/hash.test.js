@@ -2,9 +2,9 @@ const hash = require('../../lib/analyses/hash')
 const {expect, fixtureDecode} = require('../utils')
 
 describe('#analyses/hash', () => {
-  const skaterPromise = fixtureDecode('skater.jpg')
-  const sydneyPromiseA = fixtureDecode('sydney-in-focus.jpg')
-  const sydneyPromiseB = fixtureDecode('sydney-out-focus.jpg')
+  const skaterPromise = fixtureDecode('source-skater.jpg')
+  const sydneyPromiseA = fixtureDecode('source-sydney-in-focus.jpg')
+  const sydneyPromiseB = fixtureDecode('source-sydney-out-focus.jpg')
 
   describe('#computeDCT', () => {
     it('should compute the DCT of a gradient', () => {

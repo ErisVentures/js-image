@@ -3,7 +3,7 @@ const sinon = require('sinon')
 const Image = require('../lib/image').Image
 const {expect, fixture, fixturePath} = require('./utils')
 
-const skater = fixture('skater.jpg')
+const skater = fixture('source-skater.jpg')
 describe('Image', () => {
   let sandbox
 

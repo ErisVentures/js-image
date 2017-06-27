@@ -4,11 +4,11 @@ const ImageData = require('../lib/image-data').ImageData
 const NodeImage = require('../lib/node-image').NodeImage
 const {expect, fixture, compareToFixture, testImage} = require('./utils')
 
-const skater = fixture('skater.jpg')
-const yosemite = fixture('yosemite-portrait.jpg')
-const testSkater = (...args) => testImage(NodeImage, 'skater.jpg', ...args)
-const testYosemite = (...args) => testImage(NodeImage, 'yosemite-portrait.jpg', ...args)
-const testOpera = (...args) => testImage(NodeImage, 'opera-landscape.jpg', ...args)
+const skater = fixture('source-skater.jpg')
+const yosemite = fixture('source-yosemite.jpg')
+const testSkater = (...args) => testImage(NodeImage, 'source-skater.jpg', ...args)
+const testYosemite = (...args) => testImage(NodeImage, 'source-yosemite.jpg', ...args)
+const testOpera = (...args) => testImage(NodeImage, 'source-sydney.jpg', ...args)
 describe('NodeImage', () => {
   describe('._applyFormat', () => {
     it('should support jpeg', () => {

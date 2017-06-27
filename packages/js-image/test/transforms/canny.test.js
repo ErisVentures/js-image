@@ -3,7 +3,7 @@ const ImageData = require('../../lib/image-data').ImageData
 const {fixtureDecode, compareToFixture} = require('../utils')
 
 describe('#transforms/canny', () => {
-  const imageDataPromise = fixtureDecode('skater.jpg').then(ImageData.normalize)
+  const imageDataPromise = fixtureDecode('source-skater.jpg').then(ImageData.normalize)
 
   it('should find edges', () => {
     return imageDataPromise.then(imageData => {

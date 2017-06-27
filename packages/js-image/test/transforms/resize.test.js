@@ -4,7 +4,7 @@ const ImageData = require('../../lib/image-data').ImageData
 const {expect, fixtureDecode, compareToFixture} = require('../utils')
 
 describe('#transforms/resize', () => {
-  const yosemitePromise = fixtureDecode('yosemite-portrait.jpg').then(ImageData.normalize)
+  const yosemitePromise = fixtureDecode('source-yosemite.jpg').then(ImageData.normalize)
 
   describe('#nearestNeighbor', () => {
     it('should resize mock data', () => {

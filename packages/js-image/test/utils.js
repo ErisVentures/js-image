@@ -49,10 +49,10 @@ function compareToFixture(bufferOrImageData, path, options) {
     .then(([buffer, imageData]) => {
       fs.writeFileSync(fixturePath(`actual-${path}`), buffer)
       if (process.env.UPDATE_EXPECTATIONS) {
-        fs.writeFileSync(fixturePath(path), buffer)
+        fs.writeFileSync(fixturePath(`expected-${path}`), buffer)
       }
 
-      return fixtureDecode(path).then(expectedImageData => {
+      return fixtureDecode(`expected-${path}`).then(expectedImageData => {
         const diff = getImageDiff(imageData, expectedImageData, options.increment)
         if (options.strict) {
           expect(diff).to.equal(0)
