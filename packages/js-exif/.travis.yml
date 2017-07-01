@@ -4,12 +4,12 @@ cache: yarn
 notifications:
   email: false
 node_js:
+  - v8
   - v7
   - v6
 before_install:
   - npm install -g coveralls
 script:
-
   - npm run rebuild
   - npm run test:lint
   - npm run test:coverage
