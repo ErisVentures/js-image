@@ -78,6 +78,23 @@ describe('BrowserImage', () => {
           expect(result).to.equal('ea26561bb48918d5')
         })
     })
+
+    it('should compute sharpness', () => {
+      return BrowserImage.from(skater)
+        .analyze({
+          sharpness: {},
+        })
+        .toAnalysis()
+        .then(analysis => {
+          expect(analysis).to.have.property('sharpness')
+
+          const sharpness = analysis.sharpness
+          expect(sharpness.percentEdges).to.be.within(0.27, 0.28)
+          expect(sharpness.median).to.be.within(74, 76)
+          expect(sharpness.average).to.be.within(90, 95)
+          expect(sharpness.upperVentileAverage).to.be.within(228, 232)
+        })
+    })
   })
 
   describe('.toMetadata', () => {
