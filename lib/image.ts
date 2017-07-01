@@ -1,7 +1,9 @@
 import * as types from './types'
 import {ImageData} from './image-data'
 import {writeFileAsync} from './fs-utils'
+import {sobel} from './transforms/sobel'
 import {phash} from './analyses/hash'
+import {sharpness as computeSharpness} from './analyses/sharpness'
 
 export abstract class Image {
   // Image formats
@@ -89,7 +91,7 @@ export abstract class Image {
       return Promise.resolve({})
     }
 
-    const {hash} = this._analyze
+    const {hash, sharpness} = this._analyze
     return this.toImageData().then(imageData => {
       const analysis: types.IAnalysis = {}
       if (hash) {
@@ -98,6 +100,11 @@ export abstract class Image {
           default:
             analysis.hash = phash(imageData, hash.hashSize)
         }
+      }
+
+      if (sharpness) {
+        const edges = sobel(imageData, sharpness)
+        analysis.sharpness = computeSharpness(edges, sharpness)
       }
 
       return analysis

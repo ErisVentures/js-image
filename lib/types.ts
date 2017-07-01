@@ -27,6 +27,7 @@ export interface IImageOutputOptions {
 
 export interface IAnalysisOptions {
   hash?: IHashOptions,
+  sharpness?: ISharpnessOptions,
 }
 
 export interface ISobelOptions {
@@ -51,6 +52,7 @@ export interface IHashOptions {
 }
 
 export interface ISharpnessOptions {
+  radius?: number,
   threshold?: number,
 }
 
@@ -71,7 +73,8 @@ export interface ISharpness {
 }
 
 export interface IAnalysis {
-  hash?: BufferLike
+  hash?: BufferLike,
+  sharpness?: ISharpness,
 }
 
 export type ImageFormat = 'jpeg' | 'png'
