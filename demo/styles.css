@@ -1,3 +1,9 @@
+@media (min-width: 768px) {
+  .container {
+    width: auto;
+  }
+}
+
 html, body, .container {
   height: 100%;
 }
@@ -31,11 +37,11 @@ div.editor {
 }
 
 .editor__image {
-  width: 70%;
+  width: 60%;
 }
 
 .editor__controls {
-  width: 30%;
+  width: 40%;
   padding-left: 15px;
   overflow-y: auto;
 }
@@ -99,4 +105,8 @@ div.preview__canvas {
 
 #settings-form {
   padding: 0 15px;
+}
+
+.checkbox input[type=checkbox] {
+  right: 15px;
 }

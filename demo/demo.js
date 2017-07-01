@@ -37,17 +37,34 @@ function setFormsDisabledState(areDisabled) {
   settingInputs.forEach(input => input.disabled = areDisabled)
 }
 
-function renderImageMetadata(metadata) {
+function renderProperty(metadataEl, key, value) {
+  if (key !== 'hash' && typeof value === 'object') {
+    for (const subkey in value) {
+      renderProperty(metadataEl, `${key}.${subkey}`, value[subkey])
+    }
+    return
+  }
+
+  if (key === 'hash') {
+    value = Array.from(value).map(x => x.toString(16)).join('')
+  } else if (typeof value === 'number') {
+    value = value.toLocaleString(undefined, {maximumFractionDigits: 2})
+  }
+
+  const propertyEl = createElement(metadataEl, 'div', ['col-sm-8', 'metadata__key'])
+  propertyEl.textContent = key
+  const valueEl = createElement(metadataEl, 'div', ['col-sm-4', 'metadata__value'])
+  valueEl.textContent = String(value)
+}
+
+function renderImageMetadata(metadata, clear = true) {
   const metadataEl = document.querySelector('.image-info')
-  while (metadataEl.firstChild) {
+  while (clear && metadataEl.firstChild) {
     metadataEl.removeChild(metadataEl.firstChild)
   }
 
   for (const property in metadata) {
-    const propertyEl = createElement(metadataEl, 'div', ['col-sm-6', 'metadata__key'])
-    propertyEl.textContent = property
-    const valueEl = createElement(metadataEl, 'div', ['col-sm-6', 'metadata__value'])
-    valueEl.textContent = String(metadata[property])
+    renderProperty(metadataEl, property, metadata[property])
   }
 }
 
@@ -72,6 +89,27 @@ function refreshPreview() {
   })
 }
 
+function attemptDefaultImage() {
+  const img = new Image()
+  img.addEventListener('load', evt => {
+    const canvas = document.createElement('canvas')
+    const context = canvas.getContext('2d')
+    canvas.width = img.width
+    canvas.height = img.height
+    context.drawImage(img, 0, 0)
+    const rawImageData = context.getImageData(0, 0, img.width, img.height)
+    imageData = ImageData.normalize({
+      width: img.width,
+      height: img.height,
+      data: rawImageData.data,
+    })
+    setFormsDisabledState(false)
+    refreshPreview()
+  })
+
+  img.src = '../test/fixtures/source-skater.jpg'
+}
+
 function handleDrop(e) {
   e.stopPropagation()
   e.preventDefault()
@@ -93,7 +131,8 @@ function handleDrop(e) {
 
 function handleSettingsChange() {
   for (const input of settingInputs) {
-    settings[input.name] = input.value
+    settings[input.name] = input.type === 'checkbox' ?
+        input.checked : input.value
   }
   refreshPreview()
 }
@@ -119,6 +158,7 @@ function listenForWorkerMessages() {
   worker.addEventListener('message', message => {
     if (message.data.type === 'processed') {
       renderImageMetadata(message.data.payload.metadata)
+      renderImageMetadata(message.data.payload.analysis, false)
       updateCanvasContext(message.data.payload.imageData)
       const time = Math.ceil(performance.now() - processStartTs)
       setNotifier(`Processing image took ${time} ms`)
@@ -138,3 +178,4 @@ setFormsDisabledState(true)
 listenForFileDrop()
 listenForSettingsChange()
 listenForWorkerMessages()
+attemptDefaultImage()

@@ -23,17 +23,28 @@ function processImage(imageData, options) {
         })
       }
 
-      return image
+      const analysis = {}
+      if (options['analysis[hash]']) {
+        analysis.hash = {}
+      }
+
+      if (options['analysis[sharpness]']) {
+        analysis.sharpness = {}
+      }
+
+      return image.analyze(analysis)
     })
     .then(image => Promise.all([
       image.toMetadata(),
+      image.toAnalysis(),
       image.toImageData().then(ImageData.toRGBA),
     ]))
-    .then(([metadata, imageData]) => {
+    .then(([metadata, analysis, imageData]) => {
       self.postMessage({
         type: 'processed',
         payload: {
           metadata,
+          analysis,
           imageData: {
             width: imageData.width,
             height: imageData.height,
