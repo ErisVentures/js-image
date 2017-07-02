@@ -4,6 +4,10 @@ import {writeFileAsync} from './fs-utils'
 import {sobel} from './transforms/sobel'
 import {phash} from './analyses/hash'
 import {sharpness as computeSharpness} from './analyses/sharpness'
+import {Decoder as RawDecoder} from 'raw-decoder'
+
+/* tslint:disable-next-line */
+const fileType = require('file-type')
 
 export abstract class Image {
   // Image formats
@@ -122,6 +126,27 @@ export abstract class Image {
   }
 
   public static from(bufferOrImageData: types.BufferLike|ImageData): Image {
+    if (ImageData.probablyIs(bufferOrImageData)) {
+      return this._fromImageData(bufferOrImageData as ImageData)
+    }
+
+    const buffer = bufferOrImageData as Buffer
+    const type = fileType(bufferOrImageData) || {mime: 'unknown'}
+    switch (type.mime) {
+      case 'image/tiff':
+        const decoder = new RawDecoder(buffer)
+        const jpegImage = decoder.extractJpeg()
+        return this._fromBuffer(jpegImage)
+      default:
+        return this._fromBuffer(buffer)
+    }
+  }
+
+  protected static _fromBuffer(buffer: types.BufferLike): Image {
+    throw new Error('unimplemented')
+  }
+
+  protected static _fromImageData(imageData: ImageData): Image {
     throw new Error('unimplemented')
   }
 }

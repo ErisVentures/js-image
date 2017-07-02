@@ -5,6 +5,7 @@ const commonjs = require('rollup-plugin-commonjs')
 const babili = require('rollup-plugin-babili')
 const sourcemaps = require('rollup-plugin-sourcemaps')
 
+const debugshim = path.join(__dirname, 'lib/shims/debug.js')
 const fsshim = path.join(__dirname, 'lib/shims/fs.js')
 const pngshim = path.join(__dirname, 'lib/shims/png-js.js')
 const jpegshim = path.join(__dirname, 'lib/shims/jpeg-js.js')
@@ -19,6 +20,7 @@ module.exports = {
   plugins: [
     sourcemaps(),
     alias({
+      debug: debugshim,
       fs: fsshim,
       pngjs: pngshim,
       '@ouranos/jpeg-js': jpegshim,

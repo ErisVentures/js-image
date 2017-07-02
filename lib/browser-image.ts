@@ -84,11 +84,11 @@ export class BrowserImage extends Image {
         .then(imageData => ImageData.toBuffer(imageData, this._output.format))
   }
 
-  public static from(bufferOrImageData: BufferLike|ImageData): Image {
-    if (ImageData.probablyIs(bufferOrImageData)) {
-      return new BrowserImage(ImageData.normalize(bufferOrImageData))
-    }
-    const buffer = bufferOrImageData as BufferLike
+  protected static _fromBuffer(buffer: BufferLike): Image {
     return new BrowserImage(ImageData.from(buffer))
+  }
+
+  protected static _fromImageData(imageData: ImageData): Image {
+    return new BrowserImage(ImageData.normalize(imageData))
   }
 }
