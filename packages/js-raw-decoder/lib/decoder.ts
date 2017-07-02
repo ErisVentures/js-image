@@ -1,9 +1,13 @@
-import {maxBy} from 'lodash'
 import {IfdParser, IfdResult} from './ifd-parser'
+import {getFriendlyName, IfdTag} from './ifd-tag'
 import {BufferLike, Endian, Reader} from './reader'
 
 // tslint:disable-next-line
 const debug: (...args: any[]) => void = require('debug')('raw-decoder:decoder')
+
+export interface IMetadata {
+  [key: string]: string|number|null
+}
 
 export class Decoder {
   private _reader: Reader
@@ -57,24 +61,41 @@ export class Decoder {
     this._readAndValidateHeader()
     this._readIfds()
 
-    const jpegOffsets: Array<{offset: number, length: number, width: number, height: number}> = []
+    let maxResolutionJpeg: {offset: number, length: number} = {offset: 0, length: 0}
     this._ifds.forEach(ifd => {
-      const jpegOffset = ifd.entries.find(entry => entry.tag === 513)
-      const jpegLength = ifd.entries.find(entry => entry.tag === 514)
-      const xResolution = ifd.entries.find(entry => entry.tag === 282)
-      const yResolution = ifd.entries.find(entry => entry.tag === 283)
-      if (jpegOffset && jpegLength && xResolution && yResolution) {
-        jpegOffsets.push({
-          height: yResolution.data!.read(2) / yResolution.data!.read(2),
-          length: jpegLength.data!.read(4),
-          offset: jpegOffset.data!.read(4),
-          width: xResolution.data!.read(2) / xResolution.data!.read(2),
-        })
+      const offsetEntry = ifd.entries.find(entry => entry.tag === IfdTag.ThumbnailOffset)
+      const lengthEntry = ifd.entries.find(entry => entry.tag === IfdTag.ThumbnailLength)
+
+      const offset = offsetEntry && IfdParser.getEntryValue(this._reader, offsetEntry) as number
+      const length = lengthEntry && IfdParser.getEntryValue(this._reader, lengthEntry) as number
+
+      // TODO: choose largest JPEG by the attached EXIF IFD instead
+      if (offset && length && length > maxResolutionJpeg.length) {
+        maxResolutionJpeg = {length, offset}
       }
     })
 
-    const maxResolutionJpeg = maxBy(jpegOffsets, item => item.width)
+    if (!maxResolutionJpeg.offset) {
+      throw new Error('Could not find thumbnail IFDs')
+    }
+
     this._reader.seek(maxResolutionJpeg.offset)
     return this._reader.readAsBuffer(maxResolutionJpeg.length)
+  }
+
+  public extractMetadata(): IMetadata {
+    this._readAndValidateHeader()
+    this._readIfds()
+
+    const tags: IMetadata = {}
+    this._ifds.forEach(ifd => {
+      ifd.entries.forEach(entry => {
+        const name = getFriendlyName(entry.tag)
+        const value = IfdParser.getEntryValue(this._reader, entry)
+        tags[name] = value
+      })
+    })
+
+    return tags
   }
 }
