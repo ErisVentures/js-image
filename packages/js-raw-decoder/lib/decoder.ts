@@ -1,6 +1,6 @@
 import {maxBy} from 'lodash'
 import {IfdParser, IfdResult} from './ifd-parser'
-import {Endian, Reader} from './reader'
+import {BufferLike, Endian, Reader} from './reader'
 
 // tslint:disable-next-line
 const debug: (...args: any[]) => void = require('debug')('raw-decoder:decoder')
@@ -9,7 +9,7 @@ export class Decoder {
   private _reader: Reader
   private _ifds: IfdResult[]
 
-  public constructor(buffer: Buffer) {
+  public constructor(buffer: BufferLike) {
     this._reader = new Reader(buffer)
   }
 
@@ -53,7 +53,7 @@ export class Decoder {
     }
   }
 
-  public extractThumbnail(): Buffer {
+  public extractThumbnail(): BufferLike {
     this._readAndValidateHeader()
     this._readIfds()
 
