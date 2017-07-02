@@ -53,7 +53,7 @@ export class Decoder {
     }
   }
 
-  public extractThumbnail(): BufferLike {
+  public extractJpeg(): BufferLike {
     this._readAndValidateHeader()
     this._readIfds()
 
