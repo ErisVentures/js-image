@@ -141,7 +141,11 @@ export class NodeImage extends Image {
     return this._applyAll(this._image).then(image => image.toBuffer())
   }
 
-  public static from(bufferOrImageData: BufferLike|ImageData): Image {
-    return new NodeImage(SharpImage.from(bufferOrImageData))
+  protected static _fromBuffer(buffer: BufferLike): Image {
+    return new NodeImage(SharpImage.from(buffer))
+  }
+
+  protected static _fromImageData(imageData: ImageData): Image {
+    return new NodeImage(SharpImage.from(imageData))
   }
 }
