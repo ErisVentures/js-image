@@ -5,7 +5,7 @@ const jpeg = require('@ouranos/jpeg-js')
 /* tslint:disable-next-line */
 const PNG = require('pngjs').PNG
 /* tslint:disable-next-line */
-const imageType = require('image-type')
+const fileType = require('file-type')
 
 export interface BrowserImageData {
   width: number,
@@ -277,7 +277,7 @@ export class ImageData {
   }
 
   public static from(bufferLike: BufferLike): Promise<ImageData> {
-    const type = imageType(bufferLike) || {mime: 'unknown'}
+    const type = fileType(bufferLike) || {mime: 'unknown'}
 
     let imageData
     switch (type.mime) {
