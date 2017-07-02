@@ -1,5 +1,6 @@
 let imageData, processStartTs, hideNotifierTimeout
 
+const BrowserImage = window['@ouranos/image'].Image
 const ImageData = window['@ouranos/image'].ImageData
 
 const settings = {}
@@ -117,7 +118,7 @@ function handleDrop(e) {
   const file = e.dataTransfer.files[0]
   const reader = new FileReader()
   reader.addEventListener('loadend', () => {
-    ImageData.from(reader.result).then(data => {
+    BrowserImage.from(new Uint8Array(reader.result)).toImageData().then(data => {
       imageData = data
       setFormsDisabledState(false)
       refreshPreview()
