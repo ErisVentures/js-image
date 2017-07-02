@@ -17,21 +17,21 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ouranos/js-exif.git"
+    "url": "https://github.com/ouranos-oss/js-exif.git"
   },
   "author": "Patrick Hulce <patrick.hulce@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ouranos/js-exif/issues"
+    "url": "https://github.com/ouranos-oss/js-exif/issues"
   },
-  "homepage": "https://github.com/ouranos/js-exif#readme",
+  "homepage": "https://github.com/ouranos-oss/js-exif#readme",
   "config": {
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
     }
   },
   "devDependencies": {
-    "@ouranos/lint": "^1.1.1",
+    "@patrickhulce/lint": "^1.1.1",
     "babel": "^6.23.0",
     "babel-cli": "^6.24.1",
     "babel-preset-es2015": "^6.24.1",
