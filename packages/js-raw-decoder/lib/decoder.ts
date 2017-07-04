@@ -1,5 +1,5 @@
-import {IfdParser, IfdResult} from './ifd-parser'
-import {getFriendlyName, IfdTag} from './ifd-tag'
+import {IFDParser, IFDResult} from './ifd-parser'
+import {getFriendlyName, IFDTag} from './ifd-tag'
 import {BufferLike, Endian, Reader} from './reader'
 
 // tslint:disable-next-line
@@ -11,7 +11,7 @@ export interface IMetadata {
 
 export class Decoder {
   private _reader: Reader
-  private _ifds: IfdResult[]
+  private _ifds: IFDResult[]
 
   public constructor(buffer: BufferLike) {
     this._reader = new Reader(buffer)
@@ -36,7 +36,7 @@ export class Decoder {
     }
   }
 
-  private _readIfds(): void {
+  private _readIFDs(): void {
     if (this._ifds) {
       return
     }
@@ -46,10 +46,10 @@ export class Decoder {
     const ifdOffsets = [this._reader.read(4)]
     while (ifdOffsets.length) {
       const ifdOffset = ifdOffsets.shift()!
-      const ifd = IfdParser.parseIfd(this._reader, ifdOffset)
+      const ifd = IFDParser.parseIfd(this._reader, ifdOffset)
       this._ifds.push(ifd)
 
-      const suboffsets = IfdParser.getSubIfdOffsets(this._reader, ifd.entries)
+      const suboffsets = IFDParser.getSubIfdOffsets(this._reader, ifd.entries)
       suboffsets.forEach(offset => ifdOffsets.push(offset))
       if (ifd.nextIfdOffset) {
         ifdOffsets.push(ifd.nextIfdOffset)
@@ -59,15 +59,15 @@ export class Decoder {
 
   public extractJpeg(): BufferLike {
     this._readAndValidateHeader()
-    this._readIfds()
+    this._readIFDs()
 
     let maxResolutionJpeg: {offset: number, length: number} = {offset: 0, length: 0}
     this._ifds.forEach(ifd => {
-      const offsetEntry = ifd.entries.find(entry => entry.tag === IfdTag.ThumbnailOffset)
-      const lengthEntry = ifd.entries.find(entry => entry.tag === IfdTag.ThumbnailLength)
+      const offsetEntry = ifd.entries.find(entry => entry.tag === IFDTag.ThumbnailOffset)
+      const lengthEntry = ifd.entries.find(entry => entry.tag === IFDTag.ThumbnailLength)
 
-      const offset = offsetEntry && IfdParser.getEntryValue(this._reader, offsetEntry) as number
-      const length = lengthEntry && IfdParser.getEntryValue(this._reader, lengthEntry) as number
+      const offset = offsetEntry && IFDParser.getEntryValue(this._reader, offsetEntry) as number
+      const length = lengthEntry && IFDParser.getEntryValue(this._reader, lengthEntry) as number
 
       // TODO: choose largest JPEG by the attached EXIF IFD instead
       if (offset && length && length > maxResolutionJpeg.length) {
@@ -85,13 +85,13 @@ export class Decoder {
 
   public extractMetadata(): IMetadata {
     this._readAndValidateHeader()
-    this._readIfds()
+    this._readIFDs()
 
     const tags: IMetadata = {}
     this._ifds.forEach(ifd => {
       ifd.entries.forEach(entry => {
         const name = getFriendlyName(entry.tag)
-        const value = IfdParser.getEntryValue(this._reader, entry)
+        const value = IFDParser.getEntryValue(this._reader, entry)
         tags[name] = value
       })
     })

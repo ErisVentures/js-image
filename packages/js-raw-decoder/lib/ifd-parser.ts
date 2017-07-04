@@ -1,7 +1,7 @@
-import {IfdTag} from './ifd-tag'
+import {IFDTag} from './ifd-tag'
 import {Reader} from './reader'
 
-export enum IfdDataType {
+export enum IFDDataType {
   Unknown = 0,
   Byte = 1,
   String = 2,
@@ -11,7 +11,7 @@ export enum IfdDataType {
   OtherRationalNumber = 10,
 }
 
-export interface IfdEntry {
+export interface IFDEntry {
   tag: number,
   dataType: number,
   length: number,
@@ -20,24 +20,24 @@ export interface IfdEntry {
   dataOffset: number|undefined,
 }
 
-export interface IfdResult {
-  entries: IfdEntry[],
+export interface IFDResult {
+  entries: IFDEntry[],
   nextIfdOffset: number,
 }
 
-export class IfdParser {
+export class IFDParser {
   public static getDataTypeSize(dataType: number): number {
     switch (dataType) {
-      case IfdDataType.Unknown: // ???
-      case IfdDataType.Byte: // byte
-      case IfdDataType.String: // ASCII-string
+      case IFDDataType.Unknown: // ???
+      case IFDDataType.Byte: // byte
+      case IFDDataType.String: // ASCII-string
         return 1
-      case IfdDataType.Word: // word
+      case IFDDataType.Word: // word
         return 2
-      case IfdDataType.DoubleWord: // double word
+      case IFDDataType.DoubleWord: // double word
         return 4
-      case IfdDataType.RationalNumber: // rational number
-      case IfdDataType.OtherRationalNumber:
+      case IFDDataType.RationalNumber: // rational number
+      case IFDDataType.OtherRationalNumber:
         return 8
       case 7:
         return 4
@@ -46,10 +46,10 @@ export class IfdParser {
     }
   }
 
-  public static parseEntry(reader: Reader): IfdEntry {
+  public static parseEntry(reader: Reader): IFDEntry {
     const tag = reader.read(2)
     const dataType = reader.read(2)
-    const dataTypeSize = IfdParser.getDataTypeSize(dataType)
+    const dataTypeSize = IFDParser.getDataTypeSize(dataType)
     const length = reader.read(4)
     const lengthInBytes = dataTypeSize * length
     let data: Reader|undefined = reader.readAsReader(4)
@@ -62,19 +62,19 @@ export class IfdParser {
     return {tag, dataType, length, lengthInBytes, data, dataOffset}
   }
 
-  public static parseIfd(reader: Reader, startPosition: number): IfdResult {
+  public static parseIfd(reader: Reader, startPosition: number): IFDResult {
     reader.seek(startPosition)
     const numEntries = reader.read(2)
     const entries = []
     for (let i = 0; i < numEntries; i++) {
-      entries.push(IfdParser.parseEntry(reader))
+      entries.push(IFDParser.parseEntry(reader))
     }
 
     const nextIfdOffset = reader.read(4)
     return {entries, nextIfdOffset}
   }
 
-  public static getEntryReader(reader: Reader, entry: IfdEntry): Reader {
+  public static getEntryReader(reader: Reader, entry: IFDEntry): Reader {
     if (entry.data) {
       return entry.data
     }
@@ -85,17 +85,17 @@ export class IfdParser {
     })
   }
 
-  public static getEntryValue(reader: Reader, entry: IfdEntry): string|number {
-    const entryReader = IfdParser.getEntryReader(reader, entry)
+  public static getEntryValue(reader: Reader, entry: IFDEntry): string|number {
+    const entryReader = IFDParser.getEntryReader(reader, entry)
     switch (entry.dataType) {
-      case IfdDataType.Byte:
-      case IfdDataType.Word:
-      case IfdDataType.DoubleWord:
+      case IFDDataType.Byte:
+      case IFDDataType.Word:
+      case IFDDataType.DoubleWord:
         return entryReader.read(entry.lengthInBytes)
-      case IfdDataType.RationalNumber:
-      case IfdDataType.OtherRationalNumber:
+      case IFDDataType.RationalNumber:
+      case IFDDataType.OtherRationalNumber:
         return entryReader.read(4) / entryReader.read(4)
-      case IfdDataType.String:
+      case IFDDataType.String:
         const chars = []
         while (entryReader.hasNext()) {
           const charCode = entryReader.read(1)
@@ -114,14 +114,14 @@ export class IfdParser {
     }
   }
 
-  public static getSubIfdOffsets(reader: Reader, entries: IfdEntry[]): number[] {
+  public static getSubIfdOffsets(reader: Reader, entries: IFDEntry[]): number[] {
     const offsets: number[] = []
     entries.forEach(entry => {
-      if (entry.tag !== IfdTag.SubIFD && entry.tag !== IfdTag.ExifOffset) {
+      if (entry.tag !== IFDTag.SubIFD && entry.tag !== IFDTag.ExifOffset) {
         return
       }
 
-      const entryReader = IfdParser.getEntryReader(reader, entry)
+      const entryReader = IFDParser.getEntryReader(reader, entry)
       while (entryReader.hasNext()) {
         offsets.push(entryReader.read(4))
       }

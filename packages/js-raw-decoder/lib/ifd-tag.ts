@@ -1,7 +1,7 @@
 // tslint:disable
 const exifMap = require('exif-parser/lib/exif-tags').exif
 
-export enum IfdTag {
+export enum IFDTag {
   ImageWidth = 100,
   XResolution = 282,
   YResolution = 283,
