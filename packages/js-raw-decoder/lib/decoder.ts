@@ -1,4 +1,4 @@
-import {IFDParser, IFDResult} from './ifd-parser'
+import {IFD} from './ifd'
 import {getFriendlyName, IFDTag} from './ifd-tag'
 import {BufferLike, Endian, Reader} from './reader'
 
@@ -11,7 +11,7 @@ export interface IMetadata {
 
 export class Decoder {
   private _reader: Reader
-  private _ifds: IFDResult[]
+  private _ifds: IFD[]
 
   public constructor(buffer: BufferLike) {
     this._reader = new Reader(buffer)
@@ -46,13 +46,14 @@ export class Decoder {
     const ifdOffsets = [this._reader.read(4)]
     while (ifdOffsets.length) {
       const ifdOffset = ifdOffsets.shift()!
-      const ifd = IFDParser.parseIfd(this._reader, ifdOffset)
+      this._reader.seek(ifdOffset)
+      const ifd = IFD.read(this._reader)
       this._ifds.push(ifd)
 
-      const suboffsets = IFDParser.getSubIfdOffsets(this._reader, ifd.entries)
+      const suboffsets = ifd.getSubIFDOffsets(this._reader)
       suboffsets.forEach(offset => ifdOffsets.push(offset))
-      if (ifd.nextIfdOffset) {
-        ifdOffsets.push(ifd.nextIfdOffset)
+      if (ifd.nextIFDOffset) {
+        ifdOffsets.push(ifd.nextIFDOffset)
       }
     }
   }
@@ -66,8 +67,8 @@ export class Decoder {
       const offsetEntry = ifd.entries.find(entry => entry.tag === IFDTag.ThumbnailOffset)
       const lengthEntry = ifd.entries.find(entry => entry.tag === IFDTag.ThumbnailLength)
 
-      const offset = offsetEntry && IFDParser.getEntryValue(this._reader, offsetEntry) as number
-      const length = lengthEntry && IFDParser.getEntryValue(this._reader, lengthEntry) as number
+      const offset = offsetEntry && offsetEntry.getValue(this._reader) as number
+      const length = lengthEntry && lengthEntry.getValue(this._reader) as number
 
       // TODO: choose largest JPEG by the attached EXIF IFD instead
       if (offset && length && length > maxResolutionJpeg.length) {
@@ -91,7 +92,7 @@ export class Decoder {
     this._ifds.forEach(ifd => {
       ifd.entries.forEach(entry => {
         const name = getFriendlyName(entry.tag)
-        const value = IFDParser.getEntryValue(this._reader, entry)
+        const value = entry.getValue(this._reader)
         tags[name] = value
       })
     })

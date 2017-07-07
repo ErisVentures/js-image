@@ -8,7 +8,7 @@ export enum IFDTag {
   SubIFD = 330,
   ThumbnailOffset = 513,
   ThumbnailLength = 514,
-  ExifOffset = 34665,
+  EXIFOffset = 34665,
 }
 
 export function getFriendlyName(code: number): string {
