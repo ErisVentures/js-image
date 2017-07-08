@@ -19,8 +19,11 @@ const RAWDecoder = require('raw-decoder').Decoder
 
 const myFile = fs.readFileSync('./DSC_0001.nef')
 const myFileDecoder = new RAWDecoder(myFile)
-const myFileAsJpeg = myFileDecoder.extractThumbnail()
+const myFileAsJpeg = myFileDecoder.extractJpeg()
+const metadata = myFileDecoder.extractMetadata()
 fs.writeFileSync('./DSC_0001.jpg', myFileAsJpeg)
+console.log(metadata)
+// {Make: 'NIKON CORPORATION', Model: 'NIKON D4S', ISO: 160, ...}
 ```
 
 ## Documention and Resources for Various Formats
