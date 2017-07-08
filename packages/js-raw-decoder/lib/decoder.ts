@@ -1,11 +1,11 @@
-import {IFD} from './ifd'
+import {IFD, IFDOffset} from './ifd'
 import {getFriendlyName, IFDTag} from './ifd-tag'
 import {BufferLike, Endian, Reader} from './reader'
 
 // tslint:disable-next-line
 const debug: (...args: any[]) => void = require('debug')('raw-decoder:decoder')
 
-interface ThumbnailLocation {
+interface IThumbnailLocation {
   ifd: IFD,
   offset: number,
   length: number,
@@ -49,17 +49,20 @@ export class Decoder {
 
     this._ifds = []
 
-    const ifdOffsets = [this._reader.read(4)]
+    const ifdOffsets: IFDOffset[] = [{offset: this._reader.read(4)}]
     while (ifdOffsets.length) {
       const ifdOffset = ifdOffsets.shift()!
-      this._reader.seek(ifdOffset)
-      const ifd = IFD.read(this._reader)
+      if (this._ifds.some(ifd => ifd.offset === ifdOffset.offset)) {
+        continue
+      }
+
+      const ifd = IFD.read(this._reader, ifdOffset)
       this._ifds.push(ifd)
 
       const suboffsets = ifd.getSubIFDOffsets(this._reader)
-      suboffsets.forEach(offset => ifdOffsets.push(offset))
+      suboffsets.forEach(offset => ifdOffsets.push({offset, parent: ifd}))
       if (ifd.nextIFDOffset) {
-        ifdOffsets.push(ifd.nextIFDOffset)
+        ifdOffsets.push({offset: ifd.nextIFDOffset, parent: ifd.parent})
       }
     }
   }
@@ -68,7 +71,7 @@ export class Decoder {
     this._readAndValidateHeader()
     this._readIFDs()
 
-    let maxResolutionJpeg: ThumbnailLocation|undefined
+    let maxResolutionJpeg: IThumbnailLocation|undefined
     this._ifds.forEach(ifd => {
       const offsetEntry = ifd.entries.find(entry => entry.tag === IFDTag.ThumbnailOffset)
       const lengthEntry = ifd.entries.find(entry => entry.tag === IFDTag.ThumbnailLength)

@@ -2,12 +2,29 @@ import {IFDEntry} from './ifd-entry'
 import {IFDTag} from './ifd-tag'
 import {Reader} from './reader'
 
+export interface IFDOffset {
+  offset: number,
+  parent?: IFD,
+}
+
 export class IFD {
+  public offset: number
+  public parent?: IFD
+  public children: IFD[]
+
   public constructor(
+    offset: IFDOffset,
     public entries: IFDEntry[],
     public nextIFDOffset: number,
-    public parent?: IFD,
   ) {
+    this.offset = offset.offset
+    this.parent = offset.parent
+    this.children = []
+
+    if (offset.parent) {
+      offset.parent.children.push(this)
+    }
+  }
 
   }
 
@@ -27,7 +44,8 @@ export class IFD {
     return offsets
   }
 
-  public static read(reader: Reader, parent?: IFD): IFD {
+  public static read(reader: Reader, offset: IFDOffset): IFD {
+    reader.seek(offset.offset)
     const numEntries = reader.read(2)
     const entries = []
     for (let i = 0; i < numEntries; i++) {
@@ -35,6 +53,6 @@ export class IFD {
     }
 
     const nextIFDOffset = reader.read(4)
-    return new IFD(entries, nextIFDOffset, parent)
+    return new IFD(offset, entries, nextIFDOffset)
   }
 }
