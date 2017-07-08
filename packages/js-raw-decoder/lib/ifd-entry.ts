@@ -36,11 +36,13 @@ export class IFDEntry {
     public tag: number,
     public dataType: number,
     public length: number,
-    public lengthInBytes: number,
-    private data: Reader|undefined,
-    private dataOffset: number|undefined,
+    private dataReader: Reader,
   ) {
 
+  }
+
+  public get lengthInBytes(): number {
+    return this.length * getDataTypeSize(this.dataType)
   }
 
   public getValue(reader: Reader): string|number {
@@ -73,12 +75,13 @@ export class IFDEntry {
   }
 
   public getReader(reader: Reader): Reader {
-    if (this.data) {
-      return this.data
+    if (this.lengthInBytes <= 4) {
+      return this.dataReader
     }
 
+    const offset = this.dataReader.read(4)
     return reader.use(() => {
-      reader.seek(this.dataOffset!)
+      reader.seek(offset)
       return reader.readAsReader(this.lengthInBytes)
     })
   }
@@ -86,16 +89,9 @@ export class IFDEntry {
   public static read(reader: Reader): IFDEntry {
     const tag = reader.read(2)
     const dataType = reader.read(2)
-    const dataTypeSize = getDataTypeSize(dataType)
     const length = reader.read(4)
-    const lengthInBytes = dataTypeSize * length
-    let data: Reader|undefined = reader.readAsReader(4)
-    let dataOffset: number|undefined
-    if (lengthInBytes > 4) {
-      dataOffset = data.read(4)
-      data = undefined
-    }
+    const dataReader = reader.readAsReader(4)
 
-    return new IFDEntry(tag, dataType, length, lengthInBytes, data, dataOffset)
+    return new IFDEntry(tag, dataType, length, dataReader)
   }
 }
