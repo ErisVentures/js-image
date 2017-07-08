@@ -1,3 +1,4 @@
+import {getFriendlyName} from './ifd-tag'
 import {Reader} from './reader'
 
 export enum IFDDataType {
@@ -45,7 +46,11 @@ export class IFDEntry {
     return this.length * getDataTypeSize(this.dataType)
   }
 
-  public getValue(reader: Reader): string|number {
+  public get friendlyTagName(): string {
+    return getFriendlyName(this.tag)
+  }
+
+  public getValue(reader?: Reader): string|number {
     const entryReader = this.getReader(reader)
     switch (this.dataType) {
       case IFDDataType.Byte:
@@ -74,9 +79,13 @@ export class IFDEntry {
     }
   }
 
-  public getReader(reader: Reader): Reader {
+  public getReader(reader?: Reader): Reader {
     if (this.lengthInBytes <= 4) {
       return this.dataReader
+    }
+
+    if (!reader) {
+      throw new Error('Cannot read value of IFD entry without a reader')
     }
 
     const offset = this.dataReader.read(4)
