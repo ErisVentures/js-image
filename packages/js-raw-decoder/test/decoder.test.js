@@ -3,7 +3,7 @@ const {expect, fixture, compareToFixture} = require('./utils')
 
 describe('Decoder', () => {
   describe('.extractJpeg', () => {
-    it.skip('should extract the d4s thumbnail', () => {
+    it('should extract the d4s thumbnail', () => {
       const decoder = new Decoder(fixture('d4s.nef'))
       const thumbnail = decoder.extractJpeg()
       compareToFixture(thumbnail, 'd4s.jpg')

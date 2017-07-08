@@ -2,7 +2,7 @@
 
 cd $(dirname "$0")
 
-VERSION=v1
+VERSION=v2
 S3PATH="npm-fixtures/raw-decoder/$VERSION"
 
 rm actual-*.jpg 2>/dev/null|| echo 'No actual files to delete'

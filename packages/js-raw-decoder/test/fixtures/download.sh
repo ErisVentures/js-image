@@ -2,7 +2,7 @@
 
 cd $(dirname "$0")
 
-VERSION=v1
+VERSION=v2
 S3PATH="https://s3.amazonaws.com/npm-fixtures/raw-decoder/$VERSION"
 FILES=$(curl "$S3PATH/files.txt")
 for file in $FILES ;

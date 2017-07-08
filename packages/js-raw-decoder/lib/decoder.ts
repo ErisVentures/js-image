@@ -5,6 +5,12 @@ import {BufferLike, Endian, Reader} from './reader'
 // tslint:disable-next-line
 const debug: (...args: any[]) => void = require('debug')('raw-decoder:decoder')
 
+interface ThumbnailLocation {
+  ifd: IFD,
+  offset: number,
+  length: number,
+}
+
 export interface IMetadata {
   [key: string]: string|number|null
 }
@@ -62,21 +68,23 @@ export class Decoder {
     this._readAndValidateHeader()
     this._readIFDs()
 
-    let maxResolutionJpeg: {offset: number, length: number} = {offset: 0, length: 0}
+    let maxResolutionJpeg: ThumbnailLocation|undefined
     this._ifds.forEach(ifd => {
       const offsetEntry = ifd.entries.find(entry => entry.tag === IFDTag.ThumbnailOffset)
       const lengthEntry = ifd.entries.find(entry => entry.tag === IFDTag.ThumbnailLength)
+      if (!offsetEntry || !lengthEntry) {
+        return
+      }
 
-      const offset = offsetEntry && offsetEntry.getValue(this._reader) as number
-      const length = lengthEntry && lengthEntry.getValue(this._reader) as number
+      const offset = offsetEntry.getValue(this._reader) as number
+      const length = lengthEntry.getValue(this._reader) as number
 
-      // TODO: choose largest JPEG by the attached EXIF IFD instead
-      if (offset && length && length > maxResolutionJpeg.length) {
-        maxResolutionJpeg = {length, offset}
+      if (!maxResolutionJpeg || length > maxResolutionJpeg.length) {
+        maxResolutionJpeg = {offset, length, ifd}
       }
     })
 
-    if (!maxResolutionJpeg.offset) {
+    if (!maxResolutionJpeg) {
       throw new Error('Could not find thumbnail IFDs')
     }
 
