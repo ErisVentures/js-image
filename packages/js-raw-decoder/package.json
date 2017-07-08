@@ -3,6 +3,7 @@
   "version": "0.0.0-development",
   "description": "Decodes data from RAW camera files.",
   "main": "./dist/decoder.js",
+  "types": "./dist/decoder.d.ts",
   "scripts": {
     "build": "tsc",
     "test": "npm run build && npm run test:lint && npm run test:unit",
@@ -38,6 +39,7 @@
     "chai": "^3.5.0",
     "cz-conventional-changelog": "^2.0.0",
     "istanbul": "^0.4.5",
+    "lodash": "^4.17.4",
     "mocha": "^3.3.0",
     "nyc": "^10.3.0",
     "semantic-release": "^6.3.2",
@@ -48,7 +50,6 @@
   },
   "dependencies": {
     "debug": "^2.6.6",
-    "exif-parser": "0.1.9",
-    "lodash": "^4.17.4"
+    "exif-parser": "0.1.9"
   }
 }
