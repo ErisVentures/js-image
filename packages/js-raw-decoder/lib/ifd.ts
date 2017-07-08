@@ -26,6 +26,22 @@ export class IFD {
     }
   }
 
+  public get isEXIF(): boolean {
+    if (!this.parent) {
+      return false
+    }
+
+    const exifEntry = this.parent.entries.find(entry => entry.tag === IFDTag.EXIFOffset)
+    const exifOffset = exifEntry && exifEntry.getValue()
+    return exifOffset === this.offset
+  }
+
+  public get isThumbnail(): boolean {
+    if (!this.parent) {
+      return false
+    }
+
+    return this.parent.entries.some(entry => entry.tag === IFDTag.ThumbnailOffset)
   }
 
   public getSubIFDOffsets(reader: Reader): number[] {

@@ -99,15 +99,17 @@ export class Decoder {
     this._readAndValidateHeader()
     this._readIFDs()
 
+    const exifTags: IMetadata = {}
     const tags: IMetadata = {}
     this._ifds.forEach(ifd => {
+      const target = ifd.isEXIF ? exifTags : tags
       ifd.entries.forEach(entry => {
         const name = getFriendlyName(entry.tag)
         const value = entry.getValue(this._reader)
-        tags[name] = value
+        target[name] = value
       })
     })
 
-    return tags
+    return Object.assign(tags, exifTags)
   }
 }
