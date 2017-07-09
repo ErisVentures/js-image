@@ -5,6 +5,7 @@ const jpeg = require('@ouranos/jpeg-js')
 const ImageData = require('../lib/image-data').ImageData
 chai.use(require('sinon-chai'))
 
+const environmentTolerance = Number(process.env.LOOSE_COMPARISON_TOLERANCE) || 0
 const expect = chai.expect
 const fixturePath = path => `${__dirname}/fixtures/${path}`
 const fixture = memoize(path => fs.readFileSync(fixturePath(path)))
@@ -57,7 +58,7 @@ function compareToFixture(bufferOrImageData, path, options) {
         if (options.strict) {
           expect(diff).to.equal(0)
         } else {
-          const tolerance = Number(process.env.LOOSE_COMPARISON_TOLERANCE) || options.tolerance
+          const tolerance = Math.max(environmentTolerance, options.tolerance)
           const area = imageData.width * imageData.height
           expect(diff).to.be.lessThan(tolerance * area / options.increment)
         }
