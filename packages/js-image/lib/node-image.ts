@@ -137,7 +137,7 @@ export class NodeImage extends Image {
     return this._applyAll(this._image).then(SharpImage.toImageData)
   }
 
-  public toBuffer(): Promise<Buffer> {
+  public toBuffer(): Promise<BufferLike> {
     return this._applyAll(this._image).then(image => image.toBuffer())
   }
 
