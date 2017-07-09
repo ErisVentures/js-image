@@ -37,7 +37,7 @@ export abstract class Image {
 
   public constructor() {
     this._output = {
-      format: {type: 'jpeg'},
+      format: {type: 'jpeg', quality: 90},
     }
   }
 

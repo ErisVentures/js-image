@@ -6,6 +6,7 @@ lib/**/*.js
 lib/**/*.js.map
 lib/**/*.d.ts
 
+test/fixtures/*.nef
 test/fixtures/*.jpg
 test/fixtures/*.png
 

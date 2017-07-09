@@ -2,7 +2,7 @@ const jpeg = require('@ouranos/jpeg-js')
 
 const ImageData = require('../lib/image-data').ImageData
 const BrowserImage = require('../lib/browser-image').BrowserImage
-const {expect, fixture, testImage} = require('./utils')
+const {expect, fixture, compareToFixture, testImage} = require('./utils')
 
 const skater = fixture('source-skater.jpg')
 const yosemite = fixture('source-yosemite.jpg')
@@ -180,6 +180,25 @@ describe('BrowserImage', () => {
     it('should return an image from buffer', () => {
       const image = BrowserImage.from(skater)
       expect(image).to.be.instanceOf(BrowserImage)
+    })
+
+    it('should handle raw images', () => {
+      const image = BrowserImage.from(fixture('source-google.nef'))
+      expect(image).to.be.instanceOf(BrowserImage)
+      return image
+        .resize({
+          width: 604,
+          height: 400,
+          method: BrowserImage.NEAREST_NEIGHBOR,
+        })
+        .toBuffer()
+        .then(buffer => {
+          return compareToFixture(buffer, 'google.jpg', {
+            strict: false,
+            increment: 10,
+            tolerance: 25,
+          })
+        })
     })
   })
 })

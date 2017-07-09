@@ -203,5 +203,20 @@ describe('NodeImage', () => {
       const image = NodeImage.from(skater)
       expect(image).to.be.instanceOf(NodeImage)
     })
+
+    it('should handle raw images', () => {
+      const image = NodeImage.from(fixture('source-google.nef'))
+      expect(image).to.be.instanceOf(NodeImage)
+      return image
+        .resize({width: 604, height: 400})
+        .toBuffer()
+        .then(buffer => {
+          return compareToFixture(buffer, 'google.jpg', {
+            strict: false,
+            increment: 10,
+            tolerance: 25,
+          })
+        })
+    })
   })
 })

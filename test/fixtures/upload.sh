@@ -7,7 +7,7 @@ S3PATH="npm-fixtures/@ouranos/image/$VERSION"
 
 echo "" > files.txt
 
-for file in *.jpg *.png;
+for file in *.jpg *.png *.nef;
 do
   if [[ $file == "actual"* ]]; then
     continue
