@@ -79,7 +79,7 @@ export class BrowserImage extends Image {
     return this._applyAll(this._image)
   }
 
-  public toBuffer(): Promise<Buffer> {
+  public toBuffer(): Promise<BufferLike> {
     return this._applyAll(this._image)
         .then(imageData => ImageData.toBuffer(imageData, this._output.format))
   }

@@ -119,7 +119,7 @@ export abstract class Image {
 
   public abstract toImageData(): Promise<ImageData>
 
-  public abstract toBuffer(): Promise<Buffer>
+  public abstract toBuffer(): Promise<types.BufferLike>
 
   public toFile(path: string): Promise<{}> {
     return this.toBuffer().then(buffer => writeFileAsync(path, buffer))
