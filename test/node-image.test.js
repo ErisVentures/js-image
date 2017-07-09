@@ -214,7 +214,7 @@ describe('NodeImage', () => {
           return compareToFixture(buffer, 'google.jpg', {
             strict: false,
             increment: 10,
-            tolerance: 25,
+            tolerance: 30,
           })
         })
     })
