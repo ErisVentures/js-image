@@ -1,4 +1,5 @@
 
+expected-google.jpg
 expected-opera-square-crop.jpg
 expected-opera-square-exact.jpg
 expected-skater-blur.jpg
@@ -30,3 +31,4 @@ source-sydney-out-focus.jpg
 source-sydney.jpg
 source-yosemite.jpg
 expected-skater.png
+source-google.nef
