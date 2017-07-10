@@ -56,12 +56,16 @@ export abstract class Image {
   }
 
   public resize(options: types.IResizeOptions): Image {
-    if (typeof options.width !== 'number' && typeof options.height !== 'number') {
-      throw new TypeError('Must specify a width or height')
+    if (!options.width && !options.height && !options.subselect) {
+      throw new TypeError('Must specify a width, height, or subselect')
+    }
+
+    if ((!options.width || !options.height) && options.fit && options.fit !== Image.EXACT) {
+      throw new TypeError(`Must specify width and height with "${options.fit}" fit`)
     }
 
     this._output.resize = Object.assign({
-      fit: Image.CROP,
+      fit: Image.EXACT,
       method: Image.BILINEAR,
     }, options)
     return this
