@@ -93,8 +93,13 @@ describe('Image', () => {
     })
 
     it('should throw if width and height are missing', () => {
-      const options = {fit: Image.COVER}
-      expect(() => image.resize(options)).to.throw('Must specify a width or height')
+      const options = {fit: Image.EXACT}
+      expect(() => image.resize(options)).to.throw('Must specify')
+    })
+
+    it('should throw if width or height are missing', () => {
+      const options = {width: 200, fit: Image.COVER}
+      expect(() => image.resize(options)).to.throw('Must specify')
     })
   })
 
