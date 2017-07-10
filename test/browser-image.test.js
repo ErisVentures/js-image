@@ -8,6 +8,7 @@ const skater = fixture('source-skater.jpg')
 const yosemite = fixture('source-yosemite.jpg')
 const testSkater = (...args) => testImage(BrowserImage, 'source-skater.jpg', ...args)
 const testYosemite = (...args) => testImage(BrowserImage, 'source-yosemite.jpg', ...args)
+const testOpera = (...args) => testImage(BrowserImage, 'source-sydney.jpg', ...args)
 describe('BrowserImage', () => {
   describe('._applyFormat', () => {
     it('should support jpeg', () => {
@@ -35,6 +36,58 @@ describe('BrowserImage', () => {
         method: BrowserImage.BILINEAR,
       })
       return testYosemite('yosemite-bilinear-minor.jpg', modify)
+    })
+
+    it('should support cover', () => {
+      const modify = img => img.resize({
+        width: 200,
+        height: 200,
+        fit: BrowserImage.COVER,
+      })
+
+      return testYosemite('yosemite-square-cover.jpg', modify, {
+        strict: false,
+        tolerance: 25,
+      })
+    })
+
+    it('should support contain', () => {
+      const modify = img => img.resize({
+        width: 200,
+        height: 200,
+        fit: BrowserImage.CONTAIN,
+      })
+
+      return testYosemite('yosemite-square-contain.jpg', modify, {
+        strict: false,
+        tolerance: 25,
+      })
+    })
+
+    it('should support crop', () => {
+      const modify = img => img.resize({
+        width: 200,
+        height: 200,
+        fit: BrowserImage.CROP,
+      })
+
+      return testOpera('opera-square-crop.jpg', modify, {
+        strict: false,
+        tolerance: 25,
+      })
+    })
+
+    it('should support exact', () => {
+      const modify = img => img.resize({
+        width: 200,
+        height: 200,
+        fit: BrowserImage.EXACT,
+      })
+
+      return testOpera('opera-square-exact.jpg', modify, {
+        strict: false,
+        tolerance: 25,
+      })
     })
   })
 
