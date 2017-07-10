@@ -2,7 +2,8 @@ import {BufferLike, IMetadata} from './types'
 import {Image} from './image'
 import {ImageData} from './image-data'
 import {gaussianBlur} from './transforms/blur'
-import {nearestNeighbor, bilinear} from './transforms/resize'
+import * as resize from './transforms/resize'
+import {subselect} from './transforms/subselect'
 import {sobel} from './transforms/sobel'
 import {canny} from './transforms/canny'
 
@@ -19,13 +20,18 @@ export class BrowserImage extends Image {
       return image
     }
 
-    const {method} = this._output.resize
-    switch (method) {
+    const options = resize.normalizeOptions(image, this._output.resize)
+
+    if (options.subselect) {
+      image = subselect(image, options.subselect)
+    }
+
+    switch (options.method) {
       case Image.NEAREST_NEIGHBOR:
-        return nearestNeighbor(image, this._output.resize)
+        return resize.nearestNeighbor(image, options)
       case Image.BILINEAR:
       default:
-        return bilinear(image, this._output.resize)
+        return resize.bilinear(image, options)
     }
 
   }

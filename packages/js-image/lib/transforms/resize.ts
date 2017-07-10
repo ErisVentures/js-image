@@ -1,6 +1,82 @@
 /* tslint:disable */
-import {IResizeOptions} from '../types'
+import {IResizeOptions, ImageResizeFit} from '../types'
+import {Image} from '../image'
 import {ImageData} from '../image-data'
+
+export function normalizeOptions(imageData: ImageData, options: IResizeOptions): IResizeOptions {
+  const originalWidth = imageData.width
+  const originalHeight = imageData.height
+  const originalAspectRatio = originalWidth / originalHeight
+
+  let targetWidth = options.width
+  let targetHeight = options.height
+  const targetAspectRatio = targetWidth! / targetHeight!
+
+  let subselect = options.subselect
+  if (!subselect) {
+    subselect = {top: 0, bottom: originalHeight, left: 0, right: originalWidth}
+  }
+
+  switch (options.fit) {
+    case Image.EXACT:
+      if (!targetWidth && targetHeight) {
+        targetWidth = targetHeight * originalAspectRatio
+      } else if (targetWidth && !targetHeight){
+        targetHeight = targetWidth! / originalAspectRatio
+      }
+      break
+    case Image.CONTAIN:
+      if (originalAspectRatio > targetAspectRatio) {
+        const scaleFactor = targetWidth! / originalWidth
+        targetHeight = targetWidth! / originalAspectRatio
+      } else {
+        const scaleFactor = targetHeight! / originalHeight
+        targetWidth = targetHeight! * originalAspectRatio
+      }
+      break
+    case Image.COVER:
+      if (originalAspectRatio > targetAspectRatio) {
+        const scaleFactor = targetHeight! / originalHeight
+        targetWidth = targetHeight! * originalAspectRatio
+      } else {
+        const scaleFactor = targetWidth! / originalWidth
+        targetHeight = targetWidth! / originalAspectRatio
+      }
+      break
+    case Image.CROP:
+      if (options.subselect) {
+        targetWidth = options.subselect.right - options.subselect.left
+        targetHeight = options.subselect.bottom - options.subselect.top
+        break
+      }
+
+      let cropTargetWidth = originalWidth
+      let cropTargetHeight = originalHeight
+
+      if (originalAspectRatio > targetAspectRatio) {
+        cropTargetWidth = originalHeight! * targetAspectRatio
+      } else {
+        cropTargetHeight = originalWidth! / targetAspectRatio
+      }
+
+      const heightMargin = (originalHeight - cropTargetHeight) / 2
+      const widthMargin = (originalWidth - cropTargetWidth) / 2
+
+      subselect = {
+        top: Math.floor(heightMargin),
+        bottom: originalHeight - Math.ceil(heightMargin),
+        left: Math.floor(widthMargin),
+        right: originalWidth - Math.ceil(widthMargin),
+      }
+      break
+  }
+
+  return Object.assign({}, options, {
+    width: targetWidth,
+    height: targetHeight,
+    subselect,
+  })
+}
 
 export function nearestNeighbor(imageData: ImageData, options: IResizeOptions): ImageData {
   if (!options.width || !options.height) {
