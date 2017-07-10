@@ -8,6 +8,7 @@ export interface IResizeOptions {
   height?: number,
   fit?: ImageResizeFit,
   method?: ImageResizeMethod,
+  subselect?: ISubselectOptions,
 }
 
 export interface IEdgeOptions {
@@ -75,6 +76,13 @@ export interface ISharpness {
 export interface IAnalysis {
   hash?: BufferLike,
   sharpness?: ISharpness,
+}
+
+export interface ISubselectOptions {
+  top: number,
+  bottom: number,
+  left: number,
+  right: number,
 }
 
 export type ImageFormat = 'jpeg' | 'png'
