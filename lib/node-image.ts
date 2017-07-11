@@ -73,7 +73,16 @@ export class NodeImage extends Image {
       return image
     }
 
-    const {width, height, fit} = this._output.resize
+    const {width, height, fit, subselect} = this._output.resize
+    if (subselect) {
+      image = image.extract({
+        top: subselect.top,
+        left: subselect.left,
+        width: subselect.right - subselect.left,
+        height: subselect.bottom - subselect.top,
+      })
+    }
+
     image = image.resize(width, height)
     switch (fit) {
       case Image.CONTAIN:
