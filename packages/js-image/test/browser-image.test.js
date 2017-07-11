@@ -29,6 +29,25 @@ describe('BrowserImage', () => {
   })
 
   describe('._applyResize', () => {
+    it('should support subselect', () => {
+      const modify = img => img.resize({
+        width: 100,
+        height: 80,
+        fit: BrowserImage.EXACT,
+        subselect: {
+          top: 200,
+          bottom: 800,
+          left: 100,
+          right: 700,
+        },
+      })
+
+      return testYosemite('yosemite-subselect.jpg', modify, {
+        strict: false,
+        tolerance: 35,
+      })
+    })
+
     it('should resize with bilinear', () => {
       const modify = img => img.resize({
         width: 600,

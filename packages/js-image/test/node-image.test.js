@@ -26,6 +26,22 @@ describe('NodeImage', () => {
   })
 
   describe('._applyResize', () => {
+    it('should support subselect', () => {
+      const modify = img => img.resize({
+        width: 100,
+        height: 80,
+        fit: NodeImage.EXACT,
+        subselect: {
+          top: 200,
+          bottom: 800,
+          left: 100,
+          right: 700,
+        },
+      }).format({type: 'jpeg', quality: 90})
+
+      return testYosemite('yosemite-subselect.jpg', modify, {strict: false})
+    })
+
     it('should support cover', () => {
       const modify = img => img.resize({
         width: 200,

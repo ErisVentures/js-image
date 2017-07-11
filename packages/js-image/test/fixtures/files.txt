@@ -25,6 +25,7 @@ expected-yosemite-greyscale.jpg
 expected-yosemite-nearest-neighbor.jpg
 expected-yosemite-square-contain.jpg
 expected-yosemite-square-cover.jpg
+expected-yosemite-subselect.jpg
 source-skater.jpg
 source-sydney-in-focus.jpg
 source-sydney-out-focus.jpg
