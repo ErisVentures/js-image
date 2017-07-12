@@ -49,7 +49,10 @@ describe('NodeImage', () => {
         fit: NodeImage.COVER,
       })
 
-      return testYosemite('yosemite-square-cover.jpg', modify, {strict: false})
+      return testYosemite('yosemite-square-cover.jpg', modify, {
+        strict: false,
+        tolerance: 25,
+      })
     })
 
     it('should support contain', () => {
@@ -59,7 +62,10 @@ describe('NodeImage', () => {
         fit: NodeImage.CONTAIN,
       })
 
-      return testYosemite('yosemite-square-contain.jpg', modify, {strict: false})
+      return testYosemite('yosemite-square-contain.jpg', modify, {
+        strict: false,
+        tolerance: 25,
+      })
     })
 
     it('should support crop', () => {
@@ -69,7 +75,10 @@ describe('NodeImage', () => {
         fit: NodeImage.CROP,
       })
 
-      return testOpera('opera-square-crop.jpg', modify, {strict: false})
+      return testOpera('opera-square-crop.jpg', modify, {
+        strict: false,
+        tolerance: 25,
+      })
     })
 
     it('should support exact', () => {
@@ -79,7 +88,10 @@ describe('NodeImage', () => {
         fit: NodeImage.EXACT,
       })
 
-      return testOpera('opera-square-exact.jpg', modify, {strict: false})
+      return testOpera('opera-square-exact.jpg', modify, {
+        strict: false,
+        tolerance: 25,
+      })
     })
   })
 
@@ -89,6 +101,7 @@ describe('NodeImage', () => {
       return testYosemite('yosemite-greyscale.jpg', modify, {
         strict: false,
         increment: 5,
+        tolerance: 10,
       })
     })
   })
@@ -96,12 +109,18 @@ describe('NodeImage', () => {
   describe('._applyEdges', () => {
     it('should find sobel edges', () => {
       const modify = img => img.edges()
-      return testSkater('skater-edges-sobel.jpg', modify, {strict: false})
+      return testSkater('skater-edges-sobel.jpg', modify, {
+        strict: false,
+        tolerance: 25,
+      })
     })
 
     it('should find canny edges', () => {
       const modify = img => img.edges(NodeImage.CANNY)
-      return testSkater('skater-edges-canny.jpg', modify, {strict: false})
+      return testSkater('skater-edges-canny.jpg', modify, {
+        strict: false,
+        tolerance: 25,
+      })
     })
   })
 
@@ -225,6 +244,7 @@ describe('NodeImage', () => {
       expect(image).to.be.instanceOf(NodeImage)
       return image
         .resize({width: 604, height: 400})
+        .format({type: 'jpeg', quality: 80})
         .toBuffer()
         .then(buffer => {
           return compareToFixture(buffer, 'google.jpg', {
