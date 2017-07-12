@@ -19,7 +19,7 @@ describe('Image', () => {
     it('should default output', () => {
       const output = new Image()._output
       expect(output).to.eql({
-        format: {type: 'jpeg'},
+        format: {type: 'jpeg', quality: 90},
       })
     })
   })
