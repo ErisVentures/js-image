@@ -1,7 +1,7 @@
 const patterns = {
   make: /^(\w+)/,
   focalLength: /\b(\d+(-\d+)?mm)\b/,
-  aperature: /\b(F[\d.]+(-[\d.]+)?)\b/,
+  aperture: /\b(F[\d.]+(-[\d.]+)?)\b/,
 }
 
 function parseLens(data) {

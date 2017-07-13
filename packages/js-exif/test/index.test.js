@@ -32,7 +32,7 @@ describe('index.js', () => {
           make: 'TAMRON',
           model: 'TAMRON 28-300mm F3.5-6.3 Di VC PZD A010N',
           focalLength: '28-300mm',
-          aperature: 'F3.5-6.3',
+          aperture: 'F3.5-6.3',
         },
       })
     })
