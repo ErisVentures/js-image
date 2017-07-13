@@ -5,7 +5,7 @@ const patterns = {
 }
 
 function parseLens(data) {
-  const lensModel = data.tags.LensModel
+  const lensModel = data.LensModel
   if (!lensModel) {
     return null
   }
