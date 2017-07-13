@@ -1,4 +1,5 @@
 const createParser = require('exif-parser').create
+const RawDecoder = require('raw-decoder').Decoder
 const parseDate = require('./date-parser')
 const parseLens = require('./lens-parser')
 
@@ -6,8 +7,8 @@ const properties = {
   make: ['Make'],
   model: ['Model'],
 
-  width: [data => data.imageSize.width],
-  height: [data => data.imageSize.height],
+  width: [data => data.imageSize.width, 'ImageWidth'],
+  height: [data => data.imageSize.height, 'ImageHeight'],
   xResolution: ['XResolution'],
   yResolution: ['YResolution'],
 
@@ -47,7 +48,7 @@ function mapResults(results) {
     let value = null
     for (const candidate of candidates) {
       value = getResultValue(candidate, results)
-      if (value !== null) {
+      if (typeof value !== 'undefined' && value !== null) {
         break
       }
     }
@@ -58,10 +59,24 @@ function mapResults(results) {
   return output
 }
 
+function isLikelyTIFF(byte) {
+  return byte === 0x4949 || byte === 0x4D4D
+}
+
 function parse(buffer) {
-  const parser = createParser(buffer)
-  const results = parser.parse()
-  return mapResults(results)
+  let rawResults
+  if (isLikelyTIFF((buffer[0] << 8) | buffer[1])) {
+    const decoder = new RawDecoder(buffer)
+    rawResults = {
+      tags: decoder.extractMetadata(),
+      imageSize: {},
+    }
+  } else {
+    const parser = createParser(buffer)
+    rawResults = parser.parse()
+  }
+
+  return mapResults(rawResults)
 }
 
 module.exports = parse

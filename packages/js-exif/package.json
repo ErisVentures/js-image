@@ -46,6 +46,7 @@
     "sinon-chai": "^2.11.0"
   },
   "dependencies": {
-    "exif-parser": "^0.1.9"
+    "exif-parser": "^0.1.9",
+    "raw-decoder": "^1.0.0"
   }
 }
