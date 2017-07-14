@@ -4,8 +4,9 @@
   "description": "Decodes data from RAW camera files.",
   "main": "./dist/decoder.js",
   "types": "./dist/decoder.d.ts",
+  "module": "./dist-es6/decoder.js",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && tsc -p tsconfig-es6.json",
     "test": "npm run build && npm run test:lint && npm run test:unit",
     "test:unit": "mocha --reporter spec 'test/**/*.test.js'",
     "test:lint": "tslint --type-check --project tsconfig.json 'lib/**/*.ts'",
