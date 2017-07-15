@@ -35,15 +35,13 @@ function processImage(imageData, options) {
       return image.analyze(analysis)
     })
     .then(image => Promise.all([
-      image.toMetadata(),
       image.toAnalysis(),
       image.toImageData().then(ImageData.toRGBA),
     ]))
-    .then(([metadata, analysis, imageData]) => {
+    .then(([analysis, imageData]) => {
       self.postMessage({
         type: 'processed',
         payload: {
-          metadata,
           analysis,
           imageData: {
             width: imageData.width,
