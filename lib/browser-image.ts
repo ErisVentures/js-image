@@ -9,10 +9,12 @@ import {canny} from './transforms/canny'
 
 export class BrowserImage extends Image {
   private _image: Promise<ImageData>
+  private _metadata: object|undefined
 
-  public constructor(image: Promise<ImageData>|ImageData) {
+  public constructor(image: Promise<ImageData>|ImageData, metadata?: object) {
     super()
     this._image = Promise.resolve(image)
+    this._metadata = metadata
   }
 
   private _applyResize(image: ImageData): ImageData {
@@ -73,11 +75,11 @@ export class BrowserImage extends Image {
 
   public toMetadata(): Promise<IMetadata> {
     return this._image.then(imageData => {
-      return {
+      return Object.assign({}, this._metadata, {
         width: imageData.width,
         height: imageData.height,
         aspectRatio: imageData.width / imageData.height,
-      }
+      })
     })
   }
 
@@ -90,8 +92,8 @@ export class BrowserImage extends Image {
         .then(imageData => ImageData.toBuffer(imageData, this._output.format))
   }
 
-  protected static _fromBuffer(buffer: BufferLike): Image {
-    return new BrowserImage(ImageData.from(buffer))
+  protected static _fromBuffer(buffer: BufferLike, metadata?: object): Image {
+    return new BrowserImage(ImageData.from(buffer), metadata)
   }
 
   protected static _fromImageData(imageData: ImageData): Image {

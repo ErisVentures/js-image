@@ -4,10 +4,12 @@ import {writeFileAsync} from './fs-utils'
 import {sobel} from './transforms/sobel'
 import {phash} from './analyses/hash'
 import {sharpness as computeSharpness} from './analyses/sharpness'
-import {Decoder as RawDecoder} from 'raw-decoder'
+import {Decoder as RAWDecoder} from 'raw-decoder'
 
 /* tslint:disable-next-line */
 const fileType = require('file-type')
+/* tslint:disable-next-line */
+const parseEXIF = require('@ouranos/exif')
 
 export abstract class Image {
   // Image formats
@@ -134,19 +136,24 @@ export abstract class Image {
       return this._fromImageData(bufferOrImageData as ImageData)
     }
 
-    const buffer = bufferOrImageData as Buffer
-    const type = fileType(bufferOrImageData) || {mime: 'unknown'}
+    let buffer = bufferOrImageData as Buffer
+    let exif = undefined // tslint:disable-line
+
+    const type = fileType(buffer) || {mime: 'unknown'}
     switch (type.mime) {
       case 'image/tiff':
-        const decoder = new RawDecoder(buffer)
-        const jpegImage = decoder.extractJpeg()
-        return this._fromBuffer(jpegImage)
+        const decoder = new RAWDecoder(buffer)
+        buffer = decoder.extractJpeg() as Buffer
+        exif = parseEXIF(decoder)
+        break
       default:
-        return this._fromBuffer(buffer)
+        exif = parseEXIF(buffer)
+        break
     }
+    return this._fromBuffer(buffer, {exif})
   }
 
-  protected static _fromBuffer(buffer: types.BufferLike): Image {
+  protected static _fromBuffer(buffer: types.BufferLike, metadata?: object): Image {
     throw new Error('unimplemented')
   }
 

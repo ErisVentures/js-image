@@ -171,23 +171,35 @@ describe('BrowserImage', () => {
 
   describe('.toMetadata', () => {
     it('should compute the metadata of an image', () => {
-      return BrowserImage.from(skater).toMetadata().then(metadata => {
-        expect(metadata).to.eql({
-          width: 256,
-          height: 256,
-          aspectRatio: 1,
+      return BrowserImage.from(skater)
+        .toMetadata()
+        .then(metadata => {
+          expect(metadata).to.have.property('width', 256)
+          expect(metadata).to.have.property('height', 256)
+          expect(metadata).to.have.property('aspectRatio', 1)
+          expect(metadata).to.have.deep.property('exif.width', 256)
         })
-      })
+    })
+
+    it('should compute the metadata of a raw image', () => {
+      return BrowserImage.from(fixture('source-google.nef'))
+        .toMetadata()
+        .then(metadata => {
+          expect(metadata).to.have.property('width', 4928)
+          expect(metadata).to.have.property('height', 3264)
+          expect(metadata).to.have.deep.property('exif.fNumber', 7.1)
+        })
     })
 
     it('should compute the metadata of a portrait image', () => {
-      return BrowserImage.from(yosemite).toMetadata().then(metadata => {
-        expect(metadata).to.eql({
-          width: 1080,
-          height: 1350,
-          aspectRatio: 0.8,
+      return BrowserImage.from(yosemite)
+        .toMetadata()
+        .then(metadata => {
+          expect(metadata).to.have.property('width', 1080)
+          expect(metadata).to.have.property('height', 1350)
+          expect(metadata).to.have.property('aspectRatio', 0.8)
+          expect(metadata).to.have.deep.property('exif.width', 1080)
         })
-      })
     })
   })
 
