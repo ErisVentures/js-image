@@ -30,8 +30,8 @@ class SharpImage {
   public static toMetadata(image: sharp.SharpInstance): Promise<IMetadata> {
     return image.metadata().then(metadata => {
       return {
-        width: metadata.width,
-        height: metadata.height,
+        width: metadata.width!,
+        height: metadata.height!,
         aspectRatio: metadata.width! / metadata.height!,
       }
     })
@@ -52,10 +52,12 @@ class SharpImage {
 
 export class NodeImage extends Image {
   private _image: sharp.SharpInstance
+  private _metadata: object|undefined
 
-  public constructor(image: sharp.SharpInstance) {
+  public constructor(image: sharp.SharpInstance, metadata?: object) {
     super()
     this._image = image
+    this._metadata = metadata
   }
 
   private _applyFormat(image: sharp.SharpInstance): sharp.SharpInstance {
@@ -139,7 +141,9 @@ export class NodeImage extends Image {
   }
 
   public toMetadata(): Promise<IMetadata> {
-    return SharpImage.toMetadata(this._image)
+    return SharpImage.toMetadata(this._image).then(metadata => {
+      return Object.assign({}, this._metadata, metadata)
+    })
   }
 
   public toImageData(): Promise<ImageData> {
@@ -150,8 +154,8 @@ export class NodeImage extends Image {
     return this._applyAll(this._image).then(image => image.toBuffer())
   }
 
-  protected static _fromBuffer(buffer: BufferLike): Image {
-    return new NodeImage(SharpImage.from(buffer))
+  protected static _fromBuffer(buffer: BufferLike, metadata?: object): Image {
+    return new NodeImage(SharpImage.from(buffer), metadata)
   }
 
   protected static _fromImageData(imageData: ImageData): Image {

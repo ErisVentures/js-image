@@ -50,6 +50,7 @@
     }
   },
   "dependencies": {
+    "@ouranos/exif": "^1.1.0",
     "@ouranos/jpeg-js": "^1.0.0",
     "file-type": "^5.2.0",
     "pngjs": "^3.2.0",
