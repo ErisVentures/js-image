@@ -1,4 +1,4 @@
-let imageData, processStartTs, hideNotifierTimeout
+let imageData, imageMetadata, processStartTs, hideNotifierTimeout
 
 const BrowserImage = window['@ouranos/image'].Image
 const ImageData = window['@ouranos/image'].ImageData
@@ -39,6 +39,7 @@ function setFormsDisabledState(areDisabled) {
 }
 
 function renderProperty(metadataEl, key, value) {
+  if (key === 'exif._raw' || typeof value === 'undefined') return
   if (key !== 'hash' && typeof value === 'object') {
     for (const subkey in value) {
       renderProperty(metadataEl, `${key}.${subkey}`, value[subkey])
@@ -64,6 +65,7 @@ function renderImageMetadata(metadata, clear = true) {
     metadataEl.removeChild(metadataEl.firstChild)
   }
 
+  if (!metadata) return
   for (const property in metadata) {
     renderProperty(metadataEl, property, metadata[property])
   }
@@ -118,7 +120,11 @@ function handleDrop(e) {
   const file = e.dataTransfer.files[0]
   const reader = new FileReader()
   reader.addEventListener('loadend', () => {
-    BrowserImage.from(new Uint8Array(reader.result)).toImageData().then(data => {
+    const image = BrowserImage.from(new Uint8Array(reader.result))
+    image.toMetadata().then(metadata => {
+      imageMetadata = metadata
+    })
+    image.toImageData().then(data => {
       imageData = data
       setFormsDisabledState(false)
       refreshPreview()
@@ -158,7 +164,7 @@ function listenForSettingsChange() {
 function listenForWorkerMessages() {
   worker.addEventListener('message', message => {
     if (message.data.type === 'processed') {
-      renderImageMetadata(message.data.payload.metadata)
+      renderImageMetadata(imageMetadata)
       renderImageMetadata(message.data.payload.analysis, false)
       updateCanvasContext(message.data.payload.imageData)
       const time = Math.ceil(performance.now() - processStartTs)
