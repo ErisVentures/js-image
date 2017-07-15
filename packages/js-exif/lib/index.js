@@ -65,7 +65,9 @@ function isLikelyTIFF(byte) {
 
 function parse(buffer) {
   let decoder
-  if (isLikelyTIFF((buffer[0] << 8) | buffer[1])) {
+  if (typeof buffer.extractMetadata === 'function') {
+    decoder = buffer
+  } else if (isLikelyTIFF((buffer[0] << 8) | buffer[1])) {
     decoder = new RawDecoder(buffer)
   } else {
     decoder = new JPEGDecoder(buffer)

@@ -1,6 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 const expect = require('chai').expect
+const RawDecoder = require('raw-decoder').Decoder
 const parse = require('../lib')
 
 const fixture = filePath => fs.readFileSync(path.join(__dirname, 'fixtures', filePath))
@@ -10,6 +11,12 @@ const nikonNef = fixture('nikon.nef')
 
 describe('index.js', () => {
   describe('#parse', () => {
+    it('should accept a RawDecoder as input', () => {
+      const decoder = new RawDecoder(nikonNef)
+      const results = parse(decoder)
+      expect(results).to.have.property('make', 'NIKON CORPORATION')
+    })
+
     it('should work on Nikon jpeg files', () => {
       const results = parse(nikonJpeg)
       expect(results).to.have.property('_raw')
