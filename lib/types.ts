@@ -61,6 +61,7 @@ export interface IMetadata {
   width: number,
   height: number,
   aspectRatio: number,
+  exif?: object,
 }
 
 export interface ISharpness {
