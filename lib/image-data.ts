@@ -14,7 +14,7 @@ export interface BrowserImageData {
 }
 
 export class ImageData {
-  public static GREYSCALE: ImageDataFormat = 'b'
+  public static GREYSCALE: ImageDataFormat = 'k'
   public static RGB: ImageDataFormat = 'rgb'
   public static RGBA: ImageDataFormat = 'rgba'
 

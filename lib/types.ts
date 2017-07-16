@@ -92,7 +92,7 @@ export type ImageResizeMethod = 'nearestNeighbor' | 'bilinear' | 'bicubic'
 export type EdgeMethod = 'sobel' | 'canny'
 export type HashMethod = 'phash'
 
-export type ImageDataFormat = 'rgb' | 'rgba' | 'b'
+export type ImageDataFormat = 'hsl' | 'rgb' | 'rgba' | 'k'
 export type BufferLike = Buffer|Uint8Array|number[]
 
 export interface Pixel {

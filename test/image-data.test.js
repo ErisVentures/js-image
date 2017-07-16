@@ -184,7 +184,7 @@ describe('ImageData', () => {
         width: 10,
         height: 10,
         channels: 1,
-        format: 'b',
+        format: ImageData.GREYSCALE,
         data: new Uint8Array(100),
       }
 
@@ -196,7 +196,7 @@ describe('ImageData', () => {
         width: 2,
         height: 2,
         channels: 3,
-        format: 'rgb',
+        format: ImageData.RGB,
         data: [
           100, 100, 100,
           0, 100, 0,
@@ -209,7 +209,7 @@ describe('ImageData', () => {
         width: 2,
         height: 2,
         channels: 1,
-        format: 'b',
+        format: ImageData.GREYSCALE,
         data: new Uint8Array([100, 59, 30, 11]),
       })
     })
@@ -230,7 +230,7 @@ describe('ImageData', () => {
         width: 2,
         height: 2,
         channels: 1,
-        format: 'b',
+        format: ImageData.GREYSCALE,
         data: new Uint8Array([100, 50, 200, 30]),
       }
 
@@ -238,7 +238,7 @@ describe('ImageData', () => {
         width: 2,
         height: 2,
         channels: 3,
-        format: 'rgb',
+        format: ImageData.RGB,
         data: new Uint8Array([
           100, 100, 100,
           50, 50, 50,
@@ -262,7 +262,7 @@ describe('ImageData', () => {
         width: 2,
         height: 2,
         channels: 3,
-        format: 'rgb',
+        format: ImageData.RGB,
         data: [
           100, 100, 100,
           0, 100, 0,
@@ -275,7 +275,7 @@ describe('ImageData', () => {
         width: 2,
         height: 2,
         channels: 4,
-        format: 'rgba',
+        format: ImageData.RGBA,
         data: new Uint8Array([
           100, 100, 100, 255,
           0, 100, 0, 255,
