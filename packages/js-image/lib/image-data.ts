@@ -264,9 +264,11 @@ export class ImageData {
     const numPixels = srcImageData.width * srcImageData.height
     const rawData = new Uint8Array(numPixels * 3)
     for (let i = 0; i < numPixels; i++) {
-      rawData[i + 0] = srcImageData.data[(i * srcImageData.channels) + 0]
-      rawData[i + 1] = srcImageData.data[(i * srcImageData.channels) + 1]
-      rawData[i + 2] = srcImageData.data[(i * srcImageData.channels) + 2]
+      const srcOffset = i * 4
+      const dstOffset = i * 3
+      rawData[dstOffset + 0] = srcImageData.data[srcOffset + 0]
+      rawData[dstOffset + 1] = srcImageData.data[srcOffset + 1]
+      rawData[dstOffset + 2] = srcImageData.data[srcOffset + 2]
     }
 
     dstImageData.format = ImageData.RGB
