@@ -224,6 +224,59 @@ describe('ImageData', () => {
     })
   })
 
+  describe('#toHSL', () => {
+    it('should convert greyscale images', () => {
+      const imageData = {
+        width: 2,
+        height: 2,
+        channels: 1,
+        format: ImageData.GREYSCALE,
+        data: new Uint8Array([100, 50, 200, 30]),
+      }
+
+      expect(ImageData.toHSL(imageData)).to.eql({
+        width: 2,
+        height: 2,
+        channels: 3,
+        format: ImageData.HSL,
+        data: new Uint8Array([
+          0, 0, 100,
+          0, 0, 50,
+          0, 0, 200,
+          0, 0, 30,
+        ]),
+      })
+    })
+
+    it('should convert RGBA images', () => {
+      const imageData = {
+        width: 2,
+        height: 2,
+        channels: 4,
+        format: ImageData.RGBA,
+        data: new Uint8Array([
+          255, 0, 0, 255,
+          0, 255, 0, 255,
+          255, 0, 255, 255,
+          85, 185, 200, 255,
+        ]),
+      }
+
+      expect(ImageData.toHSL(imageData)).to.eql({
+        width: 2,
+        height: 2,
+        channels: 3,
+        format: ImageData.HSL,
+        data: new Uint8Array([
+          0, 255, 128,
+          Math.round(255 * 120 / 360), 255, 128,
+          Math.round(255 * 302 / 360), 255, 128,
+          Math.round(255 * 188 / 360), 130, 143,
+        ]),
+      })
+    })
+  })
+
   describe('#toRGB', () => {
     it('should inflate greyscale images', () => {
       const imageData = {
