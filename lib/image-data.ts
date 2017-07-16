@@ -17,6 +17,7 @@ export class ImageData {
   public static GREYSCALE: ImageDataFormat = 'k'
   public static RGB: ImageDataFormat = 'rgb'
   public static RGBA: ImageDataFormat = 'rgba'
+  public static HSL: ImageDataFormat = 'hsl'
 
   public channels: number
   public format: ImageDataFormat
@@ -185,6 +186,8 @@ export class ImageData {
     ImageData.assert(srcImageData)
     if (srcImageData.format === ImageData.GREYSCALE) {
       return srcImageData
+    } else if (srcImageData.format === ImageData.HSL) {
+      srcImageData = ImageData.toRGB(srcImageData)
     }
 
     const dstImageData = Object.assign({}, srcImageData)
@@ -204,12 +207,59 @@ export class ImageData {
     return dstImageData
   }
 
+  public static toHSL(srcImageData: ImageData): ImageData {
+    ImageData.assert(srcImageData)
+    if (srcImageData.format === ImageData.HSL) {
+      return srcImageData
+    } else {
+      srcImageData = ImageData.toRGB(srcImageData)
+    }
+
+    const dstImageData = Object.assign({}, srcImageData)
+    const numPixels = srcImageData.width * srcImageData.height
+    const rawData = new Uint8Array(numPixels * 3)
+    for (let i = 0; i < numPixels; i++) {
+      const offset = i * 3
+      const r = srcImageData.data[offset] / 255
+      const g = srcImageData.data[offset + 1] / 255
+      const b = srcImageData.data[offset + 2] / 255
+      const min = Math.min(r, g, b)
+      const max = Math.max(r, g, b)
+      const delta = max - min
+      const luminance = (max + min) / 2
+
+      let hue = 0
+      let saturation = 0
+      if (delta) {
+        saturation = delta / (1 - Math.abs(2 * luminance - 1))
+        if (max === r) {
+          hue = 60 * (((g - b) / delta) % 6)
+        } else if (max === g) {
+          hue = 60 * ((b - r) / delta + 2)
+        } else {
+          hue = 60 * ((r - g) / delta + 4)
+        }
+      }
+
+      rawData[offset + 0] = Math.round(255 * hue / 360)
+      rawData[offset + 1] = Math.round(255 * saturation)
+      rawData[offset + 2] = Math.round(255 * luminance)
+    }
+
+    dstImageData.format = ImageData.HSL
+    dstImageData.channels = 3
+    dstImageData.data = rawData
+    return dstImageData
+  }
+
   public static toRGB(srcImageData: ImageData): ImageData {
     ImageData.assert(srcImageData)
     if (srcImageData.format === ImageData.RGB) {
       return srcImageData
     } else if (srcImageData.format === ImageData.RGBA) {
       return ImageData.removeAlphaChannel(srcImageData)
+    } else if (srcImageData.format === ImageData.HSL) {
+      throw new TypeError('Cannot convert HSL to RGB')
     }
 
     const dstImageData = Object.assign({}, srcImageData)
