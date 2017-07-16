@@ -92,25 +92,23 @@ function refreshPreview() {
   })
 }
 
-function attemptDefaultImage() {
-  const img = new Image()
-  img.addEventListener('load', evt => {
-    const canvas = document.createElement('canvas')
-    const context = canvas.getContext('2d')
-    canvas.width = img.width
-    canvas.height = img.height
-    context.drawImage(img, 0, 0)
-    const rawImageData = context.getImageData(0, 0, img.width, img.height)
-    imageData = ImageData.normalize({
-      width: img.width,
-      height: img.height,
-      data: rawImageData.data,
-    })
+function renderFromBuffer(buffer) {
+  const image = BrowserImage.from(buffer)
+  image.toMetadata().then(metadata => {
+    imageMetadata = metadata
+  })
+  image.toImageData().then(data => {
+    imageData = data
     setFormsDisabledState(false)
     refreshPreview()
   })
+}
 
-  img.src = '../test/fixtures/source-skater.jpg'
+function attemptDefaultImage() {
+  fetch('../test/fixtures/source-skater.jpg')
+    .then(response => response.arrayBuffer())
+    .then(arrayBuffer => new Uint8Array(arrayBuffer))
+    .then(renderFromBuffer)
 }
 
 function handleDrop(e) {
@@ -120,15 +118,7 @@ function handleDrop(e) {
   const file = e.dataTransfer.files[0]
   const reader = new FileReader()
   reader.addEventListener('loadend', () => {
-    const image = BrowserImage.from(new Uint8Array(reader.result))
-    image.toMetadata().then(metadata => {
-      imageMetadata = metadata
-    })
-    image.toImageData().then(data => {
-      imageData = data
-      setFormsDisabledState(false)
-      refreshPreview()
-    })
+    renderFromBuffer(new Uint8Array(reader.result))
   })
   reader.readAsArrayBuffer(file)
 
