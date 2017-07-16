@@ -288,13 +288,30 @@ describe('ImageData', () => {
 
   describe('#removeAlphaChannel', () => {
     it('should convert RGBA to RGB', () => {
-      return fixtureDecode('source-skater.jpg').then(skaterData => {
-        const imageData = ImageData.normalize(skaterData)
-        const result = ImageData.removeAlphaChannel(imageData)
+      const imageData = {
+        width: 2,
+        height: 2,
+        channels: 4,
+        format: ImageData.RGBA,
+        data: [
+          100, 100, 100, 255,
+          0, 100, 0, 255,
+          100, 0, 0, 255,
+          0, 0, 100, 255,
+        ],
+      }
 
-        expect(result).to.have.property('format', ImageData.RGB)
-        expect(result).to.have.property('channels', 3)
-        expect(result.data.length).to.equal(imageData.data.length / 4 * 3)
+      expect(ImageData.removeAlphaChannel(imageData)).to.eql({
+        width: 2,
+        height: 2,
+        channels: 3,
+        format: ImageData.RGB,
+        data: new Uint8Array([
+          100, 100, 100,
+          0, 100, 0,
+          100, 0, 0,
+          0, 0, 100,
+        ]),
       })
     })
   })
