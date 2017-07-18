@@ -28,4 +28,4 @@ script:
   - LOOSE_COMPARISON_TOLERANCE=15 npm run test:coverage
 after_success:
   - nyc report --reporter=text-lcov | coveralls || echo 'Failed to upload to coveralls...'
-  # - npm run semantic-release
+  - npm run semantic-release
