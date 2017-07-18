@@ -3,6 +3,7 @@
   "version": "0.0.0-development",
   "description": "Collection of image manipulation libraries for node and the browser.",
   "main": "./lib/node-image.js",
+  "types": "./lib/node-image.d.ts",
   "scripts": {
     "build": "npm run build:ts && npm run build:rollup && npm run build:rollup:minify",
     "build:ts": "tsc",
