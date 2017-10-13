@@ -38,15 +38,19 @@ class SharpImage {
   }
 
   public static toImageData(image: sharp.SharpInstance): Promise<ImageData> {
-    const metadata = image.metadata()
-    const pixels = image.clone().raw().toBuffer()
-    return Promise.all([metadata, pixels]).then(([metadata, pixels]) => ({
-      channels: 3,
-      format: ImageData.RGB,
-      width: metadata.width!,
-      height: metadata.height!,
-      data: pixels,
-    }))
+    const pixels = (image.clone().raw().toBuffer as any)({resolveWithObject: true})
+    return pixels.then((rawData: any) => {
+      const {width, height, size} = rawData.info
+      const channels = size / width / height
+
+      return {
+        channels,
+        width,
+        height,
+        format: channels === 3 ? ImageData.RGB : ImageData.GREYSCALE,
+        data: rawData.data,
+      }
+    })
   }
 }
 
