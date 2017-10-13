@@ -228,6 +228,20 @@ describe('NodeImage', () => {
         return compareToFixture(buffer, 'skater-image-data.jpg', {strict: false})
       })
     })
+
+    it('should generate valid image data for transformed image', () => {
+      return NodeImage.from(skater)
+        .greyscale()
+        .resize({width: 120, height: 120})
+        .toImageData()
+        .then(imageData => {
+          expect(imageData).to.have.property('channels', 1)
+          expect(imageData).to.have.property('format', 'k')
+          expect(imageData).to.have.property('width', 120)
+          expect(imageData).to.have.property('height', 120)
+          expect(imageData.data).to.have.length(120 * 120)
+        })
+    })
   })
 
   describe('.toBuffer', () => {
@@ -266,5 +280,23 @@ describe('NodeImage', () => {
           })
         })
     })
+  })
+
+  it('should support multiple sequential changes', () => {
+    const image = NodeImage.from(fixture('source-google.nef'))
+    expect(image).to.be.instanceOf(NodeImage)
+    return image
+      .resize({width: 604, height: 400})
+      .greyscale()
+      .edges({method: NodeImage.CANNY, blurSigma: 0})
+      .format({type: 'jpeg', quality: 80})
+      .toBuffer()
+      .then(buffer => {
+        return compareToFixture(buffer, 'google-canny.jpg', {
+          strict: false,
+          increment: 10,
+          tolerance: 30,
+        })
+      })
   })
 })
