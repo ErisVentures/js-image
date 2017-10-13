@@ -1,4 +1,5 @@
 
+expected-google-canny.jpg
 expected-google.jpg
 expected-opera-square-crop.jpg
 expected-opera-square-exact.jpg
