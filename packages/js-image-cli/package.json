@@ -1,0 +1,46 @@
+{
+  "name": "@ouranos/image-cli",
+  "version": "0.0.0",
+  "description": "CLI wrapper and standalone executable API for @ouranos/image.",
+  "main": "./bin/index.js",
+  "bin": {
+    "image-cli": "./bin/index.js"
+  },
+  "scripts": {
+    "test": "npm run test:lint && npm run test:unit",
+    "test:unit": "mocha --reporter spec 'test/**/*.test.js'",
+    "test:lint": "lint",
+    "test:coverage": "nyc npm run test:unit",
+    "test:watch": "mocha --watch --reporter dot 'test/**/*.test.js'",
+    "semantic-release": "semantic-release pre && npm publish --access public && semantic-release post"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ouranos-oss/js-image-cli.git"
+  },
+  "author": "Patrick Hulce <patrick.hulce@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ouranos-oss/js-image-cli/issues"
+  },
+  "homepage": "https://github.com/ouranos-oss/js-image-cli#readme",
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "devDependencies": {
+    "@patrickhulce/lint": "^1.1.1",
+    "chai": "^4.1.2",
+    "cz-conventional-changelog": "^2.0.0",
+    "mocha": "^4.0.1",
+    "nyc": "^11.2.1",
+    "semantic-release": "^8.0.3",
+    "sinon": "^4.0.1",
+    "sinon-chai": "^2.14.0"
+  },
+  "dependencies": {
+    "@ouranos/image": "^1.0.1",
+    "yargs": "^9.0.1"
+  }
+}

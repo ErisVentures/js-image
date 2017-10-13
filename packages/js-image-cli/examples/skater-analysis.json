@@ -1,0 +1,12 @@
+{
+  "hash": "ea26561bb48918d5",
+  "sharpness": {
+    "percentEdges": 0.270477294921875,
+    "lowerQuartile": 38,
+    "median": 75,
+    "upperQuartile": 131,
+    "lowerVentileAverage": 21.829763246899663,
+    "average": 91.83893715446237,
+    "upperVentileAverage": 230.33821871476889
+  }
+}

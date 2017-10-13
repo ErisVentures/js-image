@@ -1,0 +1,24 @@
+[
+  {
+    "__notes__": "paths are relative to CWD which is assumed to be project root",
+    "input": "examples/skater.jpg",
+    "output": "examples/skater-sobel.jpg",
+    "toDisk": true,
+    "action": "toBuffer",
+    "settings": {
+      "edges": {"method": "sobel", "blurSigma": 0}
+    }
+  },
+  {
+    "input": "examples/skater.jpg",
+    "output": "examples/skater-analysis.json",
+    "toDisk": true,
+    "action": "toAnalysis",
+    "settings": {
+      "analyze": {
+        "hash": {},
+        "sharpness": {}
+      }
+    }
+  }
+]
