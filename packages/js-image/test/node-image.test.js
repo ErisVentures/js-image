@@ -39,7 +39,10 @@ describe('NodeImage', () => {
         },
       }).format({type: 'jpeg', quality: 90})
 
-      return testYosemite('yosemite-subselect.jpg', modify, {strict: false})
+      return testYosemite('yosemite-subselect.jpg', modify, {
+        strict: false,
+        tolerance: 25,
+      })
     })
 
     it('should support cover', () => {

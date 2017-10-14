@@ -52,11 +52,11 @@
   },
   "dependencies": {
     "@ouranos/exif": "^1.1.0",
-    "@ouranos/jpeg-js": "^1.0.0",
-    "file-type": "^5.2.0",
-    "pngjs": "^3.2.0",
+    "@ouranos/jpeg-js": "^1.0.1",
+    "file-type": "^7.0.1",
+    "pngjs": "^3.3.0",
     "raw-decoder": "^1.0.0",
-    "sharp": "^0.17.3"
+    "sharp": "^0.18.4"
   },
   "devDependencies": {
     "@patrickhulce/lint": "^1.1.1",
