@@ -11,6 +11,7 @@ before_install:
   - npm install -g coveralls nyc
 script:
   - npm run test:lint
+  - PKG_TARGET=node8-linux npm run build
   - npm run test:coverage
 after_success:
   - nyc report --reporter=text-lcov | coveralls || echo 'Failed to upload to coveralls...'
