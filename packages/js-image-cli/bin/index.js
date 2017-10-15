@@ -10,6 +10,11 @@ const argv = yargs
     type: 'string',
     required: true,
   })
+  .option('reporter', {
+    alias: 'r',
+    default: 'pretty',
+    choices: ['json', 'pretty'],
+  })
   .argv
 
 const configEntries = ConfigEntry.readAllFrom(argv.config)

@@ -1,7 +1,10 @@
 const PrettyReporter = require('./pretty-reporter')
+const JsonReporter = require('./json-reporter')
 
 module.exports = {
-  from() {
-    return new PrettyReporter()
+  from(options) {
+    return options.reporter === 'pretty' ?
+      new PrettyReporter() :
+      new JsonReporter()
   },
 }

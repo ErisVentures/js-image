@@ -41,6 +41,10 @@ class ConfigEntry {
     return this._entry.toDisk
   }
 
+  get toReporter() {
+    return this._entry.toReporter
+  }
+
   static readAllFrom(pathOrConfig) {
     let json
     if (pathOrConfig.charAt(0) === '{' || pathOrConfig.charAt(0) === '[') {
