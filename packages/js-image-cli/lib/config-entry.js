@@ -47,7 +47,9 @@ class ConfigEntry {
 
   static readAllFrom(pathOrConfig) {
     let json
-    if (pathOrConfig.charAt(0) === '{' || pathOrConfig.charAt(0) === '[') {
+    if (typeof pathOrConfig === 'object') {
+      json = pathOrConfig
+    } else if (pathOrConfig.charAt(0) === '{' || pathOrConfig.charAt(0) === '[') {
       json = JSON.parse(pathOrConfig)
     } else {
       json = JSON.parse(fs.readFileSync(pathOrConfig, 'utf8'))
