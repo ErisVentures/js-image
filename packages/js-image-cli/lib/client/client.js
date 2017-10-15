@@ -27,7 +27,28 @@ class CLIInstance extends EventEmitter {
     }
   }
 
+  _processChunk(chunk) {
+    const lines = chunk.toString().split('\n')
+    lines.forEach(line => {
+      if (!line) {
+        return
+      }
+
+      try {
+        const message = JSON.parse(line)
+        if (message.type === 'entryFinished') {
+          this._entries.push(message.data)
+        } else if (message.type === 'entryErrored') {
+          this._entries.push(Object.assign({failed: true}, message.data))
+        }
+      } catch (err) {
+        this.emit('error', err)
+      }
+    })
+  }
+
   _listenToProcessEvents() {
+    this._childProcess.stdout.on('data', chunk => this._processChunk(chunk))
     this._childProcess.on('error', err => this._emitDone(err))
     this._childProcess.on('exit', code => {
       if (code === 0) {
@@ -35,17 +56,6 @@ class CLIInstance extends EventEmitter {
       } else {
         this._emitDone(new Error(`Process exited with exit code ${code}`))
       }
-    })
-
-    this._childProcess.stdout.on('data', chunk => {
-      try {
-        const message = JSON.parse(chunk)
-        if (message.type === 'entryFinished') {
-          this._entries.push(message.data)
-        } else if (message.type === 'entryErrored') {
-          this._entries.push(Object.assign({failed: true}, message.data))
-        }
-      } catch (err) {}
     })
   }
 
