@@ -4,10 +4,6 @@ const REQUIRED_PROPERTIES = ['input', 'output', 'action']
 
 class ConfigEntry {
   constructor(config) {
-    if (!config) {
-      throw new Error('config is not defined')
-    }
-
     for (const prop of REQUIRED_PROPERTIES) {
       if (!config[prop]) {
         throw new Error(`config.${prop} is not defined`)
@@ -60,6 +56,10 @@ class ConfigEntry {
     }
 
     return json.map((config, index) => {
+      if (!config) {
+        throw new Error('config is not defined')
+      }
+
       config.id = index
       return new ConfigEntry(config)
     })
