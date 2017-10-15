@@ -9,7 +9,7 @@
   },
   {
     "input": ":::tmp",
-    "output": "test/fixtures/skater-analysis.json",
+    "output": "test/fixtures/actual-skater-analysis.json",
     "toDisk": true,
     "action": "toAnalysis",
     "settings": {
@@ -21,7 +21,7 @@
   },
   {
     "input": "test/fixtures/skater.jpg",
-    "output": "test/fixtures/skater-analysis.json",
+    "output": ":::ignored",
     "toReporter": true,
     "action": "toMetadata"
   }

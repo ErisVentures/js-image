@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const yargs = require('yargs')
 const ConfigEntry = require('../lib/config-entry')
 const Runner = require('../lib/runner')
