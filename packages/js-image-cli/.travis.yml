@@ -9,6 +9,8 @@ node_js:
   - v6
 before_install:
   - npm install -g coveralls nyc
+install:
+  - yarn install --check-files
 script:
   - npm run test:lint
   - PKG_TARGET=node8-linux npm run build
