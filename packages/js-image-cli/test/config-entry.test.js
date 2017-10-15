@@ -8,7 +8,7 @@ describe('lib/config-entry.js', () => {
   describe('#readAllFrom', () => {
     it('should read from disk', () => {
       const entries = ConfigEntry.readAllFrom(fixturePath('config.json'))
-      expect(entries).to.have.length(3)
+      expect(entries).to.have.length(4)
 
       for (const entry of entries) {
         expect(entry.id).to.be.a('number')

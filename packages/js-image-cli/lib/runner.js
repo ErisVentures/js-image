@@ -44,14 +44,17 @@ class Runner {
 
         this._reporter.entryFinished(entry, result)
       })
-      .catch(err => this._reporter.entryErrored(entry, err))
   }
 
   run() {
     this._reporter.started()
     return this._entries
-      .reduce((promise, config) => {
-        return promise.then(() => this._processEntry(config))
+      .reduce((promise, entry) => {
+        return promise.then(() => {
+          return Promise.resolve()
+            .then(() => this._processEntry(entry))
+            .catch(err => this._reporter.entryErrored(entry, err))
+        })
       }, Promise.resolve())
       .then(() => this._reporter.finished())
   }

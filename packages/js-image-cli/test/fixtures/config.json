@@ -8,6 +8,12 @@
     }
   },
   {
+    "input": "test/fixtures/missing.jpg",
+    "output": "test/fixtures/actual-missing.jpg",
+    "action": "toBuffer",
+    "settings": {}
+  },
+  {
     "input": ":::tmp",
     "output": "test/fixtures/actual-skater-analysis.json",
     "toDisk": true,

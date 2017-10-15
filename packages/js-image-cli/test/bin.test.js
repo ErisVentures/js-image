@@ -12,6 +12,7 @@ describe('bin/index.js', () => {
     const args = ['-c', CONFIG_PATH]
     return execa.stdout(JS_EXE, args).then(stdout => {
       expect(stdout).to.include('has finished')
+      expect(stdout).to.include('errored')
 
       const analysis = JSON.parse(fs.readFileSync(ANALYSIS_PATH))
       expect(analysis).to.have.property('hash').a('string')
