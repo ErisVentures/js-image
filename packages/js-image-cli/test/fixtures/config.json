@@ -1,0 +1,28 @@
+[
+  {
+    "input": "test/fixtures/skater.jpg",
+    "output": ":::tmp",
+    "action": "toBuffer",
+    "settings": {
+      "edges": {"method": "sobel", "blurSigma": 0}
+    }
+  },
+  {
+    "input": ":::tmp",
+    "output": "test/fixtures/skater-analysis.json",
+    "toDisk": true,
+    "action": "toAnalysis",
+    "settings": {
+      "analyze": {
+        "hash": {},
+        "sharpness": {}
+      }
+    }
+  },
+  {
+    "input": "test/fixtures/skater.jpg",
+    "output": "test/fixtures/skater-analysis.json",
+    "toReporter": true,
+    "action": "toMetadata"
+  }
+]

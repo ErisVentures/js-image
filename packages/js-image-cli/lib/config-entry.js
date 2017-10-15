@@ -38,11 +38,11 @@ class ConfigEntry {
   }
 
   get toDisk() {
-    return this._entry.toDisk
+    return Boolean(this._entry.toDisk)
   }
 
   get toReporter() {
-    return this._entry.toReporter
+    return Boolean(this._entry.toReporter)
   }
 
   static readAllFrom(pathOrConfig) {
