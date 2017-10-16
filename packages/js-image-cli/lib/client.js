@@ -85,7 +85,7 @@ class CLIInstance extends EventEmitter {
 class CLIClient {
   constructor(options) {
     this._options = Object.assign({
-      executablePath: path.join(__dirname, '../../bin/index.js'),
+      executablePath: path.join(__dirname, '../bin/index.js'),
     }, options)
   }
 

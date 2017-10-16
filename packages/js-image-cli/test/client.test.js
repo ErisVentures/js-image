@@ -1,13 +1,13 @@
 const path = require('path')
 const chai = require('chai')
-const Client = require('../../lib/client/client')
+const Client = require('../lib/client')
 
 const expect = chai.expect
 chai.use(require('chai-as-promised'))
 
-const fixturePath = name => path.join(__dirname, '../fixtures/', name)
+const fixturePath = name => path.join(__dirname, 'fixtures/', name)
 
-describe('lib/client/client.js', () => {
+describe('lib/client.js', () => {
   describe('.run', () => {
     it('should handle missing executable', () => {
       const client = new Client({executablePath: './made-up'})

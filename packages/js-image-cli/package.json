@@ -2,7 +2,7 @@
   "name": "@ouranos/image-cli",
   "version": "0.0.0",
   "description": "CLI wrapper and standalone executable API for @ouranos/image.",
-  "main": "./bin/index.js",
+  "main": "./lib/client.js",
   "bin": {
     "image-cli": "./bin/index.js"
   },
