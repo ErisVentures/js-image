@@ -1,0 +1,21 @@
+clone_depth: 10
+version: "${build}"
+environment:
+  fast_finish: true
+  matrix:
+    - nodejs_version: "8"
+      platform: x64
+build: off
+install:
+  - ps: Install-Product node $env:nodejs_version $env:platform
+  - npm install -g yarn
+  - yarn install --check-files
+test_script:
+  - node --version
+  - yarn --version
+  - yarn build
+  - yarn test:download
+  - yarn test:coverage
+cache:
+  - node_modules -> .appveyor.yml,yarn.lock
+  - '%LOCALAPPDATA%\Yarn -> appveyor.yml,yarn.lock'
