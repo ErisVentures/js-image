@@ -17,8 +17,15 @@ describe('lib/client.js', () => {
 
     it('should handle failing executable', () => {
       const client = new Client({executablePath: fixturePath('fail.js')})
-      const promise = client.run().waitForExit()
-      return expect(promise).to.eventually.be.rejectedWith(/exit code 1/)
+      return client
+        .run()
+        .waitForExit()
+        .then(() => expect.fail(null, null, 'Promise should have failed'))
+        .catch(err => {
+          expect(err.message).to.match(/exit code 1/)
+          expect(err.stdout).to.match(/Here is stdout/)
+          expect(err.stderr).to.match(/This fails/)
+        })
     })
 
     it('should work with object-based config', () => {

@@ -8,6 +8,8 @@ class CLIInstance extends EventEmitter {
     this._finished = false
     this._error = null
     this._entries = []
+    this._stdout = ''
+    this._stderr = ''
 
     try {
       this._childProcess = spawn(cmd, args)
@@ -28,6 +30,8 @@ class CLIInstance extends EventEmitter {
   }
 
   _processChunk(chunk) {
+    this._stdout += chunk
+
     const lines = chunk.toString().split('\n')
     lines.forEach(line => {
       if (!line) {
@@ -49,12 +53,16 @@ class CLIInstance extends EventEmitter {
 
   _listenToProcessEvents() {
     this._childProcess.stdout.on('data', chunk => this._processChunk(chunk))
+    this._childProcess.stderr.on('data', s => this._stderr += s)
     this._childProcess.on('error', err => this._emitDone(err))
     this._childProcess.on('exit', code => {
       if (code === 0) {
         this._emitDone()
       } else {
-        this._emitDone(new Error(`Process exited with exit code ${code}`))
+        const err = new Error(`Process exited with exit code ${code}`)
+        err.stdout = this._stdout
+        err.stderr = this._stderr
+        this._emitDone(err)
       }
     })
   }
