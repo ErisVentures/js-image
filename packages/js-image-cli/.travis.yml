@@ -4,16 +4,17 @@ cache: yarn
 notifications:
   email: false
 node_js:
-  - v8
-  - v7
-  - v6
+  - "8"
+  - "7"
+  - "6"
 before_install:
   - npm install -g coveralls nyc
 install:
   - yarn install --check-files
 script:
+  - export PKG_TARGET="node${TRAVIS_NODE_VERSION}-linux"
   - npm run test:lint
-  - PKG_TARGET=node8-linux npm run build
+  - npm run build
   - npm run test:coverage
 after_success:
   - nyc report --reporter=text-lcov | coveralls || echo 'Failed to upload to coveralls...'
@@ -27,4 +28,4 @@ deploy:
   on:
     repo: ouranos-oss/js-image-cli
     tags: true
-    node: 8
+    node: "8"
