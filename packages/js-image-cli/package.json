@@ -9,7 +9,7 @@
   "scripts": {
     "build": "bash ./scripts/build.sh",
     "test": "npm run test:lint && npm run test:unit",
-    "test:unit": "mocha --reporter spec 'test/**/*.test.js'",
+    "test:unit": "mocha --reporter spec --timeout 4000 'test/**/*.test.js'",
     "test:lint": "lint",
     "test:coverage": "nyc npm run test:unit",
     "test:watch": "mocha --watch --reporter dot 'test/**/*.test.js'",
