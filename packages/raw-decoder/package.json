@@ -1,6 +1,6 @@
 {
   "name": "raw-decoder",
-  "version": "0.0.0-development",
+  "version": "1.1.0",
   "description": "Decodes data from RAW camera files.",
   "main": "./dist/decoder.js",
   "types": "./dist/decoder.d.ts",

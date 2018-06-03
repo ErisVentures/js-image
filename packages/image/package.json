@@ -1,6 +1,6 @@
 {
   "name": "@ouranos/image",
-  "version": "0.0.0-development",
+  "version": "1.1.0",
   "description": "Collection of image manipulation libraries for node and the browser.",
   "main": "./lib/node-image.js",
   "types": "./lib/node-image.d.ts",
