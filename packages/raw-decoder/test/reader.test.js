@@ -3,7 +3,7 @@ const {expect} = require('./utils')
 
 describe('Reader', () => {
   describe('.read', () => {
-    context('when reading from Buffer', () => {
+    describe('when reading from Buffer', () => {
       const buffer = Buffer.from([0x01, 0x00, 0x00, 0x10])
 
       it('should read little endian', () => {
@@ -21,7 +21,7 @@ describe('Reader', () => {
       })
     })
 
-    context('when reading from Uint8Array', () => {
+    describe('when reading from Uint8Array', () => {
       const array = new Uint8Array([0x01, 0x00, 0x00, 0x10])
 
       it('should read little endian', () => {
