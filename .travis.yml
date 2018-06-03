@@ -11,3 +11,4 @@ install:
   - yarn install --check-files
 script:
   - npm run build
+  - npm run test:lint

@@ -11,8 +11,7 @@
     "build:rollup:minify": "cross-env MINIFY=true rollup -c rollup.config.js && cp dist/bundle.min.js demo/",
     "test": "npm run test:lint && npm run test:unit",
     "test:unit": "mocha --require source-map-support/register --timeout 20000 --reporter spec --recursive ./test",
-    "test:lint": "lint -t typescript --ignore 'lib/**/*.d.ts' 'lib/**/*.ts' && lint -t test 'test/**/*.test.js'",
-    "test:lint:fix": "lint -t typescript --fix --ignore 'lib/**/*.d.ts' 'lib/**/*.ts' && lint -t test --fix 'test/**/*.test.js'",
+    "test:lint": "lint -t typescript --ignore 'lib/**/*.d.ts' 'lib/**/*.ts'",
     "test:update-expectations": "cross-env UPDATE_EXPECTATIONS=true npm run test:unit",
     "test:upload": "bash test/fixtures/upload.sh",
     "test:update-all": "npm run test:update-expectations && npm run test:upload",
@@ -59,7 +58,7 @@
     "sharp": "^0.18.4"
   },
   "devDependencies": {
-    "@patrickhulce/lint": "^1.1.1",
+    "@patrickhulce/lint": "^2.1.2",
     "@types/bluebird": "^3.5.3",
     "@types/node": "^7.0.18",
     "@types/sharp": "^0.17.1",

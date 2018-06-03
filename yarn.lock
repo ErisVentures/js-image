@@ -10,9 +10,9 @@
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@ouranos/jpeg-js/-/jpeg-js-1.0.1.tgz#079d5f7ad2c503ef522d0ecb5831ccf26266a138"
 
-"@patrickhulce/lint@^1.0.0", "@patrickhulce/lint@^1.1.1":
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/@patrickhulce/lint/-/lint-1.1.1.tgz#468bd0b4c60002ac5bafec7f2b518ca163647913"
+"@patrickhulce/lint@^2.1.2":
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/@patrickhulce/lint/-/lint-2.1.2.tgz#994abd1f2b409e49ba52d79530612a70c39abd9a"
   dependencies:
     babel-eslint "^7.2.1"
     debug "^2.6.3"
@@ -24,6 +24,7 @@
     eslint-plugin-react "^6.10.3"
     eslint-plugin-unicorn "^2.1.1"
     lodash "^4.17.4"
+    prettier "^1.9.2"
     yargs "^7.0.2"
 
 "@semantic-release/commit-analyzer@^2.0.0":
@@ -5377,6 +5378,10 @@ prepend-http@^2.0.0:
 preserve@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/preserve/-/preserve-0.2.0.tgz#815ed1f6ebc65926f865b310c0713bcb3315ce4b"
+
+prettier@^1.9.2:
+  version "1.13.4"
+  resolved "https://registry.yarnpkg.com/prettier/-/prettier-1.13.4.tgz#31bbae6990f13b1093187c731766a14036fa72e6"
 
 private@^0.1.6, private@^0.1.8:
   version "0.1.8"
