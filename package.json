@@ -1,0 +1,18 @@
+{
+	"private": true,
+	"scripts": {
+		"clean": "lerna exec --parallel 'rm -fR dist/'",
+		"build": "npm run clean && lerna run build",
+		"test": "npm run build && npm run test:lint && npm run test:unit",
+		"test:lint": "lerna run test:lint --concurrency 1",
+		"test:unit": "jest --forceExit"
+	},
+	"devDependencies": {
+		"jest": "^22.4.3",
+		"lerna": "^2.9.1",
+		"semver": "^5.5.0",
+		"ts-jest": "^22.4.2",
+		"typedoc": "^0.10.0",
+		"typescript": "^2.8.1"
+	}
+}
