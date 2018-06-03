@@ -10,6 +10,7 @@ node_js:
 install:
   - yarn install --check-files
 script:
+  - export PKG_TARGET="node${TRAVIS_NODE_VERSION}-linux"
   - npm run build
   - npm run test:lint
   - npm run test:unit
