@@ -4,10 +4,6 @@
   "description": "Parses EXIF data.",
   "main": "./lib/index.js",
   "scripts": {
-    "clean": "rm -fR dist/",
-    "rebuild": "npm run clean && npm run build",
-    "prepublish": "npm run rebuild",
-    "build": "babel lib --out-dir dist/",
     "test": "npm run test:lint && npm run test:unit",
     "test:unit": "mocha --reporter spec 'test/**/*.test.js'",
     "test:lint": "lint",
@@ -32,9 +28,6 @@
   },
   "devDependencies": {
     "@patrickhulce/lint": "^2.1.2",
-    "babel": "^6.23.0",
-    "babel-cli": "^6.24.1",
-    "babel-preset-es2015": "^6.24.1",
     "chai": "^4.0.2",
     "cz-conventional-changelog": "^2.0.0",
     "mocha": "^3.4.2",
