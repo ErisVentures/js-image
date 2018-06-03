@@ -1,0 +1,13 @@
+dist: trusty
+language: node_js
+cache: yarn
+notifications:
+  email: false
+node_js:
+  - "8"
+  - "7"
+  - "6"
+install:
+  - yarn install --check-files
+script:
+  - npm run build
