@@ -1,15 +1,8 @@
-node_modules/
-coverage/
-npm-debug.log
-
 lib/**/*.js
 lib/**/*.js.map
 lib/**/*.d.ts
 
-test/fixtures/*.nef
-test/fixtures/*.jpg
-test/fixtures/*.png
+test/fixtures/actual-*
 
-dist/
 demo/bundle.js
 demo/bundle.min.js

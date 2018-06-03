@@ -5,6 +5,9 @@ dist-es6/
 out/
 
 actual-*.jpg
+actual-*.png
+actual-*.nef
+actual-*.json
 
 npm-debug.log
 yarn-error.log

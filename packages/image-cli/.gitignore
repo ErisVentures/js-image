@@ -1,6 +1,0 @@
-node_modules/
-coverage/
-out/
-npm-debug.log
-
-test/fixtures/actual-*
