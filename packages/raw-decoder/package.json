@@ -11,9 +11,6 @@
     "test:unit": "mocha --reporter spec 'test/**/*.test.js'",
     "test:lint": "lint -t typescript --ignore 'lib/**/*.d.ts' 'lib/**/*.ts'",
     "test:update-expectations": "UPDATE_EXPECTATIONS=true npm run test:unit",
-    "test:upload": "bash test/fixtures/upload.sh",
-    "test:update-all": "npm run test:update-expectations && npm run test:upload",
-    "test:download": "bash test/fixtures/download.sh",
     "test:coverage": "nyc npm run test:unit",
     "test:watch": "mocha --watch --reporter dot 'test/**/*.test.js'",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post"

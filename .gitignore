@@ -1,6 +1,10 @@
 node_modules/
 coverage/
+dist/
+dist-es6/
 out/
+
+actual-*.jpg
 
 npm-debug.log
 yarn-error.log
