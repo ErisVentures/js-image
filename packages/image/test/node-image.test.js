@@ -1,4 +1,4 @@
-const jpeg = require('@ouranos/jpeg-js')
+const jpeg = require('jpeg-js')
 
 const ImageData = require('../lib/image-data').ImageData
 const NodeImage = require('../lib/node-image').NodeImage

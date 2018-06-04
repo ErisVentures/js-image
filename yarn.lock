@@ -86,10 +86,6 @@
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@comandeer/babel-plugin-banner/-/babel-plugin-banner-1.0.0.tgz#40bcce0bbee084b5b02545a33635d053c248356f"
 
-"@ouranos/jpeg-js@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@ouranos/jpeg-js/-/jpeg-js-1.0.1.tgz#079d5f7ad2c503ef522d0ecb5831ccf26266a138"
-
 "@patrickhulce/lint@^2.1.2":
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/@patrickhulce/lint/-/lint-2.1.2.tgz#994abd1f2b409e49ba52d79530612a70c39abd9a"
@@ -3728,6 +3724,10 @@ isurl@^1.0.0-alpha5:
   dependencies:
     has-to-string-tag-x "^1.2.0"
     is-object "^1.0.1"
+
+jpeg-js@^0.3.4:
+  version "0.3.4"
+  resolved "https://registry.yarnpkg.com/jpeg-js/-/jpeg-js-0.3.4.tgz#dc2ba501ee3d58b7bb893c5d1fab47294917e7e7"
 
 js-tokens@^3.0.0, js-tokens@^3.0.2:
   version "3.0.2"

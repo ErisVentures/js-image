@@ -23,7 +23,7 @@ module.exports = {
       debug: debugshim,
       fs: fsshim,
       pngjs: pngshim,
-      '@ouranos/jpeg-js': jpegshim,
+      'jpeg-js': jpegshim,
     }),
     resolve({jsnext: true, main: true}),
     commonjs({}),

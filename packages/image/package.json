@@ -51,8 +51,8 @@
   },
   "dependencies": {
     "@ouranos/exif": "^1.1.0",
-    "@ouranos/jpeg-js": "^1.0.1",
     "file-type": "^7.0.1",
+    "jpeg-js": "^0.3.4",
     "pngjs": "^3.3.0",
     "raw-decoder": "^1.0.0",
     "sharp": "^0.18.4"

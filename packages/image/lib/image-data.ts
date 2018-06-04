@@ -1,7 +1,7 @@
 import {ImageDataFormat, BufferLike, IFormatOptions, Pixel} from './types'
 
 /* tslint:disable-next-line */
-const jpeg = require('@ouranos/jpeg-js')
+const jpeg = require('jpeg-js')
 /* tslint:disable-next-line */
 const PNG = require('pngjs').PNG
 /* tslint:disable-next-line */
