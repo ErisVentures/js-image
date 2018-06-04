@@ -9,7 +9,7 @@ import {Decoder as RAWDecoder} from 'raw-decoder'
 /* tslint:disable-next-line */
 const fileType = require('file-type')
 /* tslint:disable-next-line */
-const parseEXIF = require('@ouranos/exif')
+const parseEXIF = require('@eris-ai/exif')
 
 export abstract class Image {
   // Image formats

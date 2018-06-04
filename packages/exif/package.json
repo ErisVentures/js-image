@@ -1,5 +1,5 @@
 {
-  "name": "@ouranos/exif",
+  "name": "@eris-ai/exif",
   "version": "1.1.0",
   "description": "Parses EXIF data.",
   "main": "./lib/index.js",

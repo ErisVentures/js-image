@@ -1,7 +1,7 @@
 let imageData, imageMetadata, processStartTs, hideNotifierTimeout
 
-const BrowserImage = window['@ouranos/image'].Image
-const ImageData = window['@ouranos/image'].ImageData
+const BrowserImage = window['@eris-ai/image'].Image
+const ImageData = window['@eris-ai/image'].ImageData
 
 const settings = {}
 const worker = new Worker('worker.js')

@@ -1,5 +1,5 @@
 {
-  "name": "@ouranos/image",
+  "name": "@eris-ai/image",
   "version": "1.1.0",
   "description": "Collection of image manipulation libraries for node and the browser.",
   "main": "./lib/node-image.js",
@@ -50,7 +50,7 @@
     }
   },
   "dependencies": {
-    "@ouranos/exif": "^1.1.0",
+    "@eris-ai/exif": "^1.1.0",
     "file-type": "^7.0.1",
     "jpeg-js": "^0.3.4",
     "pngjs": "^3.3.0",

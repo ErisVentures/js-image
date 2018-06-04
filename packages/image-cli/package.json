@@ -1,7 +1,7 @@
 {
-  "name": "@ouranos/image-cli",
+  "name": "@eris-ai/image-cli",
   "version": "1.1.0",
-  "description": "CLI wrapper and standalone executable API for @ouranos/image.",
+  "description": "CLI wrapper and standalone executable API for @eris-ai/image.",
   "main": "./lib/client.js",
   "bin": {
     "image-cli": "./bin/index.js"
@@ -44,7 +44,7 @@
     "sinon-chai": "^2.14.0"
   },
   "dependencies": {
-    "@ouranos/image": "^1.0.1",
+    "@eris-ai/image": "^1.0.1",
     "yargs": "^9.0.1"
   }
 }
