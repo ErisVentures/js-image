@@ -1,8 +1,14 @@
 dist: trusty
 language: node_js
-cache: yarn
+cache:
+  yarn: true
+  directories:
+    - node_modules
+    - .git/lfs
 notifications:
   email: false
+git:
+  lfs_skip_smudge: true
 node_js:
   - v8
   - v6
