@@ -17,14 +17,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ouranos-oss/js-image-cli.git"
+    "url": "https://github.com/eris-ai/js-image-cli.git"
   },
   "author": "Patrick Hulce <patrick.hulce@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ouranos-oss/js-image-cli/issues"
+    "url": "https://github.com/eris-ai/js-image-cli/issues"
   },
-  "homepage": "https://github.com/ouranos-oss/js-image-cli#readme",
+  "homepage": "https://github.com/eris-ai/js-image-cli#readme",
   "config": {
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"

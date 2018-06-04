@@ -13,14 +13,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ouranos-oss/js-exif.git"
+    "url": "https://github.com/eris-ai/js-exif.git"
   },
   "author": "Patrick Hulce <patrick.hulce@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ouranos-oss/js-exif/issues"
+    "url": "https://github.com/eris-ai/js-exif/issues"
   },
-  "homepage": "https://github.com/ouranos-oss/js-exif#readme",
+  "homepage": "https://github.com/eris-ai/js-exif#readme",
   "config": {
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"

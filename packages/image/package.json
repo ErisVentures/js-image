@@ -22,14 +22,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ouranos-oss/js-image.git"
+    "url": "https://github.com/eris-ai/js-image.git"
   },
   "author": "Patrick Hulce <patrick.hulce@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ouranos-oss/js-image/issues"
+    "url": "https://github.com/eris-ai/js-image/issues"
   },
-  "homepage": "https://github.com/ouranos-oss/js-image#readme",
+  "homepage": "https://github.com/eris-ai/js-image#readme",
   "config": {
     "tslint": {
       "rules": {

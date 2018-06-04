@@ -26,6 +26,6 @@ deploy:
   file: out/node8-linux.tar.gz
   skip_cleanup: true
   on:
-    repo: ouranos-oss/js-image-cli
+    repo: eris-ai/js-image-cli
     tags: true
     node: "8"

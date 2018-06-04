@@ -17,14 +17,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ouranos-oss/js-raw-decoder.git"
+    "url": "https://github.com/eris-ai/js-raw-decoder.git"
   },
   "author": "Patrick Hulce <patrick.hulce@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ouranos-oss/js-raw-decoder/issues"
+    "url": "https://github.com/eris-ai/js-raw-decoder/issues"
   },
-  "homepage": "https://github.com/ouranos-oss/js-raw-decoder#readme",
+  "homepage": "https://github.com/eris-ai/js-raw-decoder#readme",
   "config": {
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
