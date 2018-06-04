@@ -13,6 +13,7 @@ node_js:
   - v8
   - v6
 install:
+  - git lfs fetch
   - npm install -g coveralls nyc
   - yarn install --check-files
 script:
