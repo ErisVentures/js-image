@@ -9,7 +9,7 @@ import {Decoder as RAWDecoder} from 'raw-decoder'
 /* tslint:disable-next-line */
 const fileType = require('file-type')
 /* tslint:disable-next-line */
-const parseEXIF = require('@eris-ai/exif')
+const parseEXIF = require('@eris/exif')
 
 export abstract class Image {
   // Image formats
@@ -43,7 +43,7 @@ export abstract class Image {
     }
   }
 
-  public format(options: types.ImageFormat|types.IFormatOptions): Image {
+  public format(options: types.ImageFormat | types.IFormatOptions): Image {
     if (typeof options === 'string') {
       options = {type: options}
     }
@@ -66,10 +66,13 @@ export abstract class Image {
       throw new TypeError(`Must specify width and height with "${options.fit}" fit`)
     }
 
-    this._output.resize = Object.assign({
-      fit: Image.EXACT,
-      method: Image.BILINEAR,
-    }, options)
+    this._output.resize = Object.assign(
+      {
+        fit: Image.EXACT,
+        method: Image.BILINEAR,
+      },
+      options,
+    )
     return this
   }
 
@@ -78,16 +81,19 @@ export abstract class Image {
     return this
   }
 
-  public edges(method: types.EdgeMethod|types.IEdgeOptions = Image.SOBEL): Image {
+  public edges(method: types.EdgeMethod | types.IEdgeOptions = Image.SOBEL): Image {
     let options = method as types.IEdgeOptions
     if (typeof method === 'string') {
       options = {method}
     }
 
-    this._output.edges = Object.assign({
-      radius: 1,
-      blurSigma: 2,
-    }, options)
+    this._output.edges = Object.assign(
+      {
+        radius: 1,
+        blurSigma: 2,
+      },
+      options,
+    )
     return this
   }
 
@@ -131,7 +137,7 @@ export abstract class Image {
     return this.toBuffer().then(buffer => writeFileAsync(path, buffer))
   }
 
-  public static from(bufferOrImageData: types.BufferLike|ImageData): Image {
+  public static from(bufferOrImageData: types.BufferLike | ImageData): Image {
     if (ImageData.probablyIs(bufferOrImageData)) {
       return this._fromImageData(bufferOrImageData as ImageData)
     }

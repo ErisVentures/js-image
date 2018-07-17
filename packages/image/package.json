@@ -1,5 +1,5 @@
 {
-  "name": "@eris-ai/image",
+  "name": "@eris/image",
   "version": "1.1.0",
   "description": "Collection of image manipulation libraries for node and the browser.",
   "main": "./lib/node-image.js",
@@ -22,14 +22,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/eris-ai/js-image.git"
+    "url": "https://github.com/ErisVentures/js-image.git"
   },
   "author": "Patrick Hulce <patrick.hulce@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/eris-ai/js-image/issues"
+    "url": "https://github.com/ErisVentures/js-image/issues"
   },
-  "homepage": "https://github.com/eris-ai/js-image#readme",
+  "homepage": "https://github.com/ErisVentures/js-image#readme",
   "config": {
     "tslint": {
       "rules": {
@@ -50,7 +50,7 @@
     }
   },
   "dependencies": {
-    "@eris-ai/exif": "^1.1.0",
+    "@eris/exif": "^1.1.0",
     "file-type": "^7.0.1",
     "jpeg-js": "^0.3.4",
     "pngjs": "^3.3.0",

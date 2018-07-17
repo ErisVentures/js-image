@@ -13,7 +13,7 @@ const jpegshim = path.join(__dirname, 'lib/shims/jpeg-js.js')
 module.exports = {
   entry: 'lib/browser-index.js',
   dest: `dist/bundle.${process.env.MINIFY ? 'min.' : ''}js`,
-  moduleName: '@eris-ai/image',
+  moduleName: '@eris/image',
   format: 'umd',
   sourceMap: true,
   exports: 'named',

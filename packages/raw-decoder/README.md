@@ -1,9 +1,9 @@
 # raw-decoder
+
 [![NPM Package](https://badge.fury.io/js/raw-decoder.svg)](https://www.npmjs.com/package/raw-decoder)
-[![Build Status](https://travis-ci.org/eris-ai/js-raw-decoder.svg?branch=master)](https://travis-ci.org/eris-ai/js-raw-decoder)
-[![Coverage Status](https://coveralls.io/repos/github/eris-ai/js-raw-decoder/badge.svg?branch=master)](https://coveralls.io/github/eris-ai/js-raw-decoder?branch=master)
+[![Build Status](https://travis-ci.org/ErisVentures/js-image.svg?branch=master)](https://travis-ci.org/ErisVentures/js-image)
+[![Coverage Status](https://coveralls.io/repos/github/ErisVentures/js-image/badge.svg?branch=master)](https://coveralls.io/github/ErisVentures/js-image?branch=master)
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
-[![Dependencies](https://david-dm.org/eris-ai/js-raw-decoder.svg)](https://david-dm.org/eris-ai/js-raw-decoder)
 
 Decodes data from RAW camera files.
 
@@ -28,8 +28,8 @@ console.log(metadata)
 
 ## Documention and Resources for Various Formats
 
-* [dcraw.c](www.cybercom.net/~dcoffin/dcraw/dcraw.c)
-* [TIFF Format Explainer](http://www.fileformat.info/format/tiff/corion.htm)
-* [NEF Explainer](http://lclevy.free.fr/nef/)
-* [CR2 Explainer](http://lclevy.free.fr/cr2/)
-* [EXIF Tags](http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/EXIF.html)
+- [dcraw.c](www.cybercom.net/~dcoffin/dcraw/dcraw.c)
+- [TIFF Format Explainer](http://www.fileformat.info/format/tiff/corion.htm)
+- [NEF Explainer](http://lclevy.free.fr/nef/)
+- [CR2 Explainer](http://lclevy.free.fr/cr2/)
+- [EXIF Tags](http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/EXIF.html)

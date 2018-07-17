@@ -1,6 +1,6 @@
 importScripts('bundle.js')
 
-const {Image, ImageData} = self['@eris-ai/image']
+const {Image, ImageData} = self['@eris/image']
 
 function processImage(imageData, options) {
   Promise.resolve()

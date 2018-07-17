@@ -1,7 +1,7 @@
 {
-  "name": "@eris-ai/image-cli",
+  "name": "@eris/image-cli",
   "version": "1.1.0",
-  "description": "CLI wrapper and standalone executable API for @eris-ai/image.",
+  "description": "CLI wrapper and standalone executable API for @eris/image.",
   "main": "./lib/client.js",
   "bin": {
     "image-cli": "./bin/index.js"
@@ -17,14 +17,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/eris-ai/js-image-cli.git"
+    "url": "https://github.com/ErisVentures/js-image.git"
   },
   "author": "Patrick Hulce <patrick.hulce@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/eris-ai/js-image-cli/issues"
+    "url": "https://github.com/ErisVentures/js-image/issues"
   },
-  "homepage": "https://github.com/eris-ai/js-image-cli#readme",
+  "homepage": "https://github.com/ErisVentures/js-image#readme",
   "config": {
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
@@ -44,7 +44,7 @@
     "sinon-chai": "^2.14.0"
   },
   "dependencies": {
-    "@eris-ai/image": "^1.0.1",
+    "@eris/image": "^1.0.1",
     "yargs": "^9.0.1"
   }
 }
