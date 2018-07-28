@@ -22,6 +22,7 @@ class Runner {
 
     let image = Image.from(input)
     Object.keys(entry.settings).forEach(key => {
+      if (typeof image[key] !== 'function') throw new Error(`Image.${key} is not a function`)
       image = image[key](entry.settings[key])
     })
 
