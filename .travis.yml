@@ -11,7 +11,6 @@ git:
   lfs_skip_smudge: true
 node_js:
   - v8
-  - v6
 install:
   - git lfs pull
   - npm install -g coveralls nyc
