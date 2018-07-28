@@ -1,5 +1,5 @@
 const fs = require('fs')
-const Image = require('@eris/image').NodeImage
+const Image = require('@eris/image').Image
 
 class Runner {
   constructor(reporter, entries) {
