@@ -28,13 +28,13 @@ export function computeDCT(imageData: ImageData): Uint8Array {
       var value = 0
       for (var i = 0; i < size; i++) {
         for (var j = 0; j < size; j++) {
-          const du = (i + 1 / 2) / size * u * Math.PI
-          const dv = (j + 1 / 2) / size * v * Math.PI
+          const du = ((i + 1 / 2) / size) * u * Math.PI
+          const dv = ((j + 1 / 2) / size) * v * Math.PI
           value += Math.cos(du) * Math.cos(dv) * imageData.data[j * size + i]
         }
       }
 
-      value *= getDCTCoefficient(u) * getDCTCoefficient(v) / 4
+      value *= (getDCTCoefficient(u) * getDCTCoefficient(v)) / 4
       output[v * size + u] = value
     }
   }
@@ -88,9 +88,11 @@ export function phash(imageData: ImageData, hashSize?: number): Uint8Array {
   }
 
   let thumbnail = imageData
-  if (imageData.width !== thumbnailWidth ||
-      imageData.height !== thumbnailWidth ||
-      imageData.format !== ImageData.GREYSCALE) {
+  if (
+    imageData.width !== thumbnailWidth ||
+    imageData.height !== thumbnailWidth ||
+    imageData.format !== ImageData.GREYSCALE
+  ) {
     const colorThumbnail = bilinear(imageData, {width: thumbnailWidth, height: thumbnailWidth})
     thumbnail = ImageData.toGreyscale(colorThumbnail)
   }
@@ -100,7 +102,8 @@ export function phash(imageData: ImageData, hashSize?: number): Uint8Array {
   return averageAndThreshold(partialDCT)
 }
 
-export function hammingDistance(hashA: string|Uint8Array, hashB: string|Uint8Array) {
+export function hammingDistance(hashA: string | Uint8Array, hashB: string | Uint8Array) {
+  // TODO: handle hex-based strings
   const arrayA: any[] = typeof hashA === 'string' ? hashA.split('') : toBits(hashA)
   const arrayB: any[] = typeof hashB === 'string' ? hashB.split('') : toBits(hashB)
 

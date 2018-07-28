@@ -1,3 +1,3 @@
 export {ImageData} from './image-data'
-export {BrowserImage as Image} from './browser-image'
+export {NodeImage as Image} from './node-image'
 export {hammingDistance} from './analyses/hash'
