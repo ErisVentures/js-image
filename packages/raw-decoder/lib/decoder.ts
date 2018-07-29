@@ -6,17 +6,17 @@ import {BufferLike, Endian, Reader} from './reader'
 const debug: (...args: any[]) => void = require('debug')('raw-decoder:decoder')
 
 interface IThumbnailLocation {
-  ifd: IFD,
-  offset: number,
-  length: number,
+  ifd: IFD
+  offset: number
+  length: number
 }
 
 export interface IMetadata {
-  [key: string]: string|number|null
+  [key: string]: string | number | null
 }
 
 export class Decoder {
-  private _reader: Reader
+  private readonly _reader: Reader
   private _ifds: IFD[]
 
   public constructor(buffer: BufferLike) {
@@ -29,7 +29,7 @@ export class Decoder {
     if (byteOrder === 0x4949) {
       debug('interpreting as little endian')
       this._reader.setEndianess(Endian.Little)
-    } else if (byteOrder === 0x4D4D) {
+    } else if (byteOrder === 0x4d4d) {
       debug('interpreting as big endian')
       this._reader.setEndianess(Endian.Big)
     } else {
@@ -71,7 +71,7 @@ export class Decoder {
     this._readAndValidateHeader()
     this._readIFDs()
 
-    let maxResolutionJpeg: IThumbnailLocation|undefined
+    let maxResolutionJpeg: IThumbnailLocation | undefined
     this._ifds.forEach(ifd => {
       const offsetEntry = ifd.entries.find(entry => entry.tag === IFDTag.ThumbnailOffset)
       const lengthEntry = ifd.entries.find(entry => entry.tag === IFDTag.ThumbnailLength)
@@ -110,6 +110,6 @@ export class Decoder {
       })
     })
 
-    return Object.assign(tags, exifTags)
+    return {...tags, ...exifTags}
   }
 }

@@ -21,7 +21,7 @@ export function normalizeOptions(imageData: ImageData, options: IResizeOptions):
     case Image.EXACT:
       if (!targetWidth && targetHeight) {
         targetWidth = targetHeight * originalAspectRatio
-      } else if (targetWidth && !targetHeight){
+      } else if (targetWidth && !targetHeight) {
         targetHeight = targetWidth! / originalAspectRatio
       }
       break
@@ -123,8 +123,8 @@ export function bilinear(imageData: ImageData, options: IResizeOptions): ImageDa
   var widthScaleFactor = imageData.width / targetWidth
   var heightScaleFactor = imageData.height / targetHeight
 
-  var boxResizeData: ImageData|null = null
-  var boxResizeOptions: IResizeOptions|null = null
+  var boxResizeData: ImageData | null = null
+  var boxResizeOptions: IResizeOptions | null = null
   if (widthScaleFactor >= 2 || heightScaleFactor >= 2) {
     const boxWidthScaleFactor = Math.max(Math.floor(widthScaleFactor), 1)
     const boxHeightScaleFactor = Math.max(Math.floor(heightScaleFactor), 1)
@@ -173,10 +173,11 @@ export function bilinear(imageData: ImageData, options: IResizeOptions): ImageDa
       var totalWeight = weightPosA + weightPosB + weightPosC + weightPosD
 
       for (var channel = 0; channel < imageData.channels; channel++) {
-        var value = imageData.data[srcPosA + channel] * weightPosA / totalWeight +
-          imageData.data[srcPosB + channel] * weightPosB / totalWeight +
-          imageData.data[srcPosC + channel] * weightPosC / totalWeight +
-          imageData.data[srcPosD + channel] * weightPosD / totalWeight
+        var value =
+          (imageData.data[srcPosA + channel] * weightPosA) / totalWeight +
+          (imageData.data[srcPosB + channel] * weightPosB) / totalWeight +
+          (imageData.data[srcPosC + channel] * weightPosC) / totalWeight +
+          (imageData.data[srcPosD + channel] * weightPosD) / totalWeight
         outPixels[outPos + channel] = Math.round(value)
       }
     }
@@ -209,8 +210,10 @@ export function box(imageData: ImageData, options: IResizeOptions): ImageData {
   const heightScaleFactor = imageData.height / targetHeight
   if (widthScaleFactor < 1 || heightScaleFactor < 1) {
     throw new Error('Box resize can only shrink images')
-  } else if (Math.floor(widthScaleFactor) !== widthScaleFactor ||
-      Math.floor(heightScaleFactor) !== heightScaleFactor) {
+  } else if (
+    Math.floor(widthScaleFactor) !== widthScaleFactor ||
+    Math.floor(heightScaleFactor) !== heightScaleFactor
+  ) {
     throw new Error('Can only box resize in integer increments')
   }
 
@@ -234,7 +237,6 @@ export function box(imageData: ImageData, options: IResizeOptions): ImageData {
 
         outPixels[outPos + channel] = value / (widthScaleFactor * heightScaleFactor)
       }
-
     }
   }
 

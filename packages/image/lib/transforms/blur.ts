@@ -27,7 +27,7 @@ function weightsForGauss(sigma: number): number[][] {
 // Taken from http://www.peterkovesi.com/matlabfns/Spatial/solveinteg.m
 function approximateWidthsForGauss(sigma: number, n: number): number[] {
   // Ideal averaging filter width
-  const idealWidth = Math.sqrt((12 * sigma * sigma / n) + 1)
+  const idealWidth = Math.sqrt((12 * sigma * sigma) / n + 1)
   var lowerWidth = Math.floor(idealWidth)
   if (lowerWidth % 2 === 0) {
     lowerWidth--
@@ -134,9 +134,7 @@ export function gaussianBlur(imageData: ImageData, options: IBlurOptions): Image
     sigma = 1 + radius / 2
   }
 
-  const approximate = typeof options.approximate === 'boolean' ?
-    options.approximate :
-    sigma >= 5
+  const approximate = typeof options.approximate === 'boolean' ? options.approximate : sigma >= 5
 
   if (approximate) {
     const widths = approximateWidthsForGauss(sigma, 3)

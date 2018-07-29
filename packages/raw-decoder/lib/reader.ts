@@ -1,4 +1,4 @@
-export type BufferLike = Buffer|Uint8Array
+export type BufferLike = Buffer | Uint8Array
 
 export enum Endian {
   Big,
@@ -7,10 +7,10 @@ export enum Endian {
 
 export class Reader {
   public constructor(
-    private _buffer: BufferLike,
+    private readonly _buffer: BufferLike,
     private _position: number = 0,
-    private _endianness: Endian = Endian.Big) {
-  }
+    private _endianness: Endian = Endian.Big,
+  ) {}
 
   public hasNext(): boolean {
     return this._position < this._buffer.length
@@ -25,9 +25,7 @@ export class Reader {
   }
 
   public read(length: number): number {
-    const value = this._endianness === Endian.Little ?
-      this._readLE(length) :
-      this._readBE(length)
+    const value = this._endianness === Endian.Little ? this._readLE(length) : this._readBE(length)
     this._position += length
     return value
   }
@@ -36,7 +34,7 @@ export class Reader {
     let value = 0
     for (let i = length - 1; i >= 0; i--) {
       // tslint:disable-next-line no-bitwise
-      value = value << 8 | this._buffer[this._position + i]
+      value = (value << 8) | this._buffer[this._position + i]
     }
     return value
   }
@@ -45,7 +43,7 @@ export class Reader {
     let value = 0
     for (let i = 0; i < length; i++) {
       // tslint:disable-next-line no-bitwise
-      value = value << 8 | this._buffer[this._position + i]
+      value = (value << 8) | this._buffer[this._position + i]
     }
     return value
   }
@@ -68,7 +66,7 @@ export class Reader {
     this._position = position
   }
 
-  public use<T>(func: () => T): T  {
+  public use<T>(func: () => T): T {
     const position = this._position
     const value = func()
     this._position = position

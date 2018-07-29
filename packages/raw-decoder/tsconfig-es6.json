@@ -12,7 +12,5 @@
     "moduleResolution": "node",
     "outDir": "dist-es6/"
   },
-  "include": [
-    "lib/**/*"
-  ]
+  "include": ["lib/**/*"]
 }

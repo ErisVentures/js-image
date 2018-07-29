@@ -8,10 +8,10 @@ import {sobel} from './transforms/sobel'
 import {canny} from './transforms/canny'
 
 export class BrowserImage extends Image {
-  private _image: Promise<ImageData>
-  private _metadata: object|undefined
+  private readonly _image: Promise<ImageData>
+  private readonly _metadata: object | undefined
 
-  public constructor(image: Promise<ImageData>|ImageData, metadata?: object) {
+  public constructor(image: Promise<ImageData> | ImageData, metadata?: object) {
     super()
     this._image = Promise.resolve(image)
     this._metadata = metadata
@@ -35,7 +35,6 @@ export class BrowserImage extends Image {
       default:
         return resize.bilinear(image, options)
     }
-
   }
 
   private _applyGreyscale(image: ImageData): ImageData {
@@ -75,11 +74,12 @@ export class BrowserImage extends Image {
 
   public toMetadata(): Promise<IMetadata> {
     return this._image.then(imageData => {
-      return Object.assign({}, this._metadata, {
+      return {
+        ...this._metadata,
         width: imageData.width,
         height: imageData.height,
         aspectRatio: imageData.width / imageData.height,
-      })
+      }
     })
   }
 
@@ -88,8 +88,9 @@ export class BrowserImage extends Image {
   }
 
   public toBuffer(): Promise<BufferLike> {
-    return this._applyAll(this._image)
-        .then(imageData => ImageData.toBuffer(imageData, this._output.format))
+    return this._applyAll(this._image).then(imageData =>
+      ImageData.toBuffer(imageData, this._output.format),
+    )
   }
 
   protected static _fromBuffer(buffer: BufferLike, metadata?: object): Image {

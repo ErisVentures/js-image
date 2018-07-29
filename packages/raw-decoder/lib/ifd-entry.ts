@@ -37,10 +37,8 @@ export class IFDEntry {
     public tag: number,
     public dataType: number,
     public length: number,
-    private dataReader: Reader,
-  ) {
-
-  }
+    private readonly dataReader: Reader,
+  ) {}
 
   public get lengthInBytes(): number {
     return this.length * getDataTypeSize(this.dataType)
@@ -50,7 +48,7 @@ export class IFDEntry {
     return getFriendlyName(this.tag)
   }
 
-  public getValue(reader?: Reader): string|number {
+  public getValue(reader?: Reader): string | number {
     const entryReader = this.getReader(reader)
     switch (this.dataType) {
       case IFDDataType.Byte:

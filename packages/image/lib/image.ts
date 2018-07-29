@@ -53,7 +53,7 @@ export abstract class Image {
     }
 
     const defaultOpts = options.type === Image.JPEG ? {quality: 90} : {}
-    this._output.format = Object.assign(defaultOpts, options)
+    this._output.format = {...defaultOpts, ...options}
     return this
   }
 
@@ -66,13 +66,11 @@ export abstract class Image {
       throw new TypeError(`Must specify width and height with "${options.fit}" fit`)
     }
 
-    this._output.resize = Object.assign(
-      {
-        fit: Image.EXACT,
-        method: Image.BILINEAR,
-      },
-      options,
-    )
+    this._output.resize = {
+      fit: Image.EXACT,
+      method: Image.BILINEAR,
+      ...options,
+    }
     return this
   }
 
@@ -87,13 +85,11 @@ export abstract class Image {
       options = {method}
     }
 
-    this._output.edges = Object.assign(
-      {
-        radius: 1,
-        blurSigma: 2,
-      },
-      options,
-    )
+    this._output.edges = {
+      radius: 1,
+      blurSigma: 2,
+      ...options,
+    }
     return this
   }
 
@@ -154,7 +150,6 @@ export abstract class Image {
         break
       default:
         exif = parseEXIF(buffer)
-        break
     }
     return this._fromBuffer(buffer, {exif})
   }

@@ -30,25 +30,6 @@
     "url": "https://github.com/ErisVentures/js-image/issues"
   },
   "homepage": "https://github.com/ErisVentures/js-image#readme",
-  "config": {
-    "tslint": {
-      "rules": {
-        "arrow-return-shorthand": false,
-        "no-floating-promises": false,
-        "no-void-expression": false,
-        "restrict-plus-operands": false,
-        "prefer-for-of": false,
-        "ordered-imports": false,
-        "interface-name": false,
-        "only-arrow-functions": false,
-        "no-unsafe-any": false,
-        "no-any": false
-      }
-    },
-    "commitizen": {
-      "path": "./node_modules/cz-conventional-changelog"
-    }
-  },
   "dependencies": {
     "@eris/exif": "^1.1.0",
     "file-type": "^7.0.1",

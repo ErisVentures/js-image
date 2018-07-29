@@ -5,10 +5,10 @@ const commonjs = require('rollup-plugin-commonjs')
 const babili = require('rollup-plugin-babili')
 const sourcemaps = require('rollup-plugin-sourcemaps')
 
-const debugshim = path.join(__dirname, 'lib/shims/debug.js')
-const fsshim = path.join(__dirname, 'lib/shims/fs.js')
-const pngshim = path.join(__dirname, 'lib/shims/png-js.js')
-const jpegshim = path.join(__dirname, 'lib/shims/jpeg-js.js')
+const debugshim = path.join(__dirname, 'dist/shims/debug.js')
+const fsshim = path.join(__dirname, 'dist/shims/fs.js')
+const pngshim = path.join(__dirname, 'dist/shims/png-js.js')
+const jpegshim = path.join(__dirname, 'dist/shims/jpeg-js.js')
 
 module.exports = {
   entry: 'dist/browser-index.js',

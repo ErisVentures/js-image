@@ -9,8 +9,25 @@
     "quotemark": [true, "single"],
 
     // Personal typescript options
-    "typedef": [true, "call-signature", "parameter", "property-declaration", "member-variable-declaration"],
-    "member-ordering": [true, {"order": ["static-field", "instance-field", "constructor", "instance-method", "static-method"]}],
+    "typedef": [
+      true,
+      "call-signature",
+      "parameter",
+      "property-declaration",
+      "member-variable-declaration"
+    ],
+    "member-ordering": [
+      true,
+      {
+        "order": [
+          "static-field",
+          "instance-field",
+          "constructor",
+          "instance-method",
+          "static-method"
+        ]
+      }
+    ],
     "comment-format": [true, "check-space"],
 
     // Undecided but probably will keep

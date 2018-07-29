@@ -133,14 +133,15 @@ function autoThreshold(imageData: ImageData): number {
   var rightCount = sumArray(right)
   for (var i = 20; i < 240; i++) {
     var bucketVal = buckets[i]
-    leftSum += (bucketVal * i)
-    rightSum -= (bucketVal * i)
+    leftSum += bucketVal * i
+    rightSum -= bucketVal * i
     leftCount += bucketVal
     rightCount -= bucketVal
 
     var leftMean = leftSum / leftCount
     var rightMean = rightSum / rightCount
-    var bucketVariance = Math.pow(leftMean - rightMean, 2) *
+    var bucketVariance =
+      Math.pow(leftMean - rightMean, 2) *
       (leftCount / imageData.data.length) *
       (rightCount / imageData.data.length)
     if (bucketVariance > variance) {
@@ -153,7 +154,7 @@ function autoThreshold(imageData: ImageData): number {
 }
 
 export function canny(
-  origImageData: ImageData|SobelImageData,
+  origImageData: ImageData | SobelImageData,
   options?: ICannyOptions,
 ): SobelImageData {
   options = options || {}

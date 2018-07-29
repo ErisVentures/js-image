@@ -15,8 +15,8 @@ function computeAverage(items: number[], from?: number, to?: number): number {
   return sum / (to - from)
 }
 
-export function sharpness(imageData: SobelImageData, options?: ISharpnessOptions): ISharpness  {
-  const threshold = options && options.threshold || 20
+export function sharpness(imageData: SobelImageData, options?: ISharpnessOptions): ISharpness {
+  const threshold = (options && options.threshold) || 20
 
   let edges: number[] = []
   for (var y = 0; y < imageData.height; y++) {
@@ -33,11 +33,11 @@ export function sharpness(imageData: SobelImageData, options?: ISharpnessOptions
   const percentEdges = edges.length / imageData.data.length
   const lowerQuartile = edges[Math.floor(edges.length / 4)]
   const median = edges[Math.floor(edges.length / 2)]
-  const upperQuartile = edges[Math.floor(edges.length * 3 / 4)]
+  const upperQuartile = edges[Math.floor((edges.length * 3) / 4)]
 
   const lowerVentileAverage = computeAverage(edges, 0, Math.ceil(edges.length / 20))
   const average = computeAverage(edges)
-  const upperVentileAverage = computeAverage(edges, Math.floor(edges.length * 19 / 20))
+  const upperVentileAverage = computeAverage(edges, Math.floor((edges.length * 19) / 20))
 
   return {
     percentEdges,

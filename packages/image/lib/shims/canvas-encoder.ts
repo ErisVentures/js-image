@@ -14,7 +14,7 @@ function read<T>(doRead: (reader: FileReader) => any): Promise<T> {
   })
 }
 
-export function decode(buffer: Uint8Array|string): Promise<ImageData> {
+export function decode(buffer: Uint8Array | string): Promise<ImageData> {
   const canvas = getCanvas()
   const context = canvas.getContext('2d')
 
@@ -41,7 +41,9 @@ export function decode(buffer: Uint8Array|string): Promise<ImageData> {
       img.src = buffer
     } else {
       read<string>(reader => reader.readAsDataURL(new Blob([buffer])))
-        .then(url => { img.src = url })
+        .then(url => {
+          img.src = url
+        })
         .catch(reject)
     }
   })
@@ -59,14 +61,20 @@ export function encode(
   context!.putImageData(imageData, 0, 0)
 
   return new Promise<Uint8Array>((resolve, reject) => {
-    canvas.toBlob(blob => {
-      if (!blob) {
-        return reject(new Error('failed to convert canvas to blob'))
-      }
+    canvas.toBlob(
+      blob => {
+        if (!blob) {
+          return reject(new Error('failed to convert canvas to blob'))
+        }
 
-      read<ArrayBuffer>(reader => reader.readAsArrayBuffer(blob!))
-        .then(arrayBuffer => { resolve(new Uint8Array(arrayBuffer)) })
-        .catch(reject)
-    }, dataType, quality)
+        read<ArrayBuffer>(reader => reader.readAsArrayBuffer(blob!))
+          .then(arrayBuffer => {
+            resolve(new Uint8Array(arrayBuffer))
+          })
+          .catch(reject)
+      },
+      dataType,
+      quality,
+    )
   })
 }

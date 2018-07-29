@@ -8,9 +8,9 @@ const PNG = require('pngjs').PNG
 const fileType = require('file-type')
 
 export interface BrowserImageData {
-  width: number,
-  height: number,
-  data: Uint8ClampedArray,
+  width: number
+  height: number
+  data: Uint8ClampedArray
 }
 
 export class ImageData {
@@ -26,23 +26,22 @@ export class ImageData {
   public data: BufferLike
 
   public static probablyIs(obj: any): boolean {
-    if (!obj ||
-      !obj.data ||
-      typeof obj.width !== 'number' ||
-      typeof obj.height !== 'number') {
+    if (!obj || !obj.data || typeof obj.width !== 'number' || typeof obj.height !== 'number') {
       return false
     }
 
-    return obj.data.length % obj.width * obj.height === 0
+    return (obj.data.length % obj.width) * obj.height === 0
   }
 
   public static is(obj: any): obj is ImageData {
-    return ImageData.probablyIs(obj) &&
+    return (
+      ImageData.probablyIs(obj) &&
       typeof obj.channels === 'number' &&
       (obj.format === ImageData.RGB ||
-      obj.format === ImageData.RGBA ||
-      obj.format === ImageData.GREYSCALE) &&
+        obj.format === ImageData.RGBA ||
+        obj.format === ImageData.GREYSCALE) &&
       obj.data.length === obj.width * obj.height * obj.channels
+    )
   }
 
   public static normalize(imageData: any): any {
@@ -60,7 +59,7 @@ export class ImageData {
         format = ImageData.RGBA
     }
 
-    return Object.assign({channels, format}, imageData)
+    return {channels, format, ...imageData}
   }
 
   public static assert(imageData: any): ImageData {
@@ -72,10 +71,12 @@ export class ImageData {
   }
 
   public static isBorder(imageData: ImageData, x: number, y: number, radius: number = 1): boolean {
-    return x - radius < 0 ||
+    return (
+      x - radius < 0 ||
       y - radius < 0 ||
       x + radius >= imageData.width ||
       y + radius >= imageData.height
+    )
   }
 
   public static indexFor(imageData: ImageData, x: number, y: number, channel: number = 0): number {
@@ -127,8 +128,8 @@ export class ImageData {
   }
 
   public static rotateArray(
-    srcArray: number[]|Uint8Array,
-    dstArray: number[]|Uint8Array,
+    srcArray: number[] | Uint8Array,
+    dstArray: number[] | Uint8Array,
     width: number,
     height: number,
     angle: number,
@@ -136,8 +137,8 @@ export class ImageData {
   ): void {
     // tslint:disable-next-line
     const fakeImageData = {width, height, channels} as ImageData
-    const cosAngle = Math.cos((360 - angle) * Math.PI / 180)
-    const sinAngle = Math.sin((360 - angle) * Math.PI / 180)
+    const cosAngle = Math.cos(((360 - angle) * Math.PI) / 180)
+    const sinAngle = Math.sin(((360 - angle) * Math.PI) / 180)
 
     const originX = (width - 1) / 2
     const originY = (height - 1) / 2
@@ -165,7 +166,7 @@ export class ImageData {
   }
 
   public static rotate(srcImageData: ImageData, angle: number): ImageData {
-    const dstImageData = Object.assign({}, srcImageData)
+    const dstImageData = {...srcImageData}
     const numPixels = srcImageData.width * srcImageData.height
     const dstData = new Uint8Array(numPixels * srcImageData.channels)
 
@@ -190,13 +191,13 @@ export class ImageData {
       srcImageData = ImageData.toRGB(srcImageData)
     }
 
-    const dstImageData = Object.assign({}, srcImageData)
+    const dstImageData = {...srcImageData}
     const numPixels = srcImageData.width * srcImageData.height
     const rawData = new Uint8Array(numPixels)
     for (let i = 0; i < numPixels; i++) {
-      const red = srcImageData.data[(i * srcImageData.channels) + 0]
-      const green = srcImageData.data[(i * srcImageData.channels) + 1]
-      const blue = srcImageData.data[(i * srcImageData.channels) + 2]
+      const red = srcImageData.data[i * srcImageData.channels + 0]
+      const green = srcImageData.data[i * srcImageData.channels + 1]
+      const blue = srcImageData.data[i * srcImageData.channels + 2]
       // use luminance forumla over regular average
       rawData[i] = Math.round(0.3 * red + 0.59 * green + 0.11 * blue)
     }
@@ -215,7 +216,7 @@ export class ImageData {
       srcImageData = ImageData.toRGB(srcImageData)
     }
 
-    const dstImageData = Object.assign({}, srcImageData)
+    const dstImageData = {...srcImageData}
     const numPixels = srcImageData.width * srcImageData.height
     const rawData = new Uint8Array(numPixels * 3)
     for (let i = 0; i < numPixels; i++) {
@@ -241,7 +242,7 @@ export class ImageData {
         }
       }
 
-      rawData[offset + 0] = Math.round(255 * hue / 360)
+      rawData[offset + 0] = Math.round((255 * hue) / 360)
       rawData[offset + 1] = Math.round(255 * saturation)
       rawData[offset + 2] = Math.round(255 * luminance)
     }
@@ -262,7 +263,7 @@ export class ImageData {
       throw new TypeError('Cannot convert HSL to RGB')
     }
 
-    const dstImageData = Object.assign({}, srcImageData)
+    const dstImageData = {...srcImageData}
     const numPixels = srcImageData.width * srcImageData.height
     const rawData = new Uint8Array(numPixels * 3)
     for (let i = 0; i < numPixels; i++) {
@@ -286,7 +287,7 @@ export class ImageData {
       srcImageData = ImageData.toRGB(srcImageData)
     }
 
-    const dstImageData = Object.assign({}, srcImageData)
+    const dstImageData = {...srcImageData}
     const numPixels = srcImageData.width * srcImageData.height
     const rawData = new Uint8Array(numPixels * 4)
     for (let i = 0; i < numPixels; i++) {
@@ -310,7 +311,7 @@ export class ImageData {
       return srcImageData
     }
 
-    const dstImageData = Object.assign({}, srcImageData)
+    const dstImageData = {...srcImageData}
     const numPixels = srcImageData.width * srcImageData.height
     const rawData = new Uint8Array(numPixels * 3)
     for (let i = 0; i < numPixels; i++) {

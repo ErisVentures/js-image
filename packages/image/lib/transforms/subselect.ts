@@ -3,14 +3,13 @@ import {Image} from '../image'
 import {ImageData} from '../image-data'
 import {IResizeOptions, ISubselectOptions} from '../types'
 
-export function subselect(
-  imageData: ImageData,
-  options: ISubselectOptions,
-): ImageData {
-  if (options.top === 0 &&
-      options.bottom === imageData.height &&
-      options.left === 0 &&
-      options.right === imageData.width) {
+export function subselect(imageData: ImageData, options: ISubselectOptions): ImageData {
+  if (
+    options.top === 0 &&
+    options.bottom === imageData.height &&
+    options.left === 0 &&
+    options.right === imageData.width
+  ) {
     return imageData
   }
 

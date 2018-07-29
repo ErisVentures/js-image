@@ -1,6 +1,6 @@
 export type FlatMatrix = number[]
 export type DeepMatrix = number[][]
-export type Matrix = FlatMatrix|DeepMatrix
+export type Matrix = FlatMatrix | DeepMatrix
 
 function isDeepMatrix(matrix: Matrix): matrix is DeepMatrix {
   return Array.isArray(matrix[0])

@@ -55,8 +55,8 @@ class SharpImage {
 }
 
 export class NodeImage extends Image {
-  private _image: sharp.SharpInstance
-  private _metadata: object | undefined
+  private readonly _image: sharp.SharpInstance
+  private readonly _metadata: object | undefined
 
   public constructor(image: sharp.SharpInstance, metadata?: object) {
     super()
@@ -146,7 +146,7 @@ export class NodeImage extends Image {
 
   public toMetadata(): Promise<IMetadata> {
     return SharpImage.toMetadata(this._image).then(metadata => {
-      return Object.assign({}, this._metadata, metadata)
+      return {...this._metadata, ...metadata}
     })
   }
 

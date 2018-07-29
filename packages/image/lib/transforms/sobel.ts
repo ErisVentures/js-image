@@ -3,7 +3,7 @@ import {Pixel, ISobelOptions} from '../types'
 import {ImageData} from '../image-data'
 
 function toNearestAngle(xVal: number, yVal: number): number {
-  const angle = Math.atan2(yVal, xVal) * 180 / Math.PI
+  const angle = (Math.atan2(yVal, xVal) * 180) / Math.PI
   return (Math.round(angle / 45) * 45 + 180) % 180
 }
 
@@ -46,11 +46,11 @@ export function generateWeightMatrix(radius: number, isX: boolean): number[] {
 
 export interface SobelImageData extends ImageData {
   // contains the angles of the direction of the gradient (i.e. the difference in luminance)
-  angles: Uint8Array,
+  angles: Uint8Array
 }
 
 export function sobel(origImageData: ImageData, options?: ISobelOptions): SobelImageData {
-  const radius = options && options.radius || 1
+  const radius = (options && options.radius) || 1
   const xMatrix = generateWeightMatrix(radius, true)
   const yMatrix = generateWeightMatrix(radius, false)
   const totalWeight = totalMatrixWeight(xMatrix)
@@ -88,8 +88,8 @@ export function sobel(origImageData: ImageData, options?: ISobelOptions): SobelI
           const xWeight = xMatrix[matrixOffset]
           const yWeight = yMatrix[matrixOffset]
 
-          xVal += srcPixels[srcOffset] * xWeight / totalWeight
-          yVal += srcPixels[srcOffset] * yWeight / totalWeight
+          xVal += (srcPixels[srcOffset] * xWeight) / totalWeight
+          yVal += (srcPixels[srcOffset] * yWeight) / totalWeight
         }
       }
 

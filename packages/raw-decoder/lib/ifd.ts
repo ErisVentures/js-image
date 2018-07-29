@@ -3,8 +3,8 @@ import {IFDTag} from './ifd-tag'
 import {Reader} from './reader'
 
 export interface IFDOffset {
-  offset: number,
-  parent?: IFD,
+  offset: number
+  parent?: IFD
 }
 
 export class IFD {
@@ -12,11 +12,7 @@ export class IFD {
   public parent?: IFD
   public children: IFD[]
 
-  public constructor(
-    offset: IFDOffset,
-    public entries: IFDEntry[],
-    public nextIFDOffset: number,
-  ) {
+  public constructor(offset: IFDOffset, public entries: IFDEntry[], public nextIFDOffset: number) {
     this.offset = offset.offset
     this.parent = offset.parent
     this.children = []
