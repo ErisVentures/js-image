@@ -11,7 +11,7 @@ const pngshim = path.join(__dirname, 'lib/shims/png-js.js')
 const jpegshim = path.join(__dirname, 'lib/shims/jpeg-js.js')
 
 module.exports = {
-  entry: 'lib/browser-index.js',
+  entry: 'dist/browser-index.js',
   dest: `dist/bundle.${process.env.MINIFY ? 'min.' : ''}js`,
   moduleName: '@eris/image',
   format: 'umd',

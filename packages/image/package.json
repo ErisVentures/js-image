@@ -2,8 +2,8 @@
   "name": "@eris/image",
   "version": "1.1.0",
   "description": "Collection of image manipulation libraries for node and the browser.",
-  "main": "./lib/node-index.js",
-  "types": "./lib/node-index.d.ts",
+  "main": "./dist/node-index.js",
+  "types": "./dist/node-index.d.ts",
   "scripts": {
     "build": "npm run build:ts && npm run build:rollup && npm run build:rollup:minify",
     "build:ts": "tsc",
@@ -58,7 +58,6 @@
     "sharp": "^0.18.4"
   },
   "devDependencies": {
-    "@patrickhulce/lint": "^2.1.2",
     "@types/bluebird": "^3.5.3",
     "@types/node": "^7.0.18",
     "@types/sharp": "^0.17.1",

@@ -7,7 +7,7 @@ import {sobel} from './transforms/sobel'
 import {canny} from './transforms/canny'
 
 class SharpImage {
-  public static from(bufferOrImageData: BufferLike|ImageData): sharp.SharpInstance {
+  public static from(bufferOrImageData: BufferLike | ImageData): sharp.SharpInstance {
     if (ImageData.probablyIs(bufferOrImageData)) {
       let imageData = ImageData.normalize(bufferOrImageData)
       ImageData.assert(imageData)
@@ -56,7 +56,7 @@ class SharpImage {
 
 export class NodeImage extends Image {
   private _image: sharp.SharpInstance
-  private _metadata: object|undefined
+  private _metadata: object | undefined
 
   public constructor(image: sharp.SharpInstance, metadata?: object) {
     super()
