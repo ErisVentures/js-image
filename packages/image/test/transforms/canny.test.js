@@ -1,5 +1,5 @@
-const canny = require('../../lib/transforms/canny').canny
-const ImageData = require('../../lib/image-data').ImageData
+const canny = require('../../dist/transforms/canny').canny
+const ImageData = require('../../dist/image-data').ImageData
 const {fixtureDecode, compareToFixture} = require('../utils')
 
 describe('#transforms/canny', () => {

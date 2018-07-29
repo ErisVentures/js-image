@@ -1,5 +1,5 @@
-const sobel = require('../../lib/transforms/sobel').sobel
-const sharpness = require('../../lib/analyses/sharpness').sharpness
+const sobel = require('../../dist/transforms/sobel').sobel
+const sharpness = require('../../dist/analyses/sharpness').sharpness
 const {expect, fixtureDecode, buildLinesImageData} = require('../utils')
 
 describe('#analyses/sharpness', () => {

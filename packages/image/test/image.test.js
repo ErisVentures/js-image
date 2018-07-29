@@ -1,6 +1,6 @@
 const fs = require('fs')
 const sinon = require('sinon')
-const Image = require('../lib/image').Image
+const Image = require('../dist/image').Image
 const {expect, fixture, fixturePath} = require('./utils')
 
 const skater = fixture('source-skater.jpg')

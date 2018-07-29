@@ -2,7 +2,7 @@ const fs = require('fs')
 const memoize = require('lodash/memoize')
 const chai = require('chai')
 const jpeg = require('jpeg-js')
-const ImageData = require('../lib/image-data').ImageData
+const ImageData = require('../dist/image-data').ImageData
 chai.use(require('sinon-chai'))
 
 const environmentTolerance = Number(process.env.LOOSE_COMPARISON_TOLERANCE) || 0
@@ -32,11 +32,14 @@ function getImageDiff(actual, expectation, increment = 1) {
 }
 
 function compareToFixture(bufferOrImageData, path, options) {
-  options = Object.assign({
-    strict: true,
-    tolerance: 5,
-    increment: 1,
-  }, options)
+  options = Object.assign(
+    {
+      strict: true,
+      tolerance: 5,
+      increment: 1,
+    },
+    options,
+  )
 
   return Promise.resolve(bufferOrImageData)
     .then(bufferOrImageData => {
@@ -60,16 +63,18 @@ function compareToFixture(bufferOrImageData, path, options) {
         } else {
           const tolerance = Math.max(environmentTolerance, options.tolerance)
           const area = imageData.width * imageData.height
-          expect(diff).to.be.lessThan(tolerance * area / options.increment)
+          expect(diff).to.be.lessThan((tolerance * area) / options.increment)
         }
       })
     })
 }
 
 function testImage(Image, srcPath, fixturePath, modify, ...args) {
-  return modify(Image.from(fixture(srcPath))).toBuffer().then(buffer => {
-    return compareToFixture(buffer, fixturePath, ...args)
-  })
+  return modify(Image.from(fixture(srcPath)))
+    .toBuffer()
+    .then(buffer => {
+      return compareToFixture(buffer, fixturePath, ...args)
+    })
 }
 
 function printImageData(imageData) {

@@ -1,5 +1,5 @@
-const convolve = require('../../lib/transforms/convolve').convolve
-const {ImageData} = require('../../lib/image-data')
+const convolve = require('../../dist/transforms/convolve').convolve
+const {ImageData} = require('../../dist/image-data')
 const {expect, fixtureDecode, compareToFixture} = require('../utils')
 
 const toPixels = arrs => new Uint8Array(arrs.reduce((acc, arr) => acc.concat(arr), []))

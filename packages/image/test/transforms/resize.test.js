@@ -1,6 +1,6 @@
 const _ = require('lodash')
-const resize = require('../../lib/transforms/resize')
-const ImageData = require('../../lib/image-data').ImageData
+const resize = require('../../dist/transforms/resize')
+const ImageData = require('../../dist/image-data').ImageData
 const {expect, fixtureDecode, compareToFixture} = require('../utils')
 
 describe('#transforms/resize', () => {

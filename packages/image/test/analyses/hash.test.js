@@ -1,4 +1,4 @@
-const hash = require('../../lib/analyses/hash')
+const hash = require('../../dist/analyses/hash')
 const {expect, fixtureDecode} = require('../utils')
 
 describe('#analyses/hash', () => {

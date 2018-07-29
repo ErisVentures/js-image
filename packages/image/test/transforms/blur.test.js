@@ -1,5 +1,5 @@
-const blur = require('../../lib/transforms/blur')
-const ImageData = require('../../lib/image-data').ImageData
+const blur = require('../../dist/transforms/blur')
+const ImageData = require('../../dist/image-data').ImageData
 const {fixtureDecode, compareToFixture} = require('../utils')
 
 describe('#transforms/blur', () => {

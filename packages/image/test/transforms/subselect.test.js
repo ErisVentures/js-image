@@ -1,4 +1,4 @@
-const {subselect} = require('../../lib/transforms/subselect')
+const {subselect} = require('../../dist/transforms/subselect')
 const {expect} = require('../utils')
 
 describe('#transforms/subselect', () => {

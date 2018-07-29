@@ -1,4 +1,4 @@
-const ImageData = require('../lib/image-data').ImageData
+const ImageData = require('../dist/image-data').ImageData
 const {expect, fixtureDecode, compareToFixture} = require('./utils')
 
 describe('ImageData', () => {

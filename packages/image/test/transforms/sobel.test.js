@@ -1,5 +1,5 @@
-const {sobel, generateWeightMatrix} = require('../../lib/transforms/sobel')
-const ImageData = require('../../lib/image-data').ImageData
+const {sobel, generateWeightMatrix} = require('../../dist/transforms/sobel')
+const ImageData = require('../../dist/image-data').ImageData
 const {expect, fixtureDecode, compareToFixture} = require('../utils')
 
 describe('#transforms/sobel', () => {
