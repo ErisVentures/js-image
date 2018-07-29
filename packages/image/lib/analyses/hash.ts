@@ -8,6 +8,21 @@ function getDCTCoefficient(index: number): number {
   return index === 0 ? DCT_COEFFICIENT : 1
 }
 
+function hexToBinary(hex: string): string {
+  // TODO: update ES types to use padStart
+  return (parseInt(hex, 16).toString(2) as any).padStart(64, '0')
+}
+
+export function toBinaryString(arrayOrString: string | Uint8Array): string {
+  if (typeof arrayOrString === 'string') {
+    if (/^(0|1)+$/.test(arrayOrString)) return arrayOrString
+    if (/^[a-f0-9]+$/.test(arrayOrString)) return hexToBinary(arrayOrString)
+    throw new Error(`Invalid conversion toBinaryString: ${arrayOrString}`)
+  }
+
+  return toBits(arrayOrString).join('')
+}
+
 export function toBits(array: Uint8Array): number[] {
   const bits = []
   for (var i = 0; i < array.length; i++) {
@@ -103,13 +118,12 @@ export function phash(imageData: ImageData, hashSize?: number): Uint8Array {
 }
 
 export function hammingDistance(hashA: string | Uint8Array, hashB: string | Uint8Array) {
-  // TODO: handle hex-based strings
-  const arrayA: any[] = typeof hashA === 'string' ? hashA.split('') : toBits(hashA)
-  const arrayB: any[] = typeof hashB === 'string' ? hashB.split('') : toBits(hashB)
+  const stringA = toBinaryString(hashA)
+  const stringB = toBinaryString(hashB)
 
-  var distance = 0
-  for (var i = 0; i < arrayA.length; i++) {
-    if (arrayA[i] !== arrayB[i]) {
+  let distance = 0
+  for (let i = 0; i < stringA.length; i++) {
+    if (stringA[i] !== stringB[i]) {
       distance++
     }
   }
