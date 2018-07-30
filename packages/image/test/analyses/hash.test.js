@@ -97,11 +97,10 @@ describe('#analyses/hash', () => {
       expect(parseInt(hash, 2).toString(16)).to.equal('c5b7535fe4cb7000')
     })
 
-    it.skip('should support larger hashes', async () => {
+    it('should support larger hashes', async () => {
       const imageData = await skaterPromise
-      const hash = hashModule.phash(imageData, 256)
-      // FIXME: this is broken
-      expect(parseInt(hash, 2).toString(16)).to.equal('')
+      const hash = hashModule.toHexString(hashModule.phash(imageData, 256))
+      expect(hash).to.equal('f1e21800a188a1f11c63dc63dc63dce8e695b1803182a0e8c21591b0903880')
     })
 
     it('should be resilient to minor image changes', async () => {

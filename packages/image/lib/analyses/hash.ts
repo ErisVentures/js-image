@@ -13,6 +13,13 @@ function hexToBinary(hex: string): string {
   return (parseInt(hex, 16).toString(2) as any).padStart(64, '0')
 }
 
+export function toHexString(binaryString: string): string {
+  return binaryString
+    .match(/.{8}/gm)!
+    .map(s => parseInt(s, 2).toString(16))
+    .join('')
+}
+
 export function toBinaryString(arrayOrString: string | Uint8Array): string {
   if (typeof arrayOrString === 'string') {
     if (/^(0|1)+$/.test(arrayOrString)) return arrayOrString
@@ -34,8 +41,12 @@ export function toBits(array: Uint8Array): number[] {
   return bits
 }
 
-export function computeDCT(imageData: ImageData): number[] {
-  const size = imageData.width
+export function computeDCT(
+  imageData: ImageData,
+  xOffset: number = 0,
+  yOffset: number = 0,
+): number[] {
+  const size = Math.min(imageData.width, 32)
   const output = []
 
   for (var v = 0; v < size; v++) {
@@ -45,7 +56,7 @@ export function computeDCT(imageData: ImageData): number[] {
         for (var j = 0; j < size; j++) {
           const du = ((i + 1 / 2) / size) * u * Math.PI
           const dv = ((j + 1 / 2) / size) * v * Math.PI
-          value += Math.cos(du) * Math.cos(dv) * imageData.data[j * size + i]
+          value += Math.cos(du) * Math.cos(dv) * imageData.data[(j + yOffset) * size + i + xOffset]
         }
       }
 
@@ -57,7 +68,7 @@ export function computeDCT(imageData: ImageData): number[] {
   return output
 }
 
-export function reduceDCT(dct: number[], size: number): number[] {
+export function reduceDCT(dct: number[], size: number = 8): number[] {
   const originalSize = Math.sqrt(dct.length)
   const output = []
 
@@ -90,14 +101,11 @@ export function averageAndThreshold(input: number[]): string {
  */
 export function phash(imageData: ImageData, hashSize?: number): string {
   hashSize = hashSize || 64
-  if (hashSize % 8 !== 0) {
-    throw new Error('Hash size must be a byte-multiple')
+  if (!Number.isInteger(Math.sqrt(hashSize / 64))) {
+    throw new Error('Hash size must be a square-multiple of 64')
   }
 
-  const thumbnailWidth = Math.sqrt(hashSize) * 4
-  if (!Number.isInteger(thumbnailWidth)) {
-    throw new Error('Hash size must be a square')
-  }
+  const thumbnailWidth = (hashSize / 64) * 32
 
   let thumbnail = imageData
   if (
@@ -109,9 +117,19 @@ export function phash(imageData: ImageData, hashSize?: number): string {
     thumbnail = ImageData.toGreyscale(colorThumbnail)
   }
 
-  const fullDCT = computeDCT(thumbnail)
-  const partialDCT = reduceDCT(fullDCT, thumbnailWidth / 4)
-  return averageAndThreshold(partialDCT)
+  const hashes: string[] = []
+
+  const numHashesToCompute = hashSize / 64
+  const numHashesPerRow = Math.sqrt(numHashesToCompute)
+  for (let i = 0; i < numHashesToCompute; i++) {
+    const xOffset = (i % numHashesPerRow) * 32
+    const yOffset = Math.floor(i / numHashesPerRow) * 32
+    const fullDCT = computeDCT(thumbnail, xOffset, yOffset)
+    const partialDCT = reduceDCT(fullDCT)
+    hashes.push(averageAndThreshold(partialDCT))
+  }
+
+  return hashes.join('')
 }
 
 export function hammingDistance(hashA: string | Uint8Array, hashB: string | Uint8Array) {
