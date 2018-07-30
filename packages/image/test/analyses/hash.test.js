@@ -86,7 +86,6 @@ describe('#analyses/hash', () => {
       ]
 
       const result = hashModule.averageAndThreshold(array)
-      // eslint-disable-next-line unicorn/number-literal-case
       expect(result).to.eql(`1111111100001000`)
     })
   })

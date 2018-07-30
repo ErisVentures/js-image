@@ -27,17 +27,20 @@ describe('NodeImage', () => {
 
   describe('._applyResize', () => {
     it('should support subselect', () => {
-      const modify = img => img.resize({
-        width: 100,
-        height: 80,
-        fit: NodeImage.EXACT,
-        subselect: {
-          top: 200,
-          bottom: 800,
-          left: 100,
-          right: 700,
-        },
-      }).format({type: 'jpeg', quality: 90})
+      const modify = img =>
+        img
+          .resize({
+            width: 100,
+            height: 80,
+            fit: NodeImage.EXACT,
+            subselect: {
+              top: 200,
+              bottom: 800,
+              left: 100,
+              right: 700,
+            },
+          })
+          .format({type: 'jpeg', quality: 90})
 
       return testYosemite('yosemite-subselect.jpg', modify, {
         strict: false,
@@ -46,11 +49,12 @@ describe('NodeImage', () => {
     })
 
     it('should support cover', () => {
-      const modify = img => img.resize({
-        width: 200,
-        height: 200,
-        fit: NodeImage.COVER,
-      })
+      const modify = img =>
+        img.resize({
+          width: 200,
+          height: 200,
+          fit: NodeImage.COVER,
+        })
 
       return testYosemite('yosemite-square-cover.jpg', modify, {
         strict: false,
@@ -59,11 +63,12 @@ describe('NodeImage', () => {
     })
 
     it('should support contain', () => {
-      const modify = img => img.resize({
-        width: 200,
-        height: 200,
-        fit: NodeImage.CONTAIN,
-      })
+      const modify = img =>
+        img.resize({
+          width: 200,
+          height: 200,
+          fit: NodeImage.CONTAIN,
+        })
 
       return testYosemite('yosemite-square-contain.jpg', modify, {
         strict: false,
@@ -72,11 +77,12 @@ describe('NodeImage', () => {
     })
 
     it('should support crop', () => {
-      const modify = img => img.resize({
-        width: 200,
-        height: 200,
-        fit: NodeImage.CROP,
-      })
+      const modify = img =>
+        img.resize({
+          width: 200,
+          height: 200,
+          fit: NodeImage.CROP,
+        })
 
       return testOpera('opera-square-crop.jpg', modify, {
         strict: false,
@@ -85,11 +91,12 @@ describe('NodeImage', () => {
     })
 
     it('should support exact', () => {
-      const modify = img => img.resize({
-        width: 200,
-        height: 200,
-        fit: NodeImage.EXACT,
-      })
+      const modify = img =>
+        img.resize({
+          width: 200,
+          height: 200,
+          fit: NodeImage.EXACT,
+        })
 
       return testOpera('opera-square-exact.jpg', modify, {
         strict: false,
@@ -135,8 +142,8 @@ describe('NodeImage', () => {
         })
         .toAnalysis()
         .then(analysis => {
-          const result = Buffer.from(analysis.hash).toString('hex')
-          expect(result).to.equal('ea26561bb48918d5')
+          const result = parseInt(analysis.hash, 2).toString(16)
+          expect(result).to.equal('c5b7535fe4cb7000')
         })
     })
 
@@ -195,8 +202,9 @@ describe('NodeImage', () => {
   describe('.toImageData', () => {
     it('should handle RGB image data', () => {
       const pixels = Buffer.from([
-        0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0,
+        // prettier:ignore
+        ...[0, 0, 0, 0, 0, 0],
+        ...[0, 0, 0, 0, 0, 0],
       ])
 
       const imageData = {
@@ -207,9 +215,11 @@ describe('NodeImage', () => {
         data: pixels,
       }
 
-      return NodeImage.from(imageData).toImageData().then(data => {
-        expect(data).to.eql(imageData)
-      })
+      return NodeImage.from(imageData)
+        .toImageData()
+        .then(data => {
+          expect(data).to.eql(imageData)
+        })
     })
 
     it('should be fast', () => {
@@ -226,10 +236,12 @@ describe('NodeImage', () => {
     })
 
     it('should generate a valid image data', () => {
-      return NodeImage.from(skater).toImageData().then(data => {
-        const buffer = jpeg.encode(ImageData.toRGBA(data), 90).data
-        return compareToFixture(buffer, 'skater-image-data.jpg', {strict: false})
-      })
+      return NodeImage.from(skater)
+        .toImageData()
+        .then(data => {
+          const buffer = jpeg.encode(ImageData.toRGBA(data), 90).data
+          return compareToFixture(buffer, 'skater-image-data.jpg', {strict: false})
+        })
     })
 
     it('should generate valid image data for transformed image', () => {

@@ -30,17 +30,18 @@ describe('BrowserImage', () => {
 
   describe('._applyResize', () => {
     it('should support subselect', () => {
-      const modify = img => img.resize({
-        width: 100,
-        height: 80,
-        fit: BrowserImage.EXACT,
-        subselect: {
-          top: 200,
-          bottom: 800,
-          left: 100,
-          right: 700,
-        },
-      })
+      const modify = img =>
+        img.resize({
+          width: 100,
+          height: 80,
+          fit: BrowserImage.EXACT,
+          subselect: {
+            top: 200,
+            bottom: 800,
+            left: 100,
+            right: 700,
+          },
+        })
 
       return testYosemite('yosemite-subselect.jpg', modify, {
         strict: false,
@@ -49,20 +50,22 @@ describe('BrowserImage', () => {
     })
 
     it('should resize with bilinear', () => {
-      const modify = img => img.resize({
-        width: 600,
-        height: 750,
-        method: BrowserImage.BILINEAR,
-      })
+      const modify = img =>
+        img.resize({
+          width: 600,
+          height: 750,
+          method: BrowserImage.BILINEAR,
+        })
       return testYosemite('yosemite-bilinear-minor.jpg', modify)
     })
 
     it('should support cover', () => {
-      const modify = img => img.resize({
-        width: 200,
-        height: 200,
-        fit: BrowserImage.COVER,
-      })
+      const modify = img =>
+        img.resize({
+          width: 200,
+          height: 200,
+          fit: BrowserImage.COVER,
+        })
 
       return testYosemite('yosemite-square-cover.jpg', modify, {
         strict: false,
@@ -71,11 +74,12 @@ describe('BrowserImage', () => {
     })
 
     it('should support contain', () => {
-      const modify = img => img.resize({
-        width: 200,
-        height: 200,
-        fit: BrowserImage.CONTAIN,
-      })
+      const modify = img =>
+        img.resize({
+          width: 200,
+          height: 200,
+          fit: BrowserImage.CONTAIN,
+        })
 
       return testYosemite('yosemite-square-contain.jpg', modify, {
         strict: false,
@@ -84,11 +88,12 @@ describe('BrowserImage', () => {
     })
 
     it('should support crop', () => {
-      const modify = img => img.resize({
-        width: 200,
-        height: 200,
-        fit: BrowserImage.CROP,
-      })
+      const modify = img =>
+        img.resize({
+          width: 200,
+          height: 200,
+          fit: BrowserImage.CROP,
+        })
 
       return testOpera('opera-square-crop.jpg', modify, {
         strict: false,
@@ -97,11 +102,12 @@ describe('BrowserImage', () => {
     })
 
     it('should support exact', () => {
-      const modify = img => img.resize({
-        width: 200,
-        height: 200,
-        fit: BrowserImage.EXACT,
-      })
+      const modify = img =>
+        img.resize({
+          width: 200,
+          height: 200,
+          fit: BrowserImage.EXACT,
+        })
 
       return testOpera('opera-square-exact.jpg', modify, {
         strict: false,
@@ -129,11 +135,12 @@ describe('BrowserImage', () => {
     })
 
     it('should support options', () => {
-      const modify = img => img.edges({
-        method: BrowserImage.CANNY,
-        radius: 3,
-        blurSigma: 0,
-      })
+      const modify = img =>
+        img.edges({
+          method: BrowserImage.CANNY,
+          radius: 3,
+          blurSigma: 0,
+        })
       return testSkater('skater-canny-radius-3.jpg', modify)
     })
   })
@@ -146,8 +153,8 @@ describe('BrowserImage', () => {
         })
         .toAnalysis()
         .then(analysis => {
-          const result = Buffer.from(analysis.hash).toString('hex')
-          expect(result).to.equal('ea26561bb48918d5')
+          const result = parseInt(analysis.hash, 2).toString(16)
+          expect(result).to.equal('c5b7535fe4cb7000')
         })
     })
 
@@ -206,8 +213,9 @@ describe('BrowserImage', () => {
   describe('.toImageData', () => {
     it('should handle RGB image data', () => {
       const pixels = Buffer.from([
-        0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0,
+        // prettier:ignore
+        ...[0, 0, 0, 0, 0, 0],
+        ...[0, 0, 0, 0, 0, 0],
       ])
 
       const imageData = {
@@ -218,9 +226,11 @@ describe('BrowserImage', () => {
         data: pixels,
       }
 
-      return BrowserImage.from(imageData).toImageData().then(data => {
-        expect(data).to.eql(imageData)
-      })
+      return BrowserImage.from(imageData)
+        .toImageData()
+        .then(data => {
+          expect(data).to.eql(imageData)
+        })
     })
 
     it('should be fast', () => {
@@ -237,11 +247,15 @@ describe('BrowserImage', () => {
 
     it('should generate a valid image data', () => {
       const decoded = jpeg.decode(skater)
-      return BrowserImage.from(skater).toImageData().then(imageData => {
-        expect(imageData).to.have.property('width', decoded.width)
-        expect(imageData).to.have.property('height', decoded.height)
-        expect(imageData).to.have.property('data').with.length(decoded.data.length)
-      })
+      return BrowserImage.from(skater)
+        .toImageData()
+        .then(imageData => {
+          expect(imageData).to.have.property('width', decoded.width)
+          expect(imageData).to.have.property('height', decoded.height)
+          expect(imageData)
+            .to.have.property('data')
+            .with.length(decoded.data.length)
+        })
     })
   })
 
