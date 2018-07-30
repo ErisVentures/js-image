@@ -34,12 +34,12 @@ export function toBits(array: Uint8Array): number[] {
   return bits
 }
 
-export function computeDCT(imageData: ImageData): Uint8Array {
+export function computeDCT(imageData: ImageData): number[] {
   const size = imageData.width
-  const output = new Uint8Array(size * size)
+  const output = []
 
-  for (var u = 0; u < size; u++) {
-    for (var v = 0; v < size; v++) {
+  for (var v = 0; v < size; v++) {
+    for (var u = 0; u < size; u++) {
       var value = 0
       for (var i = 0; i < size; i++) {
         for (var j = 0; j < size; j++) {
@@ -57,12 +57,12 @@ export function computeDCT(imageData: ImageData): Uint8Array {
   return output
 }
 
-export function reduceDCT(dct: Uint8Array, size: number): Uint8Array {
+export function reduceDCT(dct: number[], size: number): number[] {
   const originalSize = Math.sqrt(dct.length)
-  const output = new Uint8Array(size * size)
+  const output = []
 
-  for (var i = 0; i < size; i++) {
-    for (var j = 0; j < size; j++) {
+  for (var j = 0; j < size; j++) {
+    for (var i = 0; i < size; i++) {
       output[j * size + i] = dct[j * originalSize + i]
     }
   }
@@ -70,28 +70,25 @@ export function reduceDCT(dct: Uint8Array, size: number): Uint8Array {
   return output
 }
 
-export function averageAndThreshold(input: Uint8Array): Uint8Array {
+export function averageAndThreshold(input: number[]): string {
   var sum = 0
   for (var i = 1; i < input.length; i++) {
     sum += input[i]
   }
 
   var average = sum / (input.length - 1)
-  var output = new Uint8Array(input.length / 8)
+  var output = []
   for (var i = 0; i < input.length; i++) {
-    var index = Math.floor(i / 8)
-    var bit = input[i] > average ? 1 : 0
-    var bitPosition = 7 - (i % 8)
-    output[index] = output[index] | (bit << bitPosition)
+    output[i] = input[i] > average ? 1 : 0
   }
 
-  return output
+  return output.join('')
 }
 
 /**
  * Heavily based on the method described in http://www.hackerfactor.com/blog/index.php?/archives/432-Looks-Like-It.html
  */
-export function phash(imageData: ImageData, hashSize?: number): Uint8Array {
+export function phash(imageData: ImageData, hashSize?: number): string {
   hashSize = hashSize || 64
   if (hashSize % 8 !== 0) {
     throw new Error('Hash size must be a byte-multiple')
