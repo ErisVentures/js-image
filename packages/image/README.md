@@ -12,3 +12,9 @@ Collection of image manipulation libraries for node and the browser.
 ### Installation
 
 `npm install --save @eris/image`
+
+### Use
+
+```js
+const Image = require('@eris/image').Image
+const img = await Image.from('./path-to-image.nef')
