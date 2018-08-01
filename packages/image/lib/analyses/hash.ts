@@ -132,7 +132,7 @@ export function phash(imageData: ImageData, hashSize?: number): string {
   return hashes.join('')
 }
 
-export function hammingDistance(hashA: string | Uint8Array, hashB: string | Uint8Array) {
+export function hammingDistance(hashA: string | Uint8Array, hashB: string | Uint8Array): number {
   const stringA = toBinaryString(hashA)
   const stringB = toBinaryString(hashB)
 

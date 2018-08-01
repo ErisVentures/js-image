@@ -75,7 +75,7 @@ export interface ISharpness {
 }
 
 export interface IAnalysis {
-  hash?: BufferLike
+  hash?: string
   sharpness?: ISharpness
 }
 
