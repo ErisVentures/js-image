@@ -1,4 +1,3 @@
-// tslint:disable
 import {ImageData} from '../image-data'
 import {bilinear} from '../transforms/resize'
 
@@ -32,10 +31,10 @@ export function toBinaryString(arrayOrString: string | Uint8Array): string {
 
 export function toBits(array: Uint8Array): number[] {
   const bits = []
-  for (var i = 0; i < array.length; i++) {
+  for (let i = 0; i < array.length; i++) {
     const byte = array[i]
-    for (var k = 7; k >= 0; k--) {
-      bits.push((byte >> k) & 1)
+    for (let k = 7; k >= 0; k--) {
+      bits.push((byte >> k) & 1) // tslint:disable-line
     }
   }
   return bits
@@ -49,11 +48,11 @@ export function computeDCT(
   const size = Math.min(imageData.width, 32)
   const output = []
 
-  for (var v = 0; v < size; v++) {
-    for (var u = 0; u < size; u++) {
-      var value = 0
-      for (var i = 0; i < size; i++) {
-        for (var j = 0; j < size; j++) {
+  for (let v = 0; v < size; v++) {
+    for (let u = 0; u < size; u++) {
+      let value = 0
+      for (let i = 0; i < size; i++) {
+        for (let j = 0; j < size; j++) {
           const du = ((i + 1 / 2) / size) * u * Math.PI
           const dv = ((j + 1 / 2) / size) * v * Math.PI
           value += Math.cos(du) * Math.cos(dv) * imageData.data[(j + yOffset) * size + i + xOffset]
@@ -72,8 +71,8 @@ export function reduceDCT(dct: number[], size: number = 8): number[] {
   const originalSize = Math.sqrt(dct.length)
   const output = []
 
-  for (var j = 0; j < size; j++) {
-    for (var i = 0; i < size; i++) {
+  for (let j = 0; j < size; j++) {
+    for (let i = 0; i < size; i++) {
       output[j * size + i] = dct[j * originalSize + i]
     }
   }
@@ -82,14 +81,14 @@ export function reduceDCT(dct: number[], size: number = 8): number[] {
 }
 
 export function averageAndThreshold(input: number[]): string {
-  var sum = 0
-  for (var i = 1; i < input.length; i++) {
+  let sum = 0
+  for (let i = 1; i < input.length; i++) {
     sum += input[i]
   }
 
-  var average = sum / (input.length - 1)
-  var output = []
-  for (var i = 0; i < input.length; i++) {
+  const average = sum / (input.length - 1)
+  const output = []
+  for (let i = 0; i < input.length; i++) {
     output[i] = input[i] > average ? 1 : 0
   }
 
