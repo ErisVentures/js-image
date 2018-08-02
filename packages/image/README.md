@@ -18,3 +18,4 @@ Collection of image manipulation libraries for node and the browser.
 ```js
 const Image = require('@eris/image').Image
 const img = await Image.from('./path-to-image.nef')
+```
