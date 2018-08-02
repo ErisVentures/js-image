@@ -32,10 +32,6 @@ class Runner {
     if (Buffer.isBuffer(result)) {
       this._cachedFiles.set(entry.output, result)
     } else {
-      if (result.hash && typeof result.hash.every === 'function') {
-        result.hash = Buffer.from(result.hash).toString('hex')
-      }
-
       output = JSON.stringify(result, null, 2)
     }
 
