@@ -18,6 +18,22 @@ class Runner {
 
   async _processEntry(entry) {
     this._reporter.entryStarted(entry)
+    if (fs.existsSync(entry.output) && !entry.force) {
+      let result
+      if (entry.action === 'toBuffer') {
+        const buffer = fs.readFileSync(entry.output)
+        result = buffer
+        this._cachedFiles.set(entry.output, buffer)
+      } else {
+        const string = fs.readFileSync(entry.output, 'utf8')
+        result = JSON.parse(string)
+        this._cachedFiles.set(entry.output, string)
+      }
+
+      this._reporter.entryFinished(entry, result)
+      return
+    }
+
     const input = this._getInput(entry.input)
 
     let image = Image.from(input)
@@ -27,16 +43,16 @@ class Runner {
     })
 
     const result = await image[entry.action]()
-    let output = result
+    let buffer = result
 
     if (Buffer.isBuffer(result)) {
       this._cachedFiles.set(entry.output, result)
     } else {
-      output = JSON.stringify(result, null, 2)
+      buffer = JSON.stringify(result, null, 2)
     }
 
     if (entry.toDisk) {
-      fs.writeFileSync(entry.output, output)
+      fs.writeFileSync(entry.output, buffer)
     }
 
     this._reporter.entryFinished(entry, result)

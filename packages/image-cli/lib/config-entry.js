@@ -33,6 +33,10 @@ class ConfigEntry {
     return this._entry.settings || {}
   }
 
+  get force() {
+    return Boolean(this._entry.force)
+  }
+
   get toDisk() {
     return Boolean(this._entry.toDisk)
   }
