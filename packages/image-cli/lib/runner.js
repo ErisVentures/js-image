@@ -10,6 +10,16 @@ class Runner {
     this._cachedFiles = new Map()
   }
 
+  _checkForNecessaryFiles(filePaths) {
+    if (filePaths.length) return
+
+    for (const entry of this._entries) {
+      if (entry.input.includes('<%= file') || entry.output.includes('<%= file')) {
+        throw new Error('Entry demanded a file but none provided')
+      }
+    }
+  }
+
   _getInput(input) {
     if (this._cachedFiles.has(input)) {
       return this._cachedFiles.get(input)
@@ -74,6 +84,7 @@ class Runner {
 
   async run(filePaths = []) {
     this._reporter.started()
+    this._checkForNecessaryFiles(filePaths)
 
     const cwd = process.cwd()
     if (!filePaths.length) {

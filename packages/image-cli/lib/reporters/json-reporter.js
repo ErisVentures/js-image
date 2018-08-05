@@ -15,9 +15,10 @@ class JsonReporter {
     this._log({type: 'started', data: {}})
   }
 
-  finished() {
+  finished(err) {
+    err = err && {message: err.message, stack: err.stack}
     const timeTaken = Date.now() - this._startTime
-    this._log({type: 'finished', data: {timeTaken}})
+    this._log({type: 'finished', data: {timeTaken}, err})
   }
 
   entryStarted(config) {

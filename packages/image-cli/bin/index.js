@@ -22,4 +22,4 @@ const argv = yargs
 const configEntries = ConfigEntry.readAllFrom(argv.config)
 const reporter = Reporters.from(argv)
 const runner = new Runner(reporter, configEntries)
-runner.run()
+runner.run(argv._).catch(err => reporter.finished(err))

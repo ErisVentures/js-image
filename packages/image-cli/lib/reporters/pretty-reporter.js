@@ -6,9 +6,14 @@ class PrettyReporter {
     console.log('📸  image-cli is starting up')
   }
 
-  finished() {
+  finished(err) {
     const finish = Date.now() - this._startTime
-    console.log(`🏁  image-cli has finished in ${finish} ms`)
+    if (err) {
+      console.log(`X  image-cli has fatally errored after ${finish} ms`)
+      console.log(err.stack)
+    } else {
+      console.log(`🏁  image-cli has finished in ${finish} ms`)
+    }
   }
 
   entryStarted(config) {
