@@ -1,3 +1,4 @@
+const fs = require('fs')
 const path = require('path')
 const expect = require('chai').expect
 const sinon = require('sinon')
@@ -76,9 +77,31 @@ describe('lib/runner.js', () => {
       return runner.run().then(() => {
         expect(entryFinished.firstCall).to.be.ok
         const result = entryFinished.firstCall.args[1]
-        expect(result).to.have.property('hash').a('string')
+        expect(result)
+          .to.have.property('hash')
+          .a('string')
         expect(result.sharpness).to.have.property('median', 75)
       })
+    })
+
+    it('should process multiple files with one config', async () => {
+      const config = {
+        input: '<%= file.path %>',
+        output: '<%= file.dirname %>/actual-<%= file.basenameWithoutExtension %>-preview.jpg',
+        action: 'toBuffer',
+        toDisk: true,
+        toReporter: false,
+        settings: {},
+      }
+
+      const files = [fixturePath('skater.jpg'), fixturePath('sydney.jpg')]
+
+      const runner = new Runner(reporterApi, [config])
+
+      await runner.run(files)
+
+      expect(fs.existsSync(fixturePath('actual-skater-preview.jpg'))).to.equal(true)
+      expect(fs.existsSync(fixturePath('actual-sydney-preview.jpg'))).to.equal(true)
     })
   })
 })

@@ -1,4 +1,6 @@
 const fs = require('fs')
+const path = require('path')
+const _ = require('lodash')
 const Image = require('@eris/image').Image
 
 class Runner {
@@ -31,7 +33,16 @@ class Runner {
     this._reporter.entryFinished(entry, result)
   }
 
-  async _processEntry(entry) {
+  /**
+   *
+   * @param {ConfigEntry} entry
+   * @param {{file: FileEntry, cwd: string}} context
+   */
+  async _processEntry(entry, context) {
+    entry = _.clone(entry)
+    entry.input = _.template(entry.input)(context)
+    entry.output = _.template(entry.output)(context)
+
     this._reporter.entryStarted(entry)
     if (fs.existsSync(entry.output) && !entry.force) {
       return this._processCachedEntry(entry)
@@ -61,14 +72,33 @@ class Runner {
     this._reporter.entryFinished(entry, result)
   }
 
-  async run() {
+  async run(filePaths = []) {
     this._reporter.started()
 
-    for (const entry of this._entries) {
-      try {
-        await this._processEntry(entry)
-      } catch (err) {
-        this._reporter.entryErrored(entry, err)
+    const cwd = process.cwd()
+    if (!filePaths.length) {
+      filePaths = ['/dev/null']
+    }
+
+    for (const filePath of filePaths) {
+      const fullPath = path.resolve(cwd, filePath)
+      const extension = path.extname(fullPath)
+
+      const file = {
+        path: fullPath,
+        pathWithoutExtension: fullPath.slice(0, -1 * extension.length),
+        dirname: path.dirname(fullPath),
+        basename: path.basename(fullPath),
+        basenameWithoutExtension: path.basename(fullPath, extension),
+        extension,
+      }
+
+      for (const entry of this._entries) {
+        try {
+          await this._processEntry(entry, {file, cwd})
+        } catch (err) {
+          this._reporter.entryErrored(entry, err)
+        }
       }
     }
 
