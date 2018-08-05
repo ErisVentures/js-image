@@ -53,7 +53,7 @@ class CLIInstance extends EventEmitter {
 
   _listenToProcessEvents() {
     this._childProcess.stdout.on('data', chunk => this._processChunk(chunk))
-    this._childProcess.stderr.on('data', s => this._stderr += s)
+    this._childProcess.stderr.on('data', s => (this._stderr += s))
     this._childProcess.on('error', err => this._emitDone(err))
     this._childProcess.on('exit', code => {
       if (code === 0) {
@@ -80,21 +80,21 @@ class CLIInstance extends EventEmitter {
 
   waitForExit(options) {
     if (this._finished) {
-      return this._error ?
-        Promise.reject(this._error) :
-        this._entriesToPromise(options)
+      return this._error ? Promise.reject(this._error) : this._entriesToPromise(options)
     }
 
-    return new Promise(resolve => this.once('done', resolve))
-      .then(() => this.waitForExit(options))
+    return new Promise(resolve => this.once('done', resolve)).then(() => this.waitForExit(options))
   }
 }
 
 class CLIClient {
   constructor(options) {
-    this._options = Object.assign({
-      executablePath: path.join(__dirname, '../bin/index.js'),
-    }, options)
+    this._options = Object.assign(
+      {
+        executablePath: path.join(__dirname, '../bin/index.js'),
+      },
+      options,
+    )
   }
 
   run(config) {
