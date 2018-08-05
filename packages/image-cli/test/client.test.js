@@ -40,7 +40,9 @@ describe('lib/client.js', () => {
       const promise = client.run(config).waitForExit()
       return promise.then(entries => {
         expect(entries).to.have.length(1)
-        expect(entries[0]).to.have.property('result').that.includes({width: 256, height: 256})
+        expect(entries[0])
+          .to.have.property('result')
+          .that.includes({width: 256, height: 256})
       })
     })
 
