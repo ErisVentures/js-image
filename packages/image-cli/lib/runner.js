@@ -16,22 +16,25 @@ class Runner {
     return fs.readFileSync(input)
   }
 
+  _processCachedEntry(entry) {
+    let result
+    if (entry.action === 'toBuffer') {
+      const buffer = fs.readFileSync(entry.output)
+      result = buffer
+      this._cachedFiles.set(entry.output, buffer)
+    } else {
+      const string = fs.readFileSync(entry.output, 'utf8')
+      result = JSON.parse(string)
+      this._cachedFiles.set(entry.output, string)
+    }
+
+    this._reporter.entryFinished(entry, result)
+  }
+
   async _processEntry(entry) {
     this._reporter.entryStarted(entry)
     if (fs.existsSync(entry.output) && !entry.force) {
-      let result
-      if (entry.action === 'toBuffer') {
-        const buffer = fs.readFileSync(entry.output)
-        result = buffer
-        this._cachedFiles.set(entry.output, buffer)
-      } else {
-        const string = fs.readFileSync(entry.output, 'utf8')
-        result = JSON.parse(string)
-        this._cachedFiles.set(entry.output, string)
-      }
-
-      this._reporter.entryFinished(entry, result)
-      return
+      return this._processCachedEntry(entry)
     }
 
     const input = this._getInput(entry.input)
