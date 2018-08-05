@@ -1,0 +1,11 @@
+[
+  {
+    "input": "<%= file.path %>",
+    "output": "<%= file.pathWithoutExtension %>-preview.jpg",
+    "action": "toBuffer",
+    "toDisk": true,
+    "settings": {
+      "resize": {"width": 3000, "height": 3000, "fit": "contain"}
+    }
+  }
+]
