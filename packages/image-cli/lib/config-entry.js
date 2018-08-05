@@ -11,38 +11,17 @@ class ConfigEntry {
     }
 
     this._entry = config
-  }
 
-  get id() {
-    return this._entry.id
-  }
-
-  get input() {
-    return this._entry.input
-  }
-
-  get output() {
-    return this._entry.output
-  }
-
-  get action() {
-    return this._entry.action
-  }
-
-  get settings() {
-    return this._entry.settings || {}
-  }
-
-  get force() {
-    return Boolean(this._entry.force)
-  }
-
-  get toDisk() {
-    return Boolean(this._entry.toDisk)
-  }
-
-  get toReporter() {
-    return Boolean(this._entry.toReporter)
+    return {
+      id: config.id,
+      input: config.input || '<%= file.path %>',
+      output: config.output,
+      action: config.action,
+      settings: config.settings || {},
+      force: Boolean(config.force),
+      toDisk: Boolean(config.toDisk),
+      toReporter: Boolean(config.toReporter),
+    }
   }
 
   static readAllFrom(pathOrConfig) {
