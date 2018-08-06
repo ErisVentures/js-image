@@ -16,6 +16,9 @@ const argv = yargs
     type: 'string',
     required: true,
   })
+  .option('force', {
+    type: 'boolean',
+  })
   .option('reporter', {
     alias: 'r',
     default: 'pretty',
@@ -29,4 +32,4 @@ if (PRESETS.includes(argv.config)) {
 const configEntries = ConfigEntry.readAllFrom(argv.config)
 const reporter = Reporters.from(argv)
 const runner = new Runner(reporter, configEntries)
-runner.run(argv._).catch(err => reporter.finished(err))
+runner.run(argv._, argv).catch(err => reporter.finished(err))

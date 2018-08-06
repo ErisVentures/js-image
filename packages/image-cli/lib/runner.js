@@ -4,9 +4,9 @@ const _ = require('lodash')
 const Image = require('@eris/image').Image
 
 class Runner {
-  constructor(reporter, entries) {
+  constructor(reporter, configEntries) {
     this._reporter = reporter
-    this._entries = entries
+    this._entries = configEntries
     this._cachedFiles = new Map()
   }
 
@@ -50,6 +50,7 @@ class Runner {
    */
   async _processEntry(entry, context) {
     entry = _.clone(entry)
+    entry.force = Boolean(entry.force || context.force)
     entry.input = _.template(entry.input)(context)
     entry.output = _.template(entry.output)(context)
 
@@ -82,10 +83,11 @@ class Runner {
     this._reporter.entryFinished(entry, result)
   }
 
-  async run(filePaths = []) {
+  async run(filePaths = [], options) {
     this._reporter.started()
     this._checkForNecessaryFiles(filePaths)
 
+    const force = (options && options.force) || process.env.FORCE
     const cwd = process.cwd()
     if (!filePaths.length) {
       filePaths = ['/dev/null']
@@ -106,7 +108,7 @@ class Runner {
 
       for (const entry of this._entries) {
         try {
-          await this._processEntry(entry, {file, cwd})
+          await this._processEntry(entry, {file, cwd, force})
         } catch (err) {
           this._reporter.entryErrored(entry, err)
         }
