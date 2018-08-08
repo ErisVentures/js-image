@@ -2,9 +2,12 @@ const RawDecoder = require('raw-decoder').Decoder
 const {Endian, Reader} = require('raw-decoder/dist/reader.js')
 
 const EXIF_HEADER = 0x45786966 // "Exif"
-const APP1 = 0xFFE1
-const START_OF_SCAN = 0xFFDA
-const END_OF_IMAGE = 0xFFD9
+const APP1 = 0xffe1
+const START_OF_FRAME0 = 0xffc0
+const START_OF_FRAME1 = 0xffc1
+const START_OF_FRAME2 = 0xffc2
+const START_OF_SCAN = 0xffda
+const END_OF_IMAGE = 0xffd9
 
 class JPEGDecoder {
   constructor(buffer) {
@@ -24,6 +27,7 @@ class JPEGDecoder {
     let marker = reader.read(2)
     while (marker !== END_OF_IMAGE && reader.hasNext()) {
       if (marker === APP1) {
+        // Read the EXIF data from APP1 Marker
         const length = reader.read(2)
         const nextPosition = reader.getPosition() + length - 2
         const header = reader.read(4)
@@ -37,15 +41,15 @@ class JPEGDecoder {
         exifBuffers.push(reader.readAsBuffer(length - 8))
         marker = reader.read(2)
       } else if (marker === START_OF_SCAN) {
+        // If we reached the scan data, we've gone too far, exit early
         marker = END_OF_IMAGE
-      } else if (marker >> 8 === 0xFF) {
+      } else if (marker >> 8 === 0xff) {
+        // Skip through the other header payloads that aren't APP1
         const length = reader.read(2)
         const nextPosition = reader.getPosition() + length - 2
 
-        const markerType = marker & 0xFF
-        if (markerType === 0xC0 ||
-            markerType === 0xC1 ||
-            markerType === 0xC2) {
+        // Width and Height information will be in the Start Of Frame (SOFx) payloads
+        if (marker === START_OF_FRAME0 || marker === START_OF_FRAME1 || marker == START_OF_FRAME2) {
           reader.skip(1)
           this._height = reader.read(2)
           this._width = reader.read(2)
@@ -77,7 +81,7 @@ class JPEGDecoder {
   }
 
   static isJPEG(buffer) {
-    return buffer[0] === 0xFF && buffer[1] === 0xD8
+    return buffer[0] === 0xff && buffer[1] === 0xd8
   }
 }
 
