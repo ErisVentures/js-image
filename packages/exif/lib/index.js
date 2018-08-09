@@ -60,7 +60,7 @@ function mapResults(results) {
 }
 
 function isLikelyTIFF(byte) {
-  return byte === 0x4949 || byte === 0x4D4D
+  return byte === 0x4949 || byte === 0x4d4d
 }
 
 function parse(buffer) {
