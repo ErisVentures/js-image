@@ -5,6 +5,7 @@ const commonjs = require('rollup-plugin-commonjs')
 const babili = require('rollup-plugin-babili')
 const sourcemaps = require('rollup-plugin-sourcemaps')
 
+// TODO: add Buffer shim
 const debugshim = path.join(__dirname, 'dist/shims/debug.js')
 const fsshim = path.join(__dirname, 'dist/shims/fs.js')
 const pngshim = path.join(__dirname, 'dist/shims/png-js.js')
