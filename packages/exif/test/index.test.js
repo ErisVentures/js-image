@@ -2,7 +2,7 @@ const fs = require('fs')
 const path = require('path')
 const expect = require('chai').expect
 const RawDecoder = require('raw-decoder').Decoder
-const parse = require('../lib')
+const parse = require('../dist').parse
 
 const fixture = filePath => fs.readFileSync(path.join(__dirname, 'fixtures', filePath))
 

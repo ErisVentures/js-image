@@ -5,11 +5,10 @@ import {sobel} from './transforms/sobel'
 import {phash} from './analyses/hash'
 import {sharpness as computeSharpness} from './analyses/sharpness'
 import {Decoder as RAWDecoder} from 'raw-decoder'
+import {parse as parseEXIF} from '@eris/exif'
 
 /* tslint:disable-next-line */
 const fileType = require('file-type')
-/* tslint:disable-next-line */
-const parseEXIF = require('@eris/exif')
 
 export abstract class Image {
   // Image formats

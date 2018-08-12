@@ -1,5 +1,5 @@
-const RawDecoder = require('raw-decoder').Decoder
-const {Endian, Reader} = require('raw-decoder/dist/reader.js')
+import {Decoder as RawDecoder} from 'raw-decoder'
+import {Endian, Reader, BufferLike} from 'raw-decoder/dist/reader'
 
 const EXIF_HEADER = 0x45786966 // "Exif"
 const APP1 = 0xffe1
@@ -10,32 +10,38 @@ const START_OF_FRAME2 = 0xffc2
 const START_OF_SCAN = 0xffda
 const END_OF_IMAGE = 0xffd9
 
-function bufferFromNumber(number, minSize = 2) {
-  let buffer = Buffer.from(number.toString(16), 'hex')
+function bufferFromNumber(x: number, minSize: number = 2): BufferLike {
+  let buffer = Buffer.from(x.toString(16), 'hex')
   if (buffer.length < minSize) {
-    buffer = Buffer.concat([new Uint8Array(minSize - buffer.length), buffer])
+    buffer = Buffer.concat([Buffer.alloc(minSize - buffer.length), buffer])
   }
 
   return buffer
 }
 
-class JPEGDecoder {
-  constructor(buffer) {
+type Marker = [number, BufferLike, boolean]
+
+export class JPEGDecoder {
+  private readonly _buffer: BufferLike
+  private readonly _reader: Reader
+
+  private _markers: Marker[] | undefined
+  private _width: number | undefined
+  private _height: number | undefined
+  private _exifBuffers: BufferLike[] | undefined
+
+  public constructor(buffer: BufferLike) {
+    this._buffer = buffer
     this._reader = new Reader(buffer)
     this._reader.setEndianess(Endian.Big)
-
-    this._markers = undefined
-    this._width = undefined
-    this._height = undefined
-    this._exifBuffers = undefined
   }
 
-  _readFileMarkers() {
+  public _readFileMarkers(): void {
     if (this._markers) {
       return
     }
 
-    const markers = [[START_OF_IMAGE, Buffer.from([])]]
+    const markers: Marker[] = [[START_OF_IMAGE, Buffer.from([]), false]]
     const reader = this._reader
     const exifBuffers = []
     reader.seek(2)
@@ -51,7 +57,7 @@ class JPEGDecoder {
       const length = reader.use(() => reader.read(2)) - 2
       const markerBuffer = reader.use(() => reader.readAsBuffer(length + 2))
       // Push the marker and data onto our markers list
-      markers.push([marker, markerBuffer])
+      markers.push([marker, markerBuffer, false])
       // Skip over the length we just read
       reader.skip(2)
 
@@ -78,7 +84,11 @@ class JPEGDecoder {
         const nextPosition = reader.getPosition() + length
 
         // Width and Height information will be in the Start Of Frame (SOFx) payloads
-        if (marker === START_OF_FRAME0 || marker === START_OF_FRAME1 || marker == START_OF_FRAME2) {
+        if (
+          marker === START_OF_FRAME0 ||
+          marker === START_OF_FRAME1 ||
+          marker === START_OF_FRAME2
+        ) {
           reader.skip(1)
           this._height = reader.read(2)
           this._width = reader.read(2)
@@ -91,20 +101,21 @@ class JPEGDecoder {
       }
     }
 
-    markers.push([marker, reader._buffer.slice(reader.getPosition())])
+    markers.push([marker, this._buffer.slice(reader.getPosition()), false])
 
     this._markers = markers
     this._exifBuffers = exifBuffers
   }
 
-  extractMetadata() {
+  // TODO: remove this any
+  public extractMetadata(): any {
     this._readFileMarkers()
 
     const metadata = {
       ImageHeight: this._height,
       ImageWidth: this._width,
     }
-    for (const exifBuffer of this._exifBuffers) {
+    for (const exifBuffer of this._exifBuffers!) {
       const decoder = new RawDecoder(exifBuffer)
       Object.assign(metadata, decoder.extractMetadata())
     }
@@ -112,21 +123,21 @@ class JPEGDecoder {
     return metadata
   }
 
-  extractMetadataBuffer() {
+  public extractMetadataBuffer(): BufferLike | undefined {
     this._readFileMarkers()
-    return this._exifBuffers[0]
+    return this._exifBuffers![0]
   }
 
-  static isJPEG(buffer) {
+  public static isJPEG(buffer: BufferLike): boolean {
     return buffer[0] === 0xff && buffer[1] === 0xd8
   }
 
-  static injectMetadata(jpegBuffer, exifBuffer) {
+  public static injectMetadata(jpegBuffer: BufferLike, exifBuffer: BufferLike): BufferLike {
     const decoder = new JPEGDecoder(jpegBuffer)
     decoder._readFileMarkers()
 
-    const buffers = []
-    for (const [marker, buffer, isEXIF] of decoder._markers) {
+    const buffers: BufferLike[] = []
+    for (const [marker, buffer, isEXIF] of decoder._markers!) {
       if (marker === START_OF_IMAGE) {
         buffers.push(bufferFromNumber(START_OF_IMAGE))
         buffers.push(bufferFromNumber(APP1))
@@ -139,8 +150,7 @@ class JPEGDecoder {
       }
     }
 
+    // @ts-ignore - TODO investigate why this is error-y
     return Buffer.concat(buffers)
   }
 }
-
-module.exports = JPEGDecoder

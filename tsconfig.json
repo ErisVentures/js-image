@@ -10,8 +10,9 @@
     "noImplicitAny": true,
     "noImplicitThis": true,
     "strictNullChecks": true,
+    "preserveWatchOutput": true,
 
     "moduleResolution": "node"
   },
-  "include": ["packages/**/lib/**/*"]
+  "exclude": ["**/node_modules/", "**/dist/", "**/*.test.ts", "**/*.test.tsx"]
 }

@@ -6,6 +6,7 @@
   "scripts": {
     "clean": "lerna exec --parallel 'rm -fR dist/'",
     "build": "npm run clean && lerna run build",
+    "build:watch": "lerna exec --parallel 'tsc -w'",
     "test": "npm run build && npm run test:lint && npm run test:unit",
     "test:lint": "lint",
     "test:unit": "mocha --require source-map-support/register --timeout 20000 'packages/*/test/**/*.test.js'",

@@ -2,8 +2,9 @@
   "name": "@eris/exif",
   "version": "1.1.0",
   "description": "Parses EXIF data.",
-  "main": "./lib/index.js",
+  "main": "./dist/index.js",
   "scripts": {
+    "build": "tsc",
     "test": "npm run test:lint && npm run test:unit",
     "test:unit": "mocha --reporter spec 'test/**/*.test.js'",
     "test:lint": "lint",

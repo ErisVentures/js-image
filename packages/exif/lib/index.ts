@@ -1,9 +1,13 @@
-const RawDecoder = require('raw-decoder').Decoder
-const JPEGDecoder = require('./jpeg-decoder')
-const parseDate = require('./date-parser')
-const parseLens = require('./lens-parser')
+import {Decoder as RawDecoder} from 'raw-decoder'
+import {parseDate} from './date-parser'
+import {JPEGDecoder} from './jpeg-decoder'
+import {parseLens} from './lens-parser'
 
-const properties = {
+type ParseFn = (results: any) => any
+
+type PropertyDefn = string | [string, ParseFn] | ParseFn
+
+const properties: {[k: string]: PropertyDefn[]} = {
   make: ['Make'],
   model: ['Model'],
 
@@ -26,7 +30,11 @@ const properties = {
   lens: [parseLens],
 }
 
-function getResultValue(item, results) {
+function isRawDecoder<T>(obj: T): boolean {
+  return typeof (obj as any).extractMetadata === 'function'
+}
+
+function getResultValue(item: PropertyDefn, results: any): any {
   if (typeof item === 'string') {
     return results[item]
   } else if (typeof item === 'function') {
@@ -39,11 +47,11 @@ function getResultValue(item, results) {
   }
 }
 
-function mapResults(results) {
-  const output = {_raw: results}
+// TODO: remove these anys
+function mapResults(results: any): any {
+  const output: any = {_raw: results}
 
-  // eslint-disable-next-line guard-for-in
-  for (const key in properties) {
+  for (const key of Object.keys(properties)) {
     const candidates = properties[key]
     let value = null
     for (const candidate of candidates) {
@@ -59,13 +67,13 @@ function mapResults(results) {
   return output
 }
 
-function isLikelyTIFF(byte) {
+function isLikelyTIFF(byte: number): boolean {
   return byte === 0x4949 || byte === 0x4d4d
 }
 
-function parse(buffer) {
+export function parse(buffer: any): any {
   let decoder
-  if (typeof buffer.extractMetadata === 'function') {
+  if (isRawDecoder(buffer)) {
     decoder = buffer
   } else if (isLikelyTIFF((buffer[0] << 8) | buffer[1])) {
     decoder = new RawDecoder(buffer)
@@ -75,5 +83,3 @@ function parse(buffer) {
 
   return mapResults(decoder.extractMetadata())
 }
-
-module.exports = parse
