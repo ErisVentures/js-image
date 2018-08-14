@@ -4,7 +4,7 @@ import {writeFileAsync} from './fs-utils'
 import {sobel} from './transforms/sobel'
 import {phash} from './analyses/hash'
 import {sharpness as computeSharpness} from './analyses/sharpness'
-import {parse as parseEXIF, Decoder as RAWDecoder} from '@eris/exif'
+import {parse as parseEXIF, TIFFDecoder} from '@eris/exif'
 
 /* tslint:disable-next-line */
 const fileType = require('file-type')
@@ -142,7 +142,7 @@ export abstract class Image {
     const type = fileType(buffer) || {mime: 'unknown'}
     switch (type.mime) {
       case 'image/tiff':
-        const decoder = new RAWDecoder(buffer)
+        const decoder = new TIFFDecoder(buffer)
         buffer = decoder.extractJPEG() as Buffer
         exif = parseEXIF(decoder)
         break

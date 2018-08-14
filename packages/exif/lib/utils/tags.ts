@@ -133,7 +133,7 @@ const _tags: Array<[IFDTagName, number, IFDDataType, IFDGroup]> = [
   ['KodakIFD', 33424, -1, 1],
   ['Copyright', 33432, 2, 1],
   ['ExposureTime', 33434, 5, 1],
-  ['FNumber', 33437, -1, 1],
+  ['FNumber', 33437, 5, 1],
   ['MDFileTag', 33445, -1, 1],
   ['MDScalePixel', 33446, -1, 1],
   ['MDColorTable', 33447, -1, 1],
