@@ -22,6 +22,10 @@ export interface IReader {
   use<T>(func: () => T): T
 }
 
+export interface IDecoder {
+  extractMetadata(): IGenericMetadata
+}
+
 export interface IIFD {
   offset: number
   nextIFDOffset: number

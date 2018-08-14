@@ -1,26 +1,30 @@
 import {JPEGDecoder} from './decoder/jpeg-decoder'
 import {TIFFDecoder} from './decoder/tiff-decoder'
 import {normalizeMetadata} from './metadata/normalize'
+import {IDecoder, IBufferLike} from './utils/types'
 
-function isTIFFDecoder<T>(obj: T): boolean {
+function isTIFFDecoder(obj: any): obj is IDecoder {
   return typeof (obj as any).extractMetadata === 'function'
 }
 
-function isLikelyTIFF(byte: number): boolean {
-  return byte === 0x4949 || byte === 0x4d4d
+function isLikelyTIFF(buffer: IBufferLike): boolean {
+  return (buffer[0] === 0x49 && buffer[1] === 0x49) || (buffer[0] === 0x4d && buffer[1] === 0x4d)
 }
 
-export function parse(buffer: any): any {
-  let decoder
-  if (isTIFFDecoder(buffer)) {
-    decoder = buffer
-  } else if (isLikelyTIFF((buffer[0] << 8) | buffer[1])) {
-    decoder = new TIFFDecoder(buffer)
+export function createDecoder(bufferOrDecoder: IBufferLike | IDecoder): IDecoder {
+  if (isTIFFDecoder(bufferOrDecoder)) {
+    return bufferOrDecoder
+  } else if (isLikelyTIFF(bufferOrDecoder)) {
+    return new TIFFDecoder(bufferOrDecoder)
+  } else if (JPEGDecoder.isJPEG(bufferOrDecoder)) {
+    return new JPEGDecoder(bufferOrDecoder)
   } else {
-    decoder = new JPEGDecoder(buffer)
+    throw new Error('Unrecognizable file type')
   }
-
-  return normalizeMetadata(decoder.extractMetadata())
 }
 
-export {TIFFDecoder} from './decoder/tiff-decoder'
+export function parse(bufferOrDecoder: IBufferLike | IDecoder): any {
+  return normalizeMetadata(createDecoder(bufferOrDecoder).extractMetadata())
+}
+
+export {normalizeMetadata}

@@ -1,5 +1,5 @@
-import {TIFFDecoder as RawDecoder} from '../decoder/tiff-decoder'
-import {IBufferLike, IReader, Endian} from '../utils/types'
+import {TIFFDecoder} from '../decoder/tiff-decoder'
+import {IBufferLike, IReader, Endian, IGenericMetadata} from '../utils/types'
 import {Reader} from '../utils/reader'
 
 const EXIF_HEADER = 0x45786966 // "Exif"
@@ -108,16 +108,16 @@ export class JPEGDecoder {
     this._exifBuffers = exifBuffers
   }
 
-  // TODO: remove this any
-  public extractMetadata(): any {
+  public extractMetadata(): IGenericMetadata {
     this._readFileMarkers()
 
-    const metadata = {
+    const metadata: IGenericMetadata = {
       ImageHeight: this._height,
       ImageWidth: this._width,
     }
+
     for (const exifBuffer of this._exifBuffers!) {
-      const decoder = new RawDecoder(exifBuffer)
+      const decoder = new TIFFDecoder(exifBuffer)
       Object.assign(metadata, decoder.extractMetadata())
     }
 

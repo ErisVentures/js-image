@@ -5,6 +5,7 @@ import {IIFDTagDefinition, IFDTagName, IFDGroup, IFDDataType} from './types'
 
 export const tags: IIFDTagDefinition[] = []
 
+// TODO: fill in all IFDDataTypes with -1
 const _tags: Array<[IFDTagName, number, IFDDataType, IFDGroup]> = [
   // From other sets
   ['InteropIndex', 1, -1, 1],
