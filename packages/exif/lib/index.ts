@@ -2,12 +2,14 @@ import {Decoder as RawDecoder} from './decoder/decoder'
 import {parseDate} from './date-parser'
 import {JPEGDecoder} from './jpeg-decoder'
 import {parseLens} from './lens-parser'
+import {INormalizedMetadata, IGenericMetadata, IFDTagName} from './utils/types'
 
 type ParseFn = (results: any) => any
 
-type PropertyDefn = string | [string, ParseFn] | ParseFn
+type PropertyDefn = IFDTagName | [IFDTagName, ParseFn] | ParseFn
 
 const properties: {[k: string]: PropertyDefn[]} = {
+  // TODO: look into how to normalize GPS coordinates
   make: ['Make'],
   model: ['Model'],
 
@@ -34,9 +36,9 @@ function isRawDecoder<T>(obj: T): boolean {
   return typeof (obj as any).extractMetadata === 'function'
 }
 
-function getResultValue(item: PropertyDefn, results: any): any {
+function getResultValue(item: PropertyDefn, results: IGenericMetadata): any {
   if (typeof item === 'string') {
-    return results[item]
+    return results[item as IFDTagName]
   } else if (typeof item === 'function') {
     return item(results)
   } else if (Array.isArray(item)) {
@@ -47,21 +49,20 @@ function getResultValue(item: PropertyDefn, results: any): any {
   }
 }
 
-// TODO: remove these anys
-function mapResults(results: any): any {
-  const output: any = {_raw: results}
+function mapResults(results: IGenericMetadata): INormalizedMetadata {
+  const output: INormalizedMetadata = {_raw: results}
 
   for (const key of Object.keys(properties)) {
     const candidates = properties[key]
-    let value = null
+    let value = undefined
     for (const candidate of candidates) {
       value = getResultValue(candidate, results)
-      if (typeof value !== 'undefined' && value !== null) {
+      if (typeof value !== 'undefined') {
         break
       }
     }
 
-    output[key] = value
+    output[key as keyof INormalizedMetadata] = value
   }
 
   return output

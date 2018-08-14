@@ -1,5 +1,5 @@
 import {getFriendlyName} from './ifd-tag'
-import {IFDDataType, IIFDEntry, IReader} from '../utils/types'
+import {IFDDataType, IIFDEntry, IReader, IFDTagName} from '../utils/types'
 
 export function getDataTypeSize(dataType: number): number {
   switch (dataType) {
@@ -7,15 +7,14 @@ export function getDataTypeSize(dataType: number): number {
     case IFDDataType.Byte: // byte
     case IFDDataType.String: // ASCII-string
       return 1
-    case IFDDataType.Word: // word
+    case IFDDataType.Short: // word
       return 2
-    case IFDDataType.DoubleWord: // double word
+    case IFDDataType.Long: // double word
+    case IFDDataType.Undefined:
       return 4
-    case IFDDataType.RationalNumber: // rational number
-    case IFDDataType.OtherRationalNumber:
+    case IFDDataType.Rational: // rational number
+    case IFDDataType.SignedRational:
       return 8
-    case 7:
-      return 4
     default:
       throw new TypeError(`unknown datatype: ${dataType}`)
   }
@@ -33,7 +32,7 @@ export class IFDEntry implements IIFDEntry {
     return this.length * getDataTypeSize(this.dataType)
   }
 
-  public get friendlyTagName(): string {
+  public get friendlyTagName(): IFDTagName {
     return getFriendlyName(this.tag)
   }
 
@@ -41,11 +40,11 @@ export class IFDEntry implements IIFDEntry {
     const entryReader = this.getReader(reader)
     switch (this.dataType) {
       case IFDDataType.Byte:
-      case IFDDataType.Word:
-      case IFDDataType.DoubleWord:
+      case IFDDataType.Short:
+      case IFDDataType.Long:
         return entryReader.read(this.lengthInBytes)
-      case IFDDataType.RationalNumber:
-      case IFDDataType.OtherRationalNumber:
+      case IFDDataType.Rational:
+      case IFDDataType.SignedRational:
         return entryReader.read(4) / entryReader.read(4)
       case IFDDataType.String:
         const chars = []

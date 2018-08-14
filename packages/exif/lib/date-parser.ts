@@ -11,13 +11,13 @@ function parseColonDate(date: string): Date {
   return new Date(`${dayPart}T${timePart}Z`)
 }
 
-export function parseDate(date: string | number): Date | null {
-  let parsed = null
+export function parseDate(date: string | number): Date | undefined {
+  let parsed = undefined
   if (typeof date === 'number') {
     parsed = parseNumericDate(date)
   } else if (isColonDate(date)) {
     parsed = parseColonDate(date)
   }
 
-  return parsed && parsed.getTime() ? parsed : null
+  return parsed && parsed.getTime() ? parsed : undefined
 }

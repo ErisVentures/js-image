@@ -60,7 +60,7 @@ describe('index.js', () => {
         focalLength: 100,
         normalizedFocalLength: 150,
         exposureCompensation: 0,
-        lens: null,
+        lens: undefined,
       })
     })
   })
