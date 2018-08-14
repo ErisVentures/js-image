@@ -13,7 +13,6 @@ describe('lib/encoders/tiff-encoder.js', () => {
       }
 
       const tiff = TIFFEncoder.encode(metadata)
-      console.log(Buffer.from(tiff))
       const decoder = new TIFFDecoder(tiff)
       expect(decoder.extractMetadata()).to.eql(metadata)
     })

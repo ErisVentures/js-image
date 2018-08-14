@@ -1,7 +1,7 @@
 import {IBufferLike, IWriter, Endian} from '../utils/types'
 
 export class Writer implements IWriter {
-  private _bytes: number[]
+  private readonly _bytes: number[]
   private _position: number
   private _endianness: Endian
 

@@ -35,8 +35,8 @@ export class TIFFEncoder {
       .filter(item => item.tag.group === IFDGroup.EXIF)
       .filter(item => SUPPORTED.has(item.tag.dataType))
 
-    log(`writing ${entriesToWrite.length} entries`)
     // write the number of entries we're writing
+    log(`writing ${entriesToWrite.length} entries`)
     writer.write(entriesToWrite.length, 2)
 
     for (const {tag, value} of entriesToWrite) {

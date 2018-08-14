@@ -115,7 +115,7 @@ export class TIFFDecoder {
       ifd.entries.forEach(entry => {
         const name = getFriendlyName(entry.tag)
         const value = entry.getValue(this._reader)
-        log.verbose(`evaluated ${name} as ${value}`)
+        log.verbose(`evaluated ${name} (${entry.tag}) as ${value}`)
         target[name] = value
       })
     })
