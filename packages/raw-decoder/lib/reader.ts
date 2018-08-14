@@ -33,7 +33,6 @@ export class Reader {
   private _readLE(length: number): number {
     let value = 0
     for (let i = length - 1; i >= 0; i--) {
-      // tslint:disable-next-line no-bitwise
       value = (value << 8) | this._buffer[this._position + i]
     }
     return value
@@ -42,7 +41,6 @@ export class Reader {
   private _readBE(length: number): number {
     let value = 0
     for (let i = 0; i < length; i++) {
-      // tslint:disable-next-line no-bitwise
       value = (value << 8) | this._buffer[this._position + i]
     }
     return value
