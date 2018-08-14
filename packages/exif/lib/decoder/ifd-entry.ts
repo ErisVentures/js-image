@@ -1,4 +1,4 @@
-import {getFriendlyName} from './ifd-tag'
+import {getFriendlyName} from '../utils/tags'
 import {IFDDataType, IIFDEntry, IReader, IFDTagName} from '../utils/types'
 
 export function getDataTypeSize(dataType: number): number {

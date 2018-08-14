@@ -3,14 +3,16 @@ import {IIFDTagDefinition, IFDTagName, IFDGroup, IFDDataType} from './types'
 // From https://raw.githubusercontent.com/hMatoba/piexifjs/master/piexif.js
 // and exif-parser on npm
 
-export const tags: IIFDTagDefinition[] = []
+// @ts-ignore - filled below
+export const tags: Record<IFDTagName, IIFDTagDefinition> = {}
+export const tagsByCode: Record<number, IIFDTagDefinition> = {}
 
 // TODO: fill in all IFDDataTypes with -1
 const _tags: Array<[IFDTagName, number, IFDDataType, IFDGroup]> = [
-  // From other sets
-  ['InteropIndex', 1, -1, 1],
-  ['InteropVersion', 2, -1, 1],
-  ['ProcessingSoftware', 11, 2, 0],
+  // Disabled for overlap with GPS
+  // ['InteropIndex', 1, -1, 1],
+  // ['InteropVersion', 2, -1, 1],
+  // ['ProcessingSoftware', 11, 2, 0],
   ['ImageWidth', 100, 4, 0],
   ['NewSubfileType', 254, 4, 0],
   ['SubfileType', 255, 3, 0],
@@ -474,6 +476,12 @@ const _tags: Array<[IFDTagName, number, IFDDataType, IFDGroup]> = [
   ['GPSHPositioningError', 31, 5, 2],
 ]
 
-for (const [name, identifier, dataType, group] of _tags) {
-  tags.push({name, identifier, dataType, group})
+for (const [name, code, dataType, group] of _tags) {
+  const defn = {name, code, dataType, group}
+  tags[name] = defn
+  tagsByCode[code] = defn
+}
+
+export function getFriendlyName(code: number): IFDTagName {
+  return (tagsByCode[code] && tagsByCode[code].name) || 'Unknown'
 }

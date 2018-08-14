@@ -50,7 +50,7 @@ export interface IIFDOffset {
 
 export interface IIFDTagDefinition {
   name: IFDTagName
-  identifier: number
+  code: number
   group: IFDGroup
   dataType: IFDDataType
 }

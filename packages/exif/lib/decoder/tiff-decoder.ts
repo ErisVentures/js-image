@@ -1,5 +1,5 @@
 import {IFD} from '../decoder/ifd'
-import {getFriendlyName} from '../decoder/ifd-tag'
+import {getFriendlyName} from '../utils/tags'
 import {Reader} from '../utils/reader'
 import {
   IGenericMetadata,
