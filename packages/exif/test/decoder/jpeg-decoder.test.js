@@ -1,5 +1,5 @@
-const {expect, fixture} = require('./utils')
-const JPEGDecoder = require('../dist/jpeg-decoder').JPEGDecoder
+const {expect, fixture} = require('../utils')
+const JPEGDecoder = require('../../dist/decoder/jpeg-decoder').JPEGDecoder
 
 const nikonJpeg = fixture('nikon.jpg')
 
