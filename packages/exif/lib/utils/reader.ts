@@ -1,13 +1,8 @@
-export type BufferLike = Buffer | Uint8Array
+import {IBufferLike, IReader, Endian} from '../utils/types'
 
-export enum Endian {
-  Big,
-  Little,
-}
-
-export class Reader {
+export class Reader implements IReader {
   public constructor(
-    private readonly _buffer: BufferLike,
+    private readonly _buffer: IBufferLike,
     private _position: number = 0,
     private _endianness: Endian = Endian.Big,
   ) {}
@@ -46,13 +41,13 @@ export class Reader {
     return value
   }
 
-  public readAsBuffer(length: number): BufferLike {
+  public readAsBuffer(length: number): IBufferLike {
     const value = this._buffer.slice(this._position, this._position + length)
     this._position += length
     return value
   }
 
-  public readAsReader(length: number): Reader {
+  public readAsReader(length: number): IReader {
     return new Reader(this.readAsBuffer(length), 0, this._endianness)
   }
 

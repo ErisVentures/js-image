@@ -1,25 +1,30 @@
-import {IFD, IFDOffset} from './ifd'
-import {getFriendlyName, IFDTag} from './ifd-tag'
-import {BufferLike, Endian, Reader} from './reader'
+import {IFD} from './ifd'
+import {getFriendlyName} from './ifd-tag'
+import {Reader} from '../utils/reader'
+import {
+  IGenericMetadata,
+  IFDTag,
+  IIFDOffset,
+  IBufferLike,
+  Endian,
+  IReader,
+  IIFD,
+} from '../utils/types'
+import {createLogger} from '../utils/log'
 
-// tslint:disable-next-line
-const debug: (...args: any[]) => void = require('debug')('exif:decoder')
+const log = createLogger('decoder')
 
 interface IThumbnailLocation {
-  ifd: IFD
+  ifd: IIFD
   offset: number
   length: number
 }
 
-export interface IMetadata {
-  [key: string]: string | number | null
-}
-
 export class Decoder {
-  private readonly _reader: Reader
-  private _ifds: IFD[]
+  private readonly _reader: IReader
+  private _ifds: IIFD[]
 
-  public constructor(buffer: BufferLike) {
+  public constructor(buffer: IBufferLike) {
     this._reader = new Reader(buffer)
   }
 
@@ -27,10 +32,10 @@ export class Decoder {
     this._reader.seek(0)
     const byteOrder = this._reader.read(2)
     if (byteOrder === 0x4949) {
-      debug('interpreting as little endian')
+      log('interpreting as little endian')
       this._reader.setEndianess(Endian.Little)
     } else if (byteOrder === 0x4d4d) {
-      debug('interpreting as big endian')
+      log('interpreting as big endian')
       this._reader.setEndianess(Endian.Big)
     } else {
       throw new Error('Unrecognized format')
@@ -49,17 +54,19 @@ export class Decoder {
 
     this._ifds = []
 
-    const ifdOffsets: IFDOffset[] = [{offset: this._reader.read(4)}]
+    const ifdOffsets: IIFDOffset[] = [{offset: this._reader.read(4)}]
     while (ifdOffsets.length) {
       const ifdOffset = ifdOffsets.shift()!
       if (this._ifds.some(ifd => ifd.offset === ifdOffset.offset)) {
         continue
       }
 
+      log(`reading IFD at ${ifdOffset}`)
       const ifd = IFD.read(this._reader, ifdOffset)
       this._ifds.push(ifd)
 
       const suboffsets = ifd.getSubIFDOffsets(this._reader)
+      log(`IFD has ${suboffsets.length} child(ren)`)
       suboffsets.forEach(offset => ifdOffsets.push({offset, parent: ifd}))
       if (ifd.nextIFDOffset) {
         ifdOffsets.push({offset: ifd.nextIFDOffset, parent: ifd.parent})
@@ -67,7 +74,7 @@ export class Decoder {
     }
   }
 
-  public extractJpeg(): BufferLike {
+  public extractJpeg(): IBufferLike {
     this._readAndValidateHeader()
     this._readIFDs()
 
@@ -95,12 +102,12 @@ export class Decoder {
     return this._reader.readAsBuffer(maxResolutionJpeg.length)
   }
 
-  public extractMetadata(): IMetadata {
+  public extractMetadata(): IGenericMetadata {
     this._readAndValidateHeader()
     this._readIFDs()
 
-    const exifTags: IMetadata = {}
-    const tags: IMetadata = {}
+    const exifTags: IGenericMetadata = {}
+    const tags: IGenericMetadata = {}
     this._ifds.forEach(ifd => {
       const target = ifd.isEXIF ? exifTags : tags
       ifd.entries.forEach(entry => {

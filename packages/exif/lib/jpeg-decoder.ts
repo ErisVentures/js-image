@@ -1,5 +1,6 @@
 import {Decoder as RawDecoder} from './decoder/decoder'
-import {Endian, Reader, BufferLike} from './decoder/reader'
+import {IBufferLike, IReader, Endian} from './utils/types'
+import {Reader} from './utils/reader'
 
 const EXIF_HEADER = 0x45786966 // "Exif"
 const APP1 = 0xffe1
@@ -10,7 +11,7 @@ const START_OF_FRAME2 = 0xffc2
 const START_OF_SCAN = 0xffda
 const END_OF_IMAGE = 0xffd9
 
-function bufferFromNumber(x: number, minSize: number = 2): BufferLike {
+function bufferFromNumber(x: number, minSize: number = 2): IBufferLike {
   let buffer = Buffer.from(x.toString(16), 'hex')
   if (buffer.length < minSize) {
     buffer = Buffer.concat([Buffer.alloc(minSize - buffer.length), buffer])
@@ -19,18 +20,18 @@ function bufferFromNumber(x: number, minSize: number = 2): BufferLike {
   return buffer
 }
 
-type Marker = [number, BufferLike, boolean]
+type Marker = [number, IBufferLike, boolean]
 
 export class JPEGDecoder {
-  private readonly _buffer: BufferLike
-  private readonly _reader: Reader
+  private readonly _buffer: IBufferLike
+  private readonly _reader: IReader
 
   private _markers: Marker[] | undefined
   private _width: number | undefined
   private _height: number | undefined
-  private _exifBuffers: BufferLike[] | undefined
+  private _exifBuffers: IBufferLike[] | undefined
 
-  public constructor(buffer: BufferLike) {
+  public constructor(buffer: IBufferLike) {
     this._buffer = buffer
     this._reader = new Reader(buffer)
     this._reader.setEndianess(Endian.Big)
@@ -123,20 +124,20 @@ export class JPEGDecoder {
     return metadata
   }
 
-  public extractMetadataBuffer(): BufferLike | undefined {
+  public extractMetadataBuffer(): IBufferLike | undefined {
     this._readFileMarkers()
     return this._exifBuffers![0]
   }
 
-  public static isJPEG(buffer: BufferLike): boolean {
+  public static isJPEG(buffer: IBufferLike): boolean {
     return buffer[0] === 0xff && buffer[1] === 0xd8
   }
 
-  public static injectMetadata(jpegBuffer: BufferLike, exifBuffer: BufferLike): BufferLike {
+  public static injectMetadata(jpegBuffer: IBufferLike, exifBuffer: IBufferLike): IBufferLike {
     const decoder = new JPEGDecoder(jpegBuffer)
     decoder._readFileMarkers()
 
-    const buffers: BufferLike[] = []
+    const buffers: IBufferLike[] = []
     for (const [marker, buffer, isEXIF] of decoder._markers!) {
       if (marker === START_OF_IMAGE) {
         buffers.push(bufferFromNumber(START_OF_IMAGE))

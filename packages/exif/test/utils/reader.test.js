@@ -1,4 +1,4 @@
-const {Endian, Reader} = require('../../dist/decoder/reader')
+const {Endian, Reader} = require('../../dist/utils/reader')
 const {expect} = require('../utils')
 
 describe('Reader', () => {

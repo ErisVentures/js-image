@@ -1,17 +1,6 @@
 import {getFriendlyName} from './ifd-tag'
-import {Reader} from './reader'
+import {IFDDataType, IIFDEntry, IReader} from '../utils/types'
 
-export enum IFDDataType {
-  Unknown = 0,
-  Byte = 1,
-  String = 2,
-  Word = 3,
-  DoubleWord = 4,
-  RationalNumber = 5,
-  OtherRationalNumber = 10,
-}
-
-// tslint:disable-next-line
 export function getDataTypeSize(dataType: number): number {
   switch (dataType) {
     case IFDDataType.Unknown: // ???
@@ -32,12 +21,12 @@ export function getDataTypeSize(dataType: number): number {
   }
 }
 
-export class IFDEntry {
+export class IFDEntry implements IIFDEntry {
   public constructor(
     public tag: number,
     public dataType: number,
     public length: number,
-    private readonly dataReader: Reader,
+    private readonly dataReader: IReader,
   ) {}
 
   public get lengthInBytes(): number {
@@ -48,7 +37,7 @@ export class IFDEntry {
     return getFriendlyName(this.tag)
   }
 
-  public getValue(reader?: Reader): string | number {
+  public getValue(reader?: IReader): string | number {
     const entryReader = this.getReader(reader)
     switch (this.dataType) {
       case IFDDataType.Byte:
@@ -77,7 +66,7 @@ export class IFDEntry {
     }
   }
 
-  public getReader(reader?: Reader): Reader {
+  public getReader(reader?: IReader): IReader {
     if (this.lengthInBytes <= 4) {
       return this.dataReader
     }
@@ -93,7 +82,7 @@ export class IFDEntry {
     })
   }
 
-  public static read(reader: Reader): IFDEntry {
+  public static read(reader: IReader): IFDEntry {
     const tag = reader.read(2)
     const dataType = reader.read(2)
     const length = reader.read(4)
