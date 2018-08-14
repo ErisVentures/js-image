@@ -4,8 +4,7 @@ import {writeFileAsync} from './fs-utils'
 import {sobel} from './transforms/sobel'
 import {phash} from './analyses/hash'
 import {sharpness as computeSharpness} from './analyses/sharpness'
-import {Decoder as RAWDecoder} from 'raw-decoder'
-import {parse as parseEXIF} from '@eris/exif'
+import {parse as parseEXIF, Decoder as RAWDecoder} from '@eris/exif'
 
 /* tslint:disable-next-line */
 const fileType = require('file-type')

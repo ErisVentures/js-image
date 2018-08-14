@@ -1,4 +1,4 @@
-import {Decoder as RawDecoder} from 'raw-decoder'
+import {Decoder as RawDecoder} from './decoder/decoder'
 import {parseDate} from './date-parser'
 import {JPEGDecoder} from './jpeg-decoder'
 import {parseLens} from './lens-parser'
@@ -83,3 +83,5 @@ export function parse(buffer: any): any {
 
   return mapResults(decoder.extractMetadata())
 }
+
+export {Decoder} from './decoder/decoder'

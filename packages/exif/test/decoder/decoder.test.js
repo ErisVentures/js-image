@@ -1,5 +1,5 @@
-const Decoder = require('../dist/decoder').Decoder
-const {expect, fixture, compareToFixture} = require('./utils')
+const Decoder = require('../../dist/decoder/decoder').Decoder
+const {expect, fixture, compareToFixture} = require('../utils')
 
 describe('Decoder', () => {
   describe('.extractJpeg', () => {

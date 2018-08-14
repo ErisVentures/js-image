@@ -1,9 +1,5 @@
-const fs = require('fs')
-const path = require('path')
-const expect = require('chai').expect
+const {expect, fixture} = require('./utils')
 const JPEGDecoder = require('../dist/jpeg-decoder').JPEGDecoder
-
-const fixture = filePath => fs.readFileSync(path.join(__dirname, 'fixtures', filePath))
 
 const nikonJpeg = fixture('nikon.jpg')
 

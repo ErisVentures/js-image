@@ -1,4 +1,0 @@
-.nyc_output/
-
-test/fixtures/*.cr2
-test/fixtures/*.arw

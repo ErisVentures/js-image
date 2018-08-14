@@ -1,10 +1,6 @@
-const fs = require('fs')
-const path = require('path')
-const expect = require('chai').expect
-const RawDecoder = require('raw-decoder').Decoder
+const {expect, fixture} = require('./utils')
+const RawDecoder = require('../dist/decoder/decoder').Decoder
 const parse = require('../dist').parse
-
-const fixture = filePath => fs.readFileSync(path.join(__dirname, 'fixtures', filePath))
 
 const nikonJpeg = fixture('nikon.jpg')
 const nikonNef = fixture('nikon.nef')

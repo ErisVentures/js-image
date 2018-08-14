@@ -3,7 +3,7 @@ import {getFriendlyName, IFDTag} from './ifd-tag'
 import {BufferLike, Endian, Reader} from './reader'
 
 // tslint:disable-next-line
-const debug: (...args: any[]) => void = require('debug')('raw-decoder:decoder')
+const debug: (...args: any[]) => void = require('debug')('exif:decoder')
 
 interface IThumbnailLocation {
   ifd: IFD

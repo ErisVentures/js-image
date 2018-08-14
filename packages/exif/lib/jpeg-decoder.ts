@@ -1,5 +1,5 @@
-import {Decoder as RawDecoder} from 'raw-decoder'
-import {Endian, Reader, BufferLike} from 'raw-decoder/dist/reader'
+import {Decoder as RawDecoder} from './decoder/decoder'
+import {Endian, Reader, BufferLike} from './decoder/reader'
 
 const EXIF_HEADER = 0x45786966 // "Exif"
 const APP1 = 0xffe1
