@@ -61,7 +61,7 @@ export class TIFFDecoder {
         continue
       }
 
-      log(`reading IFD at ${ifdOffset}`)
+      log(`reading IFD at ${ifdOffset.offset}`)
       const ifd = IFD.read(this._reader, ifdOffset)
       this._ifds.push(ifd)
 
@@ -113,6 +113,7 @@ export class TIFFDecoder {
       ifd.entries.forEach(entry => {
         const name = getFriendlyName(entry.tag)
         const value = entry.getValue(this._reader)
+        log.verbose(`evaluated ${name} as ${value}`)
         target[name] = value
       })
     })

@@ -117,6 +117,25 @@ export interface INormalizedMetadata {
   lens?: IParsedLens
 }
 
+export function getDataTypeSize(dataType: number): number {
+  switch (dataType) {
+    case IFDDataType.Unknown: // ???
+    case IFDDataType.Byte: // byte
+    case IFDDataType.String: // ASCII-string
+      return 1
+    case IFDDataType.Short: // word
+      return 2
+    case IFDDataType.Long: // double word
+    case IFDDataType.Undefined:
+      return 4
+    case IFDDataType.Rational: // rational number
+    case IFDDataType.SignedRational:
+      return 8
+    default:
+      throw new TypeError(`unknown datatype: ${dataType}`)
+  }
+}
+
 export type IFDTagName =
   | 'Unknown'
   | 'InteropIndex'

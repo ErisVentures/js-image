@@ -1,24 +1,8 @@
 import {getFriendlyName} from '../utils/tags'
-import {IFDDataType, IIFDEntry, IReader, IFDTagName} from '../utils/types'
+import {IFDDataType, IIFDEntry, IReader, IFDTagName, getDataTypeSize} from '../utils/types'
+import {createLogger} from '../utils/log'
 
-export function getDataTypeSize(dataType: number): number {
-  switch (dataType) {
-    case IFDDataType.Unknown: // ???
-    case IFDDataType.Byte: // byte
-    case IFDDataType.String: // ASCII-string
-      return 1
-    case IFDDataType.Short: // word
-      return 2
-    case IFDDataType.Long: // double word
-    case IFDDataType.Undefined:
-      return 4
-    case IFDDataType.Rational: // rational number
-    case IFDDataType.SignedRational:
-      return 8
-    default:
-      throw new TypeError(`unknown datatype: ${dataType}`)
-  }
-}
+const log = createLogger('ifd-entry')
 
 export class IFDEntry implements IIFDEntry {
   public constructor(
@@ -59,7 +43,7 @@ export class IFDEntry implements IIFDEntry {
         }
 
         return chars.join('')
-      case 7:
+      case IFDDataType.Undefined:
         return ''
       default:
         throw new TypeError(`Unsupported data type: ${this.dataType}`)
@@ -88,6 +72,7 @@ export class IFDEntry implements IIFDEntry {
     const length = reader.read(4)
     const dataReader = reader.readAsReader(4)
 
+    log.verbose(`read tag ${tag}`, dataReader)
     return new IFDEntry(tag, dataType, length, dataReader)
   }
 }
