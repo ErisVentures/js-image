@@ -2,6 +2,8 @@ import {IFD} from '../decoder/ifd'
 import {getFriendlyName} from '../utils/tags'
 import {Reader} from '../utils/reader'
 import {
+  LITTLE_ENDIAN_MARKER,
+  BIG_ENDIAN_MARKER,
   IGenericMetadata,
   IFDTag,
   IIFDOffset,
@@ -31,10 +33,10 @@ export class TIFFDecoder {
   private _readAndValidateHeader(): void {
     this._reader.seek(0)
     const byteOrder = this._reader.read(2)
-    if (byteOrder === 0x4949) {
+    if (byteOrder === LITTLE_ENDIAN_MARKER) {
       log('interpreting as little endian')
       this._reader.setEndianess(Endian.Little)
-    } else if (byteOrder === 0x4d4d) {
+    } else if (byteOrder === BIG_ENDIAN_MARKER) {
       log('interpreting as big endian')
       this._reader.setEndianess(Endian.Big)
     } else {

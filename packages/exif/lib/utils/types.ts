@@ -10,6 +10,9 @@ export enum Endian {
   Little,
 }
 
+export const BIG_ENDIAN_MARKER = 0x4d4d
+export const LITTLE_ENDIAN_MARKER = 0x4949
+
 export interface IReader {
   hasNext(): boolean
   getPosition(): number
