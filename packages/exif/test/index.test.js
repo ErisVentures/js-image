@@ -1,5 +1,5 @@
 const {expect, fixture} = require('./utils')
-const RawDecoder = require('../dist/decoder/decoder').Decoder
+const TIFFDecoder = require('../dist/decoder/tiff-decoder').TIFFDecoder
 const parse = require('../dist').parse
 
 const nikonJpeg = fixture('nikon.jpg')
@@ -7,8 +7,8 @@ const nikonNef = fixture('nikon.nef')
 
 describe('index.js', () => {
   describe('#parse', () => {
-    it('should accept a RawDecoder as input', () => {
-      const decoder = new RawDecoder(nikonNef)
+    it('should accept a TIFFDecoder as input', () => {
+      const decoder = new TIFFDecoder(nikonNef)
       const results = parse(decoder)
       expect(results).to.have.property('make', 'NIKON CORPORATION')
     })

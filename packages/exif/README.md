@@ -44,7 +44,7 @@ const RAWDecoder = require('@eris/exif').Decoder
 
 const myFile = fs.readFileSync('./DSC_0001.nef')
 const myFileDecoder = new RAWDecoder(myFile)
-const myFileAsJpeg = myFileDecoder.extractJpeg()
+const myFileAsJpeg = myFileDecoder.extractJPEG()
 const metadata = myFileDecoder.extractMetadata()
 fs.writeFileSync('./DSC_0001.jpg', myFileAsJpeg)
 console.log(metadata)

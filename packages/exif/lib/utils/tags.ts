@@ -5,7 +5,7 @@ import {IIFDTagDefinition, IFDTagName, IFDGroup, IFDDataType} from './types'
 
 // @ts-ignore - filled below
 export const tags: Record<IFDTagName, IIFDTagDefinition> = {}
-export const tagsByCode: Record<number, IIFDTagDefinition> = {}
+export const tagsByCode: {[k: string]: IIFDTagDefinition} = {}
 
 // TODO: fill in all IFDDataTypes with -1
 const _tags: Array<[IFDTagName, number, IFDDataType, IFDGroup]> = [

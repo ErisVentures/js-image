@@ -96,6 +96,10 @@ export enum IFDDataType {
   SignedRational = 10,
 }
 
+export interface IJPEGOptions {
+  skipMetadata?: boolean
+}
+
 export type IGenericMetadata = Partial<Record<IFDTagName, string | number | undefined>>
 
 export interface IParsedLens {

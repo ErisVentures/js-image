@@ -1,5 +1,6 @@
 import {JPEGDecoder} from './decoder/jpeg-decoder'
 import {TIFFDecoder} from './decoder/tiff-decoder'
+import {TIFFEncoder} from './encoder/tiff-encoder'
 import {normalizeMetadata} from './metadata/normalize'
 import {IDecoder, IBufferLike} from './utils/types'
 
@@ -27,4 +28,4 @@ export function parse(bufferOrDecoder: IBufferLike | IDecoder): any {
   return normalizeMetadata(createDecoder(bufferOrDecoder).extractMetadata())
 }
 
-export {normalizeMetadata}
+export {normalizeMetadata, TIFFDecoder, JPEGDecoder, TIFFEncoder}

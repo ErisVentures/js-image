@@ -143,7 +143,7 @@ export abstract class Image {
     switch (type.mime) {
       case 'image/tiff':
         const decoder = new RAWDecoder(buffer)
-        buffer = decoder.extractJpeg() as Buffer
+        buffer = decoder.extractJPEG() as Buffer
         exif = parseEXIF(decoder)
         break
       default:

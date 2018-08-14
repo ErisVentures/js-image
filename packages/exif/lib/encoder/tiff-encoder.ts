@@ -6,6 +6,7 @@ import {
   getDataTypeSize,
   IFDGroup,
   IFDDataType,
+  IIFDTagDefinition,
 } from '../utils/types'
 import {Writer} from '../utils/writer'
 import {tags} from '../utils/tags'
@@ -13,9 +14,15 @@ import {createLogger} from '../utils/log'
 
 const log = createLogger('encoder')
 
-const SUPPORTED = new Set([IFDDataType.Short, IFDDataType.Long])
-
 export class TIFFEncoder {
+  public static isSupportedEntry(tag: IIFDTagDefinition, value: any): boolean {
+    if (!tag) return false
+    if (tag.group !== IFDGroup.EXIF) return false
+    if (tag.dataType === IFDDataType.Short) return value < Math.pow(2, 16)
+    if (tag.dataType === IFDDataType.Long) return value < Math.pow(2, 32)
+    return false
+  }
+
   public static encode(metadata: IGenericMetadata): IBufferLike {
     const writer = new Writer()
 
@@ -32,8 +39,7 @@ export class TIFFEncoder {
         const name = _name as IFDTagName
         return {tag: tags[name], value: metadata[name]}
       })
-      .filter(item => item.tag.group === IFDGroup.EXIF)
-      .filter(item => SUPPORTED.has(item.tag.dataType))
+      .filter(item => TIFFEncoder.isSupportedEntry(item.tag, item.value))
 
     // write the number of entries we're writing
     log(`writing ${entriesToWrite.length} entries`)

@@ -1,17 +1,17 @@
-const Decoder = require('../../dist/decoder/decoder').Decoder
+const Decoder = require('../../dist/decoder/tiff-decoder').TIFFDecoder
 const {expect, fixture, compareToFixture} = require('../utils')
 
 describe('Decoder', () => {
-  describe('.extractJpeg', () => {
+  describe('.extractJPEG', () => {
     it('should extract the d4s thumbnail', () => {
       const decoder = new Decoder(fixture('d4s.nef'))
-      const thumbnail = decoder.extractJpeg()
+      const thumbnail = decoder.extractJPEG({skipMetadata: true})
       compareToFixture(thumbnail, 'd4s.jpg')
     })
 
     it('should extract the d610 thumbnail', () => {
       const decoder = new Decoder(fixture('d610.nef'))
-      const thumbnail = decoder.extractJpeg()
+      const thumbnail = decoder.extractJPEG({skipMetadata: true})
       compareToFixture(thumbnail, 'd610.jpg')
     })
   })

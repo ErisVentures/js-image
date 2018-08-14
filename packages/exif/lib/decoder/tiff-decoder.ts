@@ -1,6 +1,8 @@
 import {IFD} from '../decoder/ifd'
 import {getFriendlyName} from '../utils/tags'
 import {Reader} from '../utils/reader'
+import {TIFFEncoder} from '../encoder/tiff-encoder'
+import {JPEGDecoder} from './jpeg-decoder'
 import {
   LITTLE_ENDIAN_MARKER,
   BIG_ENDIAN_MARKER,
@@ -11,6 +13,7 @@ import {
   Endian,
   IReader,
   IIFD,
+  IJPEGOptions,
 } from '../utils/types'
 import {createLogger} from '../utils/log'
 
@@ -76,11 +79,8 @@ export class TIFFDecoder {
     }
   }
 
-  public extractJpeg(): IBufferLike {
-    this._readAndValidateHeader()
-    this._readIFDs()
-
-    let maxResolutionJpeg: IThumbnailLocation | undefined
+  private _readLargestJPEG(): IBufferLike {
+    let maxResolutionJPEG: IThumbnailLocation | undefined
     this._ifds.forEach(ifd => {
       const offsetEntry = ifd.entries.find(entry => entry.tag === IFDTag.ThumbnailOffset)
       const lengthEntry = ifd.entries.find(entry => entry.tag === IFDTag.ThumbnailLength)
@@ -91,17 +91,29 @@ export class TIFFDecoder {
       const offset = offsetEntry.getValue(this._reader) as number
       const length = lengthEntry.getValue(this._reader) as number
 
-      if (!maxResolutionJpeg || length > maxResolutionJpeg.length) {
-        maxResolutionJpeg = {offset, length, ifd}
+      if (!maxResolutionJPEG || length > maxResolutionJPEG.length) {
+        maxResolutionJPEG = {offset, length, ifd}
       }
     })
 
-    if (!maxResolutionJpeg) {
+    if (!maxResolutionJPEG) {
       throw new Error('Could not find thumbnail IFDs')
     }
 
-    this._reader.seek(maxResolutionJpeg.offset)
-    return this._reader.readAsBuffer(maxResolutionJpeg.length)
+    this._reader.seek(maxResolutionJPEG.offset)
+    return this._reader.readAsBuffer(maxResolutionJPEG.length)
+  }
+
+  public extractJPEG(options: IJPEGOptions = {}): IBufferLike {
+    this._readAndValidateHeader()
+    this._readIFDs()
+
+    const jpeg = this._readLargestJPEG()
+    if (options.skipMetadata) return jpeg
+
+    const metadata = this.extractMetadata()
+    const metadataBuffer = TIFFEncoder.encode(metadata)
+    return JPEGDecoder.injectMetadata(jpeg, metadataBuffer)
   }
 
   public extractMetadata(): IGenericMetadata {
