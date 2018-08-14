@@ -1,4 +1,4 @@
-import {IParsedLens} from './utils/types'
+import {IParsedLens, IGenericMetadata} from '../utils/types'
 
 const patterns = {
   make: /^(\w+)/,
@@ -11,10 +11,9 @@ function exec(s: string, regex: RegExp): string | undefined {
   return (match && match[1]) || undefined
 }
 
-// TODO: remove these anys
-export function parseLens(data: any): IParsedLens | undefined {
+export function parseLens(data: IGenericMetadata): IParsedLens | undefined {
   const lensModel = data.LensModel
-  if (!lensModel) {
+  if (!lensModel || typeof lensModel !== 'string') {
     return undefined
   }
 

@@ -1,6 +1,6 @@
-import {Decoder as RawDecoder} from './decoder/decoder'
-import {IBufferLike, IReader, Endian} from './utils/types'
-import {Reader} from './utils/reader'
+import {TIFFDecoder as RawDecoder} from '../decoder/tiff-decoder'
+import {IBufferLike, IReader, Endian} from '../utils/types'
+import {Reader} from '../utils/reader'
 
 const EXIF_HEADER = 0x45786966 // "Exif"
 const APP1 = 0xffe1

@@ -44,6 +44,7 @@ export class IFDEntry implements IIFDEntry {
       case IFDDataType.Long:
         return entryReader.read(this.lengthInBytes)
       case IFDDataType.Rational:
+      // TODO: fix signed rational repr
       case IFDDataType.SignedRational:
         return entryReader.read(4) / entryReader.read(4)
       case IFDDataType.String:

@@ -1,5 +1,5 @@
-import {IFD} from './ifd'
-import {getFriendlyName} from './ifd-tag'
+import {IFD} from '../decoder/ifd'
+import {getFriendlyName} from '../decoder/ifd-tag'
 import {Reader} from '../utils/reader'
 import {
   IGenericMetadata,
@@ -20,7 +20,7 @@ interface IThumbnailLocation {
   length: number
 }
 
-export class Decoder {
+export class TIFFDecoder {
   private readonly _reader: IReader
   private _ifds: IIFD[]
 
