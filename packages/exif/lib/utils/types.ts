@@ -25,6 +25,16 @@ export interface IReader {
   use<T>(func: () => T): T
 }
 
+export interface IWriter {
+  getPosition(): number
+  setEndianess(endian: Endian): void
+  write(data: number, length?: number): void
+  writeBuffer(data: IBufferLike): void
+  skip(diff: number): void
+  seek(position: number): void
+  toBuffer(): IBufferLike
+}
+
 export interface IDecoder {
   extractMetadata(): IGenericMetadata
 }
