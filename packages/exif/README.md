@@ -55,7 +55,6 @@ console.log(metadata)
 
 - [EXIF Specification](http://www.exif.org/Exif2-2.PDF)
 - [dcraw.c](www.cybercom.net/~dcoffin/dcraw/dcraw.c)
-- [EXIF Spec]()
 - [TIFF Format Explainer](http://www.fileformat.info/format/tiff/corion.htm)
 - [NEF Explainer](http://lclevy.free.fr/nef/)
 - [CR2 Explainer](http://lclevy.free.fr/cr2/)
