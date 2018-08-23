@@ -51,6 +51,8 @@ export class IFDEntry implements IIFDEntry {
   }
 
   public getReader(reader?: IReader): IReader {
+    this.dataReader.seek(0)
+
     if (this.lengthInBytes <= 4) {
       return this.dataReader
     }

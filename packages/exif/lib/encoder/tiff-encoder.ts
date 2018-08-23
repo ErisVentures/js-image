@@ -33,6 +33,7 @@ export class TIFFEncoder {
     // write the offset of the first IFD
     writer.write(2 + 2 + 4, 4)
 
+    // TODO: strip out SubIFD/GPSIFD tags
     // TODO: support other complex data types
     const entriesToWrite = Object.keys(metadata)
       .map(_name => {

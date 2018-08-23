@@ -13,6 +13,15 @@ describe('index.js', () => {
       expect(results).to.have.property('make', 'NIKON CORPORATION')
     })
 
+    it('should be idempotent', () => {
+      const decoder = new TIFFDecoder(nikonNef)
+      decoder.extractMetadata()
+
+      const results = parse(decoder)
+      expect(results).to.have.property('make', 'NIKON CORPORATION')
+      expect(results).to.have.property('fNumber', 5.6)
+    })
+
     it('should work on Nikon jpeg files', () => {
       const results = parse(nikonJpeg)
       expect(results).to.have.property('_raw')

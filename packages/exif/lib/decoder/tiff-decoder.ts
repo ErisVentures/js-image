@@ -28,6 +28,8 @@ interface IThumbnailLocation {
 export class TIFFDecoder {
   private readonly _reader: IReader
   private _ifds: IIFD[]
+  private _cachedMetadata: IGenericMetadata
+  private _cachedJPEG: IBufferLike
 
   public constructor(buffer: IBufferLike) {
     this._reader = new Reader(buffer)
@@ -105,6 +107,8 @@ export class TIFFDecoder {
   }
 
   public extractJPEG(options: IJPEGOptions = {}): IBufferLike {
+    if (this._cachedJPEG) return this._cachedJPEG.slice()
+
     this._readAndValidateHeader()
     this._readIFDs()
 
@@ -113,10 +117,14 @@ export class TIFFDecoder {
 
     const metadata = this.extractMetadata()
     const metadataBuffer = TIFFEncoder.encode(metadata)
-    return JPEGDecoder.injectMetadata(jpeg, metadataBuffer)
+
+    this._cachedJPEG = JPEGDecoder.injectMetadata(jpeg, metadataBuffer)
+    return this._cachedJPEG.slice()
   }
 
   public extractMetadata(): IGenericMetadata {
+    if (this._cachedMetadata) return {...this._cachedMetadata}
+
     this._readAndValidateHeader()
     this._readIFDs()
 
@@ -132,6 +140,7 @@ export class TIFFDecoder {
       })
     })
 
-    return {...tags, ...exifTags}
+    this._cachedMetadata = {...tags, ...exifTags}
+    return {...this._cachedMetadata}
   }
 }
