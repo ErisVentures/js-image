@@ -32,6 +32,7 @@
   "homepage": "https://github.com/ErisVentures/js-image#readme",
   "dependencies": {
     "@eris/exif": "^1.1.0",
+    "buffer": "^5.2.0",
     "file-type": "^7.0.1",
     "jpeg-js": "^0.3.4",
     "pngjs": "^3.3.0",
