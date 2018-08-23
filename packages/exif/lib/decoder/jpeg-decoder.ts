@@ -1,6 +1,7 @@
 import {TIFFDecoder} from '../decoder/tiff-decoder'
 import {IBufferLike, IReader, Endian, IGenericMetadata} from '../utils/types'
 import {Reader} from '../utils/reader'
+import {Writer} from '../utils/writer'
 
 const EXIF_HEADER = 0x45786966 // "Exif"
 const APP1 = 0xffe1
@@ -12,12 +13,9 @@ const START_OF_SCAN = 0xffda
 const END_OF_IMAGE = 0xffd9
 
 function bufferFromNumber(x: number, minSize: number = 2): IBufferLike {
-  let buffer = Buffer.from(x.toString(16), 'hex')
-  if (buffer.length < minSize) {
-    buffer = Buffer.concat([Buffer.alloc(minSize - buffer.length), buffer])
-  }
-
-  return buffer
+  const writer = new Writer()
+  writer.write(x, minSize)
+  return writer.toBuffer()
 }
 
 type Marker = [number, IBufferLike, boolean]

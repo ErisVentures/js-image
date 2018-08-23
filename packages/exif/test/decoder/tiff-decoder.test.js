@@ -1,3 +1,4 @@
+const JPEG = require('jpeg-js')
 const Decoder = require('../../dist/decoder/tiff-decoder').TIFFDecoder
 const {expect, fixture, compareToFixture} = require('../utils')
 
@@ -14,6 +15,12 @@ describe('Decoder', () => {
       const thumbnail = decoder.extractJPEG({skipMetadata: true})
       compareToFixture(thumbnail, 'd610.jpg')
     })
+
+    it('should create a valid JPEG', () => {
+      const decoder = new Decoder(fixture('d610.nef'))
+      const thumbnail = decoder.extractJPEG()
+      JPEG.decode(thumbnail)
+    }).timeout(20000)
   })
 
   describe('.extractMetadata', () => {
