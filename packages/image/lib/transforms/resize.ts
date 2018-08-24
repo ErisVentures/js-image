@@ -1,5 +1,5 @@
 /* tslint:disable */
-import {IResizeOptions, ImageResizeFit} from '../types'
+import {IResizeOptions} from '../types'
 import {Image} from '../image'
 import {ImageData} from '../image-data'
 
@@ -27,19 +27,15 @@ export function normalizeOptions(imageData: ImageData, options: IResizeOptions):
       break
     case Image.CONTAIN:
       if (originalAspectRatio > targetAspectRatio) {
-        const scaleFactor = targetWidth! / originalWidth
         targetHeight = targetWidth! / originalAspectRatio
       } else {
-        const scaleFactor = targetHeight! / originalHeight
         targetWidth = targetHeight! * originalAspectRatio
       }
       break
     case Image.COVER:
       if (originalAspectRatio > targetAspectRatio) {
-        const scaleFactor = targetHeight! / originalHeight
         targetWidth = targetHeight! * originalAspectRatio
       } else {
-        const scaleFactor = targetWidth! / originalWidth
         targetHeight = targetWidth! / originalAspectRatio
       }
       break
