@@ -86,11 +86,33 @@ export interface ISubselectOptions {
   right: number
 }
 
-export type ImageFormat = 'jpeg' | 'png'
-export type ImageResizeFit = 'auto' | 'contain' | 'cover' | 'exact' | 'crop'
-export type ImageResizeMethod = 'nearestNeighbor' | 'bilinear' | 'bicubic'
-export type EdgeMethod = 'sobel' | 'canny'
-export type HashMethod = 'phash'
+export enum ImageFormat {
+  JPEG = 'jpeg',
+  PNG = 'png',
+}
+
+export enum ImageResizeFit {
+  Auto = 'auto',
+  Contain = 'contain',
+  Cover = 'cover',
+  Exact = 'exact',
+  Crop = 'crop',
+}
+
+export enum ImageResizeMethod {
+  NearestNeighbor = 'nearestNeighbor',
+  Bilinear = 'bilinear',
+  Bicubic = 'bicubic',
+}
+
+export enum EdgeMethod {
+  Sobel = 'sobel',
+  Canny = 'canny',
+}
+
+export enum HashMethod {
+  PHash = 'phash',
+}
 
 export type ImageDataFormat = 'hsl' | 'rgb' | 'rgba' | 'k'
 export type BufferLike = Buffer | Uint8Array | number[]

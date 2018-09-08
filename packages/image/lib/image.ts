@@ -11,33 +11,33 @@ const fileType = require('file-type')
 
 export abstract class Image {
   // Image formats
-  public static JPEG: types.ImageFormat = 'jpeg'
-  public static PNG: types.ImageFormat = 'png'
+  public static JPEG: types.ImageFormat = types.ImageFormat.JPEG
+  public static PNG: types.ImageFormat = types.ImageFormat.PNG
 
   // Image resize fits
-  public static AUTO_SIZE: types.ImageResizeFit = 'auto'
-  public static CONTAIN: types.ImageResizeFit = 'contain'
-  public static COVER: types.ImageResizeFit = 'cover'
-  public static EXACT: types.ImageResizeFit = 'exact'
-  public static CROP: types.ImageResizeFit = 'crop'
+  public static AUTO_SIZE: types.ImageResizeFit = types.ImageResizeFit.Auto
+  public static CONTAIN: types.ImageResizeFit = types.ImageResizeFit.Contain
+  public static COVER: types.ImageResizeFit = types.ImageResizeFit.Cover
+  public static EXACT: types.ImageResizeFit = types.ImageResizeFit.Exact
+  public static CROP: types.ImageResizeFit = types.ImageResizeFit.Crop
 
   // Image resize methods
-  public static NEAREST_NEIGHBOR: types.ImageResizeMethod = 'nearestNeighbor'
-  public static BILINEAR: types.ImageResizeMethod = 'bilinear'
+  public static NEAREST_NEIGHBOR: types.ImageResizeMethod = types.ImageResizeMethod.NearestNeighbor
+  public static BILINEAR: types.ImageResizeMethod = types.ImageResizeMethod.Bilinear
 
   // Edge detection methods
-  public static SOBEL: types.EdgeMethod = 'sobel'
-  public static CANNY: types.EdgeMethod = 'canny'
+  public static SOBEL: types.EdgeMethod = types.EdgeMethod.Sobel
+  public static CANNY: types.EdgeMethod = types.EdgeMethod.Canny
 
   // Hash methods
-  public static PHASH: types.HashMethod = 'phash'
+  public static PHASH: types.HashMethod = types.HashMethod.PHash
 
   protected _output: types.IImageOutputOptions
   protected _analyze?: types.IAnalysisOptions
 
   public constructor() {
     this._output = {
-      format: {type: 'jpeg', quality: 90},
+      format: {type: types.ImageFormat.JPEG, quality: 90},
     }
   }
 

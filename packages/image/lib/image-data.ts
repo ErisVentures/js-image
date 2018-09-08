@@ -14,10 +14,10 @@ export interface BrowserImageData {
 }
 
 export class ImageData {
-  public static GREYSCALE: ImageDataFormat = 'k'
-  public static RGB: ImageDataFormat = 'rgb'
-  public static RGBA: ImageDataFormat = 'rgba'
-  public static HSL: ImageDataFormat = 'hsl'
+  public static GREYSCALE: ImageDataFormat = ImageDataFormat.Greyscale
+  public static RGB: ImageDataFormat = ImageDataFormat.RGB
+  public static RGBA: ImageDataFormat = ImageDataFormat.RGBA
+  public static HSL: ImageDataFormat = ImageDataFormat.HSL
 
   public channels: number
   public format: ImageDataFormat
