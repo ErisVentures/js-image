@@ -1,3 +1,5 @@
+export type MapPixelFn = (pixel: Pixel) => number
+
 export interface IFormatOptions {
   type: ImageFormat
   quality?: number
@@ -114,12 +116,30 @@ export enum HashMethod {
   PHash = 'phash',
 }
 
-export type ImageDataFormat = 'hsl' | 'rgb' | 'rgba' | 'k'
+export enum ColorChannel {
+  Red = 'r',
+  Green = 'g',
+  Blue = 'b',
+  Alpha = 'a',
+  Hue = 'h',
+  Saturation = 's',
+  Lightness = 'l',
+  Black = 'k',
+}
+
+export enum ImageDataFormat {
+  HSL = 'hsl',
+  RGB = 'rgb',
+  RGBA = 'rgba',
+  Greyscale = 'k',
+}
+
 export type BufferLike = Buffer | Uint8Array | number[]
 
 export interface Pixel {
   value?: number
   index?: number
+  channel?: ColorChannel
   x: number
   y: number
 }

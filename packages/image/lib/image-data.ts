@@ -1,4 +1,4 @@
-import {ImageDataFormat, BufferLike, IFormatOptions, Pixel} from './types'
+import {ImageDataFormat, BufferLike, IFormatOptions, Pixel, ColorChannel} from './types'
 
 /* tslint:disable-next-line */
 const jpeg = require('jpeg-js')
@@ -87,6 +87,19 @@ export class ImageData {
 
   public static valueFor(imageData: ImageData, x: number, y: number, channel: number = 0): number {
     return imageData.data[ImageData.indexFor(imageData, x, y, channel)]
+  }
+
+  public static channelFor(imageData: ImageData, channel: number): ColorChannel {
+    const {Black, Hue, Saturation, Lightness, Red, Green, Blue, Alpha} = ColorChannel
+
+    switch (imageData.format) {
+      case ImageDataFormat.Greyscale:
+        return Black
+      case ImageDataFormat.HSL:
+        return [Hue, Saturation, Lightness][channel]
+      default:
+        return [Red, Green, Blue, Alpha][channel]
+    }
   }
 
   public static getOffsetForAngle(angle: number): Pixel {
