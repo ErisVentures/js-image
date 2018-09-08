@@ -5,6 +5,7 @@ import {Image} from './image'
 import {ImageData} from './image-data'
 import {sobel} from './transforms/sobel'
 import {canny} from './transforms/canny'
+import {tone} from './transforms/tone'
 
 class SharpImage {
   public static from(bufferOrImageData: BufferLike | ImageData): sharp.SharpInstance {
@@ -116,6 +117,16 @@ export class NodeImage extends Image {
     return image.greyscale()
   }
 
+  private async _applyTone(image: sharp.SharpInstance): Promise<sharp.SharpInstance> {
+    if (!this._output.tone) {
+      return image
+    }
+
+    const imageData = await SharpImage.toImageData(image)
+    const toned = tone(imageData, this._output.tone)
+    return SharpImage.from(toned)
+  }
+
   private _applyEdges(image: sharp.SharpInstance): Promise<sharp.SharpInstance> {
     if (!this._output.edges) {
       return Promise.resolve(image)
@@ -136,12 +147,14 @@ export class NodeImage extends Image {
     })
   }
 
-  private _applyAll(image: sharp.SharpInstance): Promise<sharp.SharpInstance> {
-    return Promise.resolve(image)
-      .then(image => this._applyResize(image))
-      .then(image => this._applyEdges(image))
-      .then(image => this._applyGreyscale(image))
-      .then(image => this._applyFormat(image))
+  private async _applyAll(imagePromise: sharp.SharpInstance): Promise<sharp.SharpInstance> {
+    let image = await imagePromise
+    image = await this._applyResize(image)
+    image = await this._applyGreyscale(image)
+    image = await this._applyTone(image)
+    image = await this._applyEdges(image)
+    image = await this._applyFormat(image)
+    return image
   }
 
   public toMetadata(): Promise<IMetadata> {

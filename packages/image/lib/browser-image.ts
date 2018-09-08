@@ -6,6 +6,7 @@ import * as resize from './transforms/resize'
 import {subselect} from './transforms/subselect'
 import {sobel} from './transforms/sobel'
 import {canny} from './transforms/canny'
+import {tone} from './transforms/tone'
 
 export class BrowserImage extends Image {
   private readonly _image: Promise<ImageData>
@@ -45,6 +46,14 @@ export class BrowserImage extends Image {
     return ImageData.toGreyscale(image)
   }
 
+  private _applyTone(image: ImageData): ImageData {
+    if (!this._output.tone) {
+      return image
+    }
+
+    return tone(image, this._output.tone)
+  }
+
   private _applyEdges(image: ImageData): ImageData {
     if (!this._output.edges) {
       return image
@@ -65,11 +74,13 @@ export class BrowserImage extends Image {
     return edges
   }
 
-  private _applyAll(image: Promise<ImageData>): Promise<ImageData> {
-    return Promise.resolve(image)
-      .then(image => this._applyGreyscale(image))
-      .then(image => this._applyResize(image))
-      .then(image => this._applyEdges(image))
+  private async _applyAll(imagePromise: Promise<ImageData>): Promise<ImageData> {
+    let image = await imagePromise
+    image = await this._applyGreyscale(image)
+    image = await this._applyResize(image)
+    image = await this._applyTone(image)
+    image = await this._applyEdges(image)
+    return image
   }
 
   public toMetadata(): Promise<IMetadata> {

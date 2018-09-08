@@ -21,9 +21,15 @@ export interface IEdgeOptions {
   lowThreshold?: number
 }
 
+export interface IToneOptions {
+  /** Affects the overall contrast in the image, typically a number between -0.5 and 2 */
+  contrast?: number
+}
+
 export interface IImageOutputOptions {
   format: IFormatOptions
   resize?: IResizeOptions
+  tone?: IToneOptions
   greyscale?: boolean
   edges?: IEdgeOptions
 }

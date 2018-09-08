@@ -72,6 +72,11 @@ export abstract class Image {
     return this
   }
 
+  public tone(options: types.IToneOptions): Image {
+    this._output.tone = options
+    return this
+  }
+
   public greyscale(): Image {
     this._output.greyscale = true
     return this

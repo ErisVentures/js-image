@@ -124,6 +124,13 @@ describe('BrowserImage', () => {
     })
   })
 
+  describe('._applyTone', () => {
+    it('should increase contrast', () => {
+      const modify = img => img.tone({contrast: 0.5})
+      return testSkater('skater-contrast.jpg', modify)
+    })
+  })
+
   describe('._applyEdges', () => {
     it('should find sobel edges', () => {
       const modify = img => img.edges()
