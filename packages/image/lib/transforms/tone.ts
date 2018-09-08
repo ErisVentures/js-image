@@ -1,6 +1,6 @@
 /* tslint:disable */
 import {ImageData} from '../image-data'
-import {MapPixelFn, Pixel, IToneOptions} from '../types'
+import {MapPixelFn, IToneOptions} from '../types'
 
 export function mapPixels(imageData: ImageData, fns: MapPixelFn | MapPixelFn[]): ImageData {
   if (!Array.isArray(fns)) fns = [fns]
@@ -35,12 +35,32 @@ export function contrast(options: IToneOptions): MapPixelFn {
   }
 }
 
+export function targetedBrightnessAdjustment(
+  target: number,
+  adjustment: number,
+  range: number = 100,
+): MapPixelFn {
+  // Use Cosine function to determine how much to apply the adjustment
+  // Remap the range (-R, R) to (-pi/2, pi/2)
+  const cosine0 = Math.PI / 2
+
+  return pixel => {
+    const rawDistance = pixel.value! - target
+    const cappedDistance = Math.min(range, Math.max(-range, rawDistance))
+    const cosineDistance = (cappedDistance / range) * cosine0
+    return Math.cos(cosineDistance) * adjustment + pixel.value!
+  }
+}
+
 export function tone(imageData: ImageData, options: IToneOptions): ImageData {
   const fns: MapPixelFn[] = []
 
-  if (options.contrast) {
-    fns.push(contrast(options))
-  }
+  if (options.contrast) fns.push(contrast(options))
+  if (options.whites) fns.push(targetedBrightnessAdjustment(223, options.whites, 30))
+  if (options.highlights) fns.push(targetedBrightnessAdjustment(192, options.highlights))
+  if (options.midtones) fns.push(targetedBrightnessAdjustment(128, options.midtones))
+  if (options.shadows) fns.push(targetedBrightnessAdjustment(64, options.shadows))
+  if (options.blacks) fns.push(targetedBrightnessAdjustment(32, options.blacks, 30))
 
   return mapPixels(imageData, fns)
 }

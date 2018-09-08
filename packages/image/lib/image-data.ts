@@ -90,13 +90,13 @@ export class ImageData {
   }
 
   public static channelFor(imageData: ImageData, channel: number): ColorChannel {
-    const {Black, Hue, Saturation, Lightness, Red, Green, Blue, Alpha} = ColorChannel
+    const {Black, Hue, Saturation, Luminance, Red, Green, Blue, Alpha} = ColorChannel
 
     switch (imageData.format) {
       case ImageDataFormat.Greyscale:
         return Black
       case ImageDataFormat.HSL:
-        return [Hue, Saturation, Lightness][channel]
+        return [Hue, Saturation, Luminance][channel]
       default:
         return [Red, Green, Blue, Alpha][channel]
     }
