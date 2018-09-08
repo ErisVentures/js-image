@@ -8,88 +8,97 @@
   <meta name="description" content="">
   <meta name="author" content="Patrick Hulce">
   <title>@eris/image Demo</title>
-  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+    crossorigin="anonymous">
   <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
   <div class="container">
-      <h1>@eris/image</h1>
-      <p class="lead">
-        Give the features a try by dragging an image to the area below.
-      </p>
-      <div class="user-message alert"></div>
-      <div class="editor">
-        <div class="editor__image">
-          <h2>Image Preview</h2>
-          <div class="preview">
-            <div class="preview__canvas">
-              <canvas id="preview-canvas"></canvas>
-            </div>
-            <div class="dropzone">
-              <span>Drag an Image Here</span>
-            </div>
+    <h1>@eris/image</h1>
+    <p class="lead">
+      Give the features a try by dragging an image to the area below.
+    </p>
+    <div class="user-message alert"></div>
+    <div class="editor">
+      <div class="editor__image">
+        <h2>Image Preview</h2>
+        <div class="preview">
+          <div class="preview__canvas">
+            <canvas id="preview-canvas"></canvas>
           </div>
-        </div>
-        <div class="editor__controls">
-          <h2>Image Info</h2>
-          <div class="image-info">
-            <span>Load an image first...</span>
+          <div class="dropzone">
+            <span>Drag an Image Here</span>
           </div>
-          <h2>Settings</h2>
-          <form id="settings-form" class="form-horizontal">
-            <div class="form-group">
-              <h3>Resize</h3>
-              <label for="resize[method]" class="col-sm-4 control-label">Method</label>
-              <div class="col-sm-8">
-                <select class="form-control" name="resize[method]">
-                  <option value="" selected>None</option>
-                  <option value="nearestNeighbor">Nearest Neighbor</option>
-                  <option value="bilinear">Bilinear</option>
-                </select>
-              </div>
-              <label for="resize[width]" class="col-sm-4 control-label">Width</label>
-              <div class="col-sm-8">
-                <input type="number" class="form-control" name="resize[width]">
-              </div>
-              <label for="resize[height]" class="col-sm-4 control-label">Height</label>
-              <div class="col-sm-8">
-                <input type="number" class="form-control" name="resize[height]">
-              </div>
-            </div>
-            <div class="form-group">
-              <h3>Edge Detection</h3>
-              <label for="edges[method]" class="col-sm-4 control-label">Method</label>
-              <div class="col-sm-8">
-                <select class="form-control" name="edges[method]">
-                  <option value="" selected>None</option>
-                  <option value="sobel">Sobel</option>
-                  <option value="canny">Canny</option>
-                </select>
-              </div>
-              <label for="edges[radius]" class="col-sm-4 control-label">Radius</label>
-              <div class="col-sm-8">
-                <input type="number" class="form-control" name="edges[radius]" value="1">
-              </div>
-              <label for="edges[blurSigma]" class="col-sm-4 control-label">Blur</label>
-              <div class="col-sm-8">
-                <input type="number" class="form-control" name="edges[blurSigma]" value="0">
-              </div>
-            </div>
-            <div class="form-group">
-              <h3>Analysis</h3>
-              <label for="analysis[hash]" class="col-sm-4 control-label">Hash</label>
-              <div class="col-sm-8 checkbox">
-                <input type="checkbox" name="analysis[hash]">
-              </div>
-              <label for="analysis[sharpness]" class="col-sm-4 control-label">Sharpness</label>
-              <div class="col-sm-8 checkbox">
-                <input type="checkbox" name="analysis[sharpness]">
-              </div>
-            </div>
-          </form>
         </div>
       </div>
+      <div class="editor__controls">
+        <h2>Image Info</h2>
+        <div class="image-info">
+          <span>Load an image first...</span>
+        </div>
+        <h2>Settings</h2>
+        <form id="settings-form" class="form-horizontal">
+          <div class="form-group">
+            <h3>Resize</h3>
+            <label for="resize[method]" class="col-sm-4 control-label">Method</label>
+            <div class="col-sm-8">
+              <select class="form-control" name="resize[method]">
+                <option value="" selected>None</option>
+                <option value="nearestNeighbor">Nearest Neighbor</option>
+                <option value="bilinear">Bilinear</option>
+              </select>
+            </div>
+            <label for="resize[width]" class="col-sm-4 control-label">Width</label>
+            <div class="col-sm-8">
+              <input type="number" class="form-control" name="resize[width]">
+            </div>
+            <label for="resize[height]" class="col-sm-4 control-label">Height</label>
+            <div class="col-sm-8">
+              <input type="number" class="form-control" name="resize[height]">
+            </div>
+          </div>
+          <div class="form-group">
+            <h3>Tone</h3>
+            <!-- TODO: convert to slider -->
+            <label for="tone[contrast]" class="col-sm-4 control-label">Contrast</label>
+            <div class="col-sm-8">
+              <input type="number" class="form-control" name="tone[contrast]" placeholder="0.5">
+            </div>
+          </div>
+          <div class="form-group">
+            <h3>Edge Detection</h3>
+            <label for="edges[method]" class="col-sm-4 control-label">Method</label>
+            <div class="col-sm-8">
+              <select class="form-control" name="edges[method]">
+                <option value="" selected>None</option>
+                <option value="sobel">Sobel</option>
+                <option value="canny">Canny</option>
+              </select>
+            </div>
+            <label for="edges[radius]" class="col-sm-4 control-label">Radius</label>
+            <div class="col-sm-8">
+              <input type="number" class="form-control" name="edges[radius]" value="1">
+            </div>
+            <label for="edges[blurSigma]" class="col-sm-4 control-label">Blur</label>
+            <div class="col-sm-8">
+              <input type="number" class="form-control" name="edges[blurSigma]" value="0">
+            </div>
+          </div>
+          <div class="form-group">
+            <h3>Analysis</h3>
+            <label for="analysis[hash]" class="col-sm-4 control-label">Hash</label>
+            <div class="col-sm-8 checkbox">
+              <input type="checkbox" name="analysis[hash]">
+            </div>
+            <label for="analysis[sharpness]" class="col-sm-4 control-label">Sharpness</label>
+            <div class="col-sm-8 checkbox">
+              <input type="checkbox" name="analysis[sharpness]">
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 
   <script src="bundle.js"></script>

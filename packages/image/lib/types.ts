@@ -22,7 +22,7 @@ export interface IEdgeOptions {
 }
 
 export interface IToneOptions {
-  /** Affects the overall contrast in the image, typically a number between -0.5 and 2 */
+  /** Affects the overall contrast in the image, typically a number between -0.5 and 2, reasonable range of -0.1 to 0.3 */
   contrast?: number
 }
 

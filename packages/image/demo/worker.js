@@ -2,54 +2,67 @@ importScripts('bundle.js')
 
 const {Image, ImageData} = self['@eris/image']
 
-function processImage(imageData, options) {
+function parseOptions(rawOptions) {
+  const options = {}
+
+  for (const [name, value] of Object.entries(rawOptions)) {
+    const valueAsNumber = Number(value)
+    const [_, sectionName, propName] = name.match(/^(.*)\[(.*)\]$/)
+    const section = options[sectionName] || {}
+    section[propName] = Number.isFinite(valueAsNumber) ? valueAsNumber : value
+    options[sectionName] = section
+  }
+
+  return options
+}
+
+function processImage(imageData, rawOptions) {
   Promise.resolve()
     .then(() => Image.from(imageData))
     .then(image => {
-      console.log('Processing with options', options)
-      if (options['resize[method]']) {
-        image = image.resize({
-          method: options['resize[method]'],
-          width: Number(options['resize[width]']),
-          height: Number(options['resize[height]']),
-        })
+      const options = parseOptions(rawOptions)
+
+      console.log('Processing with options', rawOptions, options)
+      if (options.resize && options.resize.method) {
+        image = image.resize(options.resize)
       }
 
-      if (options['edges[method]']) {
-        image = image.edges({
-          method: options['edges[method]'],
-          radius: Number(options['edges[radius]']),
-          blurSigma: Number(options['edges[blurSigma]']),
-        })
+      if (options.tone) {
+        image = image.tone(options.tone)
+      }
+
+      if (options.edges && options.edges.method) {
+        image = image.edges(options.edges)
       }
 
       const analysis = {}
-      if (options['analysis[hash]']) {
+      if (rawOptions['analysis[hash]']) {
         analysis.hash = {}
       }
 
-      if (options['analysis[sharpness]']) {
+      if (rawOptions['analysis[sharpness]']) {
         analysis.sharpness = {}
       }
 
       return image.analyze(analysis)
     })
-    .then(image => Promise.all([
-      image.toAnalysis(),
-      image.toImageData().then(ImageData.toRGBA),
-    ]))
+    .then(image => Promise.all([image.toAnalysis(), image.toImageData().then(ImageData.toRGBA)]))
     .then(([analysis, imageData]) => {
-      self.postMessage({
-        type: 'processed',
-        payload: {
-          analysis,
-          imageData: {
-            width: imageData.width,
-            height: imageData.height,
-            data: imageData.data,
+      self.postMessage(
+        {
+          type: 'processed',
+          payload: {
+            analysis,
+            imageData: {
+              width: imageData.width,
+              height: imageData.height,
+              data: imageData.data,
+            },
           },
         },
-      }, undefined, [imageData.data])
+        undefined,
+        [imageData.data],
+      )
     })
     .catch(err => {
       console.error(err)

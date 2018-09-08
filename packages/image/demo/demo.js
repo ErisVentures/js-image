@@ -30,12 +30,12 @@ function setNotifier(text, isError, persist) {
   editorEl.classList.toggle('editor--has-error', Boolean(isError))
 
   if (!isError && !persist) {
-    hideNotifierTimeout = setTimeout(() => messageEl.style.display = 'none', 5000)
+    hideNotifierTimeout = setTimeout(() => (messageEl.style.display = 'none'), 5000)
   }
 }
 
 function setFormsDisabledState(areDisabled) {
-  settingInputs.forEach(input => input.disabled = areDisabled)
+  settingInputs.forEach(input => (input.disabled = areDisabled))
 }
 
 function renderProperty(metadataEl, key, value) {
@@ -48,7 +48,9 @@ function renderProperty(metadataEl, key, value) {
   }
 
   if (key === 'hash') {
-    value = Array.from(value).map(x => x.toString(16)).join('')
+    value = Array.from(value)
+      .map(x => x.toString(16))
+      .join('')
   } else if (typeof value === 'number') {
     value = value.toLocaleString(undefined, {maximumFractionDigits: 2})
   }
@@ -128,8 +130,7 @@ function handleDrop(e) {
 
 function handleSettingsChange() {
   for (const input of settingInputs) {
-    settings[input.name] = input.type === 'checkbox' ?
-        input.checked : input.value
+    settings[input.name] = input.type === 'checkbox' ? input.checked : input.value
   }
   refreshPreview()
 }
