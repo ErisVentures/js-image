@@ -242,7 +242,7 @@ describe('BrowserImage', () => {
         width: 2,
         height: 2,
         channels: 3,
-        format: ImageData.RGB,
+        colorspace: 'rgb',
         data: pixels,
       }
 

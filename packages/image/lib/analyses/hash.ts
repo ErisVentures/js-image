@@ -1,6 +1,6 @@
 import {IAnnotatedImageData, ImageData} from '../image-data'
 import {bilinear} from '../transforms/resize'
-import {Colorspace} from '@eris/image/lib/types'
+import {Colorspace} from '../types'
 
 const DCT_COEFFICIENT = 1 / Math.sqrt(2)
 

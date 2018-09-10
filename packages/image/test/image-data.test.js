@@ -1,4 +1,4 @@
-const {ImageDataFormat} = require('../dist/types')
+const {Colorspace} = require('../dist/types')
 const ImageData = require('../dist/image-data').ImageData
 const {expect, fixtureDecode, compareToFixture} = require('./utils')
 
@@ -53,12 +53,12 @@ describe('ImageData', () => {
         width: 10,
         height: 10,
         channels: 3,
-        format: 'jpeg',
+        colorspace: 'what?',
         data: new Uint8Array(300),
       }
 
       expect(ImageData.is(imageData)).to.be.false
-      expect(ImageData.is(Object.assign(imageData, {format: ImageData.RGB}))).to.be.true
+      expect(ImageData.is(Object.assign(imageData, {colorspace: Colorspace.RGB}))).to.be.true
     })
 
     it('should enforce pixel length', () => {
@@ -66,7 +66,7 @@ describe('ImageData', () => {
         width: 10,
         height: 10,
         channels: 3,
-        format: 'rgb',
+        colorspace: 'rgb',
         data: new Uint8Array(100),
       }
 
@@ -80,7 +80,7 @@ describe('ImageData', () => {
       width: 3,
       height: 3,
       channels: 1,
-      format: ImageData.GREYSCALE,
+      colorspace: Colorspace.Greyscale,
       data: [
         0, 0, 0,
         1, 1, 1,
@@ -92,7 +92,7 @@ describe('ImageData', () => {
       width: 4,
       height: 4,
       channels: 1,
-      format: ImageData.GREYSCALE,
+      colorspace: Colorspace.Greyscale,
       data: [
         0, 0, 0, 0,
         0, 0, 0, 0,
@@ -107,7 +107,7 @@ describe('ImageData', () => {
         width: 3,
         height: 3,
         channels: 1,
-        format: ImageData.GREYSCALE,
+        colorspace: Colorspace.Greyscale,
         data: new Uint8Array([
           0, 0, 1,
           0, 1, 0,
@@ -122,7 +122,7 @@ describe('ImageData', () => {
         width: 3,
         height: 3,
         channels: 1,
-        format: ImageData.GREYSCALE,
+        colorspace: Colorspace.Greyscale,
         data: new Uint8Array([
           0, 1, 0,
           0, 1, 0,
@@ -137,7 +137,7 @@ describe('ImageData', () => {
         width: 3,
         height: 3,
         channels: 1,
-        format: ImageData.GREYSCALE,
+        colorspace: Colorspace.Greyscale,
         data: new Uint8Array([
           1, 0, 0,
           0, 1, 0,
@@ -152,7 +152,7 @@ describe('ImageData', () => {
         width: 4,
         height: 4,
         channels: 1,
-        format: ImageData.GREYSCALE,
+        colorspace: Colorspace.Greyscale,
         data: new Uint8Array([
           0, 0, 1, 0,
           0, 0, 1, 0,
@@ -168,7 +168,7 @@ describe('ImageData', () => {
         width: 4,
         height: 4,
         channels: 1,
-        format: ImageData.GREYSCALE,
+        colorspace: Colorspace.Greyscale,
         data: new Uint8Array([
           0, 1, 0, 0,
           0, 1, 0, 0,
@@ -185,7 +185,7 @@ describe('ImageData', () => {
         width: 10,
         height: 10,
         channels: 1,
-        format: ImageData.GREYSCALE,
+        colorspace: Colorspace.Greyscale,
         data: new Uint8Array(100),
       }
 
@@ -197,7 +197,7 @@ describe('ImageData', () => {
         width: 2,
         height: 2,
         channels: 3,
-        format: ImageData.RGB,
+        colorspace: Colorspace.RGB,
         data: [
           100, 100, 100,
           0, 100, 0,
@@ -210,7 +210,7 @@ describe('ImageData', () => {
         width: 2,
         height: 2,
         channels: 1,
-        format: ImageData.GREYSCALE,
+        colorspace: Colorspace.Greyscale,
         data: new Uint8Array([100, 59, 30, 11]),
       })
     })
@@ -230,7 +230,7 @@ describe('ImageData', () => {
         width: 2,
         height: 2,
         channels: 1,
-        format: ImageData.GREYSCALE,
+        colorspace: Colorspace.Greyscale,
         data: new Uint8Array([100, 50, 200, 30]),
       }
 
@@ -238,7 +238,7 @@ describe('ImageData', () => {
         width: 2,
         height: 2,
         channels: 3,
-        format: ImageData.HSL,
+        colorspace: Colorspace.HSL,
         data: new Uint8Array([
           0, 0, 100,
           0, 0, 50,
@@ -253,7 +253,7 @@ describe('ImageData', () => {
         width: 2,
         height: 2,
         channels: 4,
-        format: ImageData.RGBA,
+        colorspace: Colorspace.RGBA,
         data: new Uint8Array([
           255, 0, 0, 255,
           0, 255, 0, 255,
@@ -266,7 +266,7 @@ describe('ImageData', () => {
         width: 2,
         height: 2,
         channels: 3,
-        format: ImageData.HSL,
+        colorspace: Colorspace.HSL,
         data: new Uint8Array([
           0, 255, 128,
           Math.round(255 * 120 / 360), 255, 128,
@@ -283,7 +283,7 @@ describe('ImageData', () => {
         width: 2,
         height: 2,
         channels: 3,
-        format: ImageDataFormat.RGB,
+        colorspace: Colorspace.RGB,
         data: new Uint8Array([
           255, 255, 255,
           255, 0, 0,
@@ -296,7 +296,7 @@ describe('ImageData', () => {
         width: 2,
         height: 2,
         channels: 3,
-        format: ImageDataFormat.YCbCr,
+        colorspace: Colorspace.YCbCr,
         data: new Uint8Array([
           255, 128, 128,
           76, 85, 255,
@@ -321,7 +321,7 @@ describe('ImageData', () => {
         width: 2,
         height: 2,
         channels: 1,
-        format: ImageData.GREYSCALE,
+        colorspace: Colorspace.Greyscale,
         data: new Uint8Array([100, 50, 200, 30]),
       }
 
@@ -329,7 +329,7 @@ describe('ImageData', () => {
         width: 2,
         height: 2,
         channels: 3,
-        format: ImageData.RGB,
+        colorspace: Colorspace.RGB,
         data: new Uint8Array([
           100, 100, 100,
           50, 50, 50,
@@ -344,7 +344,7 @@ describe('ImageData', () => {
         width: 2,
         height: 2,
         channels: 3,
-        format: ImageDataFormat.YCbCr,
+        colorspace: Colorspace.YCbCr,
         data: new Uint8Array([
           255, 128, 128,
           76, 85, 255,
@@ -357,7 +357,7 @@ describe('ImageData', () => {
         width: 2,
         height: 2,
         channels: 3,
-        format: ImageDataFormat.RGB,
+        colorspace: Colorspace.RGB,
         data: new Uint8Array([
           255, 255, 255,
           254, 0, 0,
@@ -381,7 +381,7 @@ describe('ImageData', () => {
         width: 2,
         height: 2,
         channels: 3,
-        format: ImageData.RGB,
+        colorspace: Colorspace.RGB,
         data: [
           100, 100, 100,
           0, 100, 0,
@@ -394,7 +394,7 @@ describe('ImageData', () => {
         width: 2,
         height: 2,
         channels: 4,
-        format: ImageData.RGBA,
+        colorspace: Colorspace.RGBA,
         data: new Uint8Array([
           100, 100, 100, 255,
           0, 100, 0, 255,
@@ -411,7 +411,7 @@ describe('ImageData', () => {
         width: 2,
         height: 2,
         channels: 4,
-        format: ImageData.RGBA,
+        colorspace: Colorspace.RGBA,
         data: [
           100, 100, 100, 255,
           0, 100, 0, 255,
@@ -424,7 +424,7 @@ describe('ImageData', () => {
         width: 2,
         height: 2,
         channels: 3,
-        format: ImageData.RGB,
+        colorspace: Colorspace.RGB,
         data: new Uint8Array([
           100, 100, 100,
           0, 100, 0,

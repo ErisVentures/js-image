@@ -2,6 +2,7 @@ const fs = require('fs')
 const memoize = require('lodash/memoize')
 const chai = require('chai')
 const jpeg = require('jpeg-js')
+const {Colorspace} = require('../dist/types')
 const ImageData = require('../dist/image-data').ImageData
 chai.use(require('sinon-chai'))
 
@@ -113,7 +114,7 @@ function buildLinesImageData(width, height, lines) {
     width,
     height,
     channels: 1,
-    format: ImageData.GREYSCALE,
+    colorspace: ImageData.GREYSCALE,
     data: mergeLines(...linesData),
   }
 }

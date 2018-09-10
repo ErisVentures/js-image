@@ -236,7 +236,7 @@ describe('NodeImage', () => {
         width: 2,
         height: 2,
         channels: 3,
-        format: ImageData.RGB,
+        colorspace: 'rgb',
         data: pixels,
       }
 
@@ -276,7 +276,7 @@ describe('NodeImage', () => {
         .toImageData()
         .then(imageData => {
           expect(imageData).to.have.property('channels', 1)
-          expect(imageData).to.have.property('format', 'k')
+          expect(imageData).to.have.property('colorspace', 'k')
           expect(imageData).to.have.property('width', 120)
           expect(imageData).to.have.property('height', 120)
           expect(imageData.data).to.have.length(120 * 120)
