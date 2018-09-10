@@ -38,7 +38,7 @@ export function contrast(options: IToneOptions): MapPixelFn {
   }
 }
 
-export function targetedBrightnessAdjustment(
+function targetedLumaAdjustment(
   target: number,
   adjustment: number,
   range: number = 100,
@@ -66,11 +66,11 @@ export function tone(imageData: ImageData, options: IToneOptions): ImageData {
   imageData = ImageData.toYCbCr(imageData)
 
   if (options.contrast) fns.push(contrast(options))
-  if (options.whites) fns.push(targetedBrightnessAdjustment(223, options.whites, 30))
-  if (options.highlights) fns.push(targetedBrightnessAdjustment(192, options.highlights))
-  if (options.midtones) fns.push(targetedBrightnessAdjustment(128, options.midtones))
-  if (options.shadows) fns.push(targetedBrightnessAdjustment(64, options.shadows))
-  if (options.blacks) fns.push(targetedBrightnessAdjustment(32, options.blacks, 30))
+  if (options.whites) fns.push(targetedLumaAdjustment(223, options.whites, 30))
+  if (options.highlights) fns.push(targetedLumaAdjustment(192, options.highlights))
+  if (options.midtones) fns.push(targetedLumaAdjustment(128, options.midtones))
+  if (options.shadows) fns.push(targetedLumaAdjustment(64, options.shadows))
+  if (options.blacks) fns.push(targetedLumaAdjustment(32, options.blacks, 30))
 
   return ImageData.toColorFormat(mapPixels(imageData, fns), format)
 }
