@@ -1,8 +1,11 @@
 /* tslint:disable */
 import {ensureFlatMatrix, Matrix} from '../matrix'
-import {ImageData} from '../image-data'
+import {IAnnotatedImageData} from '../image-data'
 
-export function convolve(imageData: ImageData, flatOrDeepMatrix: Matrix): ImageData {
+export function convolve(
+  imageData: IAnnotatedImageData,
+  flatOrDeepMatrix: Matrix,
+): IAnnotatedImageData {
   const matrix = ensureFlatMatrix(flatOrDeepMatrix)
 
   const srcPixels = imageData.data

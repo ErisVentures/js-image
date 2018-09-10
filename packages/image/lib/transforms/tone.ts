@@ -1,8 +1,11 @@
 /* tslint:disable */
-import {ImageData} from '../image-data'
+import {IAnnotatedImageData, ImageData} from '../image-data'
 import {MapPixelFn, IToneOptions, ColorChannel} from '../types'
 
-export function mapPixels(imageData: ImageData, fns: MapPixelFn | MapPixelFn[]): ImageData {
+export function mapPixels(
+  imageData: IAnnotatedImageData,
+  fns: MapPixelFn | MapPixelFn[],
+): IAnnotatedImageData {
   if (!Array.isArray(fns)) fns = [fns]
   if (fns.length === 0) return imageData
 
@@ -57,8 +60,8 @@ function targetedLumaAdjustment(
   }
 }
 
-export function tone(imageData: ImageData, options: IToneOptions): ImageData {
-  const {format} = imageData
+export function tone(imageData: IAnnotatedImageData, options: IToneOptions): IAnnotatedImageData {
+  const {colorspace} = imageData
   const fns: MapPixelFn[] = []
 
   // TODO: make this work with greyscale natively too
@@ -72,5 +75,5 @@ export function tone(imageData: ImageData, options: IToneOptions): ImageData {
   if (options.shadows) fns.push(targetedLumaAdjustment(64, options.shadows))
   if (options.blacks) fns.push(targetedLumaAdjustment(32, options.blacks, 30))
 
-  return ImageData.toColorFormat(mapPixels(imageData, fns), format)
+  return ImageData.toColorspace(mapPixels(imageData, fns), colorspace)
 }

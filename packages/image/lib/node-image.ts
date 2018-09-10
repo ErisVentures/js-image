@@ -1,14 +1,14 @@
 import * as sharp from 'sharp'
 
-import {BufferLike, IMetadata} from './types'
+import {BufferLike, IMetadata, Colorspace} from './types'
 import {Image} from './image'
-import {ImageData} from './image-data'
+import {IAnnotatedImageData, ImageData} from './image-data'
 import {sobel} from './transforms/sobel'
 import {canny} from './transforms/canny'
 import {tone} from './transforms/tone'
 
 class SharpImage {
-  public static from(bufferOrImageData: BufferLike | ImageData): sharp.SharpInstance {
+  public static from(bufferOrImageData: BufferLike | IAnnotatedImageData): sharp.SharpInstance {
     if (ImageData.probablyIs(bufferOrImageData)) {
       let imageData = ImageData.normalize(bufferOrImageData)
       ImageData.assert(imageData)
@@ -38,20 +38,18 @@ class SharpImage {
     })
   }
 
-  public static toImageData(image: sharp.SharpInstance): Promise<ImageData> {
-    const pixels = (image.clone().raw().toBuffer as any)({resolveWithObject: true})
-    return pixels.then((rawData: any) => {
-      const {width, height, size} = rawData.info
-      const channels = size / width / height
+  public static async toImageData(image: sharp.SharpInstance): Promise<IAnnotatedImageData> {
+    const rawData = await (image.clone().raw().toBuffer as any)({resolveWithObject: true})
+    const {width, height, size} = rawData.info
+    const channels = size / width / height
 
-      return {
-        channels,
-        width,
-        height,
-        format: channels === 3 ? ImageData.RGB : ImageData.GREYSCALE,
-        data: rawData.data,
-      }
-    })
+    return {
+      channels,
+      width,
+      height,
+      colorspace: channels === 3 ? Colorspace.RGB : Colorspace.Greyscale,
+      data: rawData.data,
+    }
   }
 }
 
@@ -163,7 +161,7 @@ export class NodeImage extends Image {
     })
   }
 
-  public toImageData(): Promise<ImageData> {
+  public toImageData(): Promise<IAnnotatedImageData> {
     return this._applyAll(this._image).then(SharpImage.toImageData)
   }
 
@@ -175,7 +173,7 @@ export class NodeImage extends Image {
     return new NodeImage(SharpImage.from(buffer), metadata)
   }
 
-  protected static _fromImageData(imageData: ImageData): Image {
+  protected static _fromImageData(imageData: IAnnotatedImageData): Image {
     return new NodeImage(SharpImage.from(imageData))
   }
 }

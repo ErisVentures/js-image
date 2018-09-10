@@ -1,6 +1,6 @@
 /* tslint:disable */
 import {IBlurOptions, BufferLike} from '../types'
-import {ImageData} from '../image-data'
+import {IAnnotatedImageData, ImageData} from '../image-data'
 import {convolve} from './convolve'
 
 /**
@@ -125,7 +125,10 @@ function boxBlur1D(
   return outPixels
 }
 
-export function boxBlur(imageData: ImageData, options: IBlurOptions): ImageData {
+export function boxBlur(
+  imageData: IAnnotatedImageData,
+  options: IBlurOptions,
+): IAnnotatedImageData {
   var radius = options.radius!
   if (!radius) {
     radius = Math.ceil(imageData.width / 1000)
@@ -158,7 +161,10 @@ export function boxBlur(imageData: ImageData, options: IBlurOptions): ImageData 
   return Object.assign({}, imageData, {data: outPixels})
 }
 
-export function gaussianBlur(imageData: ImageData, options: IBlurOptions): ImageData {
+export function gaussianBlur(
+  imageData: IAnnotatedImageData,
+  options: IBlurOptions,
+): IAnnotatedImageData {
   var sigma = options.sigma!
   if (!sigma) {
     const radius = options.radius || 2

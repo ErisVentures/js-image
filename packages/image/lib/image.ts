@@ -1,5 +1,5 @@
 import * as types from './types'
-import {ImageData} from './image-data'
+import {IAnnotatedImageData, ImageData} from './image-data'
 import {writeFileAsync} from './fs-utils'
 import {sobel} from './transforms/sobel'
 import {phash} from './analyses/hash'
@@ -128,7 +128,7 @@ export abstract class Image {
 
   public abstract toMetadata(): Promise<types.IMetadata>
 
-  public abstract toImageData(): Promise<ImageData>
+  public abstract toImageData(): Promise<IAnnotatedImageData>
 
   public abstract toBuffer(): Promise<types.BufferLike>
 
@@ -136,9 +136,9 @@ export abstract class Image {
     return this.toBuffer().then(buffer => writeFileAsync(path, buffer))
   }
 
-  public static from(bufferOrImageData: types.BufferLike | ImageData): Image {
+  public static from(bufferOrImageData: types.BufferLike | IAnnotatedImageData): Image {
     if (ImageData.probablyIs(bufferOrImageData)) {
-      return this._fromImageData(bufferOrImageData as ImageData)
+      return this._fromImageData(bufferOrImageData as IAnnotatedImageData)
     }
 
     let buffer = bufferOrImageData as Buffer
@@ -161,7 +161,7 @@ export abstract class Image {
     throw new Error('unimplemented')
   }
 
-  protected static _fromImageData(imageData: ImageData): Image {
+  protected static _fromImageData(imageData: IAnnotatedImageData): Image {
     throw new Error('unimplemented')
   }
 }

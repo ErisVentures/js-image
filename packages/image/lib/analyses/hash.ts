@@ -1,5 +1,6 @@
-import {ImageData} from '../image-data'
+import {IAnnotatedImageData, ImageData} from '../image-data'
 import {bilinear} from '../transforms/resize'
+import {Colorspace} from '@eris/image/lib/types'
 
 const DCT_COEFFICIENT = 1 / Math.sqrt(2)
 
@@ -41,7 +42,7 @@ export function toBits(array: Uint8Array): number[] {
 }
 
 export function computeDCT(
-  imageData: ImageData,
+  imageData: IAnnotatedImageData,
   xOffset: number = 0,
   yOffset: number = 0,
 ): number[] {
@@ -98,7 +99,7 @@ export function averageAndThreshold(input: number[]): string {
 /**
  * Heavily based on the method described in http://www.hackerfactor.com/blog/index.php?/archives/432-Looks-Like-It.html
  */
-export function phash(imageData: ImageData, hashSize?: number): string {
+export function phash(imageData: IAnnotatedImageData, hashSize?: number): string {
   hashSize = hashSize || 64
   if (!Number.isInteger(Math.sqrt(hashSize / 64))) {
     throw new Error('Hash size must be a square-multiple of 64')
@@ -110,7 +111,7 @@ export function phash(imageData: ImageData, hashSize?: number): string {
   if (
     imageData.width !== thumbnailWidth ||
     imageData.height !== thumbnailWidth ||
-    imageData.format !== ImageData.GREYSCALE
+    imageData.colorspace !== Colorspace.Greyscale
   ) {
     const colorThumbnail = bilinear(imageData, {width: thumbnailWidth, height: thumbnailWidth})
     thumbnail = ImageData.toGreyscale(colorThumbnail)

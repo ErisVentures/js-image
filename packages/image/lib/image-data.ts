@@ -1,4 +1,4 @@
-import {ImageDataFormat, BufferLike, IFormatOptions, Pixel, ColorChannel} from './types'
+import {Colorspace, BufferLike, Pixel, ColorChannel, IFormatOptions} from './types'
 
 /* tslint:disable-next-line */
 const jpeg = require('jpeg-js')
@@ -13,18 +13,20 @@ export interface BrowserImageData {
   data: Uint8ClampedArray
 }
 
-export class ImageData {
-  public static GREYSCALE: ImageDataFormat = ImageDataFormat.Greyscale
-  public static RGB: ImageDataFormat = ImageDataFormat.RGB
-  public static RGBA: ImageDataFormat = ImageDataFormat.RGBA
-  public static HSL: ImageDataFormat = ImageDataFormat.HSL
-  public static YCBCR: ImageDataFormat = ImageDataFormat.YCbCr
+export interface IAnnotatedImageData {
+  channels: number
+  colorspace: Colorspace
+  width: number
+  height: number
+  data: BufferLike
+}
 
-  public channels: number
-  public format: ImageDataFormat
-  public width: number
-  public height: number
-  public data: BufferLike
+export class ImageData {
+  public static GREYSCALE: Colorspace = Colorspace.Greyscale
+  public static RGB: Colorspace = Colorspace.RGB
+  public static RGBA: Colorspace = Colorspace.RGBA
+  public static HSL: Colorspace = Colorspace.HSL
+  public static YCBCR: Colorspace = Colorspace.YCbCr
 
   public static probablyIs(obj: any): boolean {
     if (!obj || !obj.data || typeof obj.width !== 'number' || typeof obj.height !== 'number') {
@@ -34,14 +36,14 @@ export class ImageData {
     return (obj.data.length % obj.width) * obj.height === 0
   }
 
-  public static is(obj: any): obj is ImageData {
+  public static is(obj: any): obj is IAnnotatedImageData {
     return (
       ImageData.probablyIs(obj) &&
       typeof obj.channels === 'number' &&
-      (obj.format === ImageData.RGB ||
-        obj.format === ImageData.RGBA ||
-        obj.format === ImageData.GREYSCALE ||
-        obj.format === ImageDataFormat.YCbCr) &&
+      (obj.colorspace === Colorspace.RGB ||
+        obj.colorspace === Colorspace.RGBA ||
+        obj.colorspace === Colorspace.Greyscale ||
+        obj.colorspace === Colorspace.YCbCr) &&
       obj.data.length === obj.width * obj.height * obj.channels
     )
   }
@@ -49,24 +51,24 @@ export class ImageData {
   public static normalize(imageData: any): any {
     const channels = imageData.data.length / (imageData.width * imageData.height)
 
-    let format
+    let colorspace
     switch (channels) {
       case 3:
-        format = ImageData.RGB
+        colorspace = Colorspace.RGB
         break
       case 1:
-        format = ImageData.GREYSCALE
+        colorspace = Colorspace.Greyscale
         break
       default:
-        format = ImageData.RGBA
+        colorspace = Colorspace.RGBA
     }
 
-    return {channels, format, ...imageData}
+    return {channels, colorspace, ...imageData}
   }
 
-  public static assert(imageData: any): ImageData {
+  public static assert(imageData: any): IAnnotatedImageData {
     if (!ImageData.is(imageData)) {
-      throw new TypeError('Unexpected image data format')
+      throw new TypeError('Unexpected image data colorspace')
     }
 
     return imageData
@@ -76,7 +78,12 @@ export class ImageData {
     return Math.max(0, Math.min(255, Math.round(value)))
   }
 
-  public static isBorder(imageData: ImageData, x: number, y: number, radius: number = 1): boolean {
+  public static isBorder(
+    imageData: IAnnotatedImageData,
+    x: number,
+    y: number,
+    radius: number = 1,
+  ): boolean {
     return (
       x - radius < 0 ||
       y - radius < 0 ||
@@ -85,17 +92,27 @@ export class ImageData {
     )
   }
 
-  public static indexFor(imageData: ImageData, x: number, y: number, channel: number = 0): number {
+  public static indexFor(
+    imageData: IAnnotatedImageData,
+    x: number,
+    y: number,
+    channel: number = 0,
+  ): number {
     x = Math.max(0, Math.min(x, imageData.width - 1))
     y = Math.max(0, Math.min(y, imageData.height - 1))
     return (y * imageData.width + x) * imageData.channels + channel
   }
 
-  public static valueFor(imageData: ImageData, x: number, y: number, channel: number = 0): number {
+  public static valueFor(
+    imageData: IAnnotatedImageData,
+    x: number,
+    y: number,
+    channel: number = 0,
+  ): number {
     return imageData.data[ImageData.indexFor(imageData, x, y, channel)]
   }
 
-  public static channelFor(imageData: ImageData, channel: number): ColorChannel {
+  public static channelFor(imageData: IAnnotatedImageData, channel: number): ColorChannel {
     const {
       Black,
       Hue,
@@ -110,12 +127,12 @@ export class ImageData {
       ChromaRed,
     } = ColorChannel
 
-    switch (imageData.format) {
-      case ImageDataFormat.Greyscale:
+    switch (imageData.colorspace) {
+      case Colorspace.Greyscale:
         return Black
-      case ImageDataFormat.HSL:
+      case Colorspace.HSL:
         return [Hue, Saturation, Lightness][channel]
-      case ImageDataFormat.YCbCr:
+      case Colorspace.YCbCr:
         return [Luma, ChromaBlue, ChromaRed][channel]
       default:
         return [Red, Green, Blue, Alpha][channel]
@@ -138,7 +155,7 @@ export class ImageData {
   }
 
   public static getPixelsForAngle(
-    imageData: ImageData,
+    imageData: IAnnotatedImageData,
     srcX: number,
     srcY: number,
     angle: number,
@@ -169,7 +186,7 @@ export class ImageData {
     channels: number = 1,
   ): void {
     // tslint:disable-next-line
-    const fakeImageData = {width, height, channels} as ImageData
+    const fakeImageData = {width, height, channels} as IAnnotatedImageData
     const cosAngle = Math.cos(((360 - angle) * Math.PI) / 180)
     const sinAngle = Math.sin(((360 - angle) * Math.PI) / 180)
 
@@ -198,7 +215,7 @@ export class ImageData {
     }
   }
 
-  public static rotate(srcImageData: ImageData, angle: number): ImageData {
+  public static rotate(srcImageData: IAnnotatedImageData, angle: number): IAnnotatedImageData {
     const dstImageData = {...srcImageData}
     const numPixels = srcImageData.width * srcImageData.height
     const dstData = new Uint8Array(numPixels * srcImageData.channels)
@@ -216,11 +233,11 @@ export class ImageData {
     return dstImageData
   }
 
-  public static toGreyscale(srcImageData: ImageData): ImageData {
+  public static toGreyscale(srcImageData: IAnnotatedImageData): IAnnotatedImageData {
     ImageData.assert(srcImageData)
-    if (srcImageData.format === ImageData.GREYSCALE) {
+    if (srcImageData.colorspace === Colorspace.Greyscale) {
       return srcImageData
-    } else if (srcImageData.format === ImageData.HSL) {
+    } else if (srcImageData.colorspace === ImageData.HSL) {
       srcImageData = ImageData.toRGB(srcImageData)
     }
 
@@ -236,15 +253,15 @@ export class ImageData {
       rawData[i] = Math.round(0.3 * red + 0.59 * green + 0.11 * blue)
     }
 
-    dstImageData.format = ImageData.GREYSCALE
+    dstImageData.colorspace = Colorspace.Greyscale
     dstImageData.channels = 1
     dstImageData.data = rawData
     return dstImageData
   }
 
-  public static toHSL(srcImageData: ImageData): ImageData {
+  public static toHSL(srcImageData: IAnnotatedImageData): IAnnotatedImageData {
     ImageData.assert(srcImageData)
-    if (srcImageData.format === ImageData.HSL) {
+    if (srcImageData.colorspace === ImageData.HSL) {
       return srcImageData
     } else {
       srcImageData = ImageData.toRGB(srcImageData)
@@ -281,15 +298,15 @@ export class ImageData {
       rawData[offset + 2] = Math.round(255 * lightness)
     }
 
-    dstImageData.format = ImageData.HSL
+    dstImageData.colorspace = ImageData.HSL
     dstImageData.channels = 3
     dstImageData.data = rawData
     return dstImageData
   }
 
-  public static toYCbCr(srcImageData: ImageData): ImageData {
+  public static toYCbCr(srcImageData: IAnnotatedImageData): IAnnotatedImageData {
     ImageData.assert(srcImageData)
-    if (srcImageData.format === ImageDataFormat.YCbCr) {
+    if (srcImageData.colorspace === Colorspace.YCbCr) {
       return srcImageData
     } else {
       srcImageData = ImageData.toRGB(srcImageData)
@@ -309,13 +326,13 @@ export class ImageData {
       rawData[offset + 2] = ImageData.clip(128 + 0.501 * r - 0.419 * g - 0.081 * b)
     }
 
-    dstImageData.format = ImageDataFormat.YCbCr
+    dstImageData.colorspace = Colorspace.YCbCr
     dstImageData.channels = 3
     dstImageData.data = rawData
     return dstImageData
   }
 
-  private static _YCbCrToRGB(srcImageData: ImageData): ImageData {
+  private static _YCbCrToRGB(srcImageData: IAnnotatedImageData): IAnnotatedImageData {
     const dstImageData = {...srcImageData}
     const numPixels = srcImageData.width * srcImageData.height
     const rawData = new Uint8Array(numPixels * 3)
@@ -331,21 +348,21 @@ export class ImageData {
       rawData[offset + 2] = ImageData.clip(y + 1.772 * (cb - 128))
     }
 
-    dstImageData.format = ImageDataFormat.RGB
+    dstImageData.colorspace = Colorspace.RGB
     dstImageData.channels = 3
     dstImageData.data = rawData
     return dstImageData
   }
 
-  public static toRGB(srcImageData: ImageData): ImageData {
+  public static toRGB(srcImageData: IAnnotatedImageData): IAnnotatedImageData {
     ImageData.assert(srcImageData)
-    if (srcImageData.format === ImageData.RGB) {
+    if (srcImageData.colorspace === Colorspace.RGB) {
       return srcImageData
-    } else if (srcImageData.format === ImageData.RGBA) {
+    } else if (srcImageData.colorspace === Colorspace.RGBA) {
       return ImageData.removeAlphaChannel(srcImageData)
-    } else if (srcImageData.format === ImageData.HSL) {
+    } else if (srcImageData.colorspace === ImageData.HSL) {
       throw new TypeError('Cannot convert HSL to RGB')
-    } else if (srcImageData.format === ImageDataFormat.YCbCr) {
+    } else if (srcImageData.colorspace === Colorspace.YCbCr) {
       return ImageData._YCbCrToRGB(srcImageData)
     }
 
@@ -359,15 +376,15 @@ export class ImageData {
       rawData[dstOffset + 2] = srcImageData.data[i]
     }
 
-    dstImageData.format = ImageData.RGB
+    dstImageData.colorspace = Colorspace.RGB
     dstImageData.channels = 3
     dstImageData.data = rawData
     return dstImageData
   }
 
-  public static toRGBA(srcImageData: ImageData): ImageData {
+  public static toRGBA(srcImageData: IAnnotatedImageData): IAnnotatedImageData {
     ImageData.assert(srcImageData)
-    if (srcImageData.format === ImageData.RGBA) {
+    if (srcImageData.colorspace === Colorspace.RGBA) {
       return srcImageData
     } else {
       srcImageData = ImageData.toRGB(srcImageData)
@@ -385,32 +402,35 @@ export class ImageData {
       rawData[dstOffset + 3] = 255
     }
 
-    dstImageData.format = ImageData.RGBA
+    dstImageData.colorspace = Colorspace.RGBA
     dstImageData.channels = 4
     dstImageData.data = rawData
     return dstImageData
   }
 
-  public static toColorFormat(srcImageData: ImageData, format: ImageDataFormat): ImageData {
-    switch (format) {
-      case ImageDataFormat.Greyscale:
+  public static toColorspace(
+    srcImageData: IAnnotatedImageData,
+    colorspace: Colorspace,
+  ): IAnnotatedImageData {
+    switch (colorspace) {
+      case Colorspace.Greyscale:
         return ImageData.toGreyscale(srcImageData)
-      case ImageDataFormat.HSL:
+      case Colorspace.HSL:
         return ImageData.toHSL(srcImageData)
-      case ImageDataFormat.YCbCr:
+      case Colorspace.YCbCr:
         return ImageData.toYCbCr(srcImageData)
-      case ImageDataFormat.RGB:
+      case Colorspace.RGB:
         return ImageData.toRGB(srcImageData)
-      case ImageDataFormat.RGBA:
+      case Colorspace.RGBA:
         return ImageData.toRGBA(srcImageData)
       default:
-        throw new Error(`Unrecognized format '${format}'`)
+        throw new Error(`Unrecognized colorspace '${colorspace}'`)
     }
   }
 
-  public static removeAlphaChannel(srcImageData: ImageData): ImageData {
+  public static removeAlphaChannel(srcImageData: IAnnotatedImageData): IAnnotatedImageData {
     ImageData.assert(srcImageData)
-    if (srcImageData.format !== ImageData.RGBA) {
+    if (srcImageData.colorspace !== Colorspace.RGBA) {
       return srcImageData
     }
 
@@ -425,14 +445,14 @@ export class ImageData {
       rawData[dstOffset + 2] = srcImageData.data[srcOffset + 2]
     }
 
-    dstImageData.format = ImageData.RGB
+    dstImageData.colorspace = Colorspace.RGB
     dstImageData.channels = 3
     dstImageData.data = rawData
 
     return dstImageData
   }
 
-  public static from(bufferLike: BufferLike): Promise<ImageData> {
+  public static from(bufferLike: BufferLike): Promise<IAnnotatedImageData> {
     const type = fileType(bufferLike) || {mime: 'unknown'}
 
     let imageData
@@ -450,7 +470,10 @@ export class ImageData {
     return Promise.resolve(imageData).then(ImageData.normalize)
   }
 
-  public static toBuffer(imageData: ImageData, options?: IFormatOptions): Promise<BufferLike> {
+  public static toBuffer(
+    imageData: IAnnotatedImageData,
+    options?: IFormatOptions,
+  ): Promise<BufferLike> {
     const type = (options && options.type) || 'jpeg'
 
     let buffer
@@ -469,7 +492,7 @@ export class ImageData {
     return Promise.resolve(buffer)
   }
 
-  public static toBrowserImageData(imageData: ImageData): BrowserImageData {
+  public static toBrowserImageData(imageData: IAnnotatedImageData): BrowserImageData {
     // tslint:disable-next-line
     if (typeof window !== 'object' || typeof (window as any).ImageData !== 'function') {
       throw new Error('toBrowserImageData must be called in browser context')

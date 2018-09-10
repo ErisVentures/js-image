@@ -1,9 +1,12 @@
 /* tslint:disable */
 import {IResizeOptions} from '../types'
 import {Image} from '../image'
-import {ImageData} from '../image-data'
+import {IAnnotatedImageData} from '../image-data'
 
-export function normalizeOptions(imageData: ImageData, options: IResizeOptions): IResizeOptions {
+export function normalizeOptions(
+  imageData: IAnnotatedImageData,
+  options: IResizeOptions,
+): IResizeOptions {
   const originalWidth = imageData.width
   const originalHeight = imageData.height
   const originalAspectRatio = originalWidth / originalHeight
@@ -74,7 +77,10 @@ export function normalizeOptions(imageData: ImageData, options: IResizeOptions):
   })
 }
 
-export function nearestNeighbor(imageData: ImageData, options: IResizeOptions): ImageData {
+export function nearestNeighbor(
+  imageData: IAnnotatedImageData,
+  options: IResizeOptions,
+): IAnnotatedImageData {
   if (!options.width || !options.height) {
     throw new Error('Missing width or height')
   }
@@ -105,11 +111,14 @@ export function nearestNeighbor(imageData: ImageData, options: IResizeOptions): 
     height: targetHeight,
     data: outPixels,
     channels: imageData.channels,
-    format: imageData.format,
+    colorspace: imageData.colorspace,
   }
 }
 
-export function bilinear(imageData: ImageData, options: IResizeOptions): ImageData {
+export function bilinear(
+  imageData: IAnnotatedImageData,
+  options: IResizeOptions,
+): IAnnotatedImageData {
   if (!options.width || !options.height) {
     throw new Error('Missing width or height')
   }
@@ -119,7 +128,7 @@ export function bilinear(imageData: ImageData, options: IResizeOptions): ImageDa
   var widthScaleFactor = imageData.width / targetWidth
   var heightScaleFactor = imageData.height / targetHeight
 
-  var boxResizeData: ImageData | null = null
+  var boxResizeData: IAnnotatedImageData | null = null
   var boxResizeOptions: IResizeOptions | null = null
   if (widthScaleFactor >= 2 || heightScaleFactor >= 2) {
     const boxWidthScaleFactor = Math.max(Math.floor(widthScaleFactor), 1)
@@ -139,7 +148,7 @@ export function bilinear(imageData: ImageData, options: IResizeOptions): ImageDa
       height: targetHeight,
       data: imageData.data,
       channels: imageData.channels,
-      format: imageData.format,
+      colorspace: imageData.colorspace,
     }
   }
 
@@ -191,11 +200,11 @@ export function bilinear(imageData: ImageData, options: IResizeOptions): ImageDa
     height: targetHeight,
     data: outPixels,
     channels: imageData.channels,
-    format: imageData.format,
+    colorspace: imageData.colorspace,
   }
 }
 
-export function box(imageData: ImageData, options: IResizeOptions): ImageData {
+export function box(imageData: IAnnotatedImageData, options: IResizeOptions): IAnnotatedImageData {
   if (!options.width || !options.height) {
     throw new Error('Missing width or height')
   }
@@ -241,6 +250,6 @@ export function box(imageData: ImageData, options: IResizeOptions): ImageData {
     height: targetHeight,
     data: outPixels,
     channels: imageData.channels,
-    format: imageData.format,
+    colorspace: imageData.colorspace,
   }
 }

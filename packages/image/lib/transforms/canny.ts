@@ -1,6 +1,6 @@
 /* tslint:disable */
 import {Pixel, ICannyOptions} from '../types'
-import {ImageData} from '../image-data'
+import {IAnnotatedImageData, ImageData} from '../image-data'
 import {sobel, SobelImageData} from './sobel'
 
 function sumArray(arr: number[]): number {
@@ -143,7 +143,7 @@ function hysteresis(imageData: SobelImageData, options: ICannyOptions): SobelIma
   return Object.assign({}, imageData, {data: dstPixels})
 }
 
-function autoThreshold(imageData: ImageData): number {
+function autoThreshold(imageData: IAnnotatedImageData): number {
   var buckets = []
   for (var i = 0; i < 256; i++) {
     buckets[i] = 0
@@ -193,7 +193,7 @@ function autoThreshold(imageData: ImageData): number {
  * @param options
  */
 export function canny(
-  imageData: ImageData | SobelImageData,
+  imageData: IAnnotatedImageData | SobelImageData,
   options?: ICannyOptions,
 ): SobelImageData {
   options = options || {}

@@ -1,6 +1,6 @@
 import {BufferLike, IMetadata} from './types'
 import {Image} from './image'
-import {ImageData} from './image-data'
+import {IAnnotatedImageData, ImageData} from './image-data'
 import {gaussianBlur} from './transforms/blur'
 import * as resize from './transforms/resize'
 import {subselect} from './transforms/subselect'
@@ -9,16 +9,16 @@ import {canny} from './transforms/canny'
 import {tone} from './transforms/tone'
 
 export class BrowserImage extends Image {
-  private readonly _image: Promise<ImageData>
+  private readonly _image: Promise<IAnnotatedImageData>
   private readonly _metadata: object | undefined
 
-  public constructor(image: Promise<ImageData> | ImageData, metadata?: object) {
+  public constructor(image: Promise<IAnnotatedImageData> | IAnnotatedImageData, metadata?: object) {
     super()
     this._image = Promise.resolve(image)
     this._metadata = metadata
   }
 
-  private _applyResize(image: ImageData): ImageData {
+  private _applyResize(image: IAnnotatedImageData): IAnnotatedImageData {
     if (!this._output.resize) {
       return image
     }
@@ -38,7 +38,7 @@ export class BrowserImage extends Image {
     }
   }
 
-  private _applyGreyscale(image: ImageData): ImageData {
+  private _applyGreyscale(image: IAnnotatedImageData): IAnnotatedImageData {
     if (!this._output.greyscale) {
       return image
     }
@@ -46,7 +46,7 @@ export class BrowserImage extends Image {
     return ImageData.toGreyscale(image)
   }
 
-  private _applyTone(image: ImageData): ImageData {
+  private _applyTone(image: IAnnotatedImageData): IAnnotatedImageData {
     if (!this._output.tone) {
       return image
     }
@@ -54,7 +54,7 @@ export class BrowserImage extends Image {
     return tone(image, this._output.tone)
   }
 
-  private _applyEdges(image: ImageData): ImageData {
+  private _applyEdges(image: IAnnotatedImageData): IAnnotatedImageData {
     if (!this._output.edges) {
       return image
     }
@@ -74,7 +74,9 @@ export class BrowserImage extends Image {
     return edges
   }
 
-  private async _applyAll(imagePromise: Promise<ImageData>): Promise<ImageData> {
+  private async _applyAll(
+    imagePromise: Promise<IAnnotatedImageData>,
+  ): Promise<IAnnotatedImageData> {
     let image = await imagePromise
     image = await this._applyGreyscale(image)
     image = await this._applyResize(image)
@@ -94,7 +96,7 @@ export class BrowserImage extends Image {
     })
   }
 
-  public toImageData(): Promise<ImageData> {
+  public toImageData(): Promise<IAnnotatedImageData> {
     return this._applyAll(this._image)
   }
 
@@ -108,7 +110,7 @@ export class BrowserImage extends Image {
     return new BrowserImage(ImageData.from(buffer), metadata)
   }
 
-  protected static _fromImageData(imageData: ImageData): Image {
+  protected static _fromImageData(imageData: IAnnotatedImageData): Image {
     return new BrowserImage(ImageData.normalize(imageData))
   }
 }

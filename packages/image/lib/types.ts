@@ -141,7 +141,7 @@ export enum ColorChannel {
   ChromaRed = 'cr',
 }
 
-export enum ImageDataFormat {
+export enum Colorspace {
   HSL = 'hsl',
   YCbCr = 'ycbcr',
   RGB = 'rgb',

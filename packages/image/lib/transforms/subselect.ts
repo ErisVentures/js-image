@@ -1,9 +1,12 @@
 /* tslint:disable */
 import {Image} from '../image'
-import {ImageData} from '../image-data'
+import {IAnnotatedImageData, ImageData} from '../image-data'
 import {IResizeOptions, ISubselectOptions} from '../types'
 
-export function subselect(imageData: ImageData, options: ISubselectOptions): ImageData {
+export function subselect(
+  imageData: IAnnotatedImageData,
+  options: ISubselectOptions,
+): IAnnotatedImageData {
   if (
     options.top === 0 &&
     options.bottom === imageData.height &&
