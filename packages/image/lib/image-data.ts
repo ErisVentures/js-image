@@ -70,6 +70,10 @@ export class ImageData {
     return imageData
   }
 
+  public static clip(value: number): number {
+    return Math.max(0, Math.min(255, Math.round(value)))
+  }
+
   public static isBorder(imageData: ImageData, x: number, y: number, radius: number = 1): boolean {
     return (
       x - radius < 0 ||
@@ -213,7 +217,7 @@ export class ImageData {
       const blue = srcImageData.data[i * srcImageData.channels + 2]
       // use luminance forumla over regular average
       // see https://en.wikipedia.org/wiki/YCbCr#JPEG_conversion
-      rawData[i] = Math.round(0.299 * red + 0.587 * green + 0.114 * blue)
+      rawData[i] = Math.round(0.3 * red + 0.59 * green + 0.11 * blue)
     }
 
     dstImageData.format = ImageData.GREYSCALE
@@ -297,7 +301,7 @@ export class ImageData {
     ImageData.assert(srcImageData)
     if (srcImageData.format === ImageData.RGBA) {
       return srcImageData
-    } else if (srcImageData.format === ImageData.GREYSCALE) {
+    } else {
       srcImageData = ImageData.toRGB(srcImageData)
     }
 

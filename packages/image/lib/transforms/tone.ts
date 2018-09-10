@@ -20,7 +20,7 @@ export function mapPixels(imageData: ImageData, fns: MapPixelFn | MapPixelFn[]):
           value = fn({x, y, value, channel})
         }
 
-        data[baseIndex + c] = Math.min(Math.max(0, value), 255)
+        data[baseIndex + c] = ImageData.clip(value)
       }
     }
   }

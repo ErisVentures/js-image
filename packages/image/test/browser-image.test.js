@@ -125,9 +125,9 @@ describe('BrowserImage', () => {
   })
 
   describe('._applyTone', () => {
-    it('should increase contrast', () => {
+    it('should increase contrast', async () => {
       const modify = img => img.tone({contrast: 0.5})
-      return testSkater('skater-contrast.jpg', modify)
+      await testSkater('skater-contrast.jpg', modify, {strict: false})
     })
   })
 
