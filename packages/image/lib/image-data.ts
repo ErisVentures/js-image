@@ -331,7 +331,7 @@ export class ImageData {
       rawData[offset + 2] = ImageData.clip(y + 1.772 * (cb - 128))
     }
 
-    dstImageData.format = ImageDataFormat.YCbCr
+    dstImageData.format = ImageDataFormat.RGB
     dstImageData.channels = 3
     dstImageData.data = rawData
     return dstImageData

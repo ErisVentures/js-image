@@ -357,7 +357,7 @@ describe('ImageData', () => {
         width: 2,
         height: 2,
         channels: 3,
-        format: ImageDataFormat.YCbCr,
+        format: ImageDataFormat.RGB,
         data: new Uint8Array([
           255, 255, 255,
           254, 0, 0,
