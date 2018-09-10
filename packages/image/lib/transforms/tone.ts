@@ -13,6 +13,7 @@ export function mapPixels(imageData: ImageData, fns: MapPixelFn | MapPixelFn[]):
   for (var y = 0; y < height; y++) {
     for (var x = 0; x < width; x++) {
       var baseIndex = ImageData.indexFor(imageData, x, y)
+      // TODO: improve performance here to only loop on desired channels
       for (var c = 0; c < channels; c++) {
         var channel = ImageData.channelFor(imageData, c)
         var value: number = imageData.data[baseIndex + c]
@@ -60,6 +61,7 @@ export function tone(imageData: ImageData, options: IToneOptions): ImageData {
   const {format} = imageData
   const fns: MapPixelFn[] = []
 
+  // TODO: make this work with greyscale natively too
   // Convert the image to YCbCr colorspace to just operate on luma channel
   imageData = ImageData.toYCbCr(imageData)
 
