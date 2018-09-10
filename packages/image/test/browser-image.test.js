@@ -129,6 +129,18 @@ describe('BrowserImage', () => {
       const modify = img => img.tone({contrast: 0.5})
       await testSkater('skater-contrast.jpg', modify, {strict: false})
     })
+
+    it('should apply multiple tone adjustments', async () => {
+      const modify = img => img.tone({
+        whites: 30,
+        highlights: -20,
+        midtones: 30,
+        shadows: 50,
+        blacks: -20,
+      })
+
+      await testSkater('skater-tone.jpg', modify, {strict: false})
+    })
   })
 
   describe('._applyEdges', () => {

@@ -46,14 +46,20 @@ describe('#transforms/tone', () => {
   describe('#contrast', () => {
     it('should increase contrast', () => {
       const contrast = toneModule.contrast({contrast: 1})
-      expect(contrast({value: 100})).to.equal(72)
-      expect(contrast({value: 150})).to.equal(172)
+      expect(contrast({value: 100, channel: 'y'})).to.equal(72)
+      expect(contrast({value: 150, channel: 'y'})).to.equal(172)
     })
 
     it('should decrease contrast', () => {
       const contrast = toneModule.contrast({contrast: -0.5})
-      expect(contrast({value: 100})).to.equal(114)
-      expect(contrast({value: 150})).to.equal(139)
+      expect(contrast({value: 100, channel: 'y'})).to.equal(114)
+      expect(contrast({value: 150, channel: 'y'})).to.equal(139)
+    })
+
+    it('should do nothing to color components', () => {
+      const contrast = toneModule.contrast({contrast: 1})
+      expect(contrast({value: 100, channel: 'r'})).to.equal(100)
+      expect(contrast({value: 150, channel: 'cb'})).to.equal(150)
     })
   })
 })

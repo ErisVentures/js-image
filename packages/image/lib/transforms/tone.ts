@@ -1,6 +1,6 @@
 /* tslint:disable */
 import {ImageData} from '../image-data'
-import {MapPixelFn, IToneOptions} from '../types'
+import {MapPixelFn, IToneOptions, ColorChannel} from '../types'
 
 export function mapPixels(imageData: ImageData, fns: MapPixelFn | MapPixelFn[]): ImageData {
   if (!Array.isArray(fns)) fns = [fns]
@@ -30,6 +30,8 @@ export function mapPixels(imageData: ImageData, fns: MapPixelFn | MapPixelFn[]):
 
 export function contrast(options: IToneOptions): MapPixelFn {
   return pixel => {
+    if (pixel.channel !== ColorChannel.Luma) return pixel.value!
+
     const delta = pixel.value! - 128
     return delta * options.contrast! + pixel.value!
   }
@@ -45,6 +47,8 @@ export function targetedBrightnessAdjustment(
   const cosine0 = Math.PI / 2
 
   return pixel => {
+    if (pixel.channel !== ColorChannel.Luma) return pixel.value!
+
     const rawDistance = pixel.value! - target
     const cappedDistance = Math.min(range, Math.max(-range, rawDistance))
     const cosineDistance = (cappedDistance / range) * cosine0
@@ -53,7 +57,11 @@ export function targetedBrightnessAdjustment(
 }
 
 export function tone(imageData: ImageData, options: IToneOptions): ImageData {
+  const {format} = imageData
   const fns: MapPixelFn[] = []
+
+  // Convert the image to YCbCr colorspace to just operate on luma channel
+  imageData = ImageData.toYCbCr(imageData)
 
   if (options.contrast) fns.push(contrast(options))
   if (options.whites) fns.push(targetedBrightnessAdjustment(223, options.whites, 30))
@@ -62,5 +70,5 @@ export function tone(imageData: ImageData, options: IToneOptions): ImageData {
   if (options.shadows) fns.push(targetedBrightnessAdjustment(64, options.shadows))
   if (options.blacks) fns.push(targetedBrightnessAdjustment(32, options.blacks, 30))
 
-  return mapPixels(imageData, fns)
+  return ImageData.toColorFormat(mapPixels(imageData, fns), format)
 }

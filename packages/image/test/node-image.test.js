@@ -117,12 +117,26 @@ describe('NodeImage', () => {
   })
 
   describe('._applyTone', () => {
-    it('should increase contrast', () => {
+    it('should increase contrast', async () => {
       const modify = img => img.tone({contrast: 0.5})
-      return testSkater('skater-contrast.jpg', modify, {
+      await testSkater('skater-contrast.jpg', modify, {
         strict: false,
         increment: 5,
-        tolerance: 10,
+      })
+    })
+
+    it('should apply multiple tone adjustments', async () => {
+      const modify = img => img.tone({
+        whites: 30,
+        highlights: -20,
+        midtones: 30,
+        shadows: 50,
+        blacks: -20,
+      })
+
+      await testSkater('skater-tone.jpg', modify, {
+        strict: false,
+        increment: 5,
       })
     })
   })
