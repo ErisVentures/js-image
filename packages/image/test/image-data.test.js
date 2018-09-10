@@ -214,13 +214,12 @@ describe('ImageData', () => {
       })
     })
 
-    it('should cycle through back to RGBA', () => {
-      return fixtureDecode('source-skater.jpg').then(skaterData => {
-        const imageData = ImageData.normalize(skaterData)
-        const greyscale = ImageData.toGreyscale(imageData)
-        const rgba = ImageData.toRGBA(greyscale)
-        return compareToFixture(ImageData.toBuffer(rgba), 'skater-greyscale.jpg')
-      })
+    it('should cycle through back to RGBA', async () => {
+      const skaterData = await fixtureDecode('source-skater.jpg')
+      const imageData = ImageData.normalize(skaterData)
+      const greyscale = ImageData.toGreyscale(imageData)
+      const rgba = ImageData.toRGBA(greyscale)
+      await compareToFixture(ImageData.toBuffer(rgba), 'skater-greyscale.jpg')
     })
   })
 

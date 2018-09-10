@@ -31,7 +31,7 @@ function getImageDiff(actual, expectation, increment = 1) {
   return diff
 }
 
-function compareToFixture(bufferOrImageData, path, options) {
+async function compareToFixture(bufferOrImageData, path, options) {
   options = Object.assign(
     {
       strict: true,
@@ -41,32 +41,29 @@ function compareToFixture(bufferOrImageData, path, options) {
     options,
   )
 
-  return Promise.resolve(bufferOrImageData)
-    .then(bufferOrImageData => {
-      if (ImageData.probablyIs(bufferOrImageData)) {
-        return ImageData.toBuffer(bufferOrImageData)
-      } else {
-        return bufferOrImageData
-      }
-    })
-    .then(buffer => Promise.all([buffer, ImageData.from(buffer)]))
-    .then(([buffer, imageData]) => {
-      fs.writeFileSync(fixturePath(`actual-${path}`), buffer)
-      if (process.env.UPDATE_EXPECTATIONS) {
-        fs.writeFileSync(fixturePath(`expected-${path}`), buffer)
-      }
+  let imageData = await bufferOrImageData
+  let buffer = await bufferOrImageData
+  if (ImageData.probablyIs(bufferOrImageData)) {
+    buffer = await ImageData.toBuffer(bufferOrImageData)
+  } else {
+    imageData = await ImageData.from(buffer)
+  }
 
-      return fixtureDecode(`expected-${path}`).then(expectedImageData => {
-        const diff = getImageDiff(imageData, expectedImageData, options.increment)
-        if (options.strict) {
-          expect(diff).to.equal(0)
-        } else {
-          const tolerance = Math.max(environmentTolerance, options.tolerance)
-          const area = imageData.width * imageData.height
-          expect(diff).to.be.lessThan((tolerance * area) / options.increment)
-        }
-      })
-    })
+  fs.writeFileSync(fixturePath(`actual-${path}`), buffer)
+  if (process.env.UPDATE_EXPECTATIONS) {
+    fs.writeFileSync(fixturePath(`expected-${path}`), buffer)
+  }
+
+  const expectedImageData = await fixtureDecode(`expected-${path}`)
+
+  const diff = getImageDiff(imageData, expectedImageData, options.increment)
+  if (options.strict) {
+    expect(diff).to.equal(0)
+  } else {
+    const tolerance = Math.max(environmentTolerance, options.tolerance)
+    const area = imageData.width * imageData.height
+    expect(diff).to.be.lessThan((tolerance * area) / options.increment)
+  }
 }
 
 function testImage(Image, srcPath, fixturePath, modify, ...args) {
