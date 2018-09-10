@@ -18,6 +18,7 @@ export class ImageData {
   public static RGB: ImageDataFormat = ImageDataFormat.RGB
   public static RGBA: ImageDataFormat = ImageDataFormat.RGBA
   public static HSL: ImageDataFormat = ImageDataFormat.HSL
+  public static YCBCR: ImageDataFormat = ImageDataFormat.YCbCr
 
   public channels: number
   public format: ImageDataFormat
@@ -39,7 +40,8 @@ export class ImageData {
       typeof obj.channels === 'number' &&
       (obj.format === ImageData.RGB ||
         obj.format === ImageData.RGBA ||
-        obj.format === ImageData.GREYSCALE) &&
+        obj.format === ImageData.GREYSCALE ||
+        obj.format === ImageDataFormat.YCbCr) &&
       obj.data.length === obj.width * obj.height * obj.channels
     )
   }
@@ -94,13 +96,27 @@ export class ImageData {
   }
 
   public static channelFor(imageData: ImageData, channel: number): ColorChannel {
-    const {Black, Hue, Saturation, Lightness, Red, Green, Blue, Alpha} = ColorChannel
+    const {
+      Black,
+      Hue,
+      Saturation,
+      Lightness,
+      Red,
+      Green,
+      Blue,
+      Alpha,
+      Luma,
+      ChromaBlue,
+      ChromaRed,
+    } = ColorChannel
 
     switch (imageData.format) {
       case ImageDataFormat.Greyscale:
         return Black
       case ImageDataFormat.HSL:
         return [Hue, Saturation, Lightness][channel]
+      case ImageDataFormat.YCbCr:
+        return [Luma, ChromaBlue, ChromaRed][channel]
       default:
         return [Red, Green, Blue, Alpha][channel]
     }
@@ -271,6 +287,56 @@ export class ImageData {
     return dstImageData
   }
 
+  public static toYCbCr(srcImageData: ImageData): ImageData {
+    ImageData.assert(srcImageData)
+    if (srcImageData.format === ImageDataFormat.YCbCr) {
+      return srcImageData
+    } else {
+      srcImageData = ImageData.toRGB(srcImageData)
+    }
+
+    const dstImageData = {...srcImageData}
+    const numPixels = srcImageData.width * srcImageData.height
+    const rawData = new Uint8Array(numPixels * 3)
+    for (let i = 0; i < numPixels; i++) {
+      const offset = i * 3
+      const r = srcImageData.data[offset]
+      const g = srcImageData.data[offset + 1]
+      const b = srcImageData.data[offset + 2]
+      // From https://en.wikipedia.org/wiki/YCbCr#JPEG_conversion
+      rawData[offset + 0] = ImageData.clip(0.0 + 0.299 * r + 0.587 * g + 0.114 * b)
+      rawData[offset + 1] = ImageData.clip(128 - 0.169 * r - 0.331 * g + 0.501 * b)
+      rawData[offset + 2] = ImageData.clip(128 + 0.501 * r - 0.419 * g - 0.081 * b)
+    }
+
+    dstImageData.format = ImageDataFormat.YCbCr
+    dstImageData.channels = 3
+    dstImageData.data = rawData
+    return dstImageData
+  }
+
+  private static _YCbCrToRGB(srcImageData: ImageData): ImageData {
+    const dstImageData = {...srcImageData}
+    const numPixels = srcImageData.width * srcImageData.height
+    const rawData = new Uint8Array(numPixels * 3)
+    for (let i = 0; i < numPixels; i++) {
+      const offset = i * 3
+      const y = srcImageData.data[offset]
+      const cb = srcImageData.data[offset + 1]
+      const cr = srcImageData.data[offset + 2]
+
+      // From https://en.wikipedia.org/wiki/YCbCr#JPEG_conversion
+      rawData[offset + 0] = ImageData.clip(y + 1.402 * (cr - 128))
+      rawData[offset + 1] = ImageData.clip(y - 0.344 * (cb - 128) - 0.714 * (cr - 128))
+      rawData[offset + 2] = ImageData.clip(y + 1.772 * (cb - 128))
+    }
+
+    dstImageData.format = ImageDataFormat.YCbCr
+    dstImageData.channels = 3
+    dstImageData.data = rawData
+    return dstImageData
+  }
+
   public static toRGB(srcImageData: ImageData): ImageData {
     ImageData.assert(srcImageData)
     if (srcImageData.format === ImageData.RGB) {
@@ -279,6 +345,8 @@ export class ImageData {
       return ImageData.removeAlphaChannel(srcImageData)
     } else if (srcImageData.format === ImageData.HSL) {
       throw new TypeError('Cannot convert HSL to RGB')
+    } else if (srcImageData.format === ImageDataFormat.YCbCr) {
+      return ImageData._YCbCrToRGB(srcImageData)
     }
 
     const dstImageData = {...srcImageData}
@@ -321,6 +389,23 @@ export class ImageData {
     dstImageData.channels = 4
     dstImageData.data = rawData
     return dstImageData
+  }
+
+  public static toColorFormat(srcImageData: ImageData, format: ImageDataFormat): ImageData {
+    switch (format) {
+      case ImageDataFormat.Greyscale:
+        return ImageData.toGreyscale(srcImageData)
+      case ImageDataFormat.HSL:
+        return ImageData.toHSL(srcImageData)
+      case ImageDataFormat.YCbCr:
+        return ImageData.toYCbCr(srcImageData)
+      case ImageDataFormat.RGB:
+        return ImageData.toRGB(srcImageData)
+      case ImageDataFormat.RGBA:
+        return ImageData.toRGBA(srcImageData)
+      default:
+        throw new Error(`Unrecognized format '${format}'`)
+    }
   }
 
   public static removeAlphaChannel(srcImageData: ImageData): ImageData {

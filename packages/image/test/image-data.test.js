@@ -1,3 +1,4 @@
+const {ImageDataFormat} = require('../dist/types')
 const ImageData = require('../dist/image-data').ImageData
 const {expect, fixtureDecode, compareToFixture} = require('./utils')
 
@@ -269,10 +270,48 @@ describe('ImageData', () => {
         data: new Uint8Array([
           0, 255, 128,
           Math.round(255 * 120 / 360), 255, 128,
-          Math.round(255 * 302 / 360), 255, 128,
+          Math.round(255 * 301 / 360), 255, 128,
           Math.round(255 * 188 / 360), 130, 143,
         ]),
       })
+    })
+  })
+
+  describe('#toYCbCr', () => {
+    it('should convert RGB images', () => {
+      const imageData = {
+        width: 2,
+        height: 2,
+        channels: 3,
+        format: ImageDataFormat.RGB,
+        data: new Uint8Array([
+          255, 255, 255,
+          255, 0, 0,
+          0, 0, 255,
+          128, 128, 128,
+        ]),
+      }
+
+      expect(ImageData.toYCbCr(imageData)).to.eql({
+        width: 2,
+        height: 2,
+        channels: 3,
+        format: ImageDataFormat.YCbCr,
+        data: new Uint8Array([
+          255, 128, 128,
+          76, 85, 255,
+          29, 255, 107,
+          128, 128, 128,
+        ]),
+      })
+    })
+
+    it('should cycle through back to RGBA', async () => {
+      const rainbowData = await fixtureDecode('source-rainbow.jpg')
+      const imageData = ImageData.normalize(rainbowData)
+      const ycbcr = ImageData.toYCbCr(imageData)
+      const rgba = ImageData.toRGBA(ycbcr)
+      await compareToFixture(ImageData.toBuffer(rgba), 'rainbow-ycbcr.jpg')
     })
   })
 
@@ -296,6 +335,34 @@ describe('ImageData', () => {
           50, 50, 50,
           200, 200, 200,
           30, 30, 30,
+        ]),
+      })
+    })
+
+    it('should inflate YCbCr images', () => {
+      const imageData = {
+        width: 2,
+        height: 2,
+        channels: 3,
+        format: ImageDataFormat.YCbCr,
+        data: new Uint8Array([
+          255, 128, 128,
+          76, 85, 255,
+          29, 255, 107,
+          128, 128, 128,
+        ]),
+      }
+
+      expect(ImageData.toRGB(imageData)).to.eql({
+        width: 2,
+        height: 2,
+        channels: 3,
+        format: ImageDataFormat.YCbCr,
+        data: new Uint8Array([
+          255, 255, 255,
+          254, 0, 0,
+          0, 0, 254,
+          128, 128, 128,
         ]),
       })
     })

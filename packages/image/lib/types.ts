@@ -136,10 +136,14 @@ export enum ColorChannel {
   Saturation = 's',
   Lightness = 'l',
   Black = 'k',
+  Luma = 'y',
+  ChromaBlue = 'cb',
+  ChromaRed = 'cr',
 }
 
 export enum ImageDataFormat {
   HSL = 'hsl',
+  YCbCr = 'ycbcr',
   RGB = 'rgb',
   RGBA = 'rgba',
   Greyscale = 'k',
