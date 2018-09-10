@@ -134,7 +134,7 @@ export enum ColorChannel {
   Alpha = 'a',
   Hue = 'h',
   Saturation = 's',
-  Luminance = 'l',
+  Lightness = 'l',
   Black = 'k',
 }
 

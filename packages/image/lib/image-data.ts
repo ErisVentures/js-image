@@ -90,13 +90,13 @@ export class ImageData {
   }
 
   public static channelFor(imageData: ImageData, channel: number): ColorChannel {
-    const {Black, Hue, Saturation, Luminance, Red, Green, Blue, Alpha} = ColorChannel
+    const {Black, Hue, Saturation, Lightness, Red, Green, Blue, Alpha} = ColorChannel
 
     switch (imageData.format) {
       case ImageDataFormat.Greyscale:
         return Black
       case ImageDataFormat.HSL:
-        return [Hue, Saturation, Luminance][channel]
+        return [Hue, Saturation, Lightness][channel]
       default:
         return [Red, Green, Blue, Alpha][channel]
     }
@@ -212,7 +212,8 @@ export class ImageData {
       const green = srcImageData.data[i * srcImageData.channels + 1]
       const blue = srcImageData.data[i * srcImageData.channels + 2]
       // use luminance forumla over regular average
-      rawData[i] = Math.round(0.3 * red + 0.59 * green + 0.11 * blue)
+      // see https://en.wikipedia.org/wiki/YCbCr#JPEG_conversion
+      rawData[i] = Math.round(0.299 * red + 0.587 * green + 0.114 * blue)
     }
 
     dstImageData.format = ImageData.GREYSCALE
@@ -240,14 +241,14 @@ export class ImageData {
       const min = Math.min(r, g, b)
       const max = Math.max(r, g, b)
       const delta = max - min
-      const luminance = (max + min) / 2
+      const lightness = (max + min) / 2
 
       let hue = 0
       let saturation = 0
       if (delta) {
-        saturation = delta / (1 - Math.abs(2 * luminance - 1))
+        saturation = delta / (1 - Math.abs(2 * lightness - 1))
         if (max === r) {
-          hue = 60 * (((g - b) / delta) % 6)
+          hue = (360 + (60 * (g - b)) / delta) % 360
         } else if (max === g) {
           hue = 60 * ((b - r) / delta + 2)
         } else {
@@ -257,7 +258,7 @@ export class ImageData {
 
       rawData[offset + 0] = Math.round((255 * hue) / 360)
       rawData[offset + 1] = Math.round(255 * saturation)
-      rawData[offset + 2] = Math.round(255 * luminance)
+      rawData[offset + 2] = Math.round(255 * lightness)
     }
 
     dstImageData.format = ImageData.HSL
