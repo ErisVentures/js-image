@@ -1,4 +1,4 @@
-import {BufferLike, IMetadata} from './types'
+import {BufferLike, IMetadata, EdgeMethod, ImageResizeMethod} from './types'
 import {Image} from './image'
 import {IAnnotatedImageData, ImageData} from './image-data'
 import {gaussianBlur} from './transforms/blur'
@@ -30,9 +30,9 @@ export class BrowserImage extends Image {
     }
 
     switch (options.method) {
-      case Image.NEAREST_NEIGHBOR:
+      case ImageResizeMethod.NearestNeighbor:
         return resize.nearestNeighbor(image, options)
-      case Image.BILINEAR:
+      case ImageResizeMethod.Bilinear:
       default:
         return resize.bilinear(image, options)
     }
@@ -67,7 +67,7 @@ export class BrowserImage extends Image {
     }
 
     edges = sobel(edges, edgeOptions)
-    if (edgeOptions.method === Image.CANNY) {
+    if (edgeOptions.method === EdgeMethod.Canny) {
       edges = canny(edges, edgeOptions)
     }
 

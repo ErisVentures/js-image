@@ -1,5 +1,6 @@
 const jpeg = require('jpeg-js')
 
+const {ImageResizeMethod} = require('../dist/types')
 const ImageData = require('../dist/image-data').ImageData
 const BrowserImage = require('../dist/browser-image').BrowserImage
 const {expect, fixture, compareToFixture, testImage} = require('./utils')
@@ -35,7 +36,7 @@ describe('BrowserImage', () => {
         img.resize({
           width: 100,
           height: 80,
-          fit: BrowserImage.EXACT,
+          fit: 'exact',
           subselect: {
             top: 200,
             bottom: 800,
@@ -55,7 +56,7 @@ describe('BrowserImage', () => {
         img.resize({
           width: 600,
           height: 750,
-          method: BrowserImage.BILINEAR,
+          method: 'bilinear',
         })
       return testYosemite('yosemite-bilinear-minor.jpg', modify)
     })
@@ -65,7 +66,7 @@ describe('BrowserImage', () => {
         img.resize({
           width: 200,
           height: 200,
-          fit: BrowserImage.COVER,
+          fit: 'cover',
         })
 
       return testYosemite('yosemite-square-cover.jpg', modify, {
@@ -79,7 +80,7 @@ describe('BrowserImage', () => {
         img.resize({
           width: 200,
           height: 200,
-          fit: BrowserImage.CONTAIN,
+          fit: 'contain',
         })
 
       return testYosemite('yosemite-square-contain.jpg', modify, {
@@ -93,7 +94,7 @@ describe('BrowserImage', () => {
         img.resize({
           width: 200,
           height: 200,
-          fit: BrowserImage.CROP,
+          fit: 'crop',
         })
 
       return testOpera('opera-square-crop.jpg', modify, {
@@ -107,7 +108,7 @@ describe('BrowserImage', () => {
         img.resize({
           width: 200,
           height: 200,
-          fit: BrowserImage.EXACT,
+          fit: 'exact',
         })
 
       return testOpera('opera-square-exact.jpg', modify, {
@@ -150,14 +151,14 @@ describe('BrowserImage', () => {
     })
 
     it('should find canny edges', () => {
-      const modify = img => img.edges(BrowserImage.CANNY)
+      const modify = img => img.edges('canny')
       return testSkater('skater-browser-edges-canny.jpg', modify)
     })
 
     it('should support options', () => {
       const modify = img =>
         img.edges({
-          method: BrowserImage.CANNY,
+          method: 'canny',
           radius: 3,
           blurSigma: 0,
         })
@@ -169,7 +170,7 @@ describe('BrowserImage', () => {
     it('should hash an image', () => {
       return BrowserImage.from(skater)
         .analyze({
-          hash: {method: BrowserImage.PHASH},
+          hash: {method: 'phash'},
         })
         .toAnalysis()
         .then(analysis => {
@@ -307,7 +308,7 @@ describe('BrowserImage', () => {
         .resize({
           width: 604,
           height: 400,
-          method: BrowserImage.NEAREST_NEIGHBOR,
+          method: ImageResizeMethod.NearestNeighbor,
         })
         .toBuffer()
         .then(buffer => {

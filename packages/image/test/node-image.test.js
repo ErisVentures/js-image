@@ -32,7 +32,7 @@ describe('NodeImage', () => {
           .resize({
             width: 100,
             height: 80,
-            fit: NodeImage.EXACT,
+            fit: 'exact',
             subselect: {
               top: 200,
               bottom: 800,
@@ -53,7 +53,7 @@ describe('NodeImage', () => {
         img.resize({
           width: 200,
           height: 200,
-          fit: NodeImage.COVER,
+          fit: 'cover',
         })
 
       return testYosemite('yosemite-square-cover.jpg', modify, {
@@ -67,7 +67,7 @@ describe('NodeImage', () => {
         img.resize({
           width: 200,
           height: 200,
-          fit: NodeImage.CONTAIN,
+          fit: 'contain',
         })
 
       return testYosemite('yosemite-square-contain.jpg', modify, {
@@ -81,7 +81,7 @@ describe('NodeImage', () => {
         img.resize({
           width: 200,
           height: 200,
-          fit: NodeImage.CROP,
+          fit: 'crop',
         })
 
       return testOpera('opera-square-crop.jpg', modify, {
@@ -95,7 +95,7 @@ describe('NodeImage', () => {
         img.resize({
           width: 200,
           height: 200,
-          fit: NodeImage.EXACT,
+          fit: 'exact',
         })
 
       return testOpera('opera-square-exact.jpg', modify, {
@@ -151,7 +151,7 @@ describe('NodeImage', () => {
     })
 
     it('should find canny edges', () => {
-      const modify = img => img.edges(NodeImage.CANNY)
+      const modify = img => img.edges('canny')
       return testSkater('skater-edges-canny.jpg', modify, {
         strict: false,
         tolerance: 25,
@@ -163,7 +163,7 @@ describe('NodeImage', () => {
     it('should hash an image', () => {
       return NodeImage.from(skater)
         .analyze({
-          hash: {method: NodeImage.PHASH},
+          hash: {method: 'phash'},
         })
         .toAnalysis()
         .then(analysis => {
@@ -328,7 +328,7 @@ describe('NodeImage', () => {
     return image
       .resize({width: 604, height: 400})
       .greyscale()
-      .edges({method: NodeImage.CANNY, blurSigma: 0})
+      .edges({method: 'canny', blurSigma: 0})
       .format({type: 'jpeg', quality: 80})
       .toBuffer()
       .then(buffer => {

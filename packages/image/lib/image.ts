@@ -10,28 +10,6 @@ import {parse as parseEXIF, TIFFDecoder} from '@eris/exif'
 const fileType = require('file-type')
 
 export abstract class Image {
-  // Image formats
-  public static JPEG: types.ImageFormat = types.ImageFormat.JPEG
-  public static PNG: types.ImageFormat = types.ImageFormat.PNG
-
-  // Image resize fits
-  public static AUTO_SIZE: types.ImageResizeFit = types.ImageResizeFit.Auto
-  public static CONTAIN: types.ImageResizeFit = types.ImageResizeFit.Contain
-  public static COVER: types.ImageResizeFit = types.ImageResizeFit.Cover
-  public static EXACT: types.ImageResizeFit = types.ImageResizeFit.Exact
-  public static CROP: types.ImageResizeFit = types.ImageResizeFit.Crop
-
-  // Image resize methods
-  public static NEAREST_NEIGHBOR: types.ImageResizeMethod = types.ImageResizeMethod.NearestNeighbor
-  public static BILINEAR: types.ImageResizeMethod = types.ImageResizeMethod.Bilinear
-
-  // Edge detection methods
-  public static SOBEL: types.EdgeMethod = types.EdgeMethod.Sobel
-  public static CANNY: types.EdgeMethod = types.EdgeMethod.Canny
-
-  // Hash methods
-  public static PHASH: types.HashMethod = types.HashMethod.PHash
-
   protected _output: types.IImageOutputOptions
   protected _analyze?: types.IAnalysisOptions
 
@@ -46,27 +24,29 @@ export abstract class Image {
       options = {type: options}
     }
 
-    if (options.type !== Image.JPEG && options.type !== Image.PNG) {
+    if (options.type !== types.ImageFormat.JPEG && options.type !== types.ImageFormat.PNG) {
       throw new Error(`Unrecognized format: ${options.type}`)
     }
 
-    const defaultOpts = options.type === Image.JPEG ? {quality: 90} : {}
+    const defaultOpts = options.type === types.ImageFormat.JPEG ? {quality: 90} : {}
     this._output.format = {...defaultOpts, ...options}
     return this
   }
 
   public resize(options: types.IResizeOptions): Image {
+    const {Exact, Auto} = types.ImageResizeFit
     if (!options.width && !options.height && !options.subselect) {
       throw new TypeError('Must specify a width, height, or subselect')
     }
 
-    if ((!options.width || !options.height) && options.fit && options.fit !== Image.EXACT) {
+    const canCalculateDimensions = options.fit && (options.fit === Exact || options.fit === Auto)
+    if ((!options.width || !options.height) && !canCalculateDimensions) {
       throw new TypeError(`Must specify width and height with "${options.fit}" fit`)
     }
 
     this._output.resize = {
-      fit: Image.EXACT,
-      method: Image.BILINEAR,
+      fit: Exact,
+      method: types.ImageResizeMethod.Bilinear,
       ...options,
     }
     return this
@@ -82,7 +62,7 @@ export abstract class Image {
     return this
   }
 
-  public edges(method: types.EdgeMethod | types.IEdgeOptions = Image.SOBEL): Image {
+  public edges(method: types.EdgeMethod | types.IEdgeOptions = types.EdgeMethod.Sobel): Image {
     let options = method as types.IEdgeOptions
     if (typeof method === 'string') {
       options = {method}
@@ -111,7 +91,7 @@ export abstract class Image {
       const analysis: types.IAnalysis = {}
       if (hash) {
         switch (hash.method) {
-          case Image.PHASH:
+          case types.HashMethod.PHash:
           default:
             analysis.hash = phash(imageData, hash.hashSize)
         }

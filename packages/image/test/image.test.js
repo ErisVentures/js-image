@@ -32,12 +32,12 @@ describe('Image', () => {
     })
 
     it('should set format', () => {
-      image = image.format(Image.PNG)
-      expect(image._output).to.have.property('format').eql({type: Image.PNG})
+      image = image.format('png')
+      expect(image._output).to.have.property('format').eql({type: 'png'})
     })
 
     it('should set format options', () => {
-      const opts = {type: Image.JPEG, quality: 70}
+      const opts = {type: 'jpeg', quality: 70}
       image = image.format(opts)
       expect(image._output).to.have.property('format').eql(opts)
     })
@@ -59,8 +59,8 @@ describe('Image', () => {
       const options = {
         width: 200,
         height: 300,
-        fit: Image.COVER,
-        method: Image.NEAREST_NEIGHBOR,
+        fit: 'cover',
+        method: 'nearest_neighbor',
       }
       image = image.resize(options)
       expect(image._output).to.have.property('resize').eql(options)
@@ -69,9 +69,9 @@ describe('Image', () => {
     it('should accept just width', () => {
       const options = {
         width: 200,
-        height: Image.AUTO_SIZE,
-        fit: Image.CONTAIN,
-        method: Image.BILINEAR,
+        height: undefined,
+        fit: 'auto',
+        method: 'bilinear',
       }
       image = image.resize(options)
       expect(image._output).to.have.property('resize').eql(options)
@@ -79,26 +79,26 @@ describe('Image', () => {
 
     it('should accept just height', () => {
       const options = {
-        width: Image.AUTO_SIZE,
+        width: undefined,
         height: 300,
-        fit: Image.CROP,
+        fit: 'exact',
       }
       image = image.resize(options)
       expect(image._output).to.have.property('resize').eql({
-        width: Image.AUTO_SIZE,
+        width: undefined,
         height: 300,
-        fit: Image.CROP,
-        method: Image.BILINEAR,
+        fit: 'exact',
+        method: 'bilinear',
       })
     })
 
     it('should throw if width and height are missing', () => {
-      const options = {fit: Image.EXACT}
+      const options = {fit: 'exact'}
       expect(() => image.resize(options)).to.throw('Must specify')
     })
 
     it('should throw if width or height are missing', () => {
-      const options = {width: 200, fit: Image.COVER}
+      const options = {width: 200, fit: 'cover'}
       expect(() => image.resize(options)).to.throw('Must specify')
     })
   })

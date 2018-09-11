@@ -1,4 +1,5 @@
 const _ = require('lodash')
+const {ImageResizeFit} = require('../../dist/types')
 const resize = require('../../dist/transforms/resize')
 const ImageData = require('../../dist/image-data').ImageData
 const {expect, fixtureDecode, compareToFixture} = require('../utils')

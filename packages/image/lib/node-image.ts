@@ -1,6 +1,6 @@
 import * as sharp from 'sharp'
 
-import {BufferLike, IMetadata, Colorspace} from './types'
+import {BufferLike, IMetadata, Colorspace, ImageFormat, ImageResizeFit, EdgeMethod} from './types'
 import {Image} from './image'
 import {IAnnotatedImageData, ImageData} from './image-data'
 import {sobel} from './transforms/sobel'
@@ -64,9 +64,9 @@ export class NodeImage extends Image {
   }
 
   private _applyFormat(image: sharp.SharpInstance): sharp.SharpInstance {
-    if (this._output.format.type === Image.JPEG) {
+    if (this._output.format.type === ImageFormat.JPEG) {
       return image.jpeg(this._output.format)
-    } else if (this._output.format.type === Image.PNG) {
+    } else if (this._output.format.type === ImageFormat.PNG) {
       return image.png()
     } else {
       throw new Error(`Unsupported format: ${this._output.format.type}`)
@@ -90,16 +90,16 @@ export class NodeImage extends Image {
 
     image = image.resize(width, height)
     switch (fit) {
-      case Image.CONTAIN:
+      case ImageResizeFit.Contain:
         image = image.max()
         break
-      case Image.COVER:
+      case ImageResizeFit.Cover:
         image = image.min()
         break
-      case Image.EXACT:
+      case ImageResizeFit.Exact:
         image = image.ignoreAspectRatio()
         break
-      case Image.CROP:
+      case ImageResizeFit.Crop:
       default:
         image = image.crop(sharp.gravity.center)
     }
@@ -138,7 +138,7 @@ export class NodeImage extends Image {
 
     return SharpImage.toImageData(blurredIfNecessary).then(imageData => {
       let edges = sobel(imageData, edgeOptions)
-      if (edgeOptions.method === Image.CANNY) {
+      if (edgeOptions.method === EdgeMethod.Canny) {
         edges = canny(edges, edgeOptions)
       }
       return SharpImage.from(edges)

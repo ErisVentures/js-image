@@ -1,6 +1,5 @@
 /* tslint:disable */
-import {IResizeOptions} from '../types'
-import {Image} from '../image'
+import {IResizeOptions, ImageResizeFit} from '../types'
 import {IAnnotatedImageData} from '../image-data'
 
 export function normalizeOptions(
@@ -21,28 +20,29 @@ export function normalizeOptions(
   }
 
   switch (options.fit) {
-    case Image.EXACT:
+    case ImageResizeFit.Auto:
+    case ImageResizeFit.Exact:
       if (!targetWidth && targetHeight) {
         targetWidth = targetHeight * originalAspectRatio
       } else if (targetWidth && !targetHeight) {
         targetHeight = targetWidth! / originalAspectRatio
       }
       break
-    case Image.CONTAIN:
+    case ImageResizeFit.Contain:
       if (originalAspectRatio > targetAspectRatio) {
         targetHeight = targetWidth! / originalAspectRatio
       } else {
         targetWidth = targetHeight! * originalAspectRatio
       }
       break
-    case Image.COVER:
+    case ImageResizeFit.Cover:
       if (originalAspectRatio > targetAspectRatio) {
         targetWidth = targetHeight! * originalAspectRatio
       } else {
         targetHeight = targetWidth! / originalAspectRatio
       }
       break
-    case Image.CROP:
+    case ImageResizeFit.Crop:
       if (options.subselect) {
         targetWidth = options.subselect.right - options.subselect.left
         targetHeight = options.subselect.bottom - options.subselect.top
