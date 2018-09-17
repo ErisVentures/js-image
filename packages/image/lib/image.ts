@@ -8,6 +8,7 @@ import {parse as parseEXIF, TIFFDecoder} from '@eris/exif'
 import {tone} from './transforms/tone'
 import {gaussianBlur} from './transforms/blur'
 import {canny} from './transforms/canny'
+import {sharpen} from './transforms/sharpen'
 
 /* tslint:disable-next-line */
 const fileType = require('file-type')
@@ -65,6 +66,11 @@ export abstract class Image {
     return this
   }
 
+  public sharpen(options: types.ISharpenOptions = {}): Image {
+    this._output.sharpen = options
+    return this
+  }
+
   public edges(method: types.EdgeMethod | types.IEdgeOptions = types.EdgeMethod.Sobel): Image {
     let options = method as types.IEdgeOptions
     if (typeof method === 'string') {
@@ -115,6 +121,14 @@ export abstract class Image {
     }
 
     return tone(image, this._output.tone)
+  }
+
+  protected _applySharpen(image: IAnnotatedImageData): IAnnotatedImageData {
+    if (!this._output.sharpen) {
+      return image
+    }
+
+    return sharpen(image, this._output.sharpen)
   }
 
   protected _applyEdges(image: IAnnotatedImageData): IAnnotatedImageData {

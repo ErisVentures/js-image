@@ -23,6 +23,7 @@ describe('#transforms/convolve', () => {
     const output = convolve({
       width: 3,
       height: 3,
+      colorspace: 'rgba',
       data: toPixels([
         pixel(128), pixel(128), pixel(128),
         pixel(0), pixel(0), pixel(0),
@@ -37,6 +38,7 @@ describe('#transforms/convolve', () => {
     expect(output).to.eql({
       width: 3,
       height: 3,
+      colorspace: 'rgba',
       data: toPixels([
         pixel(85), pixel(96), pixel(85),
         pixel(96), pixel(77), pixel(96),

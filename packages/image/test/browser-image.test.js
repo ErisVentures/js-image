@@ -144,6 +144,24 @@ describe('BrowserImage', () => {
     })
   })
 
+  describe('._applySharpen', () => {
+    it('should sharpen the image', () => {
+      const modify = img => img.sharpen()
+      return testSkater('skater-sharpen.jpg', modify, {
+        strict: false,
+        tolerance: 25,
+      })
+    })
+
+    it('should sharpen the image with options', () => {
+      const modify = img => img.sharpen({strength: 0.25})
+      return testSkater('skater-sharpen-0.25.jpg', modify, {
+        strict: false,
+        tolerance: 25,
+      })
+    })
+  })
+
   describe('._applyEdges', () => {
     it('should find sobel edges', () => {
       const modify = img => img.edges()

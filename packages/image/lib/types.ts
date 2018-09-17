@@ -36,6 +36,7 @@ export interface IImageOutputOptions {
   resize?: IResizeOptions
   tone?: IToneOptions
   greyscale?: boolean
+  sharpen?: ISharpenOptions
   edges?: IEdgeOptions
 }
 
@@ -58,6 +59,10 @@ export interface IBlurOptions {
   radius?: number
   sigma?: number
   approximate?: boolean
+}
+
+export interface ISharpenOptions {
+  strength?: number
 }
 
 export interface IHashOptions {

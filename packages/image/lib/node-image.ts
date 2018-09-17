@@ -112,13 +112,17 @@ export class NodeImage extends Image {
     return image.greyscale()
   }
 
-  private async _applyImageDataTransforms(image: sharp.SharpInstance): Promise<sharp.SharpInstance> {
-    if (!this._output.edges && !this._output.tone) {
+  private async _applyImageDataTransforms(
+    image: sharp.SharpInstance,
+  ): Promise<sharp.SharpInstance> {
+    if (!this._output.edges && !this._output.tone && !this._output.sharpen) {
       return image
     }
 
     let imageData = await SharpImage.toImageData(image)
+    imageData = ImageData.toRGBA(imageData)
     imageData = await this._applyTone(imageData)
+    imageData = await this._applySharpen(imageData)
     imageData = await this._applyEdges(imageData)
     return SharpImage.from(imageData)
   }

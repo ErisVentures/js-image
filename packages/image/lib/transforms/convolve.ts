@@ -1,6 +1,6 @@
 /* tslint:disable */
 import {ensureFlatMatrix, Matrix} from '../matrix'
-import {IAnnotatedImageData} from '../image-data'
+import {IAnnotatedImageData, ImageData} from '../image-data'
 import {Colorspace} from '../types'
 
 export function convolve(
@@ -45,10 +45,10 @@ export function convolve(
       }
 
       var outputIndex = (y * imageWidth + x) * 4
-      dstPixels[outputIndex] = Math.round(r / totalWeight)
-      dstPixels[outputIndex + 1] = Math.round(g / totalWeight)
-      dstPixels[outputIndex + 2] = Math.round(b / totalWeight)
-      dstPixels[outputIndex + 3] = Math.round(a / totalWeight)
+      dstPixels[outputIndex] = ImageData.clip(Math.round(r / totalWeight))
+      dstPixels[outputIndex + 1] = ImageData.clip(Math.round(g / totalWeight))
+      dstPixels[outputIndex + 2] = ImageData.clip(Math.round(b / totalWeight))
+      dstPixels[outputIndex + 3] = ImageData.clip(Math.round(a / totalWeight))
     }
   }
 
