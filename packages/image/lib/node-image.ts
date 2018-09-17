@@ -1,11 +1,8 @@
 import * as sharp from 'sharp'
 
-import {BufferLike, IMetadata, Colorspace, ImageFormat, ImageResizeFit, EdgeMethod} from './types'
+import {BufferLike, IMetadata, Colorspace, ImageFormat, ImageResizeFit} from './types'
 import {Image} from './image'
 import {IAnnotatedImageData, ImageData} from './image-data'
-import {sobel} from './transforms/sobel'
-import {canny} from './transforms/canny'
-import {tone} from './transforms/tone'
 
 class SharpImage {
   public static from(bufferOrImageData: BufferLike | IAnnotatedImageData): sharp.SharpInstance {
@@ -115,42 +112,22 @@ export class NodeImage extends Image {
     return image.greyscale()
   }
 
-  private async _applyTone(image: sharp.SharpInstance): Promise<sharp.SharpInstance> {
-    if (!this._output.tone) {
+  private async _applyImageDataTransforms(image: sharp.SharpInstance): Promise<sharp.SharpInstance> {
+    if (!this._output.edges && !this._output.tone) {
       return image
     }
 
-    const imageData = await SharpImage.toImageData(image)
-    const toned = tone(imageData, this._output.tone)
-    return SharpImage.from(toned)
-  }
-
-  private _applyEdges(image: sharp.SharpInstance): Promise<sharp.SharpInstance> {
-    if (!this._output.edges) {
-      return Promise.resolve(image)
-    }
-
-    const edgeOptions = this._output.edges
-    let blurredIfNecessary = image
-    if (edgeOptions.blurSigma) {
-      blurredIfNecessary = image.clone().blur(edgeOptions.blurSigma)
-    }
-
-    return SharpImage.toImageData(blurredIfNecessary).then(imageData => {
-      let edges = sobel(imageData, edgeOptions)
-      if (edgeOptions.method === EdgeMethod.Canny) {
-        edges = canny(edges, edgeOptions)
-      }
-      return SharpImage.from(edges)
-    })
+    let imageData = await SharpImage.toImageData(image)
+    imageData = await this._applyTone(imageData)
+    imageData = await this._applyEdges(imageData)
+    return SharpImage.from(imageData)
   }
 
   private async _applyAll(imagePromise: sharp.SharpInstance): Promise<sharp.SharpInstance> {
     let image = await imagePromise
     image = await this._applyResize(image)
     image = await this._applyGreyscale(image)
-    image = await this._applyTone(image)
-    image = await this._applyEdges(image)
+    image = await this._applyImageDataTransforms(image)
     image = await this._applyFormat(image)
     return image
   }

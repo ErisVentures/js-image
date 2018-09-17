@@ -1,11 +1,14 @@
 /* tslint:disable */
 import {ensureFlatMatrix, Matrix} from '../matrix'
 import {IAnnotatedImageData} from '../image-data'
+import {Colorspace} from '../types'
 
 export function convolve(
   imageData: IAnnotatedImageData,
   flatOrDeepMatrix: Matrix,
 ): IAnnotatedImageData {
+  if (imageData.colorspace !== Colorspace.RGBA) throw new Error('Can only convolve RGBA')
+
   const matrix = ensureFlatMatrix(flatOrDeepMatrix)
 
   const srcPixels = imageData.data

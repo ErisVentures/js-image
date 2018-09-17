@@ -1,12 +1,8 @@
-import {BufferLike, IMetadata, EdgeMethod, ImageResizeMethod} from './types'
+import {BufferLike, IMetadata, ImageResizeMethod} from './types'
 import {Image} from './image'
 import {IAnnotatedImageData, ImageData} from './image-data'
-import {gaussianBlur} from './transforms/blur'
 import * as resize from './transforms/resize'
 import {subselect} from './transforms/subselect'
-import {sobel} from './transforms/sobel'
-import {canny} from './transforms/canny'
-import {tone} from './transforms/tone'
 
 export class BrowserImage extends Image {
   private readonly _image: Promise<IAnnotatedImageData>
@@ -44,34 +40,6 @@ export class BrowserImage extends Image {
     }
 
     return ImageData.toGreyscale(image)
-  }
-
-  private _applyTone(image: IAnnotatedImageData): IAnnotatedImageData {
-    if (!this._output.tone) {
-      return image
-    }
-
-    return tone(image, this._output.tone)
-  }
-
-  private _applyEdges(image: IAnnotatedImageData): IAnnotatedImageData {
-    if (!this._output.edges) {
-      return image
-    }
-
-    const edgeOptions = this._output.edges
-
-    let edges = image
-    if (edgeOptions.blurSigma) {
-      edges = gaussianBlur(image, {sigma: edgeOptions.blurSigma})
-    }
-
-    edges = sobel(edges, edgeOptions)
-    if (edgeOptions.method === EdgeMethod.Canny) {
-      edges = canny(edges, edgeOptions)
-    }
-
-    return edges
   }
 
   private async _applyAll(

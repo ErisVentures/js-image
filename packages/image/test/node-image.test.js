@@ -154,7 +154,7 @@ describe('NodeImage', () => {
       const modify = img => img.edges('canny')
       return testSkater('skater-edges-canny.jpg', modify, {
         strict: false,
-        tolerance: 25,
+        tolerance: 35,
       })
     })
   })

@@ -5,6 +5,9 @@ import {sobel} from './transforms/sobel'
 import {phash} from './analyses/hash'
 import {sharpness as computeSharpness} from './analyses/sharpness'
 import {parse as parseEXIF, TIFFDecoder} from '@eris/exif'
+import {tone} from './transforms/tone'
+import {gaussianBlur} from './transforms/blur'
+import {canny} from './transforms/canny'
 
 /* tslint:disable-next-line */
 const fileType = require('file-type')
@@ -104,6 +107,35 @@ export abstract class Image {
 
       return analysis
     })
+  }
+
+  protected _applyTone(image: IAnnotatedImageData): IAnnotatedImageData {
+    if (!this._output.tone) {
+      return image
+    }
+
+    return tone(image, this._output.tone)
+  }
+
+  protected _applyEdges(image: IAnnotatedImageData): IAnnotatedImageData {
+    if (!this._output.edges) {
+      return image
+    }
+
+    const edgeOptions = this._output.edges
+    image = ImageData.toRGBA(image)
+
+    let edges = image
+    if (edgeOptions.blurSigma) {
+      edges = gaussianBlur(image, {sigma: edgeOptions.blurSigma})
+    }
+
+    edges = sobel(edges, edgeOptions)
+    if (edgeOptions.method === types.EdgeMethod.Canny) {
+      edges = canny(edges, edgeOptions)
+    }
+
+    return edges
   }
 
   public abstract toMetadata(): Promise<types.IMetadata>
