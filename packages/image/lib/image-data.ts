@@ -114,7 +114,6 @@ export class ImageData {
 
   public static channelFor(imageData: IAnnotatedImageData, channel: number): ColorChannel {
     const {
-      Black,
       Hue,
       Saturation,
       Lightness,
@@ -129,7 +128,7 @@ export class ImageData {
 
     switch (imageData.colorspace) {
       case Colorspace.Greyscale:
-        return Black
+        return Luma
       case Colorspace.HSL:
         return [Hue, Saturation, Lightness][channel]
       case Colorspace.YCbCr:

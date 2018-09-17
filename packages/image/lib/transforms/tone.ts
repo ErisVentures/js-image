@@ -1,6 +1,6 @@
 /* tslint:disable */
 import {IAnnotatedImageData, ImageData} from '../image-data'
-import {MapPixelFn, IToneOptions, ColorChannel} from '../types'
+import {MapPixelFn, IToneOptions, ColorChannel, Colorspace} from '../types'
 
 export function mapPixels(
   imageData: IAnnotatedImageData,
@@ -64,9 +64,8 @@ export function tone(imageData: IAnnotatedImageData, options: IToneOptions): IAn
   const {colorspace} = imageData
   const fns: MapPixelFn[] = []
 
-  // TODO: make this work with greyscale natively too
   // Convert the image to YCbCr colorspace to just operate on luma channel
-  imageData = ImageData.toYCbCr(imageData)
+  if (imageData.colorspace !== Colorspace.Greyscale) imageData = ImageData.toYCbCr(imageData)
 
   if (options.contrast) fns.push(contrast(options))
   if (options.whites) fns.push(targetedLumaAdjustment(223, options.whites, 30))

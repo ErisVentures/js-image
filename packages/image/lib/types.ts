@@ -135,7 +135,6 @@ export enum ColorChannel {
   Hue = 'h',
   Saturation = 's',
   Lightness = 'l',
-  Black = 'k',
   Luma = 'y',
   ChromaBlue = 'cb',
   ChromaRed = 'cr',
