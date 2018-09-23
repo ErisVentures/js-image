@@ -35,6 +35,10 @@ function processImage(imageData, rawOptions) {
         image = image.edges(options.edges)
       }
 
+      if (options.sharpen) {
+        image = image.sharpen(options.sharpen)
+      }
+
       const analysis = {}
       if (rawOptions['analysis[hash]']) {
         analysis.hash = {}
