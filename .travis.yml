@@ -9,6 +9,13 @@ notifications:
   email: false
 git:
   lfs_skip_smudge: true
+deploy:
+  provider: pages
+  skip_cleanup: true
+  github_token: $GH_TOKEN
+  local_dir: packages/image/demo
+  on:
+    branch: master
 node_js:
   - v8
 install:
