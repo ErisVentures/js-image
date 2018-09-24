@@ -12,8 +12,7 @@
     "test:unit": "mocha --reporter spec --timeout 4000 'test/**/*.test.js'",
     "test:lint": "lint",
     "test:coverage": "nyc npm run test:unit",
-    "test:watch": "mocha --watch --reporter dot 'test/**/*.test.js'",
-    "semantic-release": "semantic-release pre && npm publish --access public && semantic-release post"
+    "test:watch": "mocha --watch --reporter dot 'test/**/*.test.js'"
   },
   "repository": {
     "type": "git",
@@ -25,10 +24,10 @@
     "url": "https://github.com/ErisVentures/js-image/issues"
   },
   "homepage": "https://github.com/ErisVentures/js-image#readme",
-  "config": {
-    "commitizen": {
-      "path": "./node_modules/cz-conventional-changelog"
-    }
+  "pkg": {
+    "assets": [
+      "presets/*.json"
+    ]
   },
   "devDependencies": {
     "chai": "^4.1.2",
