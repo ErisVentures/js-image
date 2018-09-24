@@ -62,4 +62,32 @@ describe('#transforms/tone', () => {
       expect(contrast({value: 150, channel: 'cb'})).to.equal(150)
     })
   })
+
+  describe('#curves', () => {
+    it('should hold in identity case', () => {
+      const curve = toneModule.curves({curve: []})
+      expect(curve({value: 100, channel: 'y'})).to.equal(100)
+      expect(curve({value: 150, channel: 'y'})).to.equal(150)
+    })
+
+    it('should apply basic linear interpolation', () => {
+      const curve = toneModule.curves({curve: [[0, 50], [255, 200]]})
+      expect(curve({value: 0, channel: 'y'})).to.equal(50)
+      expect(Math.round(curve({value: 128, channel: 'y'}))).to.equal(125)
+      expect(curve({value: 255, channel: 'y'})).to.equal(200)
+    })
+
+    it('should apply basic cubic interpolation', () => {
+      const curve = toneModule.curves({curve: [[0, 0], [50, 40], [205, 215], [255, 255]]})
+      expect(Math.round(curve({value: 0, channel: 'y'}))).to.equal(0)
+      expect(Math.round(curve({value: 40, channel: 'y'}))).to.equal(31)
+      expect(Math.round(curve({value: 50, channel: 'y'}))).to.equal(40)
+      expect(Math.round(curve({value: 90, channel: 'y'}))).to.equal(82)
+      expect(Math.round(curve({value: 128, channel: 'y'}))).to.equal(128)
+      expect(Math.round(curve({value: 195, channel: 'y'}))).to.equal(205)
+      expect(Math.round(curve({value: 205, channel: 'y'}))).to.equal(215)
+      expect(Math.round(curve({value: 215, channel: 'y'}))).to.equal(224)
+      expect(Math.round(curve({value: 255, channel: 'y'}))).to.equal(255)
+    })
+  })
 })

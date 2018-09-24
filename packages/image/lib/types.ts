@@ -24,6 +24,8 @@ export interface IEdgeOptions {
 export interface IToneOptions {
   /** Affects the overall contrast in the image, typically a number between -0.5 and 2, reasonable range of -0.1 to 0.3 */
   contrast?: number
+  /** Applies the curve to the lightness in the image, an array of number tuples mapping input to output, i.e. for a slight contrast curve [[0, 0], [50, 40], [200, 210], [255, 255]] */
+  curve?: number[][]
   whites?: number
   highlights?: number
   midtones?: number
