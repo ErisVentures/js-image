@@ -142,6 +142,14 @@ describe('BrowserImage', () => {
 
       await testSkater('skater-tone.jpg', modify, {strict: false})
     })
+
+    it('should apply curves', async () => {
+      const modify = img => img.tone({
+        curve: [[0, 50], [75, 65], [175, 185], [255, 200]]
+      })
+
+      await testSkater('skater-curves.jpg', modify, {strict: false})
+    })
   })
 
   describe('._applySharpen', () => {
