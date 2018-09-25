@@ -145,11 +145,15 @@ export enum ColorChannel {
   Luma = 'y',
   ChromaBlue = 'cb',
   ChromaRed = 'cr',
+  X = 'x-xyz',
+  Y = 'y-xyz',
+  Z = 'z-xyz',
 }
 
 export enum Colorspace {
   HSL = 'hsl',
   YCbCr = 'ycbcr',
+  XYZ = 'xyz',
   RGB = 'rgb',
   RGBA = 'rgba',
   Greyscale = 'k',

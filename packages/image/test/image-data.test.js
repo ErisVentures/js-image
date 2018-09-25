@@ -277,6 +277,44 @@ describe('ImageData', () => {
     })
   })
 
+  describe('#toXYZ', () => {
+    it('should survive a roundtrip', () => {
+      const imageData = {
+        width: 2,
+        height: 2,
+        channels: 3,
+        colorspace: Colorspace.RGB,
+        data: new Uint8Array([
+          255, 255, 255,
+          255, 0, 0,
+          0, 255, 0,
+          0, 0, 255,
+        ]),
+      }
+
+      expect(ImageData.toRGB(ImageData.toXYZ(imageData))).to.eql({
+        width: 2,
+        height: 2,
+        channels: 3,
+        colorspace: Colorspace.RGB,
+        data: new Uint8Array([
+          255, 255, 255,
+          255, 0, 0,
+          0, 255, 0,
+          0, 0, 255,
+        ]),
+      })
+    })
+
+    it('should handle the rainbow', async () => {
+      const rainbowData = await fixtureDecode('source-rainbow.jpg')
+      const imageData = ImageData.normalize(rainbowData)
+      const xyz = ImageData.toXYZ(imageData)
+      const rgba = ImageData.toRGBA(xyz)
+      await compareToFixture(ImageData.toBuffer(rgba), 'rainbow.jpg', {strict: false})
+    })
+  })
+
   describe('#toYCbCr', () => {
     it('should convert RGB images', () => {
       const imageData = {
@@ -311,7 +349,7 @@ describe('ImageData', () => {
       const imageData = ImageData.normalize(rainbowData)
       const ycbcr = ImageData.toYCbCr(imageData)
       const rgba = ImageData.toRGBA(ycbcr)
-      await compareToFixture(ImageData.toBuffer(rgba), 'rainbow-ycbcr.jpg')
+      await compareToFixture(ImageData.toBuffer(rgba), 'rainbow.jpg', {strict: false})
     })
   })
 

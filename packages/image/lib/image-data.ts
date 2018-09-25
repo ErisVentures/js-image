@@ -43,7 +43,8 @@ export class ImageData {
       (obj.colorspace === Colorspace.RGB ||
         obj.colorspace === Colorspace.RGBA ||
         obj.colorspace === Colorspace.Greyscale ||
-        obj.colorspace === Colorspace.YCbCr) &&
+        obj.colorspace === Colorspace.YCbCr ||
+        obj.colorspace === Colorspace.XYZ) &&
       obj.data.length === obj.width * obj.height * obj.channels
     )
   }
@@ -124,6 +125,9 @@ export class ImageData {
       Luma,
       ChromaBlue,
       ChromaRed,
+      X,
+      Y,
+      Z,
     } = ColorChannel
 
     switch (imageData.colorspace) {
@@ -133,6 +137,8 @@ export class ImageData {
         return [Hue, Saturation, Lightness][channel]
       case Colorspace.YCbCr:
         return [Luma, ChromaBlue, ChromaRed][channel]
+      case Colorspace.XYZ:
+        return [X, Y, Z][channel]
       default:
         return [Red, Green, Blue, Alpha][channel]
     }
@@ -303,6 +309,67 @@ export class ImageData {
     return dstImageData
   }
 
+  public static toXYZ(srcImageData: IAnnotatedImageData): IAnnotatedImageData {
+    ImageData.assert(srcImageData)
+    if (srcImageData.colorspace === Colorspace.YCbCr) {
+      return srcImageData
+    } else {
+      srcImageData = ImageData.toRGB(srcImageData)
+    }
+
+    const gammaCorrect = (c: number) =>
+      c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4)
+
+    const dstImageData = {...srcImageData}
+    const numPixels = srcImageData.width * srcImageData.height
+    const rawData = []
+    for (let i = 0; i < numPixels; i++) {
+      const offset = i * 3
+      const rLinear = gammaCorrect(srcImageData.data[offset] / 255)
+      const gLinear = gammaCorrect(srcImageData.data[offset + 1] / 255)
+      const bLinear = gammaCorrect(srcImageData.data[offset + 2] / 255)
+
+      // From https://en.wikipedia.org/wiki/SRGB#Specification_of_the_transformation
+      rawData[offset + 0] = 0.4124 * rLinear + 0.3576 * gLinear + 0.1805 * bLinear
+      rawData[offset + 1] = 0.2126 * rLinear + 0.7152 * gLinear + 0.0722 * bLinear
+      rawData[offset + 2] = 0.0193 * rLinear + 0.1192 * gLinear + 0.9505 * bLinear
+    }
+
+    dstImageData.colorspace = Colorspace.XYZ
+    dstImageData.channels = 3
+    dstImageData.data = rawData
+    return dstImageData
+  }
+
+  private static _XYZToRGB(srcImageData: IAnnotatedImageData): IAnnotatedImageData {
+    const dstImageData = {...srcImageData}
+    const numPixels = srcImageData.width * srcImageData.height
+    const rawData = new Uint8Array(numPixels * 3)
+    const gammaCorrect = (c: number) =>
+      c <= 0.0031308 ? 12.92 * c : 1.055 * Math.pow(c, 1 / 2.4) - 0.055
+
+    for (let i = 0; i < numPixels; i++) {
+      const offset = i * 3
+      const x = srcImageData.data[offset]
+      const y = srcImageData.data[offset + 1]
+      const z = srcImageData.data[offset + 2]
+
+      const rLinear = 3.2406 * x - 1.5372 * y - 0.4986 * z
+      const gLinear = -0.9689 * x + 1.8758 * y + 0.0415 * z
+      const bLinear = 0.0557 * x - 0.204 * y + 1.057 * z
+
+      // From https://en.wikipedia.org/wiki/SRGB#Specification_of_the_transformation
+      rawData[offset + 0] = ImageData.clip(gammaCorrect(rLinear) * 255)
+      rawData[offset + 1] = ImageData.clip(gammaCorrect(gLinear) * 255)
+      rawData[offset + 2] = ImageData.clip(gammaCorrect(bLinear) * 255)
+    }
+
+    dstImageData.colorspace = Colorspace.RGB
+    dstImageData.channels = 3
+    dstImageData.data = rawData
+    return dstImageData
+  }
+
   public static toYCbCr(srcImageData: IAnnotatedImageData): IAnnotatedImageData {
     ImageData.assert(srcImageData)
     if (srcImageData.colorspace === Colorspace.YCbCr) {
@@ -363,6 +430,10 @@ export class ImageData {
       throw new TypeError('Cannot convert HSL to RGB')
     } else if (srcImageData.colorspace === Colorspace.YCbCr) {
       return ImageData._YCbCrToRGB(srcImageData)
+    } else if (srcImageData.colorspace === Colorspace.XYZ) {
+      return ImageData._XYZToRGB(srcImageData)
+    } else if (srcImageData.colorspace !== Colorspace.Greyscale) {
+      throw new Error('Image data was not greyscale')
     }
 
     const dstImageData = {...srcImageData}
