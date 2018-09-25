@@ -7,7 +7,7 @@ export function convolve(
   imageData: IAnnotatedImageData,
   flatOrDeepMatrix: Matrix,
 ): IAnnotatedImageData {
-  if (imageData.colorspace !== Colorspace.RGBA) throw new Error('Can only convolve RGBA')
+  ImageData.assert(imageData, [Colorspace.RGBA])
 
   const matrix = ensureFlatMatrix(flatOrDeepMatrix)
 

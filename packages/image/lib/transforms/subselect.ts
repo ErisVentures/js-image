@@ -1,7 +1,7 @@
 /* tslint:disable */
 import {Image} from '../image'
 import {IAnnotatedImageData, ImageData} from '../image-data'
-import {IResizeOptions, ISubselectOptions} from '../types'
+import {IResizeOptions, ISubselectOptions, Colorspace} from '../types'
 
 export function subselect(
   imageData: IAnnotatedImageData,
@@ -15,6 +15,8 @@ export function subselect(
   ) {
     return imageData
   }
+
+  ImageData.assert(imageData, [Colorspace.RGBA, Colorspace.RGB, Colorspace.Greyscale])
 
   const width = options.right - options.left
   const height = options.bottom - options.top

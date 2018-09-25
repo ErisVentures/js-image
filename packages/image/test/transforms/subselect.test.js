@@ -7,6 +7,7 @@ describe('#transforms/subselect', () => {
       width: 5,
       height: 5,
       channels: 3,
+      colorspace: 'rgb',
       data: [
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 1, 2, 3, 1, 2, 3, 1, 2, 3, 0, 0, 0,
@@ -22,10 +23,12 @@ describe('#transforms/subselect', () => {
       left: 1,
       right: 4,
     })
+
     expect(result).to.eql({
       width: 3,
       height: 3,
       channels: 3,
+      colorspace: 'rgb',
       data: new Uint8Array([
         1, 2, 3, 1, 2, 3, 1, 2, 3,
         1, 2, 3, 1, 2, 3, 1, 2, 3,

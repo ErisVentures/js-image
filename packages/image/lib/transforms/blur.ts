@@ -1,5 +1,5 @@
 /* tslint:disable */
-import {IBlurOptions, BufferLike} from '../types'
+import {IBlurOptions, BufferLike, Colorspace} from '../types'
 import {IAnnotatedImageData, ImageData} from '../image-data'
 import {convolve} from './convolve'
 
@@ -129,6 +129,8 @@ export function boxBlur(
   imageData: IAnnotatedImageData,
   options: IBlurOptions,
 ): IAnnotatedImageData {
+  ImageData.assert(imageData, [Colorspace.RGBA, Colorspace.RGB, Colorspace.Greyscale])
+
   var radius = options.radius!
   if (!radius) {
     radius = Math.ceil(imageData.width / 1000)
@@ -165,6 +167,8 @@ export function gaussianBlur(
   imageData: IAnnotatedImageData,
   options: IBlurOptions,
 ): IAnnotatedImageData {
+  ImageData.assert(imageData, [Colorspace.RGBA, Colorspace.RGB, Colorspace.Greyscale])
+
   var sigma = options.sigma!
   if (!sigma) {
     const radius = options.radius || 2

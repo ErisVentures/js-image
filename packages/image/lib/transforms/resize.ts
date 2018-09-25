@@ -1,6 +1,6 @@
 /* tslint:disable */
-import {IResizeOptions, ImageResizeFit} from '../types'
-import {IAnnotatedImageData} from '../image-data'
+import {IResizeOptions, ImageResizeFit, Colorspace} from '../types'
+import {IAnnotatedImageData, ImageData} from '../image-data'
 
 export function normalizeOptions(
   imageData: IAnnotatedImageData,
@@ -85,6 +85,8 @@ export function nearestNeighbor(
     throw new Error('Missing width or height')
   }
 
+  ImageData.assert(imageData, [Colorspace.RGBA, Colorspace.RGB, Colorspace.Greyscale])
+
   const targetWidth = options.width!
   const targetHeight = options.height!
   const widthScaleFactor = imageData.width / targetWidth
@@ -122,6 +124,8 @@ export function bilinear(
   if (!options.width || !options.height) {
     throw new Error('Missing width or height')
   }
+
+  ImageData.assert(imageData, [Colorspace.RGBA, Colorspace.RGB, Colorspace.Greyscale])
 
   var targetWidth = options.width!
   var targetHeight = options.height!
@@ -208,6 +212,8 @@ export function box(imageData: IAnnotatedImageData, options: IResizeOptions): IA
   if (!options.width || !options.height) {
     throw new Error('Missing width or height')
   }
+
+  ImageData.assert(imageData, [Colorspace.RGBA, Colorspace.RGB, Colorspace.Greyscale])
 
   const targetWidth = options.width!
   const targetHeight = options.height!

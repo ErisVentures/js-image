@@ -8,6 +8,7 @@ describe('#transforms/tone', () => {
         width: 1,
         height: 1,
         channels: 3,
+        colorspace: 'rgb',
         data: [1, 2, 3],
       }
 
@@ -17,6 +18,7 @@ describe('#transforms/tone', () => {
         width: 1,
         height: 1,
         channels: 3,
+        colorspace: 'rgb',
         data: new Uint8Array([2, 3, 4]),
       })
     })
@@ -26,6 +28,7 @@ describe('#transforms/tone', () => {
         width: 1,
         height: 1,
         channels: 1,
+        colorspace: 'k',
         data: [10],
       }
 
@@ -38,6 +41,7 @@ describe('#transforms/tone', () => {
         width: 1,
         height: 1,
         channels: 1,
+        colorspace: 'k',
         data: new Uint8Array([7]),
       })
     })

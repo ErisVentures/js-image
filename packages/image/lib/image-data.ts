@@ -43,6 +43,7 @@ export class ImageData {
       (obj.colorspace === Colorspace.RGB ||
         obj.colorspace === Colorspace.RGBA ||
         obj.colorspace === Colorspace.Greyscale ||
+        obj.colorspace === Colorspace.HSL ||
         obj.colorspace === Colorspace.YCbCr ||
         obj.colorspace === Colorspace.XYZ) &&
       obj.data.length === obj.width * obj.height * obj.channels
@@ -67,9 +68,15 @@ export class ImageData {
     return {channels, colorspace, ...imageData}
   }
 
-  public static assert(imageData: any): IAnnotatedImageData {
+  public static assert(imageData: any, colorspaces?: Colorspace[]): IAnnotatedImageData {
     if (!ImageData.is(imageData)) {
-      throw new TypeError('Unexpected image data colorspace')
+      throw new TypeError('Unexpected image data')
+    }
+
+    if (colorspaces && colorspaces.indexOf(imageData.colorspace) === -1) {
+      const expected = colorspaces.join(' or ')
+      const actual = imageData.colorspace
+      throw new TypeError(`Expected ${expected} colorspace but found ${actual}`)
     }
 
     return imageData

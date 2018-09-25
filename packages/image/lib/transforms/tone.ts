@@ -26,6 +26,13 @@ export function mapPixels(
   if (!Array.isArray(fns)) fns = [fns]
   if (fns.length === 0) return imageData
 
+  ImageData.assert(imageData, [
+    Colorspace.RGBA,
+    Colorspace.RGB,
+    Colorspace.Greyscale,
+    Colorspace.YCbCr,
+  ])
+
   const {width, height, channels} = imageData
   var data = new Uint8Array(width * height * imageData.channels)
   var output = Object.assign({}, imageData, {width, height, data})

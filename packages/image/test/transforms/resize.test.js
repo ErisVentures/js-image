@@ -11,6 +11,8 @@ describe('#transforms/resize', () => {
     const baseImageData = {
       width: 100,
       height: 100,
+      channels: 1,
+      colorspace: 'k',
     }
 
     it('should autofill missing height', () => {
@@ -107,6 +109,7 @@ describe('#transforms/resize', () => {
     it('should resize mock data', () => {
       const input = {
         channels: 1,
+        colorspace: 'k',
         width: 4,
         height: 4,
         data: _.range(1, 33, 2),
@@ -131,6 +134,7 @@ describe('#transforms/resize', () => {
     it('should resize mock data', () => {
       const input = {
         channels: 1,
+        colorspace: 'k',
         width: 3,
         height: 3,
         data: [
@@ -166,6 +170,7 @@ describe('#transforms/resize', () => {
     it('should resize mock data', () => {
       const input = {
         channels: 1,
+        colorspace: 'k',
         width: 4,
         height: 4,
         data: _.range(1, 33, 2),

@@ -1,5 +1,5 @@
 /* tslint:disable */
-import {Pixel, ICannyOptions} from '../types'
+import {Pixel, ICannyOptions, Colorspace} from '../types'
 import {IAnnotatedImageData, ImageData} from '../image-data'
 import {sobel, SobelImageData} from './sobel'
 
@@ -203,6 +203,8 @@ export function canny(
   if (!sobelImageData.angles) {
     sobelImageData = sobel(imageData, options)
   }
+
+  ImageData.assert(sobelImageData, [Colorspace.Greyscale])
 
   if (!options.lowThreshold && !options.highThreshold) {
     const threshold = autoThreshold(sobelImageData)
