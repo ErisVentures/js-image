@@ -281,7 +281,7 @@ export class ImageData {
 
     const dstImageData = {...srcImageData}
     const numPixels = srcImageData.width * srcImageData.height
-    const rawData = new Uint8Array(numPixels * 3)
+    const rawData = []
     for (let i = 0; i < numPixels; i++) {
       const offset = i * 3
       const r = srcImageData.data[offset] / 255
@@ -305,9 +305,9 @@ export class ImageData {
         }
       }
 
-      rawData[offset + 0] = Math.round((255 * hue) / 360)
-      rawData[offset + 1] = Math.round(255 * saturation)
-      rawData[offset + 2] = Math.round(255 * lightness)
+      rawData[offset + 0] = Math.round(hue)
+      rawData[offset + 1] = saturation
+      rawData[offset + 2] = lightness
     }
 
     dstImageData.colorspace = ImageData.HSL

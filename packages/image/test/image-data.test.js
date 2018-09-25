@@ -239,12 +239,12 @@ describe('ImageData', () => {
         height: 2,
         channels: 3,
         colorspace: Colorspace.HSL,
-        data: new Uint8Array([
-          0, 0, 100,
-          0, 0, 50,
-          0, 0, 200,
-          0, 0, 30,
-        ]),
+        data: [
+          0, 0, 100 / 255,
+          0, 0, 50 / 255,
+          0, 0, 200 / 255,
+          0, 0, 30 / 255,
+        ],
       })
     })
 
@@ -258,7 +258,7 @@ describe('ImageData', () => {
           255, 0, 0, 255,
           0, 255, 0, 255,
           255, 0, 255, 255,
-          85, 185, 200, 255,
+          255, 255, 255, 255,
         ]),
       }
 
@@ -267,12 +267,12 @@ describe('ImageData', () => {
         height: 2,
         channels: 3,
         colorspace: Colorspace.HSL,
-        data: new Uint8Array([
-          0, 255, 128,
-          Math.round(255 * 120 / 360), 255, 128,
-          Math.round(255 * 301 / 360), 255, 128,
-          Math.round(255 * 188 / 360), 130, 143,
-        ]),
+        data: [
+          0, 1, 0.5,
+          120, 1, 0.5,
+          300, 1, 0.5,
+          0, 0, 1,
+        ],
       })
     })
   })
