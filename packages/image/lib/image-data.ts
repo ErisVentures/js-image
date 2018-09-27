@@ -37,6 +37,7 @@ export interface BrowserImageData {
   data: Uint8ClampedArray
 }
 
+// TODO: fork this definition based on colorspace
 export interface IAnnotatedImageData {
   channels: number
   colorspace: Colorspace
@@ -381,6 +382,91 @@ export class ImageData {
     return dstImageData
   }
 
+  private static _HSLToRGB(srcImageData: IAnnotatedImageData): IAnnotatedImageData {
+    const dstImageData = {...srcImageData}
+    const numPixels = srcImageData.width * srcImageData.height
+    const rawData = new Uint8Array(numPixels * 3)
+    for (let i = 0; i < numPixels; i++) {
+      const offset = i * 3
+      const h = srcImageData.data[offset]
+      const s = srcImageData.data[offset + 1]
+      const l = srcImageData.data[offset + 2]
+
+      // We know that...
+      // S = (maxColor - minColor) / (1 - |2L - 1|)
+      // maxColor = minColor + S * (1 - |2L - 1|)
+
+      // And we also know that...
+      // L = (maxColor + minColor) / 2
+      // maxColor = 2L - minColor
+
+      // Therefore...
+      // 2L - minColor = minColor + S * (1 - |2L - 1|)
+      // minColor = L - S * (1 - |2L - 1|) / 2
+
+      const minColor = l - (s * (1 - Math.abs(2 * l - 1))) / 2
+      const maxColor = 2 * l - minColor
+      const spread = maxColor - minColor
+
+      let r = 0
+      let g = 0
+      let b = 0
+
+      if (h <= 60) {
+        // R > G > B
+        // H = 60 * (G - B) / spread
+        // G = H * spread / 60 + B
+        r = maxColor
+        g = (h * spread) / 60 + minColor
+        b = minColor
+      } else if (h <= 120) {
+        // G > R > B
+        // H = 60 * (B - R) / spread + 120
+        // R = -(H - 120) * spread / 60 + B
+        r = -((h - 120) * spread) / 60 + minColor
+        g = maxColor
+        b = minColor
+      } else if (h <= 180) {
+        // G > B > R
+        // H = 60 * (B - R) / spread + 120
+        // B = (H - 120) * spread / 60 + R
+        r = minColor
+        g = maxColor
+        b = ((h - 120) * spread) / 60 + minColor
+      } else if (h <= 240) {
+        // B > G > R
+        // H = 60 * (R - G) / spread + 240
+        // G = -(H - 240) * spread / 60 + R
+        r = minColor
+        g = -((h - 240) * spread) / 60 + minColor
+        b = maxColor
+      } else if (h <= 300) {
+        // B > R > G
+        // H = 60 * (R - G) / spread + 240
+        // R = (H - 240) * spread / 60 + G
+        r = ((h - 240) * spread) / 60 + minColor
+        g = minColor
+        b = maxColor
+      } else {
+        // R > B > G
+        // H = 60 * (G - B) / spread + 360
+        // B = -(H - 360) * spread / 60 + G
+        r = maxColor
+        g = minColor
+        b = - ((h - 360) * spread) / 60 + minColor
+      }
+
+      rawData[offset + 0] = ImageData.clip(r * 255)
+      rawData[offset + 1] = ImageData.clip(g * 255)
+      rawData[offset + 2] = ImageData.clip(b * 255)
+    }
+
+    dstImageData.colorspace = Colorspace.RGB
+    dstImageData.channels = 3
+    dstImageData.data = rawData
+    return dstImageData
+  }
+
   public static toXYZ(
     srcImageData: IAnnotatedImageData,
     calibrationProfile: ICalibrationProfile = defaultCalibrationProfile,
@@ -515,7 +601,7 @@ export class ImageData {
     } else if (srcImageData.colorspace === Colorspace.RGBA) {
       return ImageData.removeAlphaChannel(srcImageData)
     } else if (srcImageData.colorspace === ImageData.HSL) {
-      throw new TypeError('Cannot convert HSL to RGB')
+      return ImageData._HSLToRGB(srcImageData)
     } else if (srcImageData.colorspace === Colorspace.YCbCr) {
       return ImageData._YCbCrToRGB(srcImageData)
     } else if (srcImageData.colorspace === Colorspace.XYZ) {

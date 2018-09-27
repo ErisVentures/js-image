@@ -275,6 +275,42 @@ describe('ImageData', () => {
         ],
       })
     })
+
+    it('should convert back to rgb', () => {
+      const imageData = {
+        width: 2,
+        height: 2,
+        channels: 3,
+        colorspace: Colorspace.HSL,
+        data: [
+          0, 1, 0.5,
+          60, 1, 0.5,
+          0, 1, 1,
+          300, 1, 0.5,
+        ],
+      }
+
+      expect(ImageData.toRGB(imageData)).to.eql({
+        width: 2,
+        height: 2,
+        channels: 3,
+        colorspace: Colorspace.RGB,
+        data: new Uint8Array([
+          255, 0, 0,
+          255, 255, 0,
+          255, 255, 255,
+          255, 0, 255,
+        ]),
+      })
+    })
+
+    it('should handle the rainbow', async () => {
+      const rainbowData = await fixtureDecode('source-rainbow.jpg')
+      const imageData = ImageData.normalize(rainbowData)
+      const hsl = ImageData.toHSL(imageData)
+      const rgba = ImageData.toRGBA(hsl)
+      await compareToFixture(ImageData.toBuffer(rgba), 'rainbow.jpg', {strict: false})
+    })
   })
 
   describe('#toXYZ', () => {
