@@ -159,6 +159,18 @@ export enum Colorspace {
   Greyscale = 'k',
 }
 
+export interface ICalibrationProfile {
+  xRed: number
+  yRed: number
+  zRed: number
+  xGreen: number
+  yGreen: number
+  zGreen: number
+  xBlue: number
+  yBlue: number
+  zBlue: number
+}
+
 export type BufferLike = Buffer | Uint8Array | number[]
 
 export interface Pixel {

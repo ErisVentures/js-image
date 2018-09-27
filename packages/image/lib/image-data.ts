@@ -1,4 +1,11 @@
-import {Colorspace, BufferLike, Pixel, ColorChannel, IFormatOptions} from './types'
+import {
+  Colorspace,
+  BufferLike,
+  Pixel,
+  ColorChannel,
+  IFormatOptions,
+  ICalibrationProfile,
+} from './types'
 
 /* tslint:disable-next-line */
 const jpeg = require('jpeg-js')
@@ -6,6 +13,20 @@ const jpeg = require('jpeg-js')
 const PNG = require('pngjs').PNG
 /* tslint:disable-next-line */
 const fileType = require('file-type')
+
+// Use standard sRGB conversion numbers by default
+// https://en.wikipedia.org/wiki/SRGB#The_sRGB_gamut
+const defaultCalibrationProfile: ICalibrationProfile = {
+  xRed: 0.4124,
+  yRed: 0.2126,
+  zRed: 0.0193,
+  xGreen: 0.3576,
+  yGreen: 0.7152,
+  zGreen: 0.1192,
+  xBlue: 0.1805,
+  yBlue: 0.0722,
+  zBlue: 0.9505,
+}
 
 export interface BrowserImageData {
   width: number
@@ -316,7 +337,10 @@ export class ImageData {
     return dstImageData
   }
 
-  public static toXYZ(srcImageData: IAnnotatedImageData): IAnnotatedImageData {
+  public static toXYZ(
+    srcImageData: IAnnotatedImageData,
+    calibrationProfile: ICalibrationProfile = defaultCalibrationProfile,
+  ): IAnnotatedImageData {
     ImageData.assert(srcImageData)
     if (srcImageData.colorspace === Colorspace.YCbCr) {
       return srcImageData
@@ -337,9 +361,19 @@ export class ImageData {
       const bLinear = gammaCorrect(srcImageData.data[offset + 2] / 255)
 
       // From https://en.wikipedia.org/wiki/SRGB#Specification_of_the_transformation
-      rawData[offset + 0] = 0.4124 * rLinear + 0.3576 * gLinear + 0.1805 * bLinear
-      rawData[offset + 1] = 0.2126 * rLinear + 0.7152 * gLinear + 0.0722 * bLinear
-      rawData[offset + 2] = 0.0193 * rLinear + 0.1192 * gLinear + 0.9505 * bLinear
+      const X = calibrationProfile.xRed * rLinear +
+        calibrationProfile.xGreen * gLinear +
+        calibrationProfile.xBlue * bLinear
+      const Y = calibrationProfile.yRed * rLinear +
+        calibrationProfile.yGreen * gLinear +
+        calibrationProfile.yBlue * bLinear
+      const Z = calibrationProfile.zRed * rLinear +
+        calibrationProfile.zGreen * gLinear +
+        calibrationProfile.zBlue * bLinear
+
+      rawData[offset + 0] = X
+      rawData[offset + 1] = Y
+      rawData[offset + 2] = Z
     }
 
     dstImageData.colorspace = Colorspace.XYZ

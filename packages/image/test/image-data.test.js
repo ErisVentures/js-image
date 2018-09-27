@@ -278,7 +278,7 @@ describe('ImageData', () => {
   })
 
   describe('#toXYZ', () => {
-    it('should survive a roundtrip', () => {
+    it('should convert to XYZ', () => {
       const imageData = {
         width: 2,
         height: 2,
@@ -292,7 +292,24 @@ describe('ImageData', () => {
         ]),
       }
 
-      expect(ImageData.toRGB(ImageData.toXYZ(imageData))).to.eql({
+      const converted = ImageData.toXYZ(imageData)
+      converted.data = converted.data.map(x => Math.round(x * 1000))
+      expect(converted).to.eql({
+        width: 2,
+        height: 2,
+        channels: 3,
+        colorspace: Colorspace.XYZ,
+        data: [
+          951, 1000, 1089,
+          412, 213, 19,
+          358, 715, 119,
+          181, 72, 951,
+        ],
+      })
+    })
+
+    it('should handle calibration profiles', () => {
+      const imageData = {
         width: 2,
         height: 2,
         channels: 3,
@@ -303,6 +320,32 @@ describe('ImageData', () => {
           0, 255, 0,
           0, 0, 255,
         ]),
+      }
+
+      const converted = ImageData.toXYZ(imageData, {
+        xRed: 0.25,
+        yRed: 0.5,
+        zRed: 0.25,
+        xGreen: 0.25,
+        yGreen: 0.5,
+        zGreen: 0.25,
+        xBlue: 0.75,
+        yBlue: 0.5,
+        zBlue: 0.25,
+      })
+
+      converted.data = converted.data.map(x => Math.round(x * 1000))
+      expect(converted).to.eql({
+        width: 2,
+        height: 2,
+        channels: 3,
+        colorspace: Colorspace.XYZ,
+        data: [
+          1250, 1500, 750,
+          250, 500, 250,
+          250, 500, 250,
+          750, 500, 250,
+        ],
       })
     })
 
