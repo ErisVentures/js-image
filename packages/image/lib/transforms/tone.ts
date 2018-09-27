@@ -19,40 +19,6 @@ function validateCurvesInput(options: IToneOptions): number[][] {
   return curve
 }
 
-export function mapPixels(
-  imageData: IAnnotatedImageData,
-  fns: MapPixelFn | MapPixelFn[],
-): IAnnotatedImageData {
-  if (!Array.isArray(fns)) fns = [fns]
-  if (fns.length === 0) return imageData
-
-  ImageData.assert(imageData, [
-    Colorspace.RGBA,
-    Colorspace.RGB,
-    Colorspace.Greyscale,
-    Colorspace.YCbCr,
-  ])
-
-  const {width, height} = imageData
-  var data = new Uint8Array(width * height * imageData.channels)
-  var output = Object.assign({}, imageData, {width, height, data})
-
-  for (var y = 0; y < height; y++) {
-    for (var x = 0; x < width; x++) {
-      var pixel = ImageData.pixelFor(imageData, x, y)
-      for (const fn of fns) {
-        pixel.values = fn(pixel)
-      }
-
-      for (var i = 0; i < imageData.channels; i++) {
-        data[pixel.index + i] = ImageData.clip(pixel.values[i])
-      }
-    }
-  }
-
-  return output
-}
-
 export function contrast(options: IToneOptions): MapPixelFn {
   return pixel => {
     if (pixel.colorspace !== Colorspace.YCbCr) return pixel.values
@@ -181,5 +147,5 @@ export function tone(imageData: IAnnotatedImageData, options: IToneOptions): IAn
   if (options.blacks) fns.push(targetedLumaAdjustment(32, options.blacks, 30))
   if (options.curve) fns.push(curves(options))
 
-  return ImageData.toColorspace(mapPixels(imageData, fns), colorspace)
+  return ImageData.toColorspace(ImageData.mapPixels(imageData, fns), colorspace)
 }

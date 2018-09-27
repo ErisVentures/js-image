@@ -7,6 +7,7 @@ import {
   ICalibrationProfile,
   IPixelCoordinate,
   IGreyscalePixel,
+  MapPixelFn,
 } from './types'
 
 /* tslint:disable-next-line */
@@ -273,6 +274,40 @@ export class ImageData {
 
     dstImageData.data = dstData
     return dstImageData
+  }
+
+  public static mapPixels(
+    imageData: IAnnotatedImageData,
+    fns: MapPixelFn | MapPixelFn[],
+  ): IAnnotatedImageData {
+    if (!Array.isArray(fns)) fns = [fns]
+    if (fns.length === 0) return imageData
+
+    ImageData.assert(imageData, [
+      Colorspace.RGBA,
+      Colorspace.RGB,
+      Colorspace.Greyscale,
+      Colorspace.YCbCr,
+    ])
+
+    const {width, height} = imageData
+    const data = new Uint8Array(width * height * imageData.channels)
+    const output = {...imageData, width, height, data}
+
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
+        const pixel = ImageData.pixelFor(imageData, x, y)
+        for (const fn of fns) {
+          pixel.values = fn(pixel)
+        }
+
+        for (let i = 0; i < imageData.channels; i++) {
+          data[pixel.index + i] = ImageData.clip(pixel.values[i])
+        }
+      }
+    }
+
+    return output
   }
 
   public static toGreyscale(srcImageData: IAnnotatedImageData): IAnnotatedImageData {
