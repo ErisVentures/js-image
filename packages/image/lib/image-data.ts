@@ -1,10 +1,12 @@
 import {
   Colorspace,
   BufferLike,
-  Pixel,
+  IPixel,
   ColorChannel,
   IFormatOptions,
   ICalibrationProfile,
+  IPixelCoordinate,
+  IGreyscalePixel,
 } from './types'
 
 /* tslint:disable-next-line */
@@ -132,6 +134,13 @@ export class ImageData {
     return (y * imageData.width + x) * imageData.channels + channel
   }
 
+  public static pixelFor(imageData: IAnnotatedImageData, x: number, y: number): IPixel {
+    const {colorspace, data, channels} = imageData
+    const index = ImageData.indexFor(imageData, x, y)
+    const values = data.slice(index, index + channels) as number[]
+    return {x, y, index, values, colorspace}
+  }
+
   public static valueFor(
     imageData: IAnnotatedImageData,
     x: number,
@@ -172,7 +181,7 @@ export class ImageData {
     }
   }
 
-  public static getOffsetForAngle(angle: number): Pixel {
+  public static getOffsetForAngle(angle: number): IPixelCoordinate {
     switch (angle) {
       case 0:
         return {x: 1, y: 0}
@@ -193,9 +202,9 @@ export class ImageData {
     srcY: number,
     angle: number,
     radius: number = 1,
-  ): Pixel[] {
+  ): IGreyscalePixel[] {
     const offset = ImageData.getOffsetForAngle(angle)
-    const pixels: Pixel[] = []
+    const pixels: IGreyscalePixel[] = []
     for (let i = -radius; i <= radius; i++) {
       if (i === 0) {
         continue
@@ -204,7 +213,7 @@ export class ImageData {
       const x = srcX + offset.x * i
       const y = srcY + offset.y * i
       const index = ImageData.indexFor(imageData, x, y)
-      pixels.push({x, y, index, value: imageData.data[index]})
+      pixels.push({x, y, index, colorspace: Colorspace.Greyscale, values: [imageData.data[index]]})
     }
 
     return pixels
@@ -361,13 +370,16 @@ export class ImageData {
       const bLinear = gammaCorrect(srcImageData.data[offset + 2] / 255)
 
       // From https://en.wikipedia.org/wiki/SRGB#Specification_of_the_transformation
-      const X = calibrationProfile.xRed * rLinear +
+      const X =
+        calibrationProfile.xRed * rLinear +
         calibrationProfile.xGreen * gLinear +
         calibrationProfile.xBlue * bLinear
-      const Y = calibrationProfile.yRed * rLinear +
+      const Y =
+        calibrationProfile.yRed * rLinear +
         calibrationProfile.yGreen * gLinear +
         calibrationProfile.yBlue * bLinear
-      const Z = calibrationProfile.zRed * rLinear +
+      const Z =
+        calibrationProfile.zRed * rLinear +
         calibrationProfile.zGreen * gLinear +
         calibrationProfile.zBlue * bLinear
 

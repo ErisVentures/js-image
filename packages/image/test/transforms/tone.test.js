@@ -12,7 +12,7 @@ describe('#transforms/tone', () => {
         data: [1, 2, 3],
       }
 
-      const result = toneModule.mapPixels(imageData, ({value}) => value + 1)
+      const result = toneModule.mapPixels(imageData, ({values}) => values.map(x => x + 1))
 
       expect(result).to.eql({
         width: 1,
@@ -33,8 +33,8 @@ describe('#transforms/tone', () => {
       }
 
       const result = toneModule.mapPixels(imageData, [
-        ({value}) => value / 2,
-        ({value}) => value + 2,
+        ({values}) => [values[0] / 2],
+        ({values}) => [values[0] + 2],
       ])
 
       expect(result).to.eql({
@@ -48,50 +48,59 @@ describe('#transforms/tone', () => {
   })
 
   describe('#contrast', () => {
+    const pixel = {colorspace: 'ycbcr'}
+
     it('should increase contrast', () => {
       const contrast = toneModule.contrast({contrast: 1})
-      expect(contrast({value: 100, channel: 'y'})).to.equal(72)
-      expect(contrast({value: 150, channel: 'y'})).to.equal(172)
+      expect(contrast({...pixel, values: [100, 1, 2]})).to.eql([72, 1, 2])
+      expect(contrast({...pixel, values: [150, 1, 2]})).to.eql([172, 1, 2])
     })
 
     it('should decrease contrast', () => {
       const contrast = toneModule.contrast({contrast: -0.5})
-      expect(contrast({value: 100, channel: 'y'})).to.equal(114)
-      expect(contrast({value: 150, channel: 'y'})).to.equal(139)
+      expect(contrast({...pixel, values: [100, 100, 100]})).to.eql([114, 100, 100])
+      expect(contrast({...pixel, values: [150, 50, 50]})).to.eql([139, 50, 50])
     })
 
     it('should do nothing to color components', () => {
       const contrast = toneModule.contrast({contrast: 1})
-      expect(contrast({value: 100, channel: 'r'})).to.equal(100)
-      expect(contrast({value: 150, channel: 'cb'})).to.equal(150)
+      expect(contrast({colorspace: 'rgb', values: [100, 100, 100]})).to.eql([100, 100, 100])
+      expect(contrast({colorspace: 'hsl', values: [50, 50, 50]})).to.eql([50, 50, 50])
     })
   })
 
   describe('#curves', () => {
+    const pixel = {colorspace: 'ycbcr'}
+
     it('should hold in identity case', () => {
       const curve = toneModule.curves({curve: []})
-      expect(curve({value: 100, channel: 'y'})).to.equal(100)
-      expect(curve({value: 150, channel: 'y'})).to.equal(150)
+      expect(curve({...pixel, values: [100, 1, 2]})).to.eql([100, 1, 2])
+      expect(curve({...pixel, values: [150, 1, 2]})).to.eql([150, 1, 2])
     })
 
     it('should apply basic linear interpolation', () => {
       const curve = toneModule.curves({curve: [[0, 50], [255, 200]]})
-      expect(curve({value: 0, channel: 'y'})).to.equal(50)
-      expect(Math.round(curve({value: 128, channel: 'y'}))).to.equal(125)
-      expect(curve({value: 255, channel: 'y'})).to.equal(200)
+
+      expect(curve({...pixel, values: [0, 1, 2]})).to.eql([50, 1, 2])
+      expect(curve({...pixel, values: [255, 1, 2]})).to.eql([200, 1, 2])
+
+      const interpolate = curve({...pixel, values: [128, 1, 2]}).map(Math.round)
+      expect(interpolate).to.eql([125, 1, 2])
     })
 
     it('should apply basic cubic interpolation', () => {
       const curve = toneModule.curves({curve: [[0, 0], [50, 40], [205, 215], [255, 255]]})
-      expect(Math.round(curve({value: 0, channel: 'y'}))).to.equal(0)
-      expect(Math.round(curve({value: 40, channel: 'y'}))).to.equal(31)
-      expect(Math.round(curve({value: 50, channel: 'y'}))).to.equal(40)
-      expect(Math.round(curve({value: 90, channel: 'y'}))).to.equal(82)
-      expect(Math.round(curve({value: 128, channel: 'y'}))).to.equal(128)
-      expect(Math.round(curve({value: 195, channel: 'y'}))).to.equal(205)
-      expect(Math.round(curve({value: 205, channel: 'y'}))).to.equal(215)
-      expect(Math.round(curve({value: 215, channel: 'y'}))).to.equal(224)
-      expect(Math.round(curve({value: 255, channel: 'y'}))).to.equal(255)
+      const compute = y => Math.round(curve({values: [y], colorspace: 'ycbcr'})[0])
+
+      expect(compute(0)).to.equal(0)
+      expect(compute(40)).to.equal(31)
+      expect(compute(50)).to.equal(40)
+      expect(compute(90)).to.equal(82)
+      expect(compute(128)).to.equal(128)
+      expect(compute(195)).to.equal(205)
+      expect(compute(205)).to.equal(215)
+      expect(compute(215)).to.equal(224)
+      expect(compute(255)).to.equal(255)
     })
   })
 })

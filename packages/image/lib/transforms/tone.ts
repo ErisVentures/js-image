@@ -33,22 +33,19 @@ export function mapPixels(
     Colorspace.YCbCr,
   ])
 
-  const {width, height, channels} = imageData
+  const {width, height} = imageData
   var data = new Uint8Array(width * height * imageData.channels)
   var output = Object.assign({}, imageData, {width, height, data})
 
   for (var y = 0; y < height; y++) {
     for (var x = 0; x < width; x++) {
-      var baseIndex = ImageData.indexFor(imageData, x, y)
-      // TODO: improve performance here to only loop on desired channels
-      for (var c = 0; c < channels; c++) {
-        var channel = ImageData.channelFor(imageData, c)
-        var value: number = imageData.data[baseIndex + c]
-        for (const fn of fns) {
-          value = fn({x, y, value, channel})
-        }
+      var pixel = ImageData.pixelFor(imageData, x, y)
+      for (const fn of fns) {
+        pixel.values = fn(pixel)
+      }
 
-        data[baseIndex + c] = ImageData.clip(value)
+      for (var i = 0; i < imageData.channels; i++) {
+        data[pixel.index + i] = ImageData.clip(pixel.values[i])
       }
     }
   }
@@ -58,10 +55,12 @@ export function mapPixels(
 
 export function contrast(options: IToneOptions): MapPixelFn {
   return pixel => {
-    if (pixel.channel !== ColorChannel.Luma) return pixel.value!
+    if (pixel.colorspace !== Colorspace.YCbCr) return pixel.values
 
-    const delta = pixel.value! - 128
-    return delta * options.contrast! + pixel.value!
+    const [y, cb, cr] = pixel.values
+    const delta = y - 128
+    const yPrime = delta * options.contrast! + y
+    return [yPrime, cb, cr]
   }
 }
 
@@ -123,10 +122,7 @@ export function curves(options: IToneOptions): MapPixelFn {
     thirdDegreeCoefficients.push(magicNumber * dxInverse * dxInverse)
   }
 
-  return pixel => {
-    if (pixel.channel !== ColorChannel.Luma) return pixel.value!
-
-    const input = pixel.value!
+  const mapLuma = (input: number) => {
     const distances = curve.map(entry => (entry[0] > input ? Infinity : input - entry[0]))
     const minDistance = Math.min(...distances)
     const closestIndex = curve.findIndex(entry => input - entry[0] === minDistance)
@@ -141,6 +137,12 @@ export function curves(options: IToneOptions): MapPixelFn {
     if (closestIndex >= secondDegreeCoefficients.length) return yBase + c1 * xDiff
     return yBase + c1 * xDiff + c2 * xDiff * xDiff + c3 * xDiff * xDiff * xDiff
   }
+
+  return pixel => {
+    if (pixel.colorspace !== Colorspace.YCbCr) return pixel.values
+    const [y, cb, cr] = pixel.values
+    return [mapLuma(y), cb, cr]
+  }
 }
 
 function targetedLumaAdjustment(
@@ -153,12 +155,14 @@ function targetedLumaAdjustment(
   const cosine0 = Math.PI / 2
 
   return pixel => {
-    if (pixel.channel !== ColorChannel.Luma) return pixel.value!
+    if (pixel.colorspace !== Colorspace.YCbCr) return pixel.values
+    const [y, cb, cr] = pixel.values
 
-    const rawDistance = pixel.value! - target
+    const rawDistance = y - target
     const cappedDistance = Math.min(range, Math.max(-range, rawDistance))
     const cosineDistance = (cappedDistance / range) * cosine0
-    return Math.cos(cosineDistance) * adjustment + pixel.value!
+    const luma = Math.cos(cosineDistance) * adjustment + y
+    return [luma, cb, cr]
   }
 }
 
@@ -167,7 +171,7 @@ export function tone(imageData: IAnnotatedImageData, options: IToneOptions): IAn
   const fns: MapPixelFn[] = []
 
   // Convert the image to YCbCr colorspace to just operate on luma channel
-  if (imageData.colorspace !== Colorspace.Greyscale) imageData = ImageData.toYCbCr(imageData)
+  imageData = ImageData.toYCbCr(imageData)
 
   if (options.contrast) fns.push(contrast(options))
   if (options.whites) fns.push(targetedLumaAdjustment(223, options.whites, 30))

@@ -1,5 +1,5 @@
 /* tslint:disable */
-import {Pixel, ICannyOptions, Colorspace} from '../types'
+import {IPixel, ICannyOptions, Colorspace, IGreyscalePixel} from '../types'
 import {IAnnotatedImageData, ImageData} from '../image-data'
 import {sobel, SobelImageData} from './sobel'
 
@@ -32,7 +32,7 @@ function nonMaximalSuppresion(imageData: SobelImageData, radius?: number): Sobel
       var pixels = ImageData.getPixelsForAngle(imageData, x, y, imageData.angles[srcIndex], radius)
       var isMaxima = true
       for (var i = 0; i < pixels.length; i++) {
-        if (pixels[i].value! > srcPixel) {
+        if (pixels[i].values[0]! > srcPixel) {
           isMaxima = false
           break
         }
@@ -94,7 +94,9 @@ function hysteresis(imageData: SobelImageData, options: ICannyOptions): SobelIma
 
       // We're now in a weak edge situation, we need to traverse this entire edge
       // until we reach the end or we find a strong edge it's connected to.
-      const queue: Pixel[] = [{x, y, value: srcPixel, index: srcIndex}]
+      const queue: IGreyscalePixel[] = [
+        {x, y, values: [srcPixel], index: srcIndex, colorspace: Colorspace.Greyscale},
+      ]
       const traversed: Set<number> = new Set()
       var foundStrongEdge = false
       while (queue.length) {
@@ -102,7 +104,7 @@ function hysteresis(imageData: SobelImageData, options: ICannyOptions): SobelIma
         traversed.add(location.index!)
 
         // We found our strong edge, we can stop
-        if (location.value! >= options.highThreshold!) {
+        if (location.values[0]! >= options.highThreshold!) {
           foundStrongEdge = true
           break
         }
@@ -115,7 +117,7 @@ function hysteresis(imageData: SobelImageData, options: ICannyOptions): SobelIma
           if (traversed.has(index)) {
             // We already looked at this pixel, don't add it to the queue again
             return
-          } else if (pixel.value! >= options.lowThreshold!) {
+          } else if (pixel.values[0]! >= options.lowThreshold!) {
             // We found another edge pixel, queue it up for inspection
             queue.push(pixel)
           } else {

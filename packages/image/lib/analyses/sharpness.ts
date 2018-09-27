@@ -1,6 +1,6 @@
 /* tslint:disable */
-import {Pixel, ISharpness, ISharpnessOptions} from '../types'
-import {IAnnotatedImageData, ImageData} from '../image-data'
+import {ISharpness, ISharpnessOptions} from '../types'
+import {ImageData} from '../image-data'
 import {SobelImageData} from '../transforms/sobel'
 
 function computeAverage(items: number[], from?: number, to?: number): number {

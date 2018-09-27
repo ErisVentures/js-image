@@ -1,5 +1,5 @@
 /* tslint:disable */
-import {Pixel, ISobelOptions} from '../types'
+import {ISobelOptions} from '../types'
 import {IAnnotatedImageData, ImageData} from '../image-data'
 
 function toNearestAngle(xVal: number, yVal: number): number {

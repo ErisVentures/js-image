@@ -1,4 +1,4 @@
-export type MapPixelFn = (pixel: Pixel) => number
+export type MapPixelFn = (pixel: IPixel) => number[]
 
 export interface IFormatOptions {
   type: ImageFormat
@@ -173,10 +173,30 @@ export interface ICalibrationProfile {
 
 export type BufferLike = Buffer | Uint8Array | number[]
 
-export interface Pixel {
-  value?: number
-  index?: number
-  channel?: ColorChannel
+export interface IPixelCoordinate {
   x: number
   y: number
 }
+
+export interface IBasePixel extends IPixelCoordinate {
+  index: number
+  colorspace: Colorspace
+  values: number[]
+}
+
+export interface IRGBPixel extends IBasePixel {
+  colorspace: Colorspace.RGB
+  values: [number, number, number]
+}
+
+export interface IGreyscalePixel extends IBasePixel {
+  colorspace: Colorspace.Greyscale
+  values: [number]
+}
+
+export interface IHSLPixel extends IBasePixel {
+  colorspace: Colorspace.HSL
+  values: [number, number, number]
+}
+
+export type IPixel = IRGBPixel | IGreyscalePixel | IHSLPixel | IBasePixel
