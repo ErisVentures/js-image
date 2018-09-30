@@ -116,20 +116,13 @@ function targetedLumaAdjustment(
   adjustment: number,
   range: number = 100,
 ): MapPixelFn {
-  // Use Cosine function to determine how much to apply the adjustment
-  // Remap the range (-R, R) to (-pi/2, pi/2)
-  const cosine0 = Math.PI / 2
-
-  return pixel => {
-    if (pixel.colorspace !== Colorspace.YCbCr) return pixel.values
-    const [y, cb, cr] = pixel.values
-
-    const rawDistance = y - target
-    const cappedDistance = Math.min(range, Math.max(-range, rawDistance))
-    const cosineDistance = (cappedDistance / range) * cosine0
-    const luma = Math.cos(cosineDistance) * adjustment + y
-    return [luma, cb, cr]
-  }
+  return ImageData.proximityTransform(
+    ColorChannel.Luma,
+    target,
+    range,
+    ColorChannel.Luma,
+    adjustment,
+  )
 }
 
 export function tone(imageData: IAnnotatedImageData, options: IToneOptions): IAnnotatedImageData {

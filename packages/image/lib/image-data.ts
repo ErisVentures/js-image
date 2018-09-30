@@ -46,6 +46,12 @@ export interface IAnnotatedImageData {
   data: BufferLike
 }
 
+export enum ProximitySmoothingMethod {
+  Linear = 'linear',
+  Trapezoidal = 'trapezoidal',
+  Cosine = 'cosine',
+}
+
 export class ImageData {
   public static GREYSCALE: Colorspace = Colorspace.Greyscale
   public static RGB: Colorspace = Colorspace.RGB
@@ -141,7 +147,7 @@ export class ImageData {
   public static pixelFor(imageData: IAnnotatedImageData, x: number, y: number): IPixel {
     const {colorspace, data, channels} = imageData
     const index = ImageData.indexFor(imageData, x, y)
-    const values = data.slice(index, index + channels) as number[]
+    const values = [...data.slice(index, index + channels)]
     return {x, y, index, values, colorspace}
   }
 
@@ -154,7 +160,7 @@ export class ImageData {
     return imageData.data[ImageData.indexFor(imageData, x, y, channel)]
   }
 
-  public static channelFor(imageData: IAnnotatedImageData, channel: number): ColorChannel {
+  public static channelsFor(colorspace: Colorspace): ColorChannel[] {
     const {
       Hue,
       Saturation,
@@ -164,25 +170,36 @@ export class ImageData {
       Blue,
       Alpha,
       Luma,
+      Chroma,
       ChromaBlue,
       ChromaRed,
+      x,
+      y,
       X,
       Y,
       Z,
     } = ColorChannel
 
-    switch (imageData.colorspace) {
+    switch (colorspace) {
       case Colorspace.Greyscale:
-        return Luma
+        return [Luma]
       case Colorspace.HSL:
-        return [Hue, Saturation, Lightness][channel]
+        return [Hue, Saturation, Lightness]
+      case Colorspace.HCL:
+        return [Hue, Chroma, Luma]
       case Colorspace.YCbCr:
-        return [Luma, ChromaBlue, ChromaRed][channel]
+        return [Luma, ChromaBlue, ChromaRed]
       case Colorspace.XYZ:
-        return [X, Y, Z][channel]
+        return [X, Y, Z]
+      case Colorspace.XYY:
+        return [x, y, Y]
       default:
-        return [Red, Green, Blue, Alpha][channel]
+        return [Red, Green, Blue, Alpha]
     }
+  }
+
+  public static channelFor(imageData: IAnnotatedImageData, channel: number): ColorChannel {
+    return ImageData.channelsFor(imageData.colorspace)[channel]
   }
 
   public static getOffsetForAngle(angle: number): IPixelCoordinate {
@@ -279,6 +296,48 @@ export class ImageData {
     return dstImageData
   }
 
+  public static proximityTransform(
+    filterChannel: ColorChannel,
+    filterChannelCenter: number,
+    filterChannelRange: number,
+    targetChannel: ColorChannel,
+    targetIntensity: number,
+    smoothingMethod: ProximitySmoothingMethod = ProximitySmoothingMethod.Cosine,
+  ): MapPixelFn {
+    return (pixel: IPixel) => {
+      const colorChannels = ImageData.channelsFor(pixel.colorspace)
+
+      let multiplier = 0
+      for (let i = 0; i < colorChannels.length; i++) {
+        if (colorChannels[i] !== filterChannel) continue
+
+        const value = pixel.values[i]
+        const distance = Math.abs(filterChannelCenter - value)
+        if (distance > filterChannelRange) continue
+
+        multiplier = distance / filterChannelRange
+        if (smoothingMethod === ProximitySmoothingMethod.Trapezoidal) {
+          multiplier =
+            distance < filterChannelRange / 2
+              ? 1
+              : (distance - filterChannelRange / 2) / filterChannelRange
+        } else if (smoothingMethod === ProximitySmoothingMethod.Cosine) {
+          multiplier = Math.cos((multiplier * Math.PI) / 2)
+        }
+      }
+
+      if (multiplier === 0) return pixel.values
+
+      for (let i = 0; i < colorChannels.length; i++) {
+        if (colorChannels[i] !== targetChannel) continue
+        const value = pixel.values[i]
+        pixel.values[i] = value + multiplier * targetIntensity
+      }
+
+      return pixel.values
+    }
+  }
+
   public static mapPixels(
     imageData: IAnnotatedImageData,
     fns: MapPixelFn | MapPixelFn[],
@@ -286,15 +345,15 @@ export class ImageData {
     if (!Array.isArray(fns)) fns = [fns]
     if (fns.length === 0) return imageData
 
-    ImageData.assert(imageData, [
-      Colorspace.RGBA,
-      Colorspace.RGB,
-      Colorspace.Greyscale,
-      Colorspace.YCbCr,
-    ])
+    const isUint8 =
+      [Colorspace.RGBA, Colorspace.RGB, Colorspace.Greyscale, Colorspace.YCbCr].indexOf(
+        imageData.colorspace,
+      ) >= 0
 
     const {width, height} = imageData
-    const data = new Uint8Array(width * height * imageData.channels)
+    const data: BufferLike = isUint8
+      ? new Uint8Array(imageData.width * imageData.height * imageData.channels)
+      : []
     const output = {...imageData, width, height, data}
 
     for (let y = 0; y < height; y++) {
@@ -305,7 +364,7 @@ export class ImageData {
         }
 
         for (let i = 0; i < imageData.channels; i++) {
-          data[pixel.index + i] = ImageData.clip(pixel.values[i])
+          data[pixel.index + i] = isUint8 ? ImageData.clip(pixel.values[i]) : pixel.values[i]
         }
       }
     }
