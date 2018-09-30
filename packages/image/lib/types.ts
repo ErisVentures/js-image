@@ -152,6 +152,7 @@ export enum ColorChannel {
 
 export enum Colorspace {
   HSL = 'hsl',
+  HCL = 'hcl',
   YCbCr = 'ycbcr',
   XYZ = 'xyz',
   XYY = 'xyy',

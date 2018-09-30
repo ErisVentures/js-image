@@ -313,6 +313,48 @@ describe('ImageData', () => {
     })
   })
 
+  describe('#toHCL', () => {
+    it('should convert to HCL', () => {
+      const imageData = {
+        width: 2,
+        height: 2,
+        channels: 3,
+        colorspace: Colorspace.RGB,
+        data: new Uint8Array([
+          255, 255, 255,
+          255, 0, 0,
+          0, 255, 0,
+          0, 0, 255,
+        ]),
+      }
+
+      const converted = ImageData.toHCL(imageData)
+      converted.data = converted.data.map(
+        (x, idx) => idx % 3 === 0 ? Math.round(x) : Math.round(x * 100) / 100
+      )
+      expect(converted).to.eql({
+        width: 2,
+        height: 2,
+        channels: 3,
+        colorspace: Colorspace.HCL,
+        data: [
+          5, 0, 1,
+          0, 0.33, 0.21,
+          93, 0.27, 0.72,
+          239, 0.31, .07,
+        ],
+      })
+    })
+
+    it('should cycle through back to RGBA', async () => {
+      const rainbowData = await fixtureDecode('source-rainbow.jpg')
+      const imageData = ImageData.normalize(rainbowData)
+      const ycbcr = ImageData.toHCL(imageData)
+      const rgba = ImageData.toRGBA(ycbcr)
+      await compareToFixture(ImageData.toBuffer(rgba), 'rainbow.jpg', {strict: false})
+    })
+  })
+
   describe('#toXYZ', () => {
     it('should convert to XYZ', () => {
       const imageData = {

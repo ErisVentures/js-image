@@ -69,6 +69,7 @@ export class ImageData {
         obj.colorspace === Colorspace.RGBA ||
         obj.colorspace === Colorspace.Greyscale ||
         obj.colorspace === Colorspace.HSL ||
+        obj.colorspace === Colorspace.HCL ||
         obj.colorspace === Colorspace.YCbCr ||
         obj.colorspace === Colorspace.XYY ||
         obj.colorspace === Colorspace.XYZ) &&
@@ -468,6 +469,79 @@ export class ImageData {
     return dstImageData
   }
 
+  public static toHCL(srcImageData: IAnnotatedImageData): IAnnotatedImageData {
+    ImageData.assert(srcImageData)
+    if (srcImageData.colorspace === Colorspace.HCL) {
+      return srcImageData
+    } else {
+      srcImageData = ImageData.toXYY(srcImageData)
+    }
+
+    const dstImageData = {...srcImageData}
+    const numPixels = srcImageData.width * srcImageData.height
+    const rawData = []
+    for (let i = 0; i < numPixels; i++) {
+      const offset = i * 3
+      // Convert xyY into polar coordinates, https://en.wikipedia.org/wiki/HCL_color_space#Overview
+      const x = srcImageData.data[offset]
+      const y = srcImageData.data[offset + 1]
+      const Y = srcImageData.data[offset + 2]
+
+      // Use sRGB white point, https://en.wikipedia.org/wiki/SRGB#The_sRGB_gamut
+      const xOrigin = 0.3127
+      const yOrigin = 0.3290
+
+      const xCoord = x - xOrigin
+      const yCoord = y - yOrigin
+
+      const rCoord = Math.sqrt(xCoord * xCoord + yCoord * yCoord)
+      let theta = Math.atan(yCoord / xCoord)  * 180 / Math.PI
+
+      if (xCoord < 0 && yCoord > 0) theta += 180
+      if (xCoord < 0 && yCoord < 0) theta += 180
+      if (xCoord > 0 && yCoord < 0) theta += 360
+
+      rawData[offset + 0] = theta
+      rawData[offset + 1] = rCoord
+      rawData[offset + 2] = Y
+    }
+
+    dstImageData.colorspace = Colorspace.HCL
+    dstImageData.channels = 3
+    dstImageData.data = rawData
+    return dstImageData
+  }
+
+  private static _HCLToXYY(srcImageData: IAnnotatedImageData): IAnnotatedImageData {
+    const dstImageData = {...srcImageData}
+    const numPixels = srcImageData.width * srcImageData.height
+    const rawData = []
+
+    for (let i = 0; i < numPixels; i++) {
+      const offset = i * 3
+      // Convert HCL back into cartesian coordinates, https://en.wikipedia.org/wiki/HCL_color_space#Overview
+      const hue = srcImageData.data[offset]
+      const chroma = srcImageData.data[offset + 1]
+      const Y = srcImageData.data[offset + 2]
+
+      // Use sRGB white point, https://en.wikipedia.org/wiki/SRGB#The_sRGB_gamut
+      const xOrigin = 0.3127
+      const yOrigin = 0.3290
+
+      const xCoord = Math.cos(hue * Math.PI / 180) * chroma
+      const yCoord = Math.sin(hue * Math.PI / 180) * chroma
+
+      rawData[offset + 0] = xCoord + xOrigin
+      rawData[offset + 1] = yCoord + yOrigin
+      rawData[offset + 2] = Y
+    }
+
+    dstImageData.colorspace = Colorspace.XYY
+    dstImageData.channels = 3
+    dstImageData.data = rawData
+    return dstImageData
+  }
+
   public static toXYZ(
     srcImageData: IAnnotatedImageData,
     calibrationProfile: ICalibrationProfile = defaultCalibrationProfile,
@@ -645,6 +719,8 @@ export class ImageData {
       return ImageData.removeAlphaChannel(srcImageData)
     } else if (srcImageData.colorspace === ImageData.HSL) {
       return ImageData._HSLToRGB(srcImageData)
+    } else if (srcImageData.colorspace === Colorspace.HCL) {
+      return ImageData._XYYToRGB(ImageData._HCLToXYY(srcImageData))
     } else if (srcImageData.colorspace === Colorspace.YCbCr) {
       return ImageData._YCbCrToRGB(srcImageData)
     } else if (srcImageData.colorspace === Colorspace.XYZ) {
