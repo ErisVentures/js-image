@@ -117,10 +117,10 @@ function targetedLumaAdjustment(
   range: number = 100,
 ): MapPixelFn {
   return ImageData.proximityTransform(
-    ColorChannel.Luma,
+    ColorChannel.Luminance255,
     target,
     range,
-    ColorChannel.Luma,
+    ColorChannel.Luminance255,
     adjustment,
   )
 }

@@ -115,8 +115,27 @@ export class ImageData {
     return imageData
   }
 
-  public static clip(value: number): number {
-    return Math.max(0, Math.min(255, Math.round(value)))
+  public static clip(value: number, channel: ColorChannel = ColorChannel.Red): number {
+    switch (channel) {
+      case ColorChannel.Red:
+      case ColorChannel.Green:
+      case ColorChannel.Blue:
+      case ColorChannel.Alpha:
+      case ColorChannel.Luminance255:
+        return Math.max(0, Math.min(255, Math.round(value)))
+      case ColorChannel.Hue:
+        return Math.max(0, Math.min(360, Math.round(value) % 360))
+      case ColorChannel.Saturation:
+      case ColorChannel.Chroma:
+      case ColorChannel.X:
+      case ColorChannel.Y:
+      case ColorChannel.Z:
+      case ColorChannel.x:
+      case ColorChannel.y:
+        return Math.max(0, Math.min(1, value))
+      default:
+        return value
+    }
   }
 
   public static isBorder(
@@ -169,7 +188,8 @@ export class ImageData {
       Green,
       Blue,
       Alpha,
-      Luma,
+      Luminance255,
+      Luminance,
       Chroma,
       ChromaBlue,
       ChromaRed,
@@ -182,13 +202,13 @@ export class ImageData {
 
     switch (colorspace) {
       case Colorspace.Greyscale:
-        return [Luma]
+        return [Luminance255]
       case Colorspace.HSL:
         return [Hue, Saturation, Lightness]
       case Colorspace.HCL:
-        return [Hue, Chroma, Luma]
+        return [Hue, Chroma, Luminance]
       case Colorspace.YCbCr:
-        return [Luma, ChromaBlue, ChromaRed]
+        return [Luminance255, ChromaBlue, ChromaRed]
       case Colorspace.XYZ:
         return [X, Y, Z]
       case Colorspace.XYY:
@@ -309,10 +329,12 @@ export class ImageData {
 
       let multiplier = 0
       for (let i = 0; i < colorChannels.length; i++) {
-        if (colorChannels[i] !== filterChannel) continue
+        const channel = colorChannels[i]
+        if (channel !== filterChannel) continue
 
         const value = pixel.values[i]
-        const distance = Math.abs(filterChannelCenter - value)
+        let distance = Math.abs(filterChannelCenter - value)
+        if (channel === ColorChannel.Hue) distance = Math.min(distance, 360 - distance % 360)
         if (distance > filterChannelRange) continue
 
         multiplier = distance / filterChannelRange
@@ -345,6 +367,7 @@ export class ImageData {
     if (!Array.isArray(fns)) fns = [fns]
     if (fns.length === 0) return imageData
 
+    const channels = ImageData.channelsFor(imageData.colorspace)
     const isUint8 =
       [Colorspace.RGBA, Colorspace.RGB, Colorspace.Greyscale, Colorspace.YCbCr].indexOf(
         imageData.colorspace,
@@ -364,7 +387,7 @@ export class ImageData {
         }
 
         for (let i = 0; i < imageData.channels; i++) {
-          data[pixel.index + i] = isUint8 ? ImageData.clip(pixel.values[i]) : pixel.values[i]
+          data[pixel.index + i] = ImageData.clip(pixel.values[i], channels[i])
         }
       }
     }
