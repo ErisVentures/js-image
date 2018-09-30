@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <meta name="author" content="Patrick Hulce">
+  <title>@eris/image Analyzer</title>
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+    crossorigin="anonymous">
+    <style>
+      canvas {
+        max-width: 33%;
+      }
+
+      .graphs > div {
+        display: flex;
+        flex-direction: row;
+      }
+    </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>@eris/image</h1>
+    <p class="lead">
+      Compare a before and after image in various colorspaces. Examines the first column of pixel values.
+    </p>
+    <div class="images">
+      <img id="img1">
+      <img id="img2">
+    </div>
+    <div class="graphs">
+      <div class="hsl">
+          <canvas id="hsl-h" width="300" height="300"></canvas>
+          <canvas id="hsl-s" width="300" height="300"></canvas>
+          <canvas id="hsl-l" width="300" height="300"></canvas>
+      </div>
+      <div class="hcl">
+          <canvas id="hcl-h" width="300" height="300"></canvas>
+          <canvas id="hcl-c" width="300" height="300"></canvas>
+          <canvas id="hcl-l" width="300" height="300"></canvas>
+      </div>
+      <div class="rgb">
+          <canvas id="rgb-r" width="300" height="300"></canvas>
+          <canvas id="rgb-g" width="300" height="300"></canvas>
+          <canvas id="rgb-b" width="300" height="300"></canvas>
+      </div>
+      <div class="xyz">
+          <canvas id="xyz-x" width="300" height="300"></canvas>
+          <canvas id="xyz-y" width="300" height="300"></canvas>
+          <canvas id="xyz-z" width="300" height="300"></canvas>
+      </div>
+      <div class="xyy">
+          <canvas id="xyy-x" width="300" height="300"></canvas>
+          <canvas id="xyy-y" width="300" height="300"></canvas>
+          <canvas id="xyy-yy" width="300" height="300"></canvas>
+      </div>
+    </div>
+  </div>
+  <script src="bundle.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.js"></script>
+  <script src="analyze.js"></script>
+</body>
+
+</html>
