@@ -19,7 +19,7 @@ const fileType = require('file-type')
 
 // Use standard sRGB conversion numbers by default
 // https://en.wikipedia.org/wiki/SRGB#The_sRGB_gamut
-const defaultCalibrationProfile: ICalibrationProfile = {
+export const defaultCalibrationProfile: ICalibrationProfile = {
   xRed: 0.4124,
   yRed: 0.2126,
   zRed: 0.0193,
@@ -70,6 +70,7 @@ export class ImageData {
         obj.colorspace === Colorspace.Greyscale ||
         obj.colorspace === Colorspace.HSL ||
         obj.colorspace === Colorspace.YCbCr ||
+        obj.colorspace === Colorspace.XYY ||
         obj.colorspace === Colorspace.XYZ) &&
       obj.data.length === obj.width * obj.height * obj.channels
     )
@@ -544,6 +545,48 @@ export class ImageData {
     return dstImageData
   }
 
+  public static toXYY(srcImageData: IAnnotatedImageData): IAnnotatedImageData {
+    const dstImageData = {...ImageData.toXYZ(srcImageData)}
+    dstImageData.data = dstImageData.data.slice()
+
+    const numPixels = srcImageData.width * srcImageData.height
+    for (let i = 0; i < numPixels; i++) {
+      const offset = i * 3
+      const X = dstImageData.data[offset + 0]
+      const Y = dstImageData.data[offset + 1]
+      const Z = dstImageData.data[offset + 2]
+      const XYZ = X + Y + Z
+
+      dstImageData.data[offset + 0] = X / XYZ
+      dstImageData.data[offset + 1] = Y / XYZ
+      dstImageData.data[offset + 2] = Y
+    }
+
+    dstImageData.colorspace = Colorspace.XYY
+    return dstImageData
+  }
+
+  private static _XYYToRGB(srcImageData: IAnnotatedImageData): IAnnotatedImageData {
+    const dstImageData = {...srcImageData}
+    dstImageData.data = dstImageData.data.slice()
+    const numPixels = srcImageData.width * srcImageData.height
+    for (let i = 0; i < numPixels; i++) {
+      const offset = i * 3
+      const x = dstImageData.data[offset + 0]
+      const y = dstImageData.data[offset + 1]
+      const Y = dstImageData.data[offset + 2]
+      const XYZ = Y / y
+      const X = x * XYZ
+
+      dstImageData.data[offset + 0] = X
+      dstImageData.data[offset + 1] = Y
+      dstImageData.data[offset + 2] = XYZ - Y - X
+    }
+
+    dstImageData.colorspace = Colorspace.XYZ
+    return ImageData._XYZToRGB(dstImageData)
+  }
+
   public static toYCbCr(srcImageData: IAnnotatedImageData): IAnnotatedImageData {
     ImageData.assert(srcImageData)
     if (srcImageData.colorspace === Colorspace.YCbCr) {
@@ -606,6 +649,8 @@ export class ImageData {
       return ImageData._YCbCrToRGB(srcImageData)
     } else if (srcImageData.colorspace === Colorspace.XYZ) {
       return ImageData._XYZToRGB(srcImageData)
+    } else if (srcImageData.colorspace === Colorspace.XYY) {
+      return ImageData._XYYToRGB(srcImageData)
     } else if (srcImageData.colorspace !== Colorspace.Greyscale) {
       throw new Error('Image data was not greyscale')
     }

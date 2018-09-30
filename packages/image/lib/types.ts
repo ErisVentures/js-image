@@ -154,6 +154,7 @@ export enum Colorspace {
   HSL = 'hsl',
   YCbCr = 'ycbcr',
   XYZ = 'xyz',
+  XYY = 'xyy',
   RGB = 'rgb',
   RGBA = 'rgba',
   Greyscale = 'k',
