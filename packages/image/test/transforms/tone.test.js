@@ -2,51 +2,6 @@ const toneModule = require('../../dist/transforms/tone')
 const {expect} = require('../utils')
 
 describe('#transforms/tone', () => {
-  describe('#mapPixels', () => {
-    it('should evaluate the function', () => {
-      const imageData = {
-        width: 1,
-        height: 1,
-        channels: 3,
-        colorspace: 'rgb',
-        data: [1, 2, 3],
-      }
-
-      const result = toneModule.mapPixels(imageData, ({values}) => values.map(x => x + 1))
-
-      expect(result).to.eql({
-        width: 1,
-        height: 1,
-        channels: 3,
-        colorspace: 'rgb',
-        data: new Uint8Array([2, 3, 4]),
-      })
-    })
-
-    it('should evaluate the functions in order', () => {
-      const imageData = {
-        width: 1,
-        height: 1,
-        channels: 1,
-        colorspace: 'k',
-        data: [10],
-      }
-
-      const result = toneModule.mapPixels(imageData, [
-        ({values}) => [values[0] / 2],
-        ({values}) => [values[0] + 2],
-      ])
-
-      expect(result).to.eql({
-        width: 1,
-        height: 1,
-        channels: 1,
-        colorspace: 'k',
-        data: new Uint8Array([7]),
-      })
-    })
-  })
-
   describe('#contrast', () => {
     const pixel = {colorspace: 'ycbcr'}
 

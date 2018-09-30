@@ -455,7 +455,7 @@ export class ImageData {
         // B = -(H - 360) * spread / 60 + G
         r = maxColor
         g = minColor
-        b = - ((h - 360) * spread) / 60 + minColor
+        b = -((h - 360) * spread) / 60 + minColor
       }
 
       rawData[offset + 0] = ImageData.clip(r * 255)
@@ -489,13 +489,13 @@ export class ImageData {
 
       // Use sRGB white point, https://en.wikipedia.org/wiki/SRGB#The_sRGB_gamut
       const xOrigin = 0.3127
-      const yOrigin = 0.3290
+      const yOrigin = 0.329
 
       const xCoord = x - xOrigin
       const yCoord = y - yOrigin
 
       const rCoord = Math.sqrt(xCoord * xCoord + yCoord * yCoord)
-      let theta = Math.atan(yCoord / xCoord)  * 180 / Math.PI
+      let theta = (Math.atan(yCoord / xCoord) * 180) / Math.PI
 
       if (xCoord < 0 && yCoord > 0) theta += 180
       if (xCoord < 0 && yCoord < 0) theta += 180
@@ -526,10 +526,10 @@ export class ImageData {
 
       // Use sRGB white point, https://en.wikipedia.org/wiki/SRGB#The_sRGB_gamut
       const xOrigin = 0.3127
-      const yOrigin = 0.3290
+      const yOrigin = 0.329
 
-      const xCoord = Math.cos(hue * Math.PI / 180) * chroma
-      const yCoord = Math.sin(hue * Math.PI / 180) * chroma
+      const xCoord = Math.cos((hue * Math.PI) / 180) * chroma
+      const yCoord = Math.sin((hue * Math.PI) / 180) * chroma
 
       rawData[offset + 0] = xCoord + xOrigin
       rawData[offset + 1] = yCoord + yOrigin
