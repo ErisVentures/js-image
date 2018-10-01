@@ -2,7 +2,7 @@ const BrowserImage = window['@eris/image'].Image
 const ImageData = window['@eris/image'].ImageData
 
 const IMAGE_A = '../test/fixtures/source-rainbow.jpg'
-const IMAGE_B = '../test/fixtures/actual-lr-red-hue-plus-minor.jpg'
+const IMAGE_B = '../test/fixtures/actual-lr-blue-saturation.jpg'
 
 async function imageDataFromURL(url) {
   const response = await fetch(url)

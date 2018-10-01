@@ -358,9 +358,9 @@ export class ImageData {
 
       if (!distances.length) return pixel.values
 
-      const totalDistance = Math.sqrt(distances
-        .map(distance => distance * distance)
-        .reduce((x, y) => x + y))
+      const totalDistance = Math.sqrt(
+        distances.map(distance => distance * distance).reduce((x, y) => x + y),
+      )
       const multiplier = Math.max(0, 1 - totalDistance)
 
       // if (pixel.x > 120 && pixel.values[0] > 345 || pixel.values[0] < 15) console.log({pixel, totalDistance, multiplier, distances})

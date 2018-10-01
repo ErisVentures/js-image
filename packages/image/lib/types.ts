@@ -33,6 +33,15 @@ export interface IToneOptions {
   blacks?: number
 }
 
+export interface ICalibrationOptions {
+  redHueShift?: number
+  redSaturationShift?: number
+  greenHueShift?: number
+  greenSaturationShift?: number
+  blueHueShift?: number
+  blueSaturationShift?: number
+}
+
 export interface IImageOutputOptions {
   format: IFormatOptions
   resize?: IResizeOptions
