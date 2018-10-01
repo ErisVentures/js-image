@@ -366,11 +366,17 @@ export class ImageData {
 
       if (!distances.length) return pixel.values
 
-      const totalDistance = Math.sqrt(
-        distances.map(distance => distance * distance).reduce((x, y) => x + y),
-      )
-      let multiplier = Math.max(0, 1 - totalDistance)
-      if (distances.length === 1) multiplier = Math.cos((totalDistance * Math.PI) / 2)
+      let multiplier = 0
+      if (distances.length === 1) {
+        multiplier = Math.cos((distances[0] * Math.PI) / 2)
+      } else {
+        let totalDistance = 0
+        for (const distance of distances) {
+          totalDistance += distance * distance
+        }
+
+        multiplier = totalDistance > 1 ? 0 : 1 - Math.sqrt(totalDistance)
+      }
 
       for (let i = 0; i < colorChannels.length; i++) {
         if (colorChannels[i] !== targetChannel) continue
