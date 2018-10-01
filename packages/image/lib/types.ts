@@ -45,6 +45,7 @@ export interface ICalibrationOptions {
 export interface IImageOutputOptions {
   format: IFormatOptions
   resize?: IResizeOptions
+  calibrate?: ICalibrationOptions
   tone?: IToneOptions
   greyscale?: boolean
   sharpen?: ISharpenOptions

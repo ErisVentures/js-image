@@ -116,6 +116,21 @@ describe('NodeImage', () => {
     })
   })
 
+  describe('._applyCalibrate', () => {
+    it('should apply a calibration profile', async () => {
+      const modify = img => img.calibrate({
+        redHueShift: -0.5,
+        redSaturationShift: 0.5,
+        greenHueShift: 0.5,
+        greenSaturationShift: -0.5,
+        blueHueShift: 0.5,
+        blueSaturationShift: 0.5,
+      })
+
+      await testSkater('skater-calibrate.jpg', modify, {strict: false})
+    })
+  })
+
   describe('._applyTone', () => {
     it('should increase contrast', async () => {
       const modify = img => img.tone({contrast: 0.5})

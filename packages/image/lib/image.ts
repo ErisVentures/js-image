@@ -9,6 +9,7 @@ import {tone} from './transforms/tone'
 import {gaussianBlur} from './transforms/blur'
 import {canny} from './transforms/canny'
 import {sharpen} from './transforms/sharpen'
+import {calibrate} from './transforms/calibrate'
 
 /* tslint:disable-next-line */
 const fileType = require('file-type')
@@ -53,6 +54,11 @@ export abstract class Image {
       method: types.ImageResizeMethod.Bilinear,
       ...options,
     }
+    return this
+  }
+
+  public calibrate(options: types.ICalibrationOptions): Image {
+    this._output.calibrate = options
     return this
   }
 
@@ -113,6 +119,14 @@ export abstract class Image {
 
       return analysis
     })
+  }
+
+  protected _applyCalibrate(image: IAnnotatedImageData): IAnnotatedImageData {
+    if (!this._output.calibrate) {
+      return image
+    }
+
+    return calibrate(image, this._output.calibrate)
   }
 
   protected _applyTone(image: IAnnotatedImageData): IAnnotatedImageData {
