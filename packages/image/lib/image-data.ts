@@ -120,6 +120,8 @@ export class ImageData {
       case ColorChannel.Blue:
       case ColorChannel.Alpha:
       case ColorChannel.Luminance255:
+      case ColorChannel.ChromaRed:
+      case ColorChannel.ChromaBlue:
         return 255
       case ColorChannel.Hue:
         return 360
@@ -353,7 +355,7 @@ export class ImageData {
         }
 
         distance = distance / filterChannelRanges[filterChannelIndex]
-        distances.push(distance)
+        distances.push(Math.min(distance, 1))
       }
 
       if (!distances.length) return pixel.values
@@ -361,9 +363,9 @@ export class ImageData {
       const totalDistance = Math.sqrt(
         distances.map(distance => distance * distance).reduce((x, y) => x + y),
       )
-      const multiplier = Math.max(0, 1 - totalDistance)
+      let multiplier = Math.max(0, 1 - totalDistance)
+      if (distances.length === 1) multiplier = Math.cos((totalDistance * Math.PI) / 2)
 
-      // if (pixel.x > 120 && pixel.values[0] > 345 || pixel.values[0] < 15) console.log({pixel, totalDistance, multiplier, distances})
       for (let i = 0; i < colorChannels.length; i++) {
         if (colorChannels[i] !== targetChannel) continue
         const value = pixel.values[i]
