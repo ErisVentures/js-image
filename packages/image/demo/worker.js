@@ -27,6 +27,10 @@ function processImage(imageData, rawOptions) {
         image = image.resize(options.resize)
       }
 
+      if (options.calibrate) {
+        image = image.calibrate(options.calibrate)
+      }
+
       if (options.tone) {
         image = image.tone(options.tone)
       }
