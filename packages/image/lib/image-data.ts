@@ -48,8 +48,6 @@ export interface IAnnotatedImageData {
 
 export enum ProximitySmoothingMethod {
   Linear = 'linear',
-  Trapezoidal = 'trapezoidal',
-  Cosine = 'cosine',
 }
 
 export class ImageData {
@@ -115,26 +113,39 @@ export class ImageData {
     return imageData
   }
 
-  public static clip(value: number, channel: ColorChannel = ColorChannel.Red): number {
+  public static getChannelRange(channel: ColorChannel): number {
     switch (channel) {
       case ColorChannel.Red:
       case ColorChannel.Green:
       case ColorChannel.Blue:
       case ColorChannel.Alpha:
       case ColorChannel.Luminance255:
-        return Math.max(0, Math.min(255, Math.round(value)))
+        return 255
       case ColorChannel.Hue:
-        return Math.max(0, Math.min(360, Math.round(value) % 360))
+        return 360
       case ColorChannel.Saturation:
+      case ColorChannel.Luminance:
+      case ColorChannel.Lightness:
       case ColorChannel.Chroma:
       case ColorChannel.X:
       case ColorChannel.Y:
       case ColorChannel.Z:
       case ColorChannel.x:
       case ColorChannel.y:
-        return Math.max(0, Math.min(1, value))
+        return 1
       default:
-        return value
+        throw new Error(`Unknown channel ${channel}`)
+    }
+  }
+
+  public static clip(value: number, channel: ColorChannel = ColorChannel.Red): number {
+    switch (channel) {
+      case ColorChannel.Hue:
+        return Math.max(0, Math.min(360, Math.round(value) % 360))
+      default:
+        const max = ImageData.getChannelRange(channel)
+        const rounded = max === 1 ? value : Math.round(value)
+        return Math.max(0, Math.min(max, rounded))
     }
   }
 
@@ -317,39 +328,42 @@ export class ImageData {
   }
 
   public static proximityTransform(
-    filterChannel: ColorChannel,
-    filterChannelCenter: number,
-    filterChannelRange: number,
+    filterChannels: ColorChannel[],
+    filterChannelCenters: number[],
+    filterChannelRanges: number[],
     targetChannel: ColorChannel,
     targetIntensity: number,
-    smoothingMethod: ProximitySmoothingMethod = ProximitySmoothingMethod.Cosine,
+    // TODO: add back smoothing method
   ): MapPixelFn {
     return (pixel: IPixel) => {
       const colorChannels = ImageData.channelsFor(pixel.colorspace)
 
-      let multiplier = 0
+      const distances: number[] = []
       for (let i = 0; i < colorChannels.length; i++) {
         const channel = colorChannels[i]
-        if (channel !== filterChannel) continue
+        const filterChannelIndex = filterChannels.indexOf(channel)
+        if (filterChannelIndex === -1) continue
 
         const value = pixel.values[i]
-        let distance = Math.abs(filterChannelCenter - value)
-        if (channel === ColorChannel.Hue) distance = Math.min(distance, 360 - distance % 360)
-        if (distance > filterChannelRange) continue
 
-        multiplier = distance / filterChannelRange
-        if (smoothingMethod === ProximitySmoothingMethod.Trapezoidal) {
-          multiplier =
-            distance < filterChannelRange / 2
-              ? 1
-              : (distance - filterChannelRange / 2) / filterChannelRange
-        } else if (smoothingMethod === ProximitySmoothingMethod.Cosine) {
-          multiplier = Math.cos((multiplier * Math.PI) / 2)
+        let distance = Math.abs(filterChannelCenters[filterChannelIndex] - value)
+        if (channel === ColorChannel.Hue) {
+          distance = distance % 360
+          distance = Math.min(distance, 360 - distance)
         }
+
+        distance = distance / filterChannelRanges[filterChannelIndex]
+        distances.push(distance)
       }
 
-      if (multiplier === 0) return pixel.values
+      if (!distances.length) return pixel.values
 
+      const totalDistance = Math.sqrt(distances
+        .map(distance => distance * distance)
+        .reduce((x, y) => x + y))
+      const multiplier = Math.max(0, 1 - totalDistance)
+
+      // if (pixel.x > 120 && pixel.values[0] > 345 || pixel.values[0] < 15) console.log({pixel, totalDistance, multiplier, distances})
       for (let i = 0; i < colorChannels.length; i++) {
         if (colorChannels[i] !== targetChannel) continue
         const value = pixel.values[i]

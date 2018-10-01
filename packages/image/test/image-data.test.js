@@ -50,6 +50,39 @@ describe('ImageData', () => {
     })
   })
 
+  describe('#proximityTransform', () => {
+    const hslPixel = (h, s, l) => ({colorspace: 'hsl', values: [h, s, l]})
+
+    it('should evaluate based on proximity', () => {
+      const transform = ImageData.proximityTransform(
+        ['h', 's', 'l'],
+        [180, 1, 0.5],
+        [180, 1, 0.5],
+        'l',
+        0.5
+      )
+
+      const fn = pixel => Math.round(100 * transform(pixel)[2]) / 100
+      expect(fn(hslPixel(180, 1, 0.5))).to.equal(1)
+      expect(fn(hslPixel(180, 0.5, 0.5))).to.equal(0.75)
+      expect(fn(hslPixel(0, 0, 0))).to.equal(0)
+    })
+
+    it('should handle wrap around hue', () => {
+      const transform = ImageData.proximityTransform(
+        ['h', 's', 'l'],
+        [355, 1, 0.5],
+        [355, 1, 0.5],
+        'l',
+        0.5
+      )
+
+      const fn = pixel => Math.round(100 * transform(pixel)[2]) / 100
+      expect(fn(hslPixel(355, 1, 0.5))).to.equal(1)
+      expect(fn(hslPixel(0, 1, 0.5))).to.equal(0.99)
+    })
+  })
+
   describe('#probablyIs', () => {
     it('should identify invalid values', () => {
       expect(ImageData.probablyIs()).to.be.false
