@@ -41,17 +41,6 @@ function getCalibrationProfile(options: ICalibrationOptions): ICalibrationProfil
   }
 }
 
-function createHueShiftTransform(options: ICalibrationOptions): MapPixelFn {
-  const profile = getCalibrationProfile(options)
-  const {RGB} = Colorspace
-
-  return (pixel: IPixel) => {
-    const baseImageData = {width: 1, height: 1, channels: 3, colorspace: RGB, data: pixel.values}
-    const xyzData = ImageData.toXYZ(baseImageData, profile)
-    return [...ImageData.toRGB(xyzData).data]
-  }
-}
-
 function targetedSaturationShift(targetHue: number, range: number, shift: number): MapPixelFn {
   return ImageData.proximityTransform(
     [ColorChannel.Hue, ColorChannel.Saturation, ColorChannel.Lightness],
@@ -140,17 +129,25 @@ export function calibrate(
 ): IAnnotatedImageData {
   const {colorspace} = imageData
 
-  // Convert to RGB for easy fake ImageData creation below
-  const hueTransform = createHueShiftTransform(options)
-  const rgbImageData = ImageData.toRGB(imageData)
-  const hslImageData = ImageData.toHSL(ImageData.mapPixels(rgbImageData, hueTransform))
+  if (options.redHueShift || options.greenHueShift || options.blueHueShift) {
+    // Hue transforms are conversion to XYZ colorspace using the RGB values of the hue shifted primaries
+    const profile = getCalibrationProfile(options)
+    imageData = ImageData.toXYZ(imageData, profile)
+    imageData = ImageData.toRGB(imageData)
+  }
 
-  const fns = [
-    ...handleRedSaturationShift(options),
-    ...handleGreenSaturationShift(options),
-    ...handleBlueSaturationShift(options),
-  ]
+  if (options.redSaturationShift || options.greenSaturationShift || options.blueSaturationShift) {
+    // Saturation transforms are just a series of HSL saturation and lightness transforms
+    imageData = ImageData.toHSL(imageData)
 
-  const transformed = ImageData.mapPixels(hslImageData, fns)
-  return ImageData.toColorspace(transformed, colorspace)
+    const fns = [
+      ...handleRedSaturationShift(options),
+      ...handleGreenSaturationShift(options),
+      ...handleBlueSaturationShift(options),
+    ]
+
+    imageData = ImageData.mapPixels(imageData, fns)
+  }
+
+  return ImageData.toColorspace(imageData, colorspace)
 }

@@ -143,11 +143,14 @@ export class ImageData {
   public static clip(value: number, channel: ColorChannel = ColorChannel.Red): number {
     switch (channel) {
       case ColorChannel.Hue:
-        return Math.max(0, Math.min(360, Math.round(value) % 360))
+        let hue = Math.round(value)
+        while (hue < 0) hue += 360
+        return hue % 360
       default:
         const max = ImageData.getChannelRange(channel)
         const rounded = max === 1 ? value : Math.round(value)
-        return Math.max(0, Math.min(max, rounded))
+        // Manually do a min/max to clip, believe it or not this became bottleneck
+        return rounded < 0 ? 0 : rounded > max ? max : rounded
     }
   }
 
@@ -171,8 +174,11 @@ export class ImageData {
     y: number,
     channel: number = 0,
   ): number {
-    x = Math.max(0, Math.min(x, imageData.width - 1))
-    y = Math.max(0, Math.min(y, imageData.height - 1))
+    const xMax = imageData.width - 1
+    const yMax = imageData.height - 1
+    // Manually do a min/max to clip, believe it or not this became bottleneck
+    x = x < 0 ? 0 : x > xMax ? xMax : x
+    y = y < 0 ? 0 : y > yMax ? yMax : y
     return (y * imageData.width + x) * imageData.channels + channel
   }
 
