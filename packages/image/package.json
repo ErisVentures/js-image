@@ -7,7 +7,7 @@
   "scripts": {
     "build": "npm run build:ts && npm run build:rollup && npm run build:rollup:minify",
     "build:ts": "tsc",
-    "build:wasm": "cd wasm && wasm-pack build && cp ./pkg/eris_image_bg.wasm ../demo/bundle.wasm",
+    "build:wasm": "cd wasm && wasm-pack build && cp ./pkg/eris_image_bg.wasm ../demo/bundle.wasm && cp ./pkg/eris_image_bg.wasm ../dist/bundle.wasm",
     "build:rollup": "rollup -c rollup.config.js && cp dist/bundle.js demo/",
     "build:rollup:minify": "cross-env MINIFY=true rollup -c rollup.config.js && cp dist/bundle.min.js demo/",
     "test": "npm run test:lint && npm run test:unit",

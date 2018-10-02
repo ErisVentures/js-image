@@ -1,6 +1,6 @@
 const {Colorspace} = require('../dist/types')
 const ImageData = require('../dist/image-data').ImageData
-const {expect, fixtureDecode, compareToFixture} = require('./utils')
+const {expect, fixtureDecode, compareToFixture, enableWASM, disableWASM} = require('./utils')
 
 describe('ImageData', () => {
   const pixel = value => [value, value, value, 255]
@@ -515,6 +515,23 @@ describe('ImageData', () => {
   })
 
   describe('#toYCbCr', () => {
+    const yosemitePromise = fixtureDecode('source-yosemite.jpg').then(ImageData.normalize)
+
+    describe('with WASM', () => {
+      before(async () => {
+        await enableWASM()
+      })
+
+      it('should use wasm', async () => {
+        const imageData = await yosemitePromise
+        ImageData.toYCbCr(imageData)
+      })
+
+      after(() => {
+        disableWASM()
+      })
+    })
+
     it('should convert RGB images', () => {
       const imageData = {
         width: 2,

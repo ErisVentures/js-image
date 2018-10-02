@@ -18,6 +18,10 @@ export function isBrowser(): boolean {
   return typeof window !== 'undefined' && typeof navigator !== 'undefined'
 }
 
+export function isNode(): boolean {
+  return !isBrowser()
+}
+
 export function getWASM(): any {
-  return getGlobal()['@eris/image-wasm'].wasmModule
+  return getGlobal()['@eris/image-wasm']
 }

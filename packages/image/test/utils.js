@@ -4,6 +4,8 @@ const chai = require('chai')
 const jpeg = require('jpeg-js')
 const {Colorspace} = require('../dist/types')
 const ImageData = require('../dist/image-data').ImageData
+const {hasWASM, getWASM} = require('../dist/utils/env')
+const {registerNodeWASM} = require('../dist/utils/node-wasm')
 chai.use(require('sinon-chai'))
 
 const environmentTolerance = Number(process.env.LOOSE_COMPARISON_TOLERANCE) || 0
@@ -119,6 +121,23 @@ function buildLinesImageData(width, height, lines) {
   }
 }
 
+
+let _wasmModule
+async function enableWASM() {
+  if (_wasmModule) {
+    global['@eris/image-wasm'] = _wasmModule
+    return
+  }
+
+  await registerNodeWASM()
+  if (!hasWASM()) throw new Error('WASM failed to instantiate')
+  _wasmModule = getWASM()
+}
+
+function disableWASM() {
+  global['@eris/image-wasm'] = undefined
+}
+
 module.exports = {
   expect,
   fixture,
@@ -131,4 +150,6 @@ module.exports = {
   buildLine,
   mergeLines,
   buildLinesImageData,
+  enableWASM,
+  disableWASM,
 }

@@ -16,6 +16,8 @@ deploy:
   local_dir: packages/image/demo
   on:
     branch: master
+rust:
+  - beta
 node_js:
   - v8
 install:
