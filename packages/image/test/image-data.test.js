@@ -517,14 +517,13 @@ describe('ImageData', () => {
   describe('#toYCbCr', () => {
     const yosemitePromise = fixtureDecode('source-yosemite.jpg').then(ImageData.normalize)
 
-    describe('with WASM', () => {
+    describe.skip('with WASM', () => {
       before(async () => {
         await enableWASM()
       })
 
       it('should use wasm', async () => {
-        const imageData = await yosemitePromise
-        ImageData.toYCbCr(imageData)
+        ImageData.toYCbCr(await yosemitePromise)
       })
 
       after(() => {
