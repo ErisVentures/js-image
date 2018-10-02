@@ -39,7 +39,7 @@ function processImage(imageData, rawOptions) {
         image = image.edges(options.edges)
       }
 
-      if (options.sharpen) {
+      if (options.sharpen && options.sharpen.strength) {
         image = image.sharpen(options.sharpen)
       }
 
