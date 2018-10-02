@@ -5,7 +5,7 @@
   "main": "./dist/node-index.js",
   "types": "./dist/node-index.d.ts",
   "scripts": {
-    "build": "npm run build:ts && npm run build:rollup && npm run build:rollup:minify",
+    "build": "npm run build:ts && npm run build:wasm && npm run build:rollup && npm run build:rollup:minify",
     "build:ts": "tsc",
     "build:wasm": "cd wasm && wasm-pack build && cp ./pkg/eris_image_bg.wasm ../demo/bundle.wasm && cp ./pkg/eris_image_bg.wasm ../dist/bundle.wasm",
     "build:rollup": "rollup -c rollup.config.js && cp dist/bundle.js demo/",
