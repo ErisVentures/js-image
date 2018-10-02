@@ -2,3 +2,10 @@ test/fixtures/actual-*
 
 demo/bundle.js
 demo/bundle.min.js
+demo/bundle.wasm
+
+wasm/pkg
+wasm/bin
+wasm/target
+
+wasm-pack.log

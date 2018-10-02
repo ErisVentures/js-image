@@ -9,6 +9,7 @@ import {
   IGreyscalePixel,
   MapPixelFn,
 } from './types'
+import {hasWASM, getWASM} from './utils/env'
 
 /* tslint:disable-next-line */
 const jpeg = require('jpeg-js')
@@ -781,21 +782,37 @@ export class ImageData {
 
     const dstImageData = {...srcImageData}
     const numPixels = srcImageData.width * srcImageData.height
-    const rawData = new Uint8Array(numPixels * 3)
-    for (let i = 0; i < numPixels; i++) {
-      const offset = i * 3
-      const r = srcImageData.data[offset]
-      const g = srcImageData.data[offset + 1]
-      const b = srcImageData.data[offset + 2]
-      // From https://en.wikipedia.org/wiki/YCbCr#JPEG_conversion
-      rawData[offset + 0] = ImageData.clip(0.0 + 0.299 * r + 0.587 * g + 0.114 * b)
-      rawData[offset + 1] = ImageData.clip(128 - 0.169 * r - 0.331 * g + 0.501 * b)
-      rawData[offset + 2] = ImageData.clip(128 + 0.501 * r - 0.419 * g - 0.081 * b)
+
+    if (hasWASM()) {
+      const {wasmModule} = getWASM()
+
+      const byteSize = numPixels * 3
+      const pointer = wasmModule.instance.exports.alloc(byteSize)
+      const rawData = new Uint8Array(wasmModule.instance.exports.memory.buffer, pointer, byteSize)
+      for (let i = 0; i < srcImageData.height * srcImageData.width * srcImageData.channels; i++) {
+        rawData[i] = srcImageData.data[i]
+      }
+
+      wasmModule.instance.exports.toYCbCr(pointer, numPixels)
+      dstImageData.data = new Uint8Array(rawData)
+      wasmModule.instance.exports.dealloc(pointer, byteSize)
+    } else {
+      const rawData = new Uint8Array(numPixels * 3)
+      for (let i = 0; i < numPixels; i++) {
+        const offset = i * 3
+        const r = srcImageData.data[offset]
+        const g = srcImageData.data[offset + 1]
+        const b = srcImageData.data[offset + 2]
+        // From https://en.wikipedia.org/wiki/YCbCr#JPEG_conversion
+        rawData[offset + 0] = ImageData.clip(0.0 + 0.299 * r + 0.587 * g + 0.114 * b)
+        rawData[offset + 1] = ImageData.clip(128 - 0.169 * r - 0.331 * g + 0.501 * b)
+        rawData[offset + 2] = ImageData.clip(128 + 0.501 * r - 0.419 * g - 0.081 * b)
+      }
+      dstImageData.data = rawData
     }
 
     dstImageData.colorspace = Colorspace.YCbCr
     dstImageData.channels = 3
-    dstImageData.data = rawData
     return dstImageData
   }
 

@@ -2,6 +2,13 @@ importScripts('bundle.js')
 
 const {Image, ImageData} = self['@eris/image']
 
+async function loadWASM() {
+  const response = await fetch('bundle.wasm')
+  const bytes = await response.arrayBuffer()
+  const wasmModule = await WebAssembly.instantiate(bytes, {})
+  self['@eris/image-wasm'] = {wasmModule}
+}
+
 function parseOptions(rawOptions) {
   const options = {}
 
@@ -84,6 +91,8 @@ function processImage(imageData, rawOptions) {
       })
     })
 }
+
+loadWASM()
 
 self.addEventListener('message', message => {
   if (message.data.type === 'process') {
