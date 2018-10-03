@@ -152,6 +152,7 @@ describe('NodeImage', () => {
       await testSkater('skater-tone.jpg', modify, {
         strict: false,
         increment: 5,
+        tolerance: 10,
       })
     })
   })

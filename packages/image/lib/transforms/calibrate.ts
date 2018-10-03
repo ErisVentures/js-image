@@ -1,13 +1,6 @@
 /* tslint:disable */
-import {IAnnotatedImageData, ImageData, defaultCalibrationProfile} from '../image-data'
-import {
-  ICalibrationOptions,
-  MapPixelFn,
-  IPixel,
-  ICalibrationProfile,
-  Colorspace,
-  ColorChannel,
-} from '../types'
+import {IAnnotatedImageData, ImageData, IProximityAdjustment} from '../image-data'
+import {ICalibrationOptions, ICalibrationProfile, Colorspace, ColorChannel} from '../types'
 
 function toXYZ(hue: number, saturation: number, lightness: number): number[] {
   const imageData: IAnnotatedImageData = {
@@ -41,31 +34,39 @@ function getCalibrationProfile(options: ICalibrationOptions): ICalibrationProfil
   }
 }
 
-function targetedSaturationShift(targetHue: number, range: number, shift: number): MapPixelFn {
-  return ImageData.proximityTransform(
-    [ColorChannel.Hue, ColorChannel.Saturation, ColorChannel.Lightness],
-    [targetHue, 1, 0.5],
-    [range, 1, 0.5],
-    ColorChannel.Saturation,
-    shift,
-  )
+function targetedSaturationShift(
+  targetHue: number,
+  range: number,
+  shift: number,
+): IProximityAdjustment {
+  return {
+    filterChannels: [ColorChannel.Hue, ColorChannel.Saturation, ColorChannel.Lightness],
+    filterChannelCenters: [targetHue, 1, 0.5],
+    filterChannelRanges: [range, 1, 0.5],
+    targetChannel: ColorChannel.Saturation,
+    targetIntensity: shift,
+  }
 }
 
-function targetedLightnessShift(targetHue: number, range: number, shift: number): MapPixelFn {
-  return ImageData.proximityTransform(
-    [ColorChannel.Hue, ColorChannel.Saturation, ColorChannel.Lightness],
-    [targetHue, 1, 0.5],
-    [range, 1, 0.5],
-    ColorChannel.Lightness,
-    shift,
-  )
+function targetedLightnessShift(
+  targetHue: number,
+  range: number,
+  shift: number,
+): IProximityAdjustment {
+  return {
+    filterChannels: [ColorChannel.Hue, ColorChannel.Saturation, ColorChannel.Lightness],
+    filterChannelCenters: [targetHue, 1, 0.5],
+    filterChannelRanges: [range, 1, 0.5],
+    targetChannel: ColorChannel.Lightness,
+    targetIntensity: shift,
+  }
 }
 
-function handleRedSaturationShift(options: ICalibrationOptions): MapPixelFn[] {
+function handleRedSaturationShift(options: ICalibrationOptions): IProximityAdjustment[] {
   const intensity = options.redSaturationShift
   if (!intensity) return []
 
-  let lumaAdjustments: MapPixelFn[] = []
+  let lumaAdjustments: IProximityAdjustment[] = []
   if (intensity < 0) {
     lumaAdjustments = [
       targetedLightnessShift(360, 10e6, -0.15 * intensity),
@@ -80,11 +81,11 @@ function handleRedSaturationShift(options: ICalibrationOptions): MapPixelFn[] {
   ]
 }
 
-function handleGreenSaturationShift(options: ICalibrationOptions): MapPixelFn[] {
+function handleGreenSaturationShift(options: ICalibrationOptions): IProximityAdjustment[] {
   const intensity = options.greenSaturationShift
   if (!intensity) return []
 
-  let lumaAdjustments: MapPixelFn[] = []
+  let lumaAdjustments: IProximityAdjustment[] = []
   if (intensity < 0) {
     lumaAdjustments = [
       targetedLightnessShift(60, 60, -0.2 * intensity),
@@ -101,11 +102,11 @@ function handleGreenSaturationShift(options: ICalibrationOptions): MapPixelFn[] 
   ]
 }
 
-function handleBlueSaturationShift(options: ICalibrationOptions): MapPixelFn[] {
+function handleBlueSaturationShift(options: ICalibrationOptions): IProximityAdjustment[] {
   const intensity = options.blueSaturationShift
   if (!intensity) return []
 
-  let lumaAdjustments: MapPixelFn[] = []
+  let lumaAdjustments: IProximityAdjustment[] = []
   if (intensity < 0) {
     lumaAdjustments = [
       targetedLightnessShift(180, 60, -0.2 * intensity),
@@ -140,13 +141,13 @@ export function calibrate(
     // Saturation transforms are just a series of HSL saturation and lightness transforms
     imageData = ImageData.toHSL(imageData)
 
-    const fns = [
+    const adjustments = [
       ...handleRedSaturationShift(options),
       ...handleGreenSaturationShift(options),
       ...handleBlueSaturationShift(options),
     ]
 
-    imageData = ImageData.mapPixels(imageData, fns)
+    imageData = ImageData.proximityTransform(imageData, adjustments)
   }
 
   return ImageData.toColorspace(imageData, colorspace)

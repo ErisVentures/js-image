@@ -1,5 +1,5 @@
 /* tslint:disable */
-import {IAnnotatedImageData, ImageData} from '../image-data'
+import {IAnnotatedImageData, ImageData, IProximityAdjustment} from '../image-data'
 import {MapPixelFn, IToneOptions, ColorChannel, Colorspace} from '../types'
 
 function validateCurvesInput(options: IToneOptions): number[][] {
@@ -115,30 +115,34 @@ function targetedLumaAdjustment(
   target: number,
   adjustment: number,
   range: number = 100,
-): MapPixelFn {
-  return ImageData.proximityTransform(
-    [ColorChannel.Luminance255],
-    [target],
-    [range],
-    ColorChannel.Luminance255,
-    adjustment,
-  )
+): IProximityAdjustment {
+  return {
+    filterChannels: [ColorChannel.Luminance255],
+    filterChannelCenters: [target],
+    filterChannelRanges: [range],
+    targetChannel: ColorChannel.Luminance255,
+    targetIntensity: adjustment,
+  }
 }
 
 export function tone(imageData: IAnnotatedImageData, options: IToneOptions): IAnnotatedImageData {
   const {colorspace} = imageData
-  const fns: MapPixelFn[] = []
-
   // Convert the image to YCbCr colorspace to just operate on luma channel
   imageData = ImageData.toYCbCr(imageData)
 
-  if (options.contrast) fns.push(contrast(options))
-  if (options.whites) fns.push(targetedLumaAdjustment(223, options.whites, 30))
-  if (options.highlights) fns.push(targetedLumaAdjustment(192, options.highlights))
-  if (options.midtones) fns.push(targetedLumaAdjustment(128, options.midtones))
-  if (options.shadows) fns.push(targetedLumaAdjustment(64, options.shadows))
-  if (options.blacks) fns.push(targetedLumaAdjustment(32, options.blacks, 30))
-  if (options.curve) fns.push(curves(options))
+  const adjustments: IProximityAdjustment[] = []
+  const mappings: MapPixelFn[] = []
 
-  return ImageData.toColorspace(ImageData.mapPixels(imageData, fns), colorspace)
+  if (options.whites) adjustments.push(targetedLumaAdjustment(223, options.whites, 30))
+  if (options.highlights) adjustments.push(targetedLumaAdjustment(192, options.highlights))
+  if (options.midtones) adjustments.push(targetedLumaAdjustment(128, options.midtones))
+  if (options.shadows) adjustments.push(targetedLumaAdjustment(64, options.shadows))
+  if (options.blacks) adjustments.push(targetedLumaAdjustment(32, options.blacks, 30))
+
+  if (options.contrast) mappings.push(contrast(options))
+  if (options.curve) mappings.push(curves(options))
+
+  if (adjustments.length) imageData = ImageData.proximityTransform(imageData, adjustments)
+  if (mappings.length) imageData = ImageData.mapPixels(imageData, mappings)
+  return ImageData.toColorspace(imageData, colorspace)
 }

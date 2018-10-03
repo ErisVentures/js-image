@@ -38,6 +38,14 @@ export interface BrowserImageData {
   data: Uint8ClampedArray
 }
 
+export interface IProximityAdjustment {
+  filterChannels: ColorChannel[]
+  filterChannelCenters: number[]
+  filterChannelRanges: number[]
+  targetChannel: ColorChannel
+  targetIntensity: number
+}
+
 // TODO: fork this definition based on colorspace
 export interface IAnnotatedImageData {
   channels: number
@@ -337,23 +345,24 @@ export class ImageData {
   }
 
   public static proximityTransform(
-    filterChannels: ColorChannel[],
-    filterChannelCenters: number[],
-    filterChannelRanges: number[],
-    targetChannel: ColorChannel,
-    targetIntensity: number,
-    // TODO: add back smoothing method
-  ): MapPixelFn {
-    return (pixel: IPixel) => {
-      const colorChannels = ImageData.channelsFor(pixel.colorspace)
+    imageData: IAnnotatedImageData,
+    adjustments: IProximityAdjustment[],
+  ): IAnnotatedImageData {
+    const colorChannels = ImageData.channelsFor(imageData.colorspace)
 
+    function computeDistances(
+      {filterChannels, filterChannelCenters, filterChannelRanges}: IProximityAdjustment,
+      offset: number,
+    ): number[] {
       const distances: number[] = []
+      let totalDist = 0
+
       for (let i = 0; i < colorChannels.length; i++) {
         const channel = colorChannels[i]
         const filterChannelIndex = filterChannels.indexOf(channel)
         if (filterChannelIndex === -1) continue
 
-        const value = pixel.values[i]
+        const value = imageData.data[offset + i]
 
         let distance = Math.abs(filterChannelCenters[filterChannelIndex] - value)
         if (channel === ColorChannel.Hue) {
@@ -362,11 +371,17 @@ export class ImageData {
         }
 
         distance = distance / filterChannelRanges[filterChannelIndex]
-        distances.push(Math.min(distance, 1))
+        distance = Math.min(distance, 1)
+        distances.push(distance)
+        totalDist += distance
       }
 
-      if (!distances.length) return pixel.values
+      if (distances.length - totalDist < 0.05) return []
 
+      return distances
+    }
+
+    function computeMultiplier(distances: number[]): number {
       let multiplier = 0
       if (distances.length === 1) {
         multiplier = Math.cos((distances[0] * Math.PI) / 2)
@@ -379,14 +394,40 @@ export class ImageData {
         multiplier = totalDistance > 1 ? 0 : 1 - Math.sqrt(totalDistance)
       }
 
+      return multiplier
+    }
+
+    function updateTargetChannel(
+      {targetChannel, targetIntensity}: IProximityAdjustment,
+      offset: number,
+      multiplier: number,
+    ): void {
       for (let i = 0; i < colorChannels.length; i++) {
         if (colorChannels[i] !== targetChannel) continue
-        const value = pixel.values[i]
-        pixel.values[i] = value + multiplier * targetIntensity
+        const value = imageData.data[offset + i]
+        imageData.data[offset + i] = ImageData.clip(
+          value + multiplier * targetIntensity,
+          targetChannel,
+        )
       }
-
-      return pixel.values
     }
+
+    for (let x = 0; x < imageData.width; x++) {
+      for (let y = 0; y < imageData.height; y++) {
+        const offset = ImageData.indexFor(imageData, x, y)
+
+        for (let i = 0; i < adjustments.length; i++) {
+          const adjustment = adjustments[i]
+          const distances = computeDistances(adjustment, offset)
+          if (!distances.length) continue
+
+          const multiplier = computeMultiplier(distances)
+          updateTargetChannel(adjustment, offset, multiplier)
+        }
+      }
+    }
+
+    return imageData
   }
 
   public static mapPixels(

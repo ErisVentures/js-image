@@ -3,7 +3,7 @@ const jpeg = require('jpeg-js')
 const {ImageResizeMethod} = require('../dist/types')
 const ImageData = require('../dist/image-data').ImageData
 const BrowserImage = require('../dist/browser-image').BrowserImage
-const {expect, fixture, compareToFixture, testImage} = require('./utils')
+const {expect, fixture, fixtureDecode, compareToFixture, testImage, enableWASM, disableWASM} = require('./utils')
 
 const skater = fixture('source-skater.jpg')
 const yosemite = fixture('source-yosemite.jpg')
@@ -360,5 +360,38 @@ describe('BrowserImage', () => {
           })
         })
     })
+  })
+
+  describe('Performance', () => {
+    before(async () => {
+      await enableWASM()
+    })
+
+    after(async () => {
+      await disableWASM()
+    })
+
+    it('should not be hella slow', async () => {
+      const imageData = await fixtureDecode('source-yosemite.jpg')
+      const image = BrowserImage.from(imageData)
+        .tone({
+          contrast: 0.5,
+          whites: 30,
+          highlights: -20,
+          midtones: 30,
+          shadows: 50,
+          blacks: -20,
+        })
+        .calibrate({
+          redHueShift: -0.5,
+          redSaturationShift: 0.5,
+          greenHueShift: 0.5,
+          greenSaturationShift: -0.5,
+          blueHueShift: 0.5,
+          blueSaturationShift: 0.5,
+        })
+
+      await image.toImageData()
+    }).timeout(10000)
   })
 })

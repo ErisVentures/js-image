@@ -51,35 +51,37 @@ describe('ImageData', () => {
   })
 
   describe('#proximityTransform', () => {
-    const hslPixel = (h, s, l) => ({colorspace: 'hsl', values: [h, s, l]})
+    const hslImageData = (h, s, l) => ({colorspace: 'hsl', data: [h, s, l], channels: 3, width: 1, height: 1})
 
     it('should evaluate based on proximity', () => {
-      const transform = ImageData.proximityTransform(
-        ['h', 's', 'l'],
-        [180, 1, 0.5],
-        [180, 1, 0.5],
-        'l',
-        0.5
+      const transform = data => ImageData.proximityTransform(
+        data,
+        [{filterChannels: ['h', 's', 'l'],
+        filterChannelCenters: [180, 1, 0.5],
+        filterChannelRanges: [180, 1, 0.5],
+        targetChannel: 'l',
+        targetIntensity: 0.5}]
       )
 
-      const fn = pixel => Math.round(100 * transform(pixel)[2]) / 100
-      expect(fn(hslPixel(180, 1, 0.5))).to.equal(1)
-      expect(fn(hslPixel(180, 0.5, 0.5))).to.equal(0.75)
-      expect(fn(hslPixel(0, 0, 0))).to.equal(0)
+      const fn = imageData => Math.round(100 * transform(imageData).data[2]) / 100
+      expect(fn(hslImageData(180, 1, 0.5))).to.equal(1)
+      expect(fn(hslImageData(180, 0.5, 0.5))).to.equal(0.75)
+      expect(fn(hslImageData(0, 0, 0))).to.equal(0)
     })
 
     it('should handle wrap around hue', () => {
-      const transform = ImageData.proximityTransform(
-        ['h', 's', 'l'],
-        [355, 1, 0.5],
-        [355, 1, 0.5],
-        'l',
-        0.5
+      const transform = data => ImageData.proximityTransform(
+        data,
+        [{filterChannels: ['h', 's', 'l'],
+        filterChannelCenters: [355, 1, 0.5],
+        filterChannelRanges: [355, 1, 0.5],
+        targetChannel: 'l',
+        targetIntensity: 0.5}]
       )
 
-      const fn = pixel => Math.round(100 * transform(pixel)[2]) / 100
-      expect(fn(hslPixel(355, 1, 0.5))).to.equal(1)
-      expect(fn(hslPixel(0, 1, 0.5))).to.equal(0.99)
+      const fn = imageData => Math.round(100 * transform(imageData).data[2]) / 100
+      expect(fn(hslImageData(355, 1, 0.5))).to.equal(1)
+      expect(fn(hslImageData(0, 1, 0.5))).to.equal(0.99)
     })
   })
 
