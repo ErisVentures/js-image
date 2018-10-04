@@ -28,13 +28,13 @@ describe('#transforms/tone', () => {
     const pixel = {colorspace: 'ycbcr'}
 
     it('should hold in identity case', () => {
-      const curve = toneModule.curves({curve: []})
+      const curve = toneModule.curves([])
       expect(curve({...pixel, values: [100, 1, 2]})).to.eql([100, 1, 2])
       expect(curve({...pixel, values: [150, 1, 2]})).to.eql([150, 1, 2])
     })
 
     it('should apply basic linear interpolation', () => {
-      const curve = toneModule.curves({curve: [[0, 50], [255, 200]]})
+      const curve = toneModule.curves([[0, 50], [255, 200]])
 
       expect(curve({...pixel, values: [0, 1, 2]})).to.eql([50, 1, 2])
       expect(curve({...pixel, values: [255, 1, 2]})).to.eql([200, 1, 2])
@@ -44,7 +44,7 @@ describe('#transforms/tone', () => {
     })
 
     it('should apply basic cubic interpolation', () => {
-      const curve = toneModule.curves({curve: [[0, 0], [50, 40], [205, 215], [255, 255]]})
+      const curve = toneModule.curves([[0, 0], [50, 40], [205, 215], [255, 255]])
       const compute = y => Math.round(curve({values: [y], colorspace: 'ycbcr'})[0])
 
       expect(compute(0)).to.equal(0)

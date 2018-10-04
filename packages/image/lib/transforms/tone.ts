@@ -2,8 +2,7 @@
 import {IAnnotatedImageData, ImageData, IProximityAdjustment} from '../image-data'
 import {MapPixelFn, IToneOptions, ColorChannel, Colorspace} from '../types'
 
-function validateCurvesInput(options: IToneOptions): number[][] {
-  let {curve} = options
+function validateCurvesInput(curve?: number[][]): number[][] {
   if (!curve) throw new Error('curve is not defined')
 
   let lastEntry = -Infinity
@@ -35,8 +34,8 @@ export function contrast(options: IToneOptions): MapPixelFn {
  * @see https://en.wikipedia.org/wiki/Monotone_cubic_interpolation#Example_implementation
  * @param options
  */
-export function curves(options: IToneOptions): MapPixelFn {
-  const curve = validateCurvesInput(options)
+export function curves(unsafeCurve: number[][]): MapPixelFn {
+  const curve = validateCurvesInput(unsafeCurve)
 
   const xDiffs: number[] = []
   const yDiffs: number[] = []
@@ -111,18 +110,42 @@ export function curves(options: IToneOptions): MapPixelFn {
   }
 }
 
-function targetedLumaAdjustment(
-  target: number,
-  adjustment: number,
-  range: number = 100,
-): IProximityAdjustment {
-  return {
-    filterChannels: [ColorChannel.Luminance255],
-    filterChannelCenters: [target],
-    filterChannelRanges: [range],
-    targetChannel: ColorChannel.Luminance255,
-    targetIntensity: adjustment,
+function generateIdentityCurvesPoints(numPoints: number): number[][] {
+  const curves: number[][] = []
+  const increment = 255 / (numPoints - 1)
+  for (let i = 0; i < numPoints; i++) {
+    const value = Math.round(i * increment)
+    curves.push([value, value])
   }
+
+  return curves
+}
+
+function convertToneToCurves(options: IToneOptions): number[][] {
+  let hasAdjustment = false
+  const cosine0 = Math.PI / 2
+  const curves = generateIdentityCurvesPoints(32)
+
+  function adjustCurvesTargetPoints(target: number, range: number, adjustment: number) {
+    for (let i = 0; i < curves.length; i++) {
+      const [x, y] = curves[i]
+      const distanceRatio = Math.abs(target - x) / range
+      if (distanceRatio >= 1) continue
+
+      hasAdjustment = true
+      const cosDistance = Math.cos(distanceRatio * cosine0)
+      curves[i][1] = Math.min(255, Math.max(0, Math.round(y + adjustment * cosDistance)))
+    }
+  }
+
+  if (options.whites) adjustCurvesTargetPoints(256, 32, options.whites)
+  if (options.highlights) adjustCurvesTargetPoints(192, 64, options.highlights)
+  if (options.midtones) adjustCurvesTargetPoints(128, 128, options.midtones)
+  if (options.shadows) adjustCurvesTargetPoints(64, 64, options.shadows)
+  if (options.blacks) adjustCurvesTargetPoints(0, 32, options.blacks)
+
+  if (!hasAdjustment) return []
+  return curves
 }
 
 export function tone(imageData: IAnnotatedImageData, options: IToneOptions): IAnnotatedImageData {
@@ -130,19 +153,13 @@ export function tone(imageData: IAnnotatedImageData, options: IToneOptions): IAn
   // Convert the image to YCbCr colorspace to just operate on luma channel
   imageData = ImageData.toYCbCr(imageData)
 
-  const adjustments: IProximityAdjustment[] = []
   const mappings: MapPixelFn[] = []
+  const toneAsCurves = convertToneToCurves(options)
 
-  if (options.whites) adjustments.push(targetedLumaAdjustment(223, options.whites, 30))
-  if (options.highlights) adjustments.push(targetedLumaAdjustment(192, options.highlights))
-  if (options.midtones) adjustments.push(targetedLumaAdjustment(128, options.midtones))
-  if (options.shadows) adjustments.push(targetedLumaAdjustment(64, options.shadows))
-  if (options.blacks) adjustments.push(targetedLumaAdjustment(32, options.blacks, 30))
-
+  if (toneAsCurves.length) mappings.push(curves(toneAsCurves))
   if (options.contrast) mappings.push(contrast(options))
-  if (options.curve) mappings.push(curves(options))
+  if (options.curve) mappings.push(curves(options.curve))
 
-  if (adjustments.length) imageData = ImageData.proximityTransform(imageData, adjustments)
   if (mappings.length) imageData = ImageData.mapPixels(imageData, mappings)
   return ImageData.toColorspace(imageData, colorspace)
 }
