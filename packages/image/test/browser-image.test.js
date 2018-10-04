@@ -258,7 +258,7 @@ describe('BrowserImage', () => {
           expect(metadata).to.have.property('height', 3264)
           expect(metadata).to.have.deep.property('exif.fNumber', 7.1)
         })
-    })
+    }).timeout(5000)
 
     it('should compute the metadata of a portrait image', () => {
       return BrowserImage.from(yosemite)
@@ -359,7 +359,7 @@ describe('BrowserImage', () => {
             tolerance: 30,
           })
         })
-    })
+    }).timeout(5000)
   })
 
   describe('Performance', () => {
