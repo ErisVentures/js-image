@@ -25,27 +25,28 @@ describe('#transforms/tone', () => {
   })
 
   describe('#curves', () => {
-    const pixel = {colorspace: 'ycbcr'}
+    const imageData = {width: 1, height: 1, channels: 3, colorspace: 'ycbcr'}
+    const curves = curvePoints => imageData => toneModule.curves(imageData, curvePoints).data
 
     it('should hold in identity case', () => {
-      const curve = toneModule.curves([])
-      expect(curve({...pixel, values: [100, 1, 2]})).to.eql([100, 1, 2])
-      expect(curve({...pixel, values: [150, 1, 2]})).to.eql([150, 1, 2])
+      const curve = curves([])
+      expect(curve({...imageData, data: [100, 1, 2]})).to.eql([100, 1, 2])
+      expect(curve({...imageData, data: [150, 1, 2]})).to.eql([150, 1, 2])
     })
 
     it('should apply basic linear interpolation', () => {
-      const curve = toneModule.curves([[0, 50], [255, 200]])
+      const curve = curves([[0, 50], [255, 200]])
 
-      expect(curve({...pixel, values: [0, 1, 2]})).to.eql([50, 1, 2])
-      expect(curve({...pixel, values: [255, 1, 2]})).to.eql([200, 1, 2])
+      expect(curve({...imageData, data: [0, 1, 2]})).to.eql([50, 1, 2])
+      expect(curve({...imageData, data: [255, 1, 2]})).to.eql([200, 1, 2])
 
-      const interpolate = curve({...pixel, values: [128, 1, 2]}).map(Math.round)
+      const interpolate = curve({...imageData, data: [128, 1, 2]}).map(Math.round)
       expect(interpolate).to.eql([125, 1, 2])
     })
 
     it('should apply basic cubic interpolation', () => {
-      const curve = toneModule.curves([[0, 0], [50, 40], [205, 215], [255, 255]])
-      const compute = y => Math.round(curve({values: [y], colorspace: 'ycbcr'})[0])
+      const curve = curves([[0, 0], [50, 40], [205, 215], [255, 255]])
+      const compute = y => Math.round(curve({...imageData, data: [y]})[0])
 
       expect(compute(0)).to.equal(0)
       expect(compute(40)).to.equal(31)

@@ -34,7 +34,11 @@ export function contrast(options: IToneOptions): MapPixelFn {
  * @see https://en.wikipedia.org/wiki/Monotone_cubic_interpolation#Example_implementation
  * @param options
  */
-export function curves(unsafeCurve: number[][]): MapPixelFn {
+export function curves(
+  imageData: IAnnotatedImageData,
+  unsafeCurve: number[][],
+): IAnnotatedImageData {
+  if (imageData.colorspace !== Colorspace.YCbCr) throw new Error('Curves only works on YCbCr')
   const curve = validateCurvesInput(unsafeCurve)
 
   const xDiffs: number[] = []
@@ -87,27 +91,36 @@ export function curves(unsafeCurve: number[][]): MapPixelFn {
     thirdDegreeCoefficients.push(magicNumber * dxInverse * dxInverse)
   }
 
-  const mapLuma = (input: number) => {
-    const distances = curve.map(entry => (entry[0] > input ? Infinity : input - entry[0]))
-    const minDistance = Math.min(...distances)
-    const closestIndex = curve.findIndex(entry => input - entry[0] === minDistance)
-    const [xBase, yBase] = curve[closestIndex]
-    const xDiff = input - xBase
+  for (let x = 0; x < imageData.width; x++) {
+    for (let y = 0; y < imageData.height; y++) {
+      const offset = ImageData.indexFor(imageData, x, y)
+      const yValue = imageData.data[offset]
 
-    const c1 = firstDegreeCoefficients[closestIndex]
-    const c2 = secondDegreeCoefficients[closestIndex]
-    const c3 = thirdDegreeCoefficients[closestIndex]
+      let closestIndex = -1
+      for (let i = 0; i < curve.length; i++) {
+        const curvePoint = curve[i][0]
+        if (curvePoint > yValue) break
+        closestIndex = i
+      }
 
-    if (xDiff === 0) return yBase
-    if (closestIndex >= secondDegreeCoefficients.length) return yBase + c1 * xDiff
-    return yBase + c1 * xDiff + c2 * xDiff * xDiff + c3 * xDiff * xDiff * xDiff
+      const [xBase, yBase] = curve[closestIndex]
+      const xDiff = yValue - xBase
+
+      const c1 = firstDegreeCoefficients[closestIndex]
+      const c2 = secondDegreeCoefficients[closestIndex]
+      const c3 = thirdDegreeCoefficients[closestIndex]
+
+      let yPrime: number
+
+      if (xDiff === 0) yPrime = yBase
+      else if (closestIndex >= secondDegreeCoefficients.length) yPrime = yBase + c1 * xDiff
+      else yPrime = yBase + c1 * xDiff + c2 * xDiff * xDiff + c3 * xDiff * xDiff * xDiff
+
+      imageData.data[offset] = yPrime
+    }
   }
 
-  return pixel => {
-    if (pixel.colorspace !== Colorspace.YCbCr) return pixel.values
-    const [y, cb, cr] = pixel.values
-    return [mapLuma(y), cb, cr]
-  }
+  return imageData
 }
 
 function generateIdentityCurvesPoints(numPoints: number): number[][] {
@@ -156,9 +169,9 @@ export function tone(imageData: IAnnotatedImageData, options: IToneOptions): IAn
   const mappings: MapPixelFn[] = []
   const toneAsCurves = convertToneToCurves(options)
 
-  if (toneAsCurves.length) mappings.push(curves(toneAsCurves))
+  if (toneAsCurves.length) imageData = curves(imageData, toneAsCurves)
   if (options.contrast) mappings.push(contrast(options))
-  if (options.curve) mappings.push(curves(options.curve))
+  if (options.curve) imageData = curves(imageData, options.curve)
 
   if (mappings.length) imageData = ImageData.mapPixels(imageData, mappings)
   return ImageData.toColorspace(imageData, colorspace)
