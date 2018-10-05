@@ -1,7 +1,7 @@
 const BrowserImage = window['@eris/image'].Image
 const ImageData = window['@eris/image'].ImageData
 
-const IMAGE_A = '../test/fixtures/source-rainbow.jpg'
+const IMAGE_A = '../test/fixtures/actual-rainbow2.jpg'
 const IMAGE_B = '../test/fixtures/actual-lr-blue-saturation.jpg'
 
 async function imageDataFromURL(url) {
@@ -11,14 +11,14 @@ async function imageDataFromURL(url) {
   return await image.toImageData()
 }
 
-async function getFirstColumn(imageData) {
+async function getColumn(imageData, position = 0) {
   const image = BrowserImage.from(imageData)
   return await image
     .resize({
       width: 1,
       height: imageData.height,
       fit: 'exact',
-      subselect: {top: 0, bottom: imageData.height, left: 0, right: 1},
+      subselect: {top: 0, bottom: imageData.height, left: position, right: position + 1},
     })
     .toImageData()
 }
@@ -59,17 +59,58 @@ function graphDatasets(transform, imageDataA, imageDataB, datasetInfo) {
   }
 }
 
+function graphRGBDatasets(imageDataA, imageDataB) {
+  const transformedA = ImageData.toRGB(imageDataA)
+  const transformedB = ImageData.toRGB(imageDataB)
+
+  const datasets = [
+    {label: 'R', data: []},
+    {label: 'G', data: []},
+    {label: 'B', data: []},
+  ]
+
+  for (let i = 0; i < transformedA.height; i++) {
+    const offset = i * datasets.length
+    for (let c = 0; c < datasets.length; c++) {
+      datasets[c].data.push({
+        x: transformedA.data[offset + c],
+        y: transformedB.data[offset + c] - transformedA.data[offset + c],
+      })
+    }
+  }
+
+  for (const {data} of datasets) {
+    data.sort((a, b) => a.x - b.x)
+  }
+
+  for (let c = 0; c < datasets.length; c++) {
+    new Chart(document.getElementById(`rgb2-${datasets[c].label}`), {
+      type: 'scatter',
+      data: {datasets: [datasets[c]]},
+      options: {
+        scales: {
+          yAxes: [
+            {
+              type: 'linear',
+              position: 'left',
+              ticks: {min: -255, max: 255},
+            },
+          ],
+          xAxes: [{type: 'linear', position: 'bottom', ticks: {min: 0, max: 255, stepSize: 32}}],
+        },
+      },
+    })
+  }
+}
+
 function showImages() {
   document.getElementById('img1').src = IMAGE_A
   document.getElementById('img2').src = IMAGE_B
 }
 
-async function analyzeAndGraphImages() {
-  const imageA = await imageDataFromURL(IMAGE_A)
-  const imageB = await imageDataFromURL(IMAGE_B)
-
-  const columnA = await getFirstColumn(imageA)
-  const columnB = await getFirstColumn(imageB)
+async function graphAtColumn(imageA, imageB, position) {
+  const columnA = await getColumn(imageA, position)
+  const columnB = await getColumn(imageB, position)
 
   graphDatasets(ImageData.toHSL, columnA, columnB, [
     {label: 'Hue', id: 'hsl-h', yAxis: {min: -60, max: 60}},
@@ -89,6 +130,8 @@ async function analyzeAndGraphImages() {
     {label: 'B', id: 'rgb-b', yAxis: {min: -255, max: 255}},
   ])
 
+  graphRGBDatasets(columnA, columnB)
+
   graphDatasets(ImageData.toXYZ, columnA, columnB, [
     {label: 'X', id: 'xyz-x'},
     {label: 'Y', id: 'xyz-y'},
@@ -100,6 +143,13 @@ async function analyzeAndGraphImages() {
     {label: 'y', id: 'xyy-y'},
     {label: 'Y', id: 'xyy-yy'},
   ])
+}
+
+async function analyzeAndGraphImages() {
+  const imageA = await imageDataFromURL(IMAGE_A)
+  const imageB = await imageDataFromURL(IMAGE_B)
+
+  await graphAtColumn(imageA, imageB, 0)
 }
 
 showImages()
