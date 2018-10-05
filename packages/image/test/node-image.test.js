@@ -127,7 +127,10 @@ describe('NodeImage', () => {
         blueSaturationShift: 0.5,
       })
 
-      await testSkater('skater-calibrate.jpg', modify, {strict: false})
+      await testSkater('skater-calibrate.jpg', modify, {
+        strict: false,
+        tolerance: 10,
+      })
     })
   })
 
