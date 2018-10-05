@@ -1,5 +1,6 @@
-let imageData, imageMetadata, processStartTs, hideNotifierTimeout
+let imageData, imageMetadata, processStartTs, hideNotifierTimeout, isLoading
 
+const debounce = (self._ && self._.debounce) || (fn => fn)
 const BrowserImage = window['@eris/image'].Image
 const ImageData = window['@eris/image'].ImageData
 
@@ -14,7 +15,8 @@ function createElement(parent, tagName, classNames = []) {
   return element
 }
 
-function setLoading(isLoading) {
+function setLoading(_isLoading) {
+  isLoading = !!_isLoading
   document.querySelector('.editor').classList.toggle('editor--loading', !!isLoading)
 }
 
@@ -84,7 +86,7 @@ function updateCanvasContext(rawImageData) {
   context.putImageData(imageData, 0, 0)
 }
 
-function refreshPreview() {
+const refreshPreview = debounce(function () {
   setNotifier('Processing image...', false, true)
   setLoading(true)
   processStartTs = performance.now()
@@ -92,7 +94,7 @@ function refreshPreview() {
     type: 'process',
     payload: {data: imageData, settings},
   })
-}
+}, 1000)
 
 function renderFromBuffer(buffer) {
   const image = BrowserImage.from(buffer)
