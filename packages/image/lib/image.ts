@@ -102,6 +102,10 @@ export abstract class Image {
     }
 
     const {hash, sharpness} = this._analyze
+    if (!hash && !sharpness) {
+      return Promise.resolve({})
+    }
+
     return this.toImageData().then(imageData => {
       const analysis: types.IAnalysis = {}
       if (hash) {
