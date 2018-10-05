@@ -18,17 +18,6 @@ function validateCurvesInput(curve?: number[][]): number[][] {
   return curve
 }
 
-export function contrast(options: IToneOptions): MapPixelFn {
-  return pixel => {
-    if (pixel.colorspace !== Colorspace.YCbCr) return pixel.values
-
-    const [y, cb, cr] = pixel.values
-    const delta = y - 128
-    const yPrime = delta * options.contrast! + y
-    return [yPrime, cb, cr]
-  }
-}
-
 /**
  * Use monotonic cubic interpolation to map lightness values according to the provided curve.
  * @see https://en.wikipedia.org/wiki/Monotone_cubic_interpolation#Example_implementation
@@ -40,6 +29,7 @@ export function curves(
 ): IAnnotatedImageData {
   if (imageData.colorspace !== Colorspace.YCbCr) throw new Error('Curves only works on YCbCr')
   const curve = validateCurvesInput(unsafeCurve)
+  if (curve.every(([x, y]) => x === y)) return imageData
 
   const xDiffs: number[] = []
   const yDiffs: number[] = []
@@ -134,6 +124,10 @@ function generateIdentityCurvesPoints(numPoints: number): number[][] {
   return curves
 }
 
+function convertContrastToCurves({contrast = 0}: IToneOptions): number[][] {
+  return [[0, 0], [64, 64 - contrast * 64], [192, 192 + contrast * 62], [255, 255]]
+}
+
 function convertToneToCurves(options: IToneOptions): number[][] {
   let hasAdjustment = false
   const cosine0 = Math.PI / 2
@@ -166,13 +160,9 @@ export function tone(imageData: IAnnotatedImageData, options: IToneOptions): IAn
   // Convert the image to YCbCr colorspace to just operate on luma channel
   imageData = ImageData.toYCbCr(imageData)
 
-  const mappings: MapPixelFn[] = []
-  const toneAsCurves = convertToneToCurves(options)
-
-  if (toneAsCurves.length) imageData = curves(imageData, toneAsCurves)
-  if (options.contrast) mappings.push(contrast(options))
+  imageData = curves(imageData, convertToneToCurves(options))
+  if (options.contrast) imageData = curves(imageData, convertContrastToCurves(options))
   if (options.curve) imageData = curves(imageData, options.curve)
 
-  if (mappings.length) imageData = ImageData.mapPixels(imageData, mappings)
   return ImageData.toColorspace(imageData, colorspace)
 }
