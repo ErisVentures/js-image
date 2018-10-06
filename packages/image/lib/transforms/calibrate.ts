@@ -1,5 +1,5 @@
 /* tslint:disable */
-import {IAnnotatedImageData, ImageData, IProximityAdjustment} from '../image-data'
+import {IAnnotatedImageData, ImageData} from '../image-data'
 import {ICalibrationOptions, ICalibrationProfile, Colorspace, ColorChannel} from '../types'
 
 function toXYZ(hue: number, saturation: number, lightness: number): number[] {
@@ -8,7 +8,7 @@ function toXYZ(hue: number, saturation: number, lightness: number): number[] {
     height: 1,
     channels: 3,
     colorspace: Colorspace.HSL,
-    data: [hue, saturation, lightness],
+    data: [(hue / 360) * 255, saturation * 255, lightness * 255],
   }
 
   return ImageData.toXYZ(imageData).data as number[]

@@ -319,12 +319,12 @@ describe('ImageData', () => {
         height: 2,
         channels: 3,
         colorspace: Colorspace.HSL,
-        data: [
-          0, 0, 100 / 255,
-          0, 0, 50 / 255,
-          0, 0, 200 / 255,
-          0, 0, 30 / 255,
-        ],
+        data: new Uint8Array([
+          0, 0, 100,
+          0, 0, 50,
+          0, 0, 200,
+          0, 0, 30,
+        ]),
       })
     })
 
@@ -347,12 +347,12 @@ describe('ImageData', () => {
         height: 2,
         channels: 3,
         colorspace: Colorspace.HSL,
-        data: [
-          0, 1, 0.5,
-          120, 1, 0.5,
-          300, 1, 0.5,
-          0, 0, 1,
-        ],
+        data: new Uint8Array([
+          0, 255, 128,
+          85, 255, 128,
+          213, 255, 128,
+          0, 0, 255,
+        ]),
       })
     })
 
@@ -363,10 +363,10 @@ describe('ImageData', () => {
         channels: 3,
         colorspace: Colorspace.HSL,
         data: [
-          0, 1, 0.5,
-          60, 1, 0.5,
-          0, 1, 1,
-          300, 1, 0.5,
+          0, 255, 127,
+          43, 255, 127,
+          0, 255, 255,
+          213, 255, 127,
         ],
       }
 
@@ -376,10 +376,10 @@ describe('ImageData', () => {
         channels: 3,
         colorspace: Colorspace.RGB,
         data: new Uint8Array([
-          255, 0, 0,
-          255, 255, 0,
+          254, 0, 0,
+          251, 254, 0,
           255, 255, 255,
-          255, 0, 255,
+          254, 0, 251,
         ]),
       })
     })
