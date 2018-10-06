@@ -155,6 +155,20 @@ function convertToneToCurves(options: IToneOptions): number[][] {
   return curves
 }
 
+function saturation(imageData: IAnnotatedImageData, options: IToneOptions): IAnnotatedImageData {
+  imageData = ImageData.toHSL(imageData)
+
+  for (let x = 0; x < imageData.width; x++) {
+    for (let y = 0; y < imageData.height; y++) {
+      const index = ImageData.indexFor(imageData, x, y, 1)
+      const saturation = imageData.data[index]
+      imageData.data[index] = ImageData.clip(saturation * (1 + options.saturation!))
+    }
+  }
+
+  return imageData
+}
+
 export function tone(imageData: IAnnotatedImageData, options: IToneOptions): IAnnotatedImageData {
   const {colorspace} = imageData
   // Convert the image to YCbCr colorspace to just operate on luma channel
@@ -163,6 +177,7 @@ export function tone(imageData: IAnnotatedImageData, options: IToneOptions): IAn
   imageData = curves(imageData, convertToneToCurves(options))
   if (options.contrast) imageData = curves(imageData, convertContrastToCurves(options))
   if (options.curve) imageData = curves(imageData, options.curve)
+  if (options.saturation) imageData = saturation(imageData, options)
 
   return ImageData.toColorspace(imageData, colorspace)
 }

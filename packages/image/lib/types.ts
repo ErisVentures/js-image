@@ -26,6 +26,8 @@ export interface IToneOptions {
   contrast?: number
   /** Applies the curve to the lightness in the image, an array of number tuples mapping input to output, i.e. for a slight contrast curve [[0, 0], [50, 40], [200, 210], [255, 255]] */
   curve?: number[][]
+  /** Affects the overall saturation in the image, typically a number between -1 and 2 */
+  saturation?: number
   whites?: number
   highlights?: number
   midtones?: number

@@ -525,7 +525,7 @@ export class ImageData {
         }
       }
 
-      rawData[offset + 0] = ImageData.clip(hue / 360 * 255)
+      rawData[offset + 0] = ImageData.clip((hue / 360) * 255)
       rawData[offset + 1] = ImageData.clip(saturation * 255)
       rawData[offset + 2] = ImageData.clip(lightness * 255)
     }
@@ -542,7 +542,7 @@ export class ImageData {
     const rawData = new Uint8Array(numPixels * 3)
     for (let i = 0; i < numPixels; i++) {
       const offset = i * 3
-      const h = 360 * srcImageData.data[offset] / 255
+      const h = (360 * srcImageData.data[offset]) / 255
       const s = srcImageData.data[offset + 1] / 255
       const l = srcImageData.data[offset + 2] / 255
 

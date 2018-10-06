@@ -146,6 +146,19 @@ describe('BrowserImage', () => {
       await testSkater('skater-contrast.jpg', modify, {strict: false})
     })
 
+    it('should increase saturation', async () => {
+      const modify = img => img.tone({saturation: 1})
+      await testSkater('skater-saturation-plus.jpg', modify, {
+        strict: false,
+        tolerance: 10,
+      })
+    })
+
+    it('should decrease saturation', async () => {
+      const modify = img => img.tone({saturation: -0.5})
+      await testSkater('skater-saturation-minus.jpg', modify, {strict: false})
+    })
+
     it('should apply multiple tone adjustments', async () => {
       const modify = img => img.tone({
         whites: 30,
