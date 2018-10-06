@@ -6,7 +6,7 @@ const ImageData = window['@eris/image'].ImageData
 
 const settings = {}
 const worker = new Worker('worker.js')
-const settingInputs = [...document.querySelectorAll('input, select')]
+const settingInputs = [...document.querySelectorAll('input, select, textarea')]
 
 function createElement(parent, tagName, classNames = []) {
   const element = document.createElement(tagName)

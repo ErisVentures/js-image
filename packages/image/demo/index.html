@@ -69,25 +69,29 @@
             <div class="col-sm-8">
               <input type="number" class="form-control" name="tone[saturation]" placeholder="-0.5">
             </div>
-            <label for="tone[whites]" class="col-sm-4 control-label">whites</label>
+            <label for="tone[whites]" class="col-sm-4 control-label">Whites</label>
             <div class="col-sm-8">
               <input type="number" class="form-control" name="tone[whites]" placeholder="10">
             </div>
-            <label for="tone[highlights]" class="col-sm-4 control-label">highlights</label>
+            <label for="tone[highlights]" class="col-sm-4 control-label">Highlights</label>
             <div class="col-sm-8">
               <input type="number" class="form-control" name="tone[highlights]" placeholder="10">
             </div>
-            <label for="tone[midtones]" class="col-sm-4 control-label">midtones</label>
+            <label for="tone[midtones]" class="col-sm-4 control-label">Midtones</label>
             <div class="col-sm-8">
               <input type="number" class="form-control" name="tone[midtones]" placeholder="10">
             </div>
-            <label for="tone[shadows]" class="col-sm-4 control-label">shadows</label>
+            <label for="tone[shadows]" class="col-sm-4 control-label">Shadows</label>
             <div class="col-sm-8">
               <input type="number" class="form-control" name="tone[shadows]" placeholder="10">
             </div>
-            <label for="tone[blacks]" class="col-sm-4 control-label">blacks</label>
+            <label for="tone[blacks]" class="col-sm-4 control-label">Blacks</label>
             <div class="col-sm-8">
               <input type="number" class="form-control" name="tone[blacks]" placeholder="10">
+            </div>
+            <label for="tone[curve]" class="col-sm-4 control-label">Curves</label>
+            <div class="col-sm-8">
+              <textarea id="curves" class="form-control" name="tone[curve]" title="Each line is an X,Y pair mapping input luminance to output luminance."></textarea>
             </div>
           </div>
           <div class="form-group">
@@ -163,6 +167,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.11/lodash.min.js"></script>
   <script src="bundle.js"></script>
   <script src="demo.js"></script>
+  <script>document.getElementById('curves').placeholder = '0,50\n255,205'</script>
 </body>
 
 </html>
