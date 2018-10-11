@@ -8,7 +8,7 @@
     "build": "npm run build:ts && npm run build:wasm && npm run build:rollup && npm run build:rollup:minify",
     "build:ts": "tsc",
     "build:wasm": "cd wasm && wasm-pack build && cp ./pkg/eris_image_bg.wasm ../demo/bundle.wasm && cp ./pkg/eris_image_bg.wasm ../dist/bundle.wasm",
-    "build:rollup": "rollup -c rollup.config.js && cp dist/bundle.js demo/",
+    "build:rollup": "rollup -c rollup.config.js && cp dist/bundle.js demo/ && cp dist/browser-index.d.ts dist/bundle.d.ts",
     "build:rollup:minify": "cross-env MINIFY=true rollup -c rollup.config.js && cp dist/bundle.min.js demo/",
     "test": "npm run test:lint && npm run test:unit",
     "test:unit": "mocha --require source-map-support/register --timeout 20000 --reporter spec --recursive ./test",
