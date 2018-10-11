@@ -1,6 +1,6 @@
 {
   "name": "@eris/image",
-  "version": "1.1.0",
+  "version": "0.1.0",
   "description": "Collection of image manipulation libraries for node and the browser.",
   "main": "./dist/node-index.js",
   "types": "./dist/node-index.d.ts",
@@ -21,6 +21,9 @@
     "test:watch": "mocha --watch --reporter dot 'test/**/*.test.js'",
     "semantic-release": "semantic-release pre && npm publish --access public && semantic-release post"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/ErisVentures/js-image.git"
@@ -32,7 +35,7 @@
   },
   "homepage": "https://github.com/ErisVentures/js-image#readme",
   "dependencies": {
-    "@eris/exif": "^1.1.0",
+    "@eris/exif": "^0.1.0",
     "buffer": "^5.2.0",
     "file-type": "^7.0.1",
     "jpeg-js": "^0.3.4",
@@ -63,5 +66,6 @@
     "source-map-support": "^0.4.15",
     "tslint": "^5.2.0",
     "typescript": "^2.3.2"
-  }
+  },
+  "gitHead": "ebc86fb8cbc78e41f62cb44909825c033c140f3c"
 }

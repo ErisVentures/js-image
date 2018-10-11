@@ -4,6 +4,5 @@ coverage/
 test/
 demo/
 
-wasm/target/
-wasm/bin/
 *.log
+yarn.lock

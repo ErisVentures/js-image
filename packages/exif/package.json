@@ -1,6 +1,6 @@
 {
   "name": "@eris/exif",
-  "version": "1.1.0",
+  "version": "0.1.0",
   "description": "Parses EXIF data.",
   "main": "./dist/index.js",
   "scripts": {
@@ -12,6 +12,9 @@
     "test:watch": "mocha --watch --reporter dot 'test/**/*.test.js'",
     "test:coverage": "nyc npm run test:unit",
     "semantic-release": "semantic-release pre && npm publish --access public && semantic-release post"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "repository": {
     "type": "git",

@@ -1,6 +1,6 @@
 {
   "name": "@eris/image-cli",
-  "version": "1.1.0",
+  "version": "0.1.0",
   "description": "CLI wrapper and standalone executable API for @eris/image.",
   "main": "./lib/client.js",
   "bin": {
@@ -13,6 +13,9 @@
     "test:lint": "lint",
     "test:coverage": "nyc npm run test:unit",
     "test:watch": "mocha --watch --reporter dot 'test/**/*.test.js'"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "repository": {
     "type": "git",
@@ -42,7 +45,7 @@
     "sinon-chai": "^2.14.0"
   },
   "dependencies": {
-    "@eris/image": "^1.0.1",
+    "@eris/image": "^0.1.0",
     "yargs": "^9.0.1"
   }
 }
