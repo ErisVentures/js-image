@@ -24,6 +24,18 @@ describe('Image', () => {
     })
   })
 
+  describe('.options', () => {
+    it('should set many options at once', () => {
+      const image = new Image().options({format: 'png', greyscale: true, analyze: {hash: {}}})
+      expect(image._output).to.eql({
+        format: {type: 'png'},
+        greyscale: true,
+      })
+
+      expect(image._analyze).to.eql({hash: {}})
+    })
+  })
+
   describe('.format', () => {
     let image
 

@@ -24,6 +24,18 @@ export abstract class Image {
     }
   }
 
+  public options(options: types.IImageOutputOptions & {analyze?: types.IAnalysisOptions}): Image {
+    if (options.analyze) this.analyze(options.analyze)
+    if (options.format) this.format(options.format)
+    if (options.resize) this.resize(options.resize)
+    if (options.calibrate) this.calibrate(options.calibrate)
+    if (options.tone) this.tone(options.tone)
+    if (options.greyscale) this.greyscale(options.greyscale)
+    if (options.sharpen) this.sharpen(options.sharpen)
+    if (options.edges) this.edges(options.edges)
+    return this
+  }
+
   public format(options: types.ImageFormat | types.IFormatOptions): Image {
     if (typeof options === 'string') {
       options = {type: options}
@@ -67,8 +79,8 @@ export abstract class Image {
     return this
   }
 
-  public greyscale(): Image {
-    this._output.greyscale = true
+  public greyscale(isGreyscale: boolean = true): Image {
+    this._output.greyscale = isGreyscale
     return this
   }
 
