@@ -27,6 +27,12 @@ describe('#transforms/resize', () => {
       expect(result).to.have.property('width', 50)
     })
 
+    it('should round values', () => {
+      const options = {height: 50, fit: 'exact'}
+      const result = resize.normalizeOptions({...baseImageData, width: 133}, options)
+      expect(result).to.have.property('width', 67)
+    })
+
     it('should support height contain', () => {
       const options = {width: 125, height: 25, fit: 'contain'}
       const result = resize.normalizeOptions(baseImageData, options)

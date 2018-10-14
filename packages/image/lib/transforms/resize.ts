@@ -70,9 +70,11 @@ export function normalizeOptions(
       break
   }
 
+  if (!targetWidth || !targetHeight) throw new Error('Invalid dimensions for resize')
+
   return Object.assign({}, options, {
-    width: targetWidth,
-    height: targetHeight,
+    width: Math.round(targetWidth),
+    height: Math.round(targetHeight),
     subselect,
   })
 }
