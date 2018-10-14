@@ -1031,6 +1031,7 @@ export class ImageData {
       throw new Error('toBrowserImageData must be called in browser context')
     }
 
+    imageData = ImageData.toRGBA(imageData)
     const clamped = new Uint8ClampedArray(imageData.data)
     return new (window as any).ImageData(clamped, imageData.width, imageData.height)
   }
