@@ -29,7 +29,7 @@ rust:
 install:
   - *INSTALL_NODE_AND_WASM
   - git lfs pull
-  - npm install -g yarn coveralls nyc @patrickhulce/scripts
+  - npm install -g yarn coveralls nyc @patrickhulce/scripts lerna
   - yarn install --check-files
 script:
   - export PKG_TARGET="node8-linux"
