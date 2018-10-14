@@ -29,7 +29,7 @@ rust:
 install:
   - *INSTALL_NODE_AND_WASM
   - git lfs pull
-  - npm install -g yarn coveralls nyc @patrickhulce/scripts lerna
+  - npm install -g yarn coveralls nyc @patrickhulce/scripts lerna@3.x
   - yarn install --check-files
 script:
   - export PKG_TARGET="node8-linux"
@@ -38,4 +38,4 @@ script:
   - npm run test:coverage
 after_success:
   - nyc report --reporter=text-lcov | coveralls || echo 'Failed to upload to coveralls...'
-  - TRAVIS_NODE_VERSION=v8 hulk npm-publish --lerna --prerelease --yes
+  - ./scripts/publish.sh
