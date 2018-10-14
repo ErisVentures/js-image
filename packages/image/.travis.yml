@@ -18,7 +18,7 @@ node_js:
   - v7
   - v6
 before_install:
-  - npm install -g coveralls nyc yarn
+  - npm install -g coveralls nyc yarn lerna
 install:
   - yarn install --check-files
 script:
