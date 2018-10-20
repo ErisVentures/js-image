@@ -14,6 +14,34 @@ export class BrowserImage extends Image {
     this._metadata = metadata
   }
 
+  private _applyEXIFOrientation(image: IAnnotatedImageData): IAnnotatedImageData {
+    // TODO: make this use EXIF types
+    const exif: any = this._metadata && this._metadata.exif
+    if (!exif || !exif._raw.Orientation) {
+      return image
+    }
+
+    /** @see https://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/EXIF.html */
+    switch (exif._raw.Orientation) {
+      case 1:
+        // Do nothing
+        break
+      case 3:
+        image = ImageData.rotate(image, 180)
+        break
+      case 6:
+        image = ImageData.rotate(image, 270) // our rotate is CCW so 360 - 90
+        break
+      case 8:
+        image = ImageData.rotate(image, 90) // our rotate is CCW so 360 - 270
+        break
+      default:
+        throw new Error(`Unable to handle orientation ${exif._raw.Orientation}`)
+    }
+
+    return image
+  }
+
   private _applyResize(image: IAnnotatedImageData): IAnnotatedImageData {
     if (!this._output.resize) {
       return image
@@ -46,6 +74,7 @@ export class BrowserImage extends Image {
     imagePromise: Promise<IAnnotatedImageData>,
   ): Promise<IAnnotatedImageData> {
     let image = await imagePromise
+    image = await this._applyEXIFOrientation(image)
     image = await this._applyGreyscale(image)
     image = await this._applyResize(image)
     image = await this._applyCalibrate(image)

@@ -135,6 +135,10 @@ export class NodeImage extends Image {
 
   private async _applyAll(imagePromise: sharp.SharpInstance): Promise<sharp.SharpInstance> {
     let image = await imagePromise
+
+    // Make sure the image is rotated according to EXIF
+    image = image.rotate()
+
     image = await this._applyResize(image)
     image = await this._applyGreyscale(image)
     image = await this._applyImageDataTransforms(image)

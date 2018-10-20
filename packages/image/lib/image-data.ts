@@ -326,6 +326,10 @@ export class ImageData {
     }
   }
 
+  /**
+   * Rotates the image data counter-clockwise by the specified angle.
+   * TODO: convert this to clockwise rotation
+   */
   public static rotate(srcImageData: IAnnotatedImageData, angle: number): IAnnotatedImageData {
     const dstImageData = {...srcImageData}
     const numPixels = srcImageData.width * srcImageData.height

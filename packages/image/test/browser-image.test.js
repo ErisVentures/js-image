@@ -6,6 +6,7 @@ const BrowserImage = require('../dist/browser-image').BrowserImage
 const {expect, fixture, fixtureDecode, compareToFixture, testImage, enableWASM, disableWASM} = require('./utils')
 
 const skater = fixture('source-skater.jpg')
+const skaterRotated = fixture('source-skater-rotated.jpg')
 const yosemite = fixture('source-yosemite.jpg')
 const testSkater = (...args) => testImage(BrowserImage, 'source-skater.jpg', ...args)
 const testYosemite = (...args) => testImage(BrowserImage, 'source-yosemite.jpg', ...args)
@@ -320,17 +321,15 @@ describe('BrowserImage', () => {
       })
     })
 
-    it('should generate a valid image data', () => {
-      const decoded = jpeg.decode(skater)
-      return BrowserImage.from(skater)
-        .toImageData()
-        .then(imageData => {
-          expect(imageData).to.have.property('width', decoded.width)
-          expect(imageData).to.have.property('height', decoded.height)
-          expect(imageData)
-            .to.have.property('data')
-            .with.length(decoded.data.length)
-        })
+    it('should generate a valid image data', async () => {
+      const imageData = await BrowserImage.from(skater).toImageData()
+      const buffer = jpeg.encode(ImageData.toRGBA(imageData), 90).data
+      await compareToFixture(buffer, 'skater-image-data.jpg', {strict: false})
+    })
+
+    it('should handle rotated image data', async () => {
+      const imageData = await BrowserImage.from(skaterRotated).toImageData()
+      await compareToFixture(ImageData.toRGBA(imageData), 'skater-rotated.jpg', {strict: false})
     })
   })
 

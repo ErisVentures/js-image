@@ -5,6 +5,7 @@ const NodeImage = require('../dist/node-image').NodeImage
 const {expect, fixture, compareToFixture, testImage} = require('./utils')
 
 const skater = fixture('source-skater.jpg')
+const skaterRotated = fixture('source-skater-rotated.jpg')
 const yosemite = fixture('source-yosemite.jpg')
 const testSkater = (...args) => testImage(NodeImage, 'source-skater.jpg', ...args)
 const testYosemite = (...args) => testImage(NodeImage, 'source-yosemite.jpg', ...args)
@@ -118,14 +119,15 @@ describe('NodeImage', () => {
 
   describe('._applyCalibrate', () => {
     it('should apply a calibration profile', async () => {
-      const modify = img => img.calibrate({
-        redHueShift: -0.5,
-        redSaturationShift: 0.5,
-        greenHueShift: 0.5,
-        greenSaturationShift: -0.5,
-        blueHueShift: 0.5,
-        blueSaturationShift: 0.5,
-      })
+      const modify = img =>
+        img.calibrate({
+          redHueShift: -0.5,
+          redSaturationShift: 0.5,
+          greenHueShift: 0.5,
+          greenSaturationShift: -0.5,
+          blueHueShift: 0.5,
+          blueSaturationShift: 0.5,
+        })
 
       await testSkater('skater-calibrate.jpg', modify, {
         strict: false,
@@ -154,13 +156,14 @@ describe('NodeImage', () => {
     })
 
     it('should apply multiple tone adjustments', async () => {
-      const modify = img => img.tone({
-        whites: 30,
-        highlights: -20,
-        midtones: 30,
-        shadows: 50,
-        blacks: -20,
-      })
+      const modify = img =>
+        img.tone({
+          whites: 30,
+          highlights: -20,
+          midtones: 30,
+          shadows: 50,
+          blacks: -20,
+        })
 
       await testSkater('skater-tone.jpg', modify, {
         strict: false,
@@ -307,13 +310,15 @@ describe('NodeImage', () => {
       })
     })
 
-    it('should generate a valid image data', () => {
-      return NodeImage.from(skater)
-        .toImageData()
-        .then(data => {
-          const buffer = jpeg.encode(ImageData.toRGBA(data), 90).data
-          return compareToFixture(buffer, 'skater-image-data.jpg', {strict: false})
-        })
+    it('should generate a valid image data', async () => {
+      const imageData = await NodeImage.from(skater).toImageData()
+      const buffer = jpeg.encode(ImageData.toRGBA(imageData), 90).data
+      await compareToFixture(buffer, 'skater-image-data.jpg', {strict: false})
+    })
+
+    it('should handle rotated image data', async () => {
+      const imageData = await NodeImage.from(skaterRotated).toImageData()
+      await compareToFixture(ImageData.toRGBA(imageData), 'skater-rotated.jpg', {strict: false})
     })
 
     it('should generate valid image data for transformed image', () => {
