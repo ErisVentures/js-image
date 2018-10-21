@@ -6,17 +6,19 @@ import {subselect} from './transforms/subselect'
 
 export class BrowserImage extends Image {
   private readonly _image: Promise<IAnnotatedImageData>
-  private readonly _metadata: object | undefined
+  private readonly _metadata: Partial<IMetadata> | undefined
 
-  public constructor(image: Promise<IAnnotatedImageData> | IAnnotatedImageData, metadata?: object) {
+  public constructor(
+    image: Promise<IAnnotatedImageData> | IAnnotatedImageData,
+    metadata?: Partial<IMetadata>,
+  ) {
     super()
     this._image = Promise.resolve(image)
     this._metadata = metadata
   }
 
   private _applyEXIFOrientation(image: IAnnotatedImageData): IAnnotatedImageData {
-    // TODO: make this use EXIF types
-    const exif: any = this._metadata && this._metadata.exif
+    const exif = this._metadata && this._metadata.exif
     if (!exif || !exif._raw.Orientation) {
       return image
     }
@@ -105,7 +107,7 @@ export class BrowserImage extends Image {
     )
   }
 
-  protected static _fromBuffer(buffer: BufferLike, metadata?: object): Image {
+  protected static _fromBuffer(buffer: BufferLike, metadata?: Partial<IMetadata>): Image {
     return new BrowserImage(ImageData.from(buffer), metadata)
   }
 

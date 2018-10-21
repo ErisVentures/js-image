@@ -2,7 +2,7 @@ import {JPEGDecoder} from './decoder/jpeg-decoder'
 import {TIFFDecoder} from './decoder/tiff-decoder'
 import {TIFFEncoder} from './encoder/tiff-encoder'
 import {normalizeMetadata} from './metadata/normalize'
-import {IDecoder, IBufferLike} from './utils/types'
+import {IDecoder, IBufferLike, INormalizedMetadata} from './utils/types'
 
 function isTIFFDecoder(obj: any): obj is IDecoder {
   return typeof (obj as any).extractMetadata === 'function'
@@ -24,7 +24,7 @@ export function createDecoder(bufferOrDecoder: IBufferLike | IDecoder): IDecoder
   }
 }
 
-export function parse(bufferOrDecoder: IBufferLike | IDecoder): any {
+export function parse(bufferOrDecoder: IBufferLike | IDecoder): INormalizedMetadata {
   return normalizeMetadata(createDecoder(bufferOrDecoder).extractMetadata())
 }
 

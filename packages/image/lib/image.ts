@@ -4,7 +4,7 @@ import {writeFileAsync} from './fs-utils'
 import {sobel} from './transforms/sobel'
 import {phash} from './analyses/hash'
 import {sharpness as computeSharpness} from './analyses/sharpness'
-import {parse as parseEXIF, TIFFDecoder} from '@eris/exif'
+import {parse as parseEXIF, TIFFDecoder, INormalizedMetadata} from '@eris/exif'
 import {tone} from './transforms/tone'
 import {gaussianBlur} from './transforms/blur'
 import {canny} from './transforms/canny'
@@ -198,7 +198,7 @@ export abstract class Image {
     }
 
     let buffer = bufferOrImageData as Buffer
-    let exif = undefined // tslint:disable-line
+    let exif: INormalizedMetadata | undefined
 
     const type = fileType(buffer) || {mime: 'unknown'}
     switch (type.mime) {
@@ -213,7 +213,10 @@ export abstract class Image {
     return this._fromBuffer(buffer, {exif})
   }
 
-  protected static _fromBuffer(buffer: types.BufferLike, metadata?: object): Image {
+  protected static _fromBuffer(
+    buffer: types.BufferLike,
+    metadata?: Partial<types.IMetadata>,
+  ): Image {
     throw new Error('unimplemented')
   }
 

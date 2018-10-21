@@ -1,3 +1,5 @@
+import {INormalizedMetadata} from '@eris/exif'
+
 export type MapPixelFn = (pixel: IPixel) => number[]
 
 export interface IFormatOptions {
@@ -93,7 +95,7 @@ export interface IMetadata {
   width: number
   height: number
   aspectRatio: number
-  exif?: object
+  exif?: INormalizedMetadata
 }
 
 export interface ISharpness {
