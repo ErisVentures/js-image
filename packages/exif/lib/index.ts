@@ -29,3 +29,5 @@ export function parse(bufferOrDecoder: IBufferLike | IDecoder): any {
 }
 
 export {normalizeMetadata, TIFFDecoder, JPEGDecoder, TIFFEncoder}
+
+export {IGenericMetadata, INormalizedMetadata, IParsedLens, IFDTagName} from './utils/types'
