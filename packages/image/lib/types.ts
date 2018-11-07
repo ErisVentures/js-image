@@ -1,4 +1,5 @@
 import {INormalizedMetadata} from '@eris/exif'
+import {IAnnotatedImageData} from './image-data'
 
 export type MapPixelFn = (pixel: IPixel) => number[]
 
@@ -46,9 +47,15 @@ export interface ICalibrationOptions {
   blueSaturationShift?: number
 }
 
+export interface ILayerOptions {
+  imageData: IAnnotatedImageData
+  opacity: number
+}
+
 export interface IImageOutputOptions {
   format: IFormatOptions
   resize?: IResizeOptions
+  layers?: ILayerOptions[]
   calibrate?: ICalibrationOptions
   tone?: IToneOptions
   greyscale?: boolean

@@ -10,6 +10,7 @@ import {gaussianBlur} from './transforms/blur'
 import {canny} from './transforms/canny'
 import {sharpen} from './transforms/sharpen'
 import {calibrate} from './transforms/calibrate'
+import {opacity} from './transforms/opacity'
 
 /* tslint:disable-next-line */
 const fileType = require('file-type')
@@ -66,6 +67,11 @@ export abstract class Image {
       method: types.ImageResizeMethod.Bilinear,
       ...options,
     }
+    return this
+  }
+
+  public layers(layers: types.ILayerOptions[]): Image {
+    this._output.layers = layers
     return this
   }
 
@@ -135,6 +141,20 @@ export abstract class Image {
 
       return analysis
     })
+  }
+
+  protected _applyLayers(image: IAnnotatedImageData): IAnnotatedImageData {
+    if (!this._output.layers) {
+      return image
+    }
+
+    let imageWithLayers = image
+    for (const layer of this._output.layers) {
+      const convertedLayer = ImageData.toColorspace(layer.imageData, image.colorspace)
+      imageWithLayers = opacity(imageWithLayers, convertedLayer, layer.opacity)
+    }
+
+    return imageWithLayers
   }
 
   protected _applyCalibrate(image: IAnnotatedImageData): IAnnotatedImageData {

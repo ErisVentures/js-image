@@ -79,6 +79,7 @@ export class BrowserImage extends Image {
     image = await this._applyEXIFOrientation(image)
     image = await this._applyGreyscale(image)
     image = await this._applyResize(image)
+    image = await this._applyLayers(image)
     image = await this._applyCalibrate(image)
     image = await this._applyTone(image)
     image = await this._applySharpen(image)

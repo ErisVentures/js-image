@@ -5,6 +5,7 @@ const NodeImage = require('../dist/node-image').NodeImage
 const {expect, fixture, compareToFixture, testImage} = require('./utils')
 
 const skater = fixture('source-skater.jpg')
+const sydney = fixture('source-sydney.jpg')
 const skaterRotated = fixture('source-skater-rotated.jpg')
 const yosemite = fixture('source-yosemite.jpg')
 const testSkater = (...args) => testImage(NodeImage, 'source-skater.jpg', ...args)
@@ -114,6 +115,23 @@ describe('NodeImage', () => {
         increment: 5,
         tolerance: 10,
       })
+    })
+  })
+
+  describe('._applyLayers', () => {
+    it('should merge multiple images', async () => {
+      const sizeOptions = {width: 200, height: 200, fit: 'crop'}
+      const imageA = NodeImage.from(skater).resize(sizeOptions)
+      const imageB = NodeImage.from(yosemite).resize(sizeOptions)
+      const imageC = NodeImage.from(sydney).resize(sizeOptions)
+
+      const layers = [
+        {imageData: await imageB.toImageData(), opacity: 0.5},
+        {imageData: await imageC.toImageData(), opacity: 0.33},
+      ]
+
+      const buffer = await imageA.layers(layers).toBuffer()
+      await compareToFixture(buffer, 'layers-merged.jpg', {strict: false, tolerance: 15})
     })
   })
 

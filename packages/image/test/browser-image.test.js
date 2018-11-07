@@ -6,6 +6,7 @@ const BrowserImage = require('../dist/browser-image').BrowserImage
 const {expect, fixture, fixtureDecode, compareToFixture, testImage, enableWASM, disableWASM} = require('./utils')
 
 const skater = fixture('source-skater.jpg')
+const sydney = fixture('source-sydney.jpg')
 const skaterRotated = fixture('source-skater-rotated.jpg')
 const yosemite = fixture('source-yosemite.jpg')
 const testSkater = (...args) => testImage(BrowserImage, 'source-skater.jpg', ...args)
@@ -123,6 +124,23 @@ describe('BrowserImage', () => {
     it('should covert to greyscale', () => {
       const modify = img => img.greyscale()
       return testSkater('skater-greyscale.jpg', modify)
+    })
+  })
+
+  describe('._applyLayers', () => {
+    it('should merge multiple images', async () => {
+      const sizeOptions = {width: 200, height: 200, fit: 'crop'}
+      const imageA = BrowserImage.from(skater).resize(sizeOptions)
+      const imageB = BrowserImage.from(yosemite).resize(sizeOptions)
+      const imageC = BrowserImage.from(sydney).resize(sizeOptions)
+
+      const layers = [
+        {imageData: await imageB.toImageData(), opacity: 0.5},
+        {imageData: await imageC.toImageData(), opacity: 0.33},
+      ]
+
+      const buffer = await imageA.layers(layers).toBuffer()
+      await compareToFixture(buffer, 'layers-merged.jpg', {strict: false, tolerance: 15})
     })
   })
 
