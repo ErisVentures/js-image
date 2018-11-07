@@ -25,8 +25,6 @@ export interface IEdgeOptions {
 }
 
 export interface INoiseOptions {
-  width: number
-  height: number
   seed?: string
 }
 
