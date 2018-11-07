@@ -2,7 +2,11 @@ import {INoiseOptions, Colorspace} from '../types'
 import {IAnnotatedImageData, ImageData} from '../image-data'
 import {createPRNG} from '../third-party/alea'
 
-export function noise(width: number, height: number, options: INoiseOptions = {}): IAnnotatedImageData {
+export function noise(
+  width: number,
+  height: number,
+  options: INoiseOptions = {},
+): IAnnotatedImageData {
   const {seed = 'noise'} = options
   const prng = createPRNG(seed)
 

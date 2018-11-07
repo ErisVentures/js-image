@@ -239,6 +239,13 @@ describe('BrowserImage', () => {
     })
   })
 
+  describe('._applyEffects', () => {
+    it('should add noise', async () => {
+      const modify = img => img.effects([{type: 'noise'}])
+      await testSkater('skater-noise.jpg', modify, {strict: false})
+    })
+  })
+
   describe('.toAnalysis', () => {
     it('should hash an image', () => {
       return BrowserImage.from(skater)

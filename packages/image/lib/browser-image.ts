@@ -84,6 +84,7 @@ export class BrowserImage extends Image {
     image = await this._applyTone(image)
     image = await this._applySharpen(image)
     image = await this._applyEdges(image)
+    image = await this._applyEffects(image)
     return image
   }
 

@@ -11,6 +11,7 @@ import {canny} from './transforms/canny'
 import {sharpen} from './transforms/sharpen'
 import {calibrate} from './transforms/calibrate'
 import {opacity} from './transforms/opacity'
+import {noise} from './effects/noise'
 
 /* tslint:disable-next-line */
 const fileType = require('file-type')
@@ -29,11 +30,13 @@ export abstract class Image {
     if (options.analyze) this.analyze(options.analyze)
     if (options.format) this.format(options.format)
     if (options.resize) this.resize(options.resize)
+    if (options.layers) this.layers(options.layers)
     if (options.calibrate) this.calibrate(options.calibrate)
     if (options.tone) this.tone(options.tone)
     if (options.greyscale) this.greyscale(options.greyscale)
     if (options.sharpen) this.sharpen(options.sharpen)
     if (options.edges) this.edges(options.edges)
+    if (options.effects) this.effects(options.effects)
     return this
   }
 
@@ -106,6 +109,11 @@ export abstract class Image {
       blurSigma: 2,
       ...options,
     }
+    return this
+  }
+
+  public effects(effects: types.IEffect[]): Image {
+    this._output.effects = effects
     return this
   }
 
@@ -200,6 +208,28 @@ export abstract class Image {
     }
 
     return edges
+  }
+  protected _applyEffects(image: IAnnotatedImageData): IAnnotatedImageData {
+    if (!this._output.effects) {
+      return image
+    }
+
+    let imageWithEffects = image
+    for (const effect of this._output.effects) {
+      switch (effect.type) {
+        case types.EffectType.Noise:
+          const options = effect.options || {}
+          const opacityValue = options.opacity || 0.05
+          const noiseLayer = noise(imageWithEffects.width, imageWithEffects.height, effect.options)
+          const noiseMatched = ImageData.toColorspace(noiseLayer, imageWithEffects.colorspace)
+          imageWithEffects = opacity(imageWithEffects, noiseMatched, opacityValue)
+          break
+        default:
+          throw new Error(`Unrecognized type: ${effect.type}`)
+      }
+    }
+
+    return imageWithEffects
   }
 
   public abstract toMetadata(): Promise<types.IMetadata>

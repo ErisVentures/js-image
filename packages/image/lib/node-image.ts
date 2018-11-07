@@ -116,6 +116,7 @@ export class NodeImage extends Image {
     image: sharp.SharpInstance,
   ): Promise<sharp.SharpInstance> {
     if (
+      !this._output.effects &&
       !this._output.edges &&
       !this._output.layers &&
       !this._output.tone &&
@@ -132,6 +133,7 @@ export class NodeImage extends Image {
     imageData = await this._applyTone(imageData)
     imageData = await this._applySharpen(imageData)
     imageData = await this._applyEdges(imageData)
+    imageData = await this._applyEffects(imageData)
     return SharpImage.from(imageData)
   }
 

@@ -26,7 +26,15 @@ export interface IEdgeOptions {
 
 export interface INoiseOptions {
   seed?: string
+  opacity?: number
 }
+
+export enum EffectType {
+  Noise = 'noise',
+}
+
+// tslint:disable-next-line
+export type IEffect = {type: EffectType.Noise; options?: INoiseOptions}
 
 export interface IToneOptions {
   /** Affects the overall contrast in the image, typically a number between -0.5 and 2, reasonable range of -0.1 to 0.3 */
@@ -65,6 +73,7 @@ export interface IImageOutputOptions {
   greyscale?: boolean
   sharpen?: ISharpenOptions
   edges?: IEdgeOptions
+  effects?: IEffect[]
 }
 
 export interface IAnalysisOptions {
