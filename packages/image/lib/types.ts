@@ -25,7 +25,9 @@ export interface IEdgeOptions {
 }
 
 export interface INoiseOptions {
+  /** Used for the random noise pattern to generate predictable noise */
   seed?: string
+  /** The strength of the noise, typically a value between 0 and 0.1 */
   opacity?: number
 }
 

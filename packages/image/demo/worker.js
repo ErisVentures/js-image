@@ -18,12 +18,17 @@ function parseOptions(rawOptions) {
     const section = options[sectionName] || {}
     section[propName] = Number.isFinite(valueAsNumber) ? valueAsNumber : value
     options[sectionName] = section
-    if (propName === 'curve') {
+    if (propName === 'curve' && value.trim()) {
       section.curve = value
         .trim()
         .split('\n')
         .map(row => row.split(',').map(n => Number(n)))
     }
+  }
+
+  options.effects = []
+  if (options.noise) {
+    options.effects.push({type: 'noise', options: options.noise})
   }
 
   return options
@@ -46,6 +51,10 @@ function processImage(imageData, rawOptions) {
 
       if (options.tone) {
         image = image.tone(options.tone)
+      }
+
+      if (options.effects) {
+        image = image.effects(options.effects)
       }
 
       if (options.edges && options.edges.method) {
