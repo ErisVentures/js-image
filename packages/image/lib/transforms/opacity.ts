@@ -11,6 +11,7 @@ export function opacity(
 
   const alphaForeground = opacity
   const alphaBackground = 1 - opacity
+  // TODO: take alpha channel into account
   const newData = new Uint8Array(background.data.length)
   for (let i = 0; i < background.data.length; i++) {
     newData[i] = ImageData.clip(

@@ -24,6 +24,12 @@ export interface IEdgeOptions {
   lowThreshold?: number
 }
 
+export interface INoiseOptions {
+  width: number
+  height: number
+  seed?: string
+}
+
 export interface IToneOptions {
   /** Affects the overall contrast in the image, typically a number between -0.5 and 2, reasonable range of -0.1 to 0.3 */
   contrast?: number
