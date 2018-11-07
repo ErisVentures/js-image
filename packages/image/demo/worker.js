@@ -75,6 +75,8 @@ function processImage(imageData, rawOptions) {
           payload: {
             analysis,
             imageData: {
+              channels: 4,
+              colorspace: 'rgba',
               width: imageData.width,
               height: imageData.height,
               data: imageData.data,
