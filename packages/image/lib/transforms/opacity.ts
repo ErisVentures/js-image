@@ -5,9 +5,11 @@ export function opacity(
   foreground: IAnnotatedImageData,
   opacity: number,
 ): IAnnotatedImageData {
+  const isUint8 =
+    background.data instanceof Uint8Array || background.data instanceof Uint8ClampedArray
   if (background.colorspace !== foreground.colorspace) throw new Error('Colorspaces must match')
   if (background.data.length !== foreground.data.length) throw new Error('Sizes must match')
-  if (!(background.data instanceof Uint8Array)) throw new Error('Must be Uint8Array')
+  if (!isUint8) throw new Error('Must be Uint8Array')
 
   const alphaForeground = opacity
   const alphaBackground = 1 - opacity
