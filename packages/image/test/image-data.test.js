@@ -295,6 +295,24 @@ describe('ImageData', () => {
       })
     })
 
+    it('should cycle with non-rgb images', () => {
+      const imageData = {
+        width: 2,
+        height: 2,
+        channels: 3,
+        colorspace: Colorspace.YCbCr,
+        data: new Uint8Array([
+          100, 128, 128,
+          0, 128, 128,
+          50, 128, 128,
+          192, 128, 128,
+        ]),
+      }
+
+      const greyscale = ImageData.toGreyscale(imageData)
+      expect(ImageData.toYCbCr(greyscale)).to.eql(imageData)
+    })
+
     it('should cycle through back to RGBA', async () => {
       const skaterData = await fixtureDecode('source-skater.jpg')
       const imageData = ImageData.normalize(skaterData)

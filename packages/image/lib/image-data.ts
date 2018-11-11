@@ -473,8 +473,8 @@ export class ImageData {
     ImageData.assert(srcImageData)
     if (srcImageData.colorspace === Colorspace.Greyscale) {
       return srcImageData
-    } else if (srcImageData.colorspace === ImageData.HSL) {
-      srcImageData = ImageData.toRGB(srcImageData)
+    } else {
+      srcImageData = ImageData.toRGBA(srcImageData)
     }
 
     const dstImageData = {...srcImageData}
