@@ -277,3 +277,5 @@ export abstract class Image {
 }
 
 instrumentation.wrapAllMethods(Image.prototype)
+// @ts-ignore tslint:disable-next-line
+Image._instrumentation = instrumentation
