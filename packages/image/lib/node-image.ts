@@ -3,6 +3,7 @@ import * as sharp from 'sharp'
 import {BufferLike, IMetadata, Colorspace, ImageFormat, ImageResizeFit} from './types'
 import {Image} from './image'
 import {IAnnotatedImageData, ImageData} from './image-data'
+import {instrumentation} from './instrumentation'
 
 class SharpImage {
   public static from(bufferOrImageData: BufferLike | IAnnotatedImageData): sharp.SharpInstance {
@@ -172,3 +173,5 @@ export class NodeImage extends Image {
     return new NodeImage(SharpImage.from(imageData))
   }
 }
+
+instrumentation.wrapAllMethods(NodeImage.prototype)

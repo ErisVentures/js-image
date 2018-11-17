@@ -3,6 +3,7 @@ import {Image} from './image'
 import {IAnnotatedImageData, ImageData} from './image-data'
 import * as resize from './transforms/resize'
 import {subselect} from './transforms/subselect'
+import {instrumentation} from './instrumentation'
 
 export class BrowserImage extends Image {
   private readonly _image: Promise<IAnnotatedImageData>
@@ -117,3 +118,5 @@ export class BrowserImage extends Image {
     return new BrowserImage(ImageData.normalize(imageData))
   }
 }
+
+instrumentation.wrapAllMethods(BrowserImage.prototype)

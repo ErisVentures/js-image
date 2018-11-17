@@ -12,6 +12,7 @@ import {sharpen} from './transforms/sharpen'
 import {calibrate} from './transforms/calibrate'
 import {opacity} from './transforms/opacity'
 import {noise} from './effects/noise'
+import {instrumentation} from './instrumentation'
 
 /* tslint:disable-next-line */
 const fileType = require('file-type')
@@ -274,3 +275,5 @@ export abstract class Image {
     throw new Error('unimplemented')
   }
 }
+
+instrumentation.wrapAllMethods(Image.prototype)
