@@ -25,15 +25,15 @@ export function opacity(
         const foregroundMultiplier = opacityForeground
         const backgroundMultiplier = 1 - opacityForeground
 
-        newData[index] = ImageData.clip(
+        newData[index] = Math.round(
           background.data[index] * backgroundMultiplier +
             foreground.data[index] * foregroundMultiplier,
         )
-        newData[index + 1] = ImageData.clip(
+        newData[index + 1] = Math.round(
           background.data[index + 1] * backgroundMultiplier +
             foreground.data[index + 1] * foregroundMultiplier,
         )
-        newData[index + 2] = ImageData.clip(
+        newData[index + 2] = Math.round(
           background.data[index + 2] * backgroundMultiplier +
             foreground.data[index + 2] * foregroundMultiplier,
         )
@@ -45,7 +45,8 @@ export function opacity(
     const backgroundMultiplier = 1 - opacity
 
     for (let i = 0; i < background.data.length; i++) {
-      newData[i] = ImageData.clip(
+      // Assuming the input data is clipped, there's no need to clip here either
+      newData[i] = Math.round(
         background.data[i] * backgroundMultiplier + foreground.data[i] * foregroundMultiplier,
       )
     }

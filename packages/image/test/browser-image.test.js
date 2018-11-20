@@ -400,6 +400,15 @@ describe('BrowserImage', () => {
   })
 
   describe('Performance', () => {
+    function buildImageData({width, height}) {
+      const data = new Uint8Array(width * height)
+      for (let i = 0; i < data.length; i++) {
+        data[i] = 0
+      }
+
+      return {width, height, channels: 1, colorspace: 'k', data}
+    }
+
     before(async () => {
       await enableWASM()
     })
@@ -408,7 +417,20 @@ describe('BrowserImage', () => {
       await disableWASM()
     })
 
-    it('should not be hella slow', async () => {
+    it('should not be hella slow merging layers', async () => {
+      const layerA = buildImageData({width: 3000, height: 3000})
+      const layerB = buildImageData({width: 3000, height: 3000})
+      const layerC = buildImageData({width: 3000, height: 3000})
+      const image = BrowserImage.from(ImageData.toRGBA(layerA))
+        .layers([
+          {imageData: layerB, opacity: 0.25},
+          {imageData: layerC, opacity: 0.25},
+        ])
+
+      await image.toImageData()
+    }).timeout(5000)
+
+    it('should not be hella slow calibrating', async () => {
       const imageData = await fixtureDecode('source-yosemite.jpg')
       const image = BrowserImage.from(imageData)
         .tone({

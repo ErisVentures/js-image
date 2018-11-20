@@ -149,7 +149,12 @@ export class ImageData {
     }
   }
 
-  public static clip(value: number, channel: ColorChannel = ColorChannel.Red): number {
+  /**
+   * A flexible, slightly less performant ImageData.clip
+   * @param value Pixel value to clip
+   * @param channel Channel of the pixel to clip
+   */
+  public static clipChannel(value: number, channel: ColorChannel = ColorChannel.Red): number {
     switch (channel) {
       case ColorChannel.Hue:
         let hue = Math.round(value)
@@ -161,6 +166,16 @@ export class ImageData {
         // Manually do a min/max to clip, believe it or not this became bottleneck
         return rounded < 0 ? 0 : rounded > max ? max : rounded
     }
+  }
+
+  /**
+   * Performant clip for standard 8-bit pixel values
+   * @param value Pixel value to clip to 0-255
+   */
+  public static clip(value: number): number {
+    const rounded = Math.round(value)
+    // Manually do a min/max to clip, believe it or not this became bottleneck
+    return rounded < 0 ? 0 : rounded > 255 ? 255 : rounded
   }
 
   public static isBorder(
@@ -409,7 +424,7 @@ export class ImageData {
       for (let i = 0; i < colorChannels.length; i++) {
         if (colorChannels[i] !== targetChannel) continue
         const value = imageData.data[offset + i]
-        imageData.data[offset + i] = ImageData.clip(
+        imageData.data[offset + i] = ImageData.clipChannel(
           value + multiplier * targetIntensity,
           targetChannel,
         )
@@ -461,7 +476,7 @@ export class ImageData {
         }
 
         for (let i = 0; i < imageData.channels; i++) {
-          data[pixel.index + i] = ImageData.clip(pixel.values[i], channels[i])
+          data[pixel.index + i] = ImageData.clipChannel(pixel.values[i], channels[i])
         }
       }
     }
