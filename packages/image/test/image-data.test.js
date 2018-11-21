@@ -181,6 +181,18 @@ describe('ImageData', () => {
       ],
     }
 
+    const simpleRectangle = {
+      width: 6,
+      height: 3,
+      channels: 1,
+      colorspace: Colorspace.Greyscale,
+      data: [
+        1, 0, 0, 0, 0, 0,
+        1, 1, 1, 1, 1, 1,
+        1, 0, 0, 0, 0, 0,
+      ],
+    }
+
     it('should rotate an odd-size image 45 degrees', () => {
       const result = ImageData.rotate(simpleLineOdd, 45)
       expect(result).to.eql({
@@ -254,6 +266,57 @@ describe('ImageData', () => {
           0, 1, 0, 0,
           0, 1, 0, 0,
           0, 1, 0, 0,
+        ]),
+      })
+    })
+
+    it('should rotate a rectangular image 90 degrees', () => {
+      const result = ImageData.rotate(simpleRectangle, 90)
+      expect(result).to.eql({
+        width: 3,
+        height: 6,
+        channels: 1,
+        colorspace: Colorspace.Greyscale,
+        data: new Uint8Array([
+          0, 1, 0,
+          0, 1, 0,
+          0, 1, 0,
+          0, 1, 0,
+          0, 1, 0,
+          1, 1, 1,
+        ]),
+      })
+    })
+
+    it('should rotate a rectangular image 180 degrees', () => {
+      const result = ImageData.rotate(simpleRectangle, 180)
+      expect(result).to.eql({
+        width: 6,
+        height: 3,
+        channels: 1,
+        colorspace: Colorspace.Greyscale,
+        data: new Uint8Array([
+          0, 0, 0, 0, 0, 1,
+          1, 1, 1, 1, 1, 1,
+          0, 0, 0, 0, 0, 1,
+        ]),
+      })
+    })
+
+    it('should rotate a rectangular image 270 degrees', () => {
+      const result = ImageData.rotate(simpleRectangle, 270)
+      expect(result).to.eql({
+        width: 3,
+        height: 6,
+        channels: 1,
+        colorspace: Colorspace.Greyscale,
+        data: new Uint8Array([
+          1, 1, 1,
+          0, 1, 0,
+          0, 1, 0,
+          0, 1, 0,
+          0, 1, 0,
+          0, 1, 0,
         ]),
       })
     })

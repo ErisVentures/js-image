@@ -303,7 +303,7 @@ export class ImageData {
     return pixels
   }
 
-  public static rotateArray(
+  public static rotateSquareArray(
     srcArray: number[] | Uint8Array,
     dstArray: number[] | Uint8Array,
     width: number,
@@ -311,6 +311,8 @@ export class ImageData {
     angle: number,
     channels: number = 1,
   ): void {
+    if (width !== height) throw new Error('Only works on squares')
+
     // tslint:disable-next-line
     const fakeImageData = {width, height, channels} as IAnnotatedImageData
     const cosAngle = Math.cos(((360 - angle) * Math.PI) / 180)
@@ -327,6 +329,7 @@ export class ImageData {
 
         const xPrime = Math.round(xPrimeRelative + originX)
         const yPrime = Math.round(yPrimeRelative + originY)
+        // Check if new coordinates are out of bounds
         if (ImageData.isBorder(fakeImageData, xPrime, yPrime, 0)) {
           continue
         }
@@ -350,14 +353,46 @@ export class ImageData {
     const numPixels = srcImageData.width * srcImageData.height
     const dstData = new Uint8Array(numPixels * srcImageData.channels)
 
-    ImageData.rotateArray(
-      srcImageData.data,
-      dstData,
-      srcImageData.width,
-      srcImageData.height,
-      angle,
-      srcImageData.channels,
-    )
+    if (srcImageData.width === srcImageData.height) {
+      ImageData.rotateSquareArray(
+        srcImageData.data,
+        dstData,
+        srcImageData.width,
+        srcImageData.height,
+        angle,
+        srcImageData.channels,
+      )
+    } else {
+      if (angle % 90 !== 0) throw new Error('Can only rotate by 90 degree increments')
+
+      if (angle === 90 || angle === 270) {
+        dstImageData.width = srcImageData.height
+        dstImageData.height = srcImageData.width
+      }
+
+      for (let srcX = 0; srcX < srcImageData.width; srcX++) {
+        for (let srcY = 0; srcY < srcImageData.height; srcY++) {
+          let dstX: number, dstY: number
+
+          if (angle === 90) {
+            dstX = srcY
+            dstY = srcImageData.width - srcX - 1
+          } else if (angle === 180) {
+            dstX = srcImageData.width - srcX - 1
+            dstY = srcImageData.height - srcY - 1
+          } else if (angle === 270) {
+            dstX = srcImageData.height - srcY - 1
+            dstY = srcX
+          }
+
+          const srcIndex = ImageData.indexFor(srcImageData, srcX, srcY)
+          const dstIndex = ImageData.indexFor(dstImageData, dstX!, dstY!)
+          for (let c = 0; c < srcImageData.channels; c++) {
+            dstData[dstIndex + c] = srcImageData.data[srcIndex + c]
+          }
+        }
+      }
+    }
 
     dstImageData.data = dstData
     return dstImageData

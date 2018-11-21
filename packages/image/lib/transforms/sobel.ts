@@ -37,7 +37,7 @@ export function generateWeightMatrix(radius: number, isX: boolean): number[] {
   if (isX) {
     const matrixWidth = 2 * radius + 1
     const rotatedMatrix = new Array(matrix.length)
-    ImageData.rotateArray(matrix, rotatedMatrix, matrixWidth, matrixWidth, 90)
+    ImageData.rotateSquareArray(matrix, rotatedMatrix, matrixWidth, matrixWidth, 90)
     matrix = rotatedMatrix
   }
 
