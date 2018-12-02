@@ -162,34 +162,56 @@ export function bilinear(
 
   for (var i = 0; i < targetWidth; i++) {
     for (var j = 0; j < targetHeight; j++) {
+      // Find the ideal X,Y coordinates we'd pull from
       var srcX = i * widthScaleFactor
       var srcY = j * heightScaleFactor
+      var srcXFloor = Math.floor(srcX)
+      var srcYFloor = Math.floor(srcY)
 
-      var outPos = (j * targetWidth + i) * imageData.channels
+      // Compute the source indexes we'll pull from
+      // We're trying to pull from the 4 closest pixels
+      // A = floor(X), floor(Y)
+      // D = ceil(X), ceil(Y)
+      // - - A B - -
+      // - - C D - -
+      var srcXOffset = srcXFloor
+      var srcRowIndexOffset = Math.floor(srcY) * imageData.width
+      var srcIndexA = (srcRowIndexOffset + srcXOffset) * imageData.channels
+      var srcIndexB = srcIndexA + imageData.channels
+      var srcIndexC = (srcRowIndexOffset + imageData.width + srcXOffset) * imageData.channels
+      var srcIndexD = srcIndexC + imageData.channels
 
-      var srcXOffset = Math.floor(srcX)
-      var srcYOffset = Math.floor(srcY) * imageData.width
+      // Make sure the edges don't fly off the image data
+      if (srcXFloor === imageData.width - 1) {
+        srcIndexB = srcIndexA
+        srcIndexD = srcIndexC
+      }
 
-      var srcPosA = (srcYOffset + srcXOffset) * imageData.channels
-      var srcPosB = srcPosA + imageData.channels
-      var srcPosC = (srcYOffset + imageData.width + srcXOffset) * imageData.channels
-      var srcPosD = srcPosC + imageData.channels
+      if (srcYFloor === imageData.height - 1) {
+        srcIndexC = srcIndexA
+        srcIndexD = srcIndexB
+      }
 
-      var xWeight = Math.max(1 - Math.abs(Math.floor(srcX) - srcX), 0)
-      var yWeight = Math.max(1 - Math.abs(Math.floor(srcY) - srcY), 0)
-      var weightPosA = xWeight * yWeight
-      var weightPosB = (1 - xWeight) * yWeight
-      var weightPosC = xWeight * (1 - yWeight)
-      var weightPosD = (1 - xWeight) * (1 - yWeight)
-      var totalWeight = weightPosA + weightPosB + weightPosC + weightPosD
+      // Compute the weights each pixel will have using the distance
+      var xDistanceA = srcX - srcXFloor
+      var yDistanceA = srcY - srcYFloor
+      var xWeightA = 1 - xDistanceA
+      var yWeightB = 1 - yDistanceA
+      var weightA = xWeightA * yWeightB
+      var weightB = (1 - xWeightA) * yWeightB
+      var weightC = xWeightA * (1 - yWeightB)
+      var weightD = (1 - xWeightA) * (1 - yWeightB)
+      var totalWeight = weightA + weightB + weightC + weightD
+
+      var outIndex = (j * targetWidth + i) * imageData.channels
 
       for (var channel = 0; channel < imageData.channels; channel++) {
         var value =
-          (imageData.data[srcPosA + channel] * weightPosA) / totalWeight +
-          (imageData.data[srcPosB + channel] * weightPosB) / totalWeight +
-          (imageData.data[srcPosC + channel] * weightPosC) / totalWeight +
-          (imageData.data[srcPosD + channel] * weightPosD) / totalWeight
-        outPixels[outPos + channel] = Math.round(value)
+          (imageData.data[srcIndexA + channel] * weightA) / totalWeight +
+          (imageData.data[srcIndexB + channel] * weightB) / totalWeight +
+          (imageData.data[srcIndexC + channel] * weightC) / totalWeight +
+          (imageData.data[srcIndexD + channel] * weightD) / totalWeight
+        outPixels[outIndex + channel] = Math.round(value)
       }
     }
   }

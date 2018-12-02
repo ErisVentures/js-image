@@ -157,6 +157,43 @@ describe('#transforms/resize', () => {
       ]))
     })
 
+    it('should resize multi-channel mock data', () => {
+      const input = {
+        channels: 3,
+        colorspace: 'rgb',
+        width: 3,
+        height: 3,
+        data: [
+          01, 03, 05, 07, 09, 11, 13, 15, 17,
+          19, 21, 23, 25, 27, 29, 31, 33, 35,
+          37, 39, 41, 43, 45, 47, 49, 51, 53,
+        ],
+      }
+
+      const output = resize.bilinear(input, {width: 2, height: 2})
+      expect(output.data).to.eql(new Uint8Array([
+        1, 3, 5, (7 + 13) / 2, (9 + 15) / 2, (11 + 17) / 2,
+        (19 + 37) / 2, (21 + 39) / 2, (23 + 41) / 2, (25 + 31 + 43 + 49) / 4, (27 + 33 + 45 + 51) / 4, (29 + 47 + 35 + 53) / 4,
+      ]))
+    })
+
+    it('should resize to same size identically', () => {
+      const input = {
+        channels: 3,
+        colorspace: 'rgb',
+        width: 3,
+        height: 3,
+        data: new Uint8Array([
+          01, 03, 05, 07, 09, 11, 13, 15, 17,
+          19, 21, 23, 25, 27, 29, 31, 33, 35,
+          37, 39, 41, 43, 45, 47, 49, 51, 53,
+        ]),
+      }
+
+      const output = resize.bilinear(input, {width: 3, height: 3})
+      expect(output.data).to.eql(input.data)
+    })
+
     it('should resize an actual image', () => {
       return yosemitePromise.then(yosemite => {
         const output = resize.bilinear(yosemite, {width: 600, height: 750})
