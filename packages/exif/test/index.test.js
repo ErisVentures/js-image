@@ -4,6 +4,7 @@ const parse = require('../dist').parse
 
 const nikonJpeg = fixture('nikon.jpg')
 const nikonNef = fixture('nikon.nef')
+const iphoneDng = fixture('iphone.dng')
 
 describe('index.js', () => {
   describe('#parse', () => {
@@ -70,6 +71,34 @@ describe('index.js', () => {
         normalizedFocalLength: 150,
         exposureCompensation: 0,
         lens: undefined,
+      })
+    })
+
+    it('should work on iphone dng files', () => {
+      const results = parse(iphoneDng)
+      expect(results).to.have.property('_raw')
+      delete results._raw
+      expect(results).to.eql({
+        make: 'Apple',
+        model: 'iPhone 7 Plus',
+        width: 4032,
+        height: 3024,
+        xResolution: undefined,
+        yResolution: undefined,
+        createdAt: new Date('2017-10-07T16:25:39.000Z'),
+        modifiedAt: new Date('2017-10-07T16:25:39.000Z'),
+        iso: 20,
+        exposureTime: 1 / 127,
+        fNumber: 1.8,
+        focalLength: 3.99,
+        normalizedFocalLength: 28,
+        exposureCompensation: -1,
+        lens: {
+          model: 'iPhone 7 Plus back camera 3.99mm f/1.8',
+          make: 'iPhone',
+          focalLength: '99mm',
+          aperture: undefined,
+        },
       })
     })
   })

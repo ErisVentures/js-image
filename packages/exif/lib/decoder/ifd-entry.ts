@@ -1,5 +1,5 @@
 import {getFriendlyName} from '../utils/tags'
-import {IFDDataType, IIFDEntry, IReader, IFDTagName, getDataTypeSize} from '../utils/types'
+import {IFDDataType, IIFDEntry, IReader, IFDTagName, getDataTypeSize, IFDTag} from '../utils/types'
 import {createLogger} from '../utils/log'
 
 const log = createLogger('ifd-entry')
@@ -13,7 +13,7 @@ export class IFDEntry implements IIFDEntry {
   ) {}
 
   public get lengthInBytes(): number {
-    return this.length * getDataTypeSize(this.dataType)
+    return this.length * getDataTypeSize(this.dataType, this.tag)
   }
 
   public get friendlyTagName(): IFDTagName {
@@ -43,10 +43,14 @@ export class IFDEntry implements IIFDEntry {
         }
 
         return chars.join('')
+      case IFDDataType.SingleFloat:
+        return new DataView(entryReader.readAsBuffer(4).buffer).getFloat32(0)
+      case IFDDataType.DoubleFloat:
+        return new DataView(entryReader.readAsBuffer(8).buffer).getFloat64(0)
       case IFDDataType.Undefined:
         return ''
       default:
-        throw new TypeError(`Unsupported data type: ${this.dataType}`)
+        throw new TypeError(`Unsupported data type (${this.dataType}) for tag (${this.tag})`)
     }
   }
 

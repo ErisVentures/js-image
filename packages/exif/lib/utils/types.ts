@@ -70,6 +70,7 @@ export interface IIFDTagDefinition {
 
 export enum IFDTag {
   ImageWidth = 100,
+  StripOffsets = 273,
   XResolution = 282,
   YResolution = 283,
   SubIFD = 330,
@@ -94,6 +95,9 @@ export enum IFDDataType {
   Undefined = 7,
   SignedLong = 9,
   SignedRational = 10,
+  // From https://www.media.mit.edu/pia/Research/deepview/exif.html
+  SingleFloat = 11,
+  DoubleFloat = 12,
 }
 
 export interface IJPEGOptions {
@@ -134,7 +138,7 @@ export interface INormalizedMetadata {
   lens?: IParsedLens
 }
 
-export function getDataTypeSize(dataType: number): number {
+export function getDataTypeSize(dataType: number, name?: string|number): number {
   switch (dataType) {
     case IFDDataType.Unknown: // ???
     case IFDDataType.Byte: // byte
@@ -143,13 +147,17 @@ export function getDataTypeSize(dataType: number): number {
     case IFDDataType.Short: // word
       return 2
     case IFDDataType.Long: // double word
+    case IFDDataType.SingleFloat:
     case IFDDataType.Undefined:
       return 4
     case IFDDataType.Rational: // rational number
     case IFDDataType.SignedRational:
+    case IFDDataType.DoubleFloat:
       return 8
-    default:
-      throw new TypeError(`unknown datatype: ${dataType}`)
+    default: {
+      const nameComponent = name ? ` for name (${name})` : ''
+      throw new TypeError(`unknown datatype${nameComponent}: ${dataType}`)
+    }
   }
 }
 
