@@ -81,7 +81,7 @@ export class TIFFDecoder {
     }
   }
 
-  private _readLargestJPEG(): IBufferLike {
+  private _readLargestJPEGThumbnail(): IBufferLike | undefined {
     let maxResolutionJPEG: IThumbnailLocation | undefined
     this._ifds.forEach(ifd => {
       const offsetEntry = ifd.entries.find(entry => entry.tag === IFDTag.ThumbnailOffset)
@@ -99,11 +99,49 @@ export class TIFFDecoder {
     })
 
     if (!maxResolutionJPEG) {
-      throw new Error('Could not find thumbnail IFDs')
+      return undefined
     }
 
     this._reader.seek(maxResolutionJPEG.offset)
     return this._reader.readAsBuffer(maxResolutionJPEG.length)
+  }
+
+  private _readStripOffsetsAsJPEG(): IBufferLike | undefined {
+    let maxResolutionJPEG: IThumbnailLocation | undefined
+    this._ifds.forEach(ifd => {
+      const compressionEntry = ifd.entries.find(entry => entry.tag === IFDTag.Compression)
+      const stripOffsetsEntry = ifd.entries.find(entry => entry.tag === IFDTag.StripOffsets)
+      const stripBytesEntry = ifd.entries.find(entry => entry.tag === IFDTag.StripByteCounts)
+      if (!compressionEntry || !stripOffsetsEntry || !stripBytesEntry) return
+
+      const compression = compressionEntry.getValue(this._reader) as number
+      // From EXIF and DNG specs, 6 and 7 signal JPEG-compressed data
+      // https://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/EXIF.html#Compression
+      if (compression !== 6 && compression !== 7) return
+
+      const offset = stripOffsetsEntry.getValue(this._reader) as number
+      const length = stripBytesEntry.getValue(this._reader) as number
+
+      // TODO: throw if there's more than one strip
+      if (!maxResolutionJPEG || length > maxResolutionJPEG.length) {
+        maxResolutionJPEG = {offset, length, ifd}
+      }
+    })
+
+    if (!maxResolutionJPEG) {
+      return undefined
+    }
+
+    this._reader.seek(maxResolutionJPEG.offset)
+    return this._reader.readAsBuffer(maxResolutionJPEG.length)
+  }
+
+  private _readLargestJPEG(): IBufferLike {
+    const maxResolutionJPEG = this._readLargestJPEGThumbnail() || this._readStripOffsetsAsJPEG()
+    if (!maxResolutionJPEG) {
+      throw new Error('Could not find thumbnail or read StripOffsets IFDs')
+    }
+    return maxResolutionJPEG
   }
 
   public extractJPEG(options: IJPEGOptions = {}): IBufferLike {

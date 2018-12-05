@@ -1,5 +1,5 @@
 import {getFriendlyName} from '../utils/tags'
-import {IFDDataType, IIFDEntry, IReader, IFDTagName, getDataTypeSize, IFDTag} from '../utils/types'
+import {IFDDataType, IIFDEntry, IReader, IFDTagName, getDataTypeSize} from '../utils/types'
 import {createLogger} from '../utils/log'
 
 const log = createLogger('ifd-entry')

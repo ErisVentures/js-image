@@ -16,6 +16,12 @@ describe('Decoder', () => {
       compareToFixture(thumbnail, 'd610.jpg')
     })
 
+    it('should extract the iphone thumbnail', () => {
+      const decoder = new Decoder(fixture('iphone.dng'))
+      const thumbnail = decoder.extractJPEG()
+      compareToFixture(thumbnail, 'iphone.jpg')
+    })
+
     it('should create a valid JPEG', () => {
       const decoder = new Decoder(fixture('d610.nef'))
       const thumbnail = decoder.extractJPEG()

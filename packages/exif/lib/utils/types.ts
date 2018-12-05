@@ -69,8 +69,13 @@ export interface IIFDTagDefinition {
 }
 
 export enum IFDTag {
-  ImageWidth = 100,
+  ImageWidth = 256,
+  ImageHeight = 257,
+  Compression = 259,
   StripOffsets = 273,
+  SamplesPerPixel = 277,
+  RowsPerStrip = 278,
+  StripByteCounts = 279,
   XResolution = 282,
   YResolution = 283,
   SubIFD = 330,
@@ -138,7 +143,7 @@ export interface INormalizedMetadata {
   lens?: IParsedLens
 }
 
-export function getDataTypeSize(dataType: number, name?: string|number): number {
+export function getDataTypeSize(dataType: number, name?: string | number): number {
   switch (dataType) {
     case IFDDataType.Unknown: // ???
     case IFDDataType.Byte: // byte
