@@ -54,6 +54,7 @@ console.log(metadata)
 ## Documention and Resources for Various Formats
 
 - [EXIF Specification](http://www.exif.org/Exif2-2.PDF)
+- [DNG Specification](https://www.adobe.com/content/dam/acom/en/products/photoshop/pdfs/dng_spec_1.4.0.0.pdf)
 - [dcraw.c](www.cybercom.net/~dcoffin/dcraw/dcraw.c)
 - [TIFF Format Explainer](http://www.fileformat.info/format/tiff/corion.htm)
 - [NEF Explainer](http://lclevy.free.fr/nef/)
