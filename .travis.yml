@@ -26,6 +26,8 @@ jobs:
         - beta
       env: PKG_TARGET=node8-linux ENABLE_WASM=1
       script:
+        - git lfs pull
+        - npm install -g coveralls nyc
         - npm run build
         - npm run test:lint
         - npm run test:coverage
@@ -36,6 +38,7 @@ jobs:
       language: node_js
       node_js: v8
       script:
+        - npm install -g @patrickhulce/scripts
         - npm run build
         - ./scripts/publish.sh
       deploy:
@@ -54,10 +57,7 @@ notifications:
 git:
   lfs_skip_smudge: true
 before_install:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install git-lfs; fi
 install:
   - ./scripts/install-node-and-wasm.sh
-  - git lfs pull
-  - npm install -g yarn coveralls nyc @patrickhulce/scripts
   - yarn install --check-files
