@@ -1,3 +1,8 @@
+stages:
+  - build
+  - test
+  - name: deploy
+    if: branch = master
 jobs:
   include:
     - stage: build
@@ -38,8 +43,6 @@ jobs:
         skip_cleanup: true
         github_token: $GH_TOKEN
         local_dir: packages/image/demo
-        on:
-          branch: master
 cache:
   cargo: true
   yarn: true
