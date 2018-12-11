@@ -20,31 +20,36 @@ class Runner {
     }
   }
 
-  _getInput(input) {
-    if (this._cachedFiles.has(input)) {
-      return this._cachedFiles.get(input)
+  _fileExistsInCacheOrDisk(filePath) {
+    return this._cachedFiles.has(filePath) || fs.existsSync(filePath)
+  }
+
+  _getBufferFromCacheOrDisk(filePath) {
+    if (this._cachedFiles.has(filePath)) {
+      return this._cachedFiles.get(filePath)
     }
 
-    return fs.readFileSync(input)
+    return fs.readFileSync(filePath)
   }
 
   _processCachedEntry(entry) {
     let result
     if (entry.action === 'toBuffer') {
-      const buffer = fs.readFileSync(entry.output)
+      const buffer = this._getBufferFromCacheOrDisk(entry.output)
       result = buffer
       this._cachedFiles.set(entry.output, buffer)
-    } else {
+    } else if (entry.action === 'toAnalysis' || entry.action === 'toMetadata') {
       const string = fs.readFileSync(entry.output, 'utf8')
       result = JSON.parse(string)
       this._cachedFiles.set(entry.output, string)
+    } else {
+      throw new Error(`Unrecognized action "${entry.action}"`)
     }
 
     this._reporter.entryFinished(entry, result)
   }
 
   /**
-   *
    * @param {ConfigEntry} entry
    * @param {{file: FileEntry, cwd: string}} context
    */
@@ -55,11 +60,11 @@ class Runner {
     entry.output = _.template(entry.output)(context)
 
     this._reporter.entryStarted(entry)
-    if (fs.existsSync(entry.output) && !entry.force) {
+    if (this._fileExistsInCacheOrDisk(entry.output) && !entry.force) {
       return this._processCachedEntry(entry)
     }
 
-    const input = this._getInput(entry.input)
+    const input = this._getBufferFromCacheOrDisk(entry.input)
 
     let image = Image.from(input)
     Object.keys(entry.settings).forEach(key => {
