@@ -5,7 +5,7 @@
   ],
   "scripts": {
     "clean": "lerna exec --parallel 'rm -fR dist/'",
-    "build": "npm run clean && lerna run build",
+    "build": "./scripts/build.sh",
     "build:watch": "lerna exec --parallel 'tsc -w'",
     "test": "npm run build && npm run test:lint && npm run test:unit",
     "test:lint": "lint",
