@@ -24,13 +24,16 @@ jobs:
       language: rust
       rust: beta
       env: PKG_TARGET=node8-linux ENABLE_WASM=1
+      before_install:
+        - ./scripts/install-node-and-wasm.sh
+        - npm install -g yarn
       before_script:
         - git lfs pull
       script:
-        - npm install -g coveralls nyc
         - npm run build
         - npm run test:lint
         - npm run test:coverage
+        - npm install -g coveralls nyc
         - nyc report --reporter=text-lcov | coveralls || echo 'Failed to upload to coveralls...'
     - stage: deploy
       os: linux
@@ -57,5 +60,4 @@ notifications:
 git:
   lfs_skip_smudge: true
 install:
-  - ./scripts/install-node-and-wasm.sh
   - yarn install --check-files
