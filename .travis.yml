@@ -2,7 +2,8 @@ stages:
   - build
   - test
   - name: deploy
-    if: (tag =~ ^v) AND (branch = master)
+    # Only deploy changes that landed on master, i.e. not PRs too
+    if: (type = push) AND (branch = master)
 jobs:
   include:
     - stage: build
