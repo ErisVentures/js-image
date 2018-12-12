@@ -8,7 +8,7 @@ if [[ -z "$ENABLE_WASM" ]]; then
 fi
 
 rustup target add wasm32-unknown-unknown
-cargo install wasm-pack
+which wasm-pack || cargo install wasm-pack
 curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh | bash
 source ~/.nvm/nvm.sh
 nvm install v8.11
