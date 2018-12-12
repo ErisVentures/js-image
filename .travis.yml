@@ -42,9 +42,11 @@ jobs:
       dist: trusty
       language: node_js
       node_js: v8
+      env: PKG_TARGET=node8-linux
       script:
         - npm install -g @patrickhulce/scripts
         - npm run build
+      after_success:
         - ./scripts/publish.sh
       deploy:
         provider: pages
