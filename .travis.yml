@@ -26,6 +26,7 @@ jobs:
       env: PKG_TARGET=node8-linux ENABLE_WASM=1
       before_install:
         - ./scripts/install-node-and-wasm.sh
+        - nvm use v8
         - npm install -g yarn
       before_script:
         - git lfs pull
