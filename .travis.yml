@@ -22,11 +22,11 @@ jobs:
       os: linux
       dist: trusty
       language: rust
-      rust:
-        - beta
+      rust: beta
       env: PKG_TARGET=node8-linux ENABLE_WASM=1
-      script:
+      before_script:
         - git lfs pull
+      script:
         - npm install -g coveralls nyc
         - npm run build
         - npm run test:lint
@@ -56,8 +56,6 @@ notifications:
   email: false
 git:
   lfs_skip_smudge: true
-before_install:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install git-lfs; fi
 install:
   - ./scripts/install-node-and-wasm.sh
   - yarn install --check-files
