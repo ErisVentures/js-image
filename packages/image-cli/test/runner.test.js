@@ -44,6 +44,24 @@ describe('lib/runner.js', () => {
       })
     })
 
+    it('should copy images', async () => {
+      const entry = {
+        input: fixturePath('skater.jpg'),
+        output: fixturePath('actual-skater-exact-copy.jpg'),
+        toDisk: true,
+        settings: {},
+      }
+
+      const runner = new Runner(reporterApi, [entry])
+      const entryFinished = sandbox.stub(reporterApi, 'entryFinished')
+      await runner.run()
+      const actual = fs.readFileSync(fixturePath('actual-skater-exact-copy.jpg'))
+      const actualReported = entryFinished.firstCall.args[1]
+      const expected = fs.readFileSync(fixturePath('skater.jpg'))
+      expect(actual).to.eql(expected)
+      expect(actualReported).to.eql(expected)
+    })
+
     it('should process metadata', () => {
       const entry = {
         input: fixturePath('skater.jpg'),

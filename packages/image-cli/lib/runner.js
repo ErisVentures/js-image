@@ -42,6 +42,8 @@ class Runner {
       const string = fs.readFileSync(entry.output, 'utf8')
       result = JSON.parse(string)
       this._cachedFiles.set(entry.output, string)
+    } else if (!entry.action) {
+      result = this._getBufferFromCacheOrDisk(entry.input)
     } else {
       throw new Error(`Unrecognized action "${entry.action}"`)
     }
@@ -72,7 +74,7 @@ class Runner {
       image = image[key](entry.settings[key])
     })
 
-    const result = await image[entry.action]()
+    const result = entry.action ? await image[entry.action]() : input
     let buffer = result
 
     if (Buffer.isBuffer(result)) {

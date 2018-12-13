@@ -1,6 +1,6 @@
 const fs = require('fs')
 
-const REQUIRED_PROPERTIES = ['input', 'output', 'action']
+const REQUIRED_PROPERTIES = ['input', 'output']
 
 class ConfigEntry {
   constructor(config) {
