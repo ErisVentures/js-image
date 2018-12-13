@@ -23,11 +23,20 @@ else
 fi
 
 mkdir -p bin/prebuilt/
+EXISTING_VERSION=$(cat bin/prebuilt/version.txt || echo 'None')
+
+if [[ "$EXISTING_VERSION" == "$VERSION" ]]; then
+  echo "Already has latest version!"
+  exit 0
+fi
+
 FILE_TO_DOWNLOAD="image-cli-$PLATFORM_FILE"
 echo "Downloading $FILE_TO_DOWNLOAD for version $VERSION..."
 curl -L -o "bin/prebuilt/$FILE_TO_DOWNLOAD" "https://github.com/ErisVentures/js-image/releases/download/v${VERSION}/$FILE_TO_DOWNLOAD"
 
 cd bin/prebuilt
+
+echo "$VERSION" > version.txt
 
 if [[ "$FILE_TO_DOWNLOAD" = *.tar.gz ]]; then
   tar -xzf "$FILE_TO_DOWNLOAD"
