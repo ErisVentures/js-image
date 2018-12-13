@@ -26,10 +26,12 @@ fi
 
 GITHUB_URL="https://api.github.com/repos/ErisVentures/js-image/releases/tags/$TRAVIS_TAG"
 echo "Determining release ID for $TRAVIS_TAG..."
-RELEASE_ID=$(curl "$GITHUB_URL" | node -e 'console.log(JSON.parse(fs.readFileSync(0, "utf8")).id)')
+RELEASE_DATA=$(curl "$GITHUB_URL")
+echo "$RELEASE_DATA"
+RELEASE_ID=$(echo "$RELEASE_DATA" | node -e 'console.log(JSON.parse(fs.readFileSync(0, "utf8")).id)')
 echo "$TRAVIS_TAG is release $RELEASE_ID"
 
 BASENAME_TO_PUBLISH="image-cli-$(basename "$ASSET_PATH")"
 echo "Publishing $ASSET_PATH as $BASENAME_TO_PUBLISH..."
 GITHUB_URL="https://uploads.github.com/repos/ErisVentures/js-image/releases/$RELEASE_ID/assets?name=$BASENAME_TO_PUBLISH&access_token=$GH_TOKEN"
-curl --data-binary @"$ASSET_PATH" -H 'Content-Type: application/octet-stream' "$GITHUB_URL" -vvvv
+curl --data-binary @"$ASSET_PATH" -H 'Content-Type: application/octet-stream' "$GITHUB_URL"
