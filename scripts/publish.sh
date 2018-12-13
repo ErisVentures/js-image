@@ -9,7 +9,7 @@ fi
 export TRAVIS_NODE_VERSION=v8
 
 PRERELEASE_FLAGS="--prerelease"
-if [[ git log "$TRAVIS_COMMIT_RANGE" | grep 'OFFICIAL RELEASE' ]]; then
+if git log "$TRAVIS_COMMIT_RANGE" | grep 'OFFICIAL RELEASE'; then
   PRERELEASE_FLAGS=""
 fi
 
