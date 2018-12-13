@@ -11,6 +11,7 @@ jobs:
       language: node_js
       node_js: v8
       script: npm run build
+      after_success: ./scripts/add-asset-to-github.sh ./packages/image-cli/out/node8-mac.tar.gz
       env: PKG_TARGET=node8-mac
     - stage: build
       os: linux
@@ -18,6 +19,7 @@ jobs:
       language: node_js
       node_js: v8
       script: npm run build
+      after_success: ./scripts/add-asset-to-github.sh ./packages/image-cli/out/node8-linux.tar.gz
       env: PKG_TARGET=node8-linux
     - stage: test
       os: linux
