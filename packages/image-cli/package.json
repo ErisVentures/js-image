@@ -46,7 +46,7 @@
     "sinon-chai": "^2.14.0"
   },
   "dependencies": {
-    "@eris/image": "^0.1.0",
+    "@eris/image": "^0.1.0-development",
     "yargs": "^9.0.1"
   }
 }
