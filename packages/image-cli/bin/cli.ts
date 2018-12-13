@@ -8,7 +8,9 @@ import {Runner} from '../lib/runner'
 
 const yargs = require('yargs') // tslint:disable-line
 
-const PRESETS = fs.readdirSync(path.join(__dirname, '../../presets')).map(p => p.replace('.json', ''))
+const PRESETS = fs
+  .readdirSync(path.join(__dirname, '../../presets'))
+  .map(p => p.replace('.json', ''))
 
 const argv = yargs
   .usage('Usage: $0 -c [config]')

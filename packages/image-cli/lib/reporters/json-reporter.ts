@@ -1,7 +1,10 @@
 import {IConfigEntry} from '../config-entry'
 import {IReporter} from './reporter'
 
-interface ErrorData {message: string; stack?: string}
+interface ErrorData {
+  message: string
+  stack?: string
+}
 
 export type IJsonReporterLog =
   | IJsonReporterStartedLog
