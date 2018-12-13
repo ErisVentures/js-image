@@ -24,11 +24,9 @@ if [[ -z "$TRAVIS_TAG" ]]; then
   exit 0
 fi
 
-GITHUB_URL="https://api.github.com/repos/ErisVentures/js-image/releases/tags/$TRAVIS_TAG"
+GITHUB_URL="https://api.github.com/repos/ErisVentures/js-image/releases/tags/$TRAVIS_TAG?access_token=$GH_TOKEN"
 echo "Determining release ID for $TRAVIS_TAG..."
-RELEASE_DATA=$(curl "$GITHUB_URL")
-echo "$RELEASE_DATA"
-RELEASE_ID=$(echo "$RELEASE_DATA" | node -e 'console.log(JSON.parse(fs.readFileSync(0, "utf8")).id)')
+RELEASE_ID=$(curl "$GITHUB_URL" | node -e 'console.log(JSON.parse(fs.readFileSync(0, "utf8")).id)')
 echo "$TRAVIS_TAG is release $RELEASE_ID"
 
 BASENAME_TO_PUBLISH="image-cli-$(basename "$ASSET_PATH")"
