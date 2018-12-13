@@ -1,6 +1,6 @@
 const path = require('path')
 const expect = require('chai').expect
-const ConfigEntry = require('../lib/config-entry')
+const ConfigEntry = require('../dist/lib/config-entry')
 
 const fixturePath = name => path.join(__dirname, `fixtures/${name}`)
 

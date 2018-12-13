@@ -1,6 +1,6 @@
 const path = require('path')
 const chai = require('chai')
-const Client = require('../lib/client')
+const Client = require('../dist/lib/client').CLIClient
 
 const expect = chai.expect
 chai.use(require('chai-as-promised'))

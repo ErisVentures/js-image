@@ -2,7 +2,7 @@ const fs = require('fs')
 const path = require('path')
 const expect = require('chai').expect
 const sinon = require('sinon')
-const Runner = require('../lib/runner')
+const Runner = require('../dist/lib/runner').Runner
 
 const fixturePath = name => path.join(__dirname, `fixtures/${name}`)
 

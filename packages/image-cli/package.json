@@ -2,13 +2,13 @@
   "name": "@eris/image-cli",
   "version": "0.1.0-development",
   "description": "CLI wrapper and standalone executable API for @eris/image.",
-  "main": "./lib/client.js",
+  "main": "./dist/lib/client.js",
   "bin": {
-    "image-cli": "./bin/index.js"
+    "image-cli": "./bin/run.js"
   },
   "scripts": {
     "download-prebuilt": "./scripts/download-prebuilt.sh",
-    "build": "bash ./scripts/build.sh",
+    "build": "tsc && bash ./scripts/build.sh",
     "test": "npm run test:lint && npm run test:unit",
     "test:unit": "mocha --reporter spec --timeout 4000 'test/**/*.test.js'",
     "test:lint": "lint",

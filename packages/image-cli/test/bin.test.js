@@ -4,7 +4,7 @@ const expect = require('chai').expect
 const execa = require('execa')
 
 const CWD = path.join(__dirname, '..')
-const JS_EXE = path.join(__dirname, '../bin/index.js')
+const JS_EXE = path.join(__dirname, '../bin/run.js')
 const CONFIG_PATH = path.join(__dirname, 'fixtures/config.json')
 const ANALYSIS_PATH = path.join(__dirname, 'fixtures/actual-skater-analysis.json')
 

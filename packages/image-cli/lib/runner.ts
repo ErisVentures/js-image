@@ -1,16 +1,41 @@
-const fs = require('fs')
-const path = require('path')
-const _ = require('lodash')
-const Image = require('@eris/image').Image
+import * as fs from 'fs'
+import * as path from 'path'
+import * as _ from 'lodash'
+import {Image} from '@eris/image'
+import {IReporter} from './reporters/reporter'
+import {IConfigEntry} from './config-entry'
 
-class Runner {
-  constructor(reporter, configEntries) {
+interface IRunnerFile {
+  path: string
+  pathWithoutExtension: string
+  dirname: string
+  basename: string
+  basenameWithoutExtension: string
+  extension: string
+}
+
+interface IRunnerContext {
+  file: IRunnerFile
+  cwd: string
+  force: boolean
+}
+
+export interface IRunOptions {
+  force?: boolean
+}
+
+export class Runner {
+  private readonly _reporter: IReporter
+  private readonly _entries: IConfigEntry[]
+  private readonly _cachedFiles: Map<string, Buffer>
+
+  public constructor(reporter: IReporter, configEntries: IConfigEntry[]) {
     this._reporter = reporter
     this._entries = configEntries
     this._cachedFiles = new Map()
   }
 
-  _checkForNecessaryFiles(filePaths) {
+  private _checkForNecessaryFiles(filePaths: string[]): void {
     if (filePaths.length) return
 
     for (const entry of this._entries) {
@@ -20,28 +45,27 @@ class Runner {
     }
   }
 
-  _fileExistsInCacheOrDisk(filePath) {
+  private _fileExistsInCacheOrDisk(filePath: string): boolean {
     return this._cachedFiles.has(filePath) || fs.existsSync(filePath)
   }
 
-  _getBufferFromCacheOrDisk(filePath) {
+  private _getBufferFromCacheOrDisk(filePath: string): Buffer {
     if (this._cachedFiles.has(filePath)) {
-      return this._cachedFiles.get(filePath)
+      return this._cachedFiles.get(filePath)!
     }
 
     return fs.readFileSync(filePath)
   }
 
-  _processCachedEntry(entry) {
+  private _processCachedEntry(entry: IConfigEntry): void {
     let result
     if (entry.action === 'toBuffer') {
       const buffer = this._getBufferFromCacheOrDisk(entry.output)
       result = buffer
       this._cachedFiles.set(entry.output, buffer)
     } else if (entry.action === 'toAnalysis' || entry.action === 'toMetadata') {
-      const string = fs.readFileSync(entry.output, 'utf8')
-      result = JSON.parse(string)
-      this._cachedFiles.set(entry.output, string)
+      const contents = fs.readFileSync(entry.output, 'utf8')
+      result = JSON.parse(contents)
     } else if (!entry.action) {
       result = this._getBufferFromCacheOrDisk(entry.input)
     } else {
@@ -51,11 +75,7 @@ class Runner {
     this._reporter.entryFinished(entry, result)
   }
 
-  /**
-   * @param {ConfigEntry} entry
-   * @param {{file: FileEntry, cwd: string}} context
-   */
-  async _processEntry(entry, context) {
+  private async _processEntry(entry: IConfigEntry, context: IRunnerContext): Promise<void> {
     entry = _.clone(entry)
     entry.force = Boolean(entry.force || context.force)
     entry.input = _.template(entry.input)(context)
@@ -68,33 +88,28 @@ class Runner {
 
     const input = this._getBufferFromCacheOrDisk(entry.input)
 
-    let image = Image.from(input)
-    Object.keys(entry.settings).forEach(key => {
-      if (typeof image[key] !== 'function') throw new Error(`Image.${key} is not a function`)
-      image = image[key](entry.settings[key])
-    })
-
+    const image = Image.from(input).options(entry.settings)
     const result = entry.action ? await image[entry.action]() : input
-    let buffer = result
+    let toDiskResult: Buffer | string = result as Buffer
 
     if (Buffer.isBuffer(result)) {
       this._cachedFiles.set(entry.output, result)
     } else {
-      buffer = JSON.stringify(result, null, 2)
+      toDiskResult = JSON.stringify(result, null, 2)
     }
 
     if (entry.toDisk) {
-      fs.writeFileSync(entry.output, buffer)
+      fs.writeFileSync(entry.output, toDiskResult)
     }
 
     this._reporter.entryFinished(entry, result)
   }
 
-  async run(filePaths = [], options) {
+  public async run(filePaths: string[] = [], options?: IRunOptions): Promise<void> {
     this._reporter.started()
     this._checkForNecessaryFiles(filePaths)
 
-    const force = (options && options.force) || process.env.FORCE
+    const force = Boolean((options && options.force) || process.env.FORCE)
     const cwd = process.cwd()
     if (!filePaths.length) {
       filePaths = ['/dev/null']
@@ -125,5 +140,3 @@ class Runner {
     this._reporter.finished()
   }
 }
-
-module.exports = Runner

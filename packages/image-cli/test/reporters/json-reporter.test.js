@@ -1,6 +1,6 @@
 const expect = require('chai').expect
 const sinon = require('sinon')
-const Reporter = require('../../lib/reporters/json-reporter')
+const Reporter = require('../../dist/lib/reporters/json-reporter').JsonReporter
 
 describe('lib/reporters/json-reporter.js', () => {
   let sandbox, reporter, logStub
