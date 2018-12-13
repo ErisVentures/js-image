@@ -1,6 +1,6 @@
 {
   "name": "@eris/exif",
-  "version": "0.1.0",
+  "version": "0.1.0-development",
   "description": "Parses EXIF data.",
   "main": "./dist/index.js",
   "scripts": {

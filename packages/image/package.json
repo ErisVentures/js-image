@@ -1,6 +1,6 @@
 {
   "name": "@eris/image",
-  "version": "0.1.0",
+  "version": "0.1.0-development",
   "description": "Collection of image manipulation libraries for node and the browser.",
   "main": "./dist/node-index.js",
   "types": "./dist/node-index.d.ts",

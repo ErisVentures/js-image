@@ -1,6 +1,6 @@
 {
   "name": "@eris/image-cli",
-  "version": "0.1.0",
+  "version": "0.1.0-development",
   "description": "CLI wrapper and standalone executable API for @eris/image.",
   "main": "./lib/client.js",
   "bin": {
