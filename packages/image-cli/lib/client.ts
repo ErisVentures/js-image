@@ -68,7 +68,7 @@ export class CLIInstance extends EventEmitter {
         if (message.type === 'entryFinished') {
           this._entries.push(message.data)
         } else if (message.type === 'entryErrored') {
-          this._entries.push({failed: true, ...message.data})
+          this._entries.push(message.data)
         }
       } catch (err) {
         this.emit('error', err)

@@ -67,7 +67,7 @@ describe('lib/reporters/json-reporter.js', () => {
     expect(erroredArg.data).to.include({
       id: 1,
       input: 'file',
-      message: 'wtf',
     })
+    expect(erroredArg.data.error).to.include({message: 'wtf'})
   })
 })

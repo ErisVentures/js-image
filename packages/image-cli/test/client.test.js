@@ -53,9 +53,9 @@ describe('lib/client.js', () => {
       const promise = client.run(config).waitForExit()
       return promise.then(entries => {
         expect(entries).to.have.length(4)
-        expect(entries[1]).to.have.property('failed', true)
-        expect(entries[1]).to.have.property('message')
-        expect(entries[1]).to.have.property('stack')
+        expect(entries[1]).to.have.property('error')
+        expect(entries[1].error).to.have.property('message')
+        expect(entries[1].error).to.have.property('stack')
       })
     })
 
