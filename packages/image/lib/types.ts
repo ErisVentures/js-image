@@ -242,3 +242,7 @@ export interface IHSLPixel extends IBasePixel {
 }
 
 export type IPixel = IRGBPixel | IGreyscalePixel | IHSLPixel | IBasePixel
+
+export interface IAllImageOptions extends IImageOutputOptions {
+  analyze?: IAnalysisOptions
+}

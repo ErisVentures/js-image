@@ -27,7 +27,7 @@ export abstract class Image {
     }
   }
 
-  public options(options: types.IImageOutputOptions & {analyze?: types.IAnalysisOptions}): Image {
+  public options(options: types.IAllImageOptions): Image {
     if (options.analyze) this.analyze(options.analyze)
     if (options.format) this.format(options.format)
     if (options.resize) this.resize(options.resize)
