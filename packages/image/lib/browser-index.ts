@@ -1,5 +1,3 @@
 import './shims/buffer'
-export {ImageData} from './image-data'
 export {BrowserImage as Image} from './browser-image'
-export {hammingDistance} from './analyses/hash'
-export {ImageFormat, ImageResizeFit, ImageResizeMethod, EdgeMethod, HashMethod} from './types'
+export * from './shared-index'
