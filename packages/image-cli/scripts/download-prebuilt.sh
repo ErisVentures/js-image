@@ -1,0 +1,34 @@
+#!/bin/bash
+
+set -e
+
+# Make sure we're in the image-cli directory
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+cd "$SCRIPT_DIR" && cd ../
+
+PLATFORM=$(node -e 'console.log(require("os").platform())')
+VERSION=$(node -e 'console.log(require("./package.json").version)')
+
+PLATFORM_FILE=""
+if [[ "$PLATFORM" == "darwin" ]]; then
+  PLATFORM_FILE="node8-mac.tar.gz"
+elif [[ "$PLATFORM" == "linux" ]]; then
+  PLATFORM_FILE="node8-linux.tar.gz"
+elif [[ "$PLATFORM" == "win32" ]]; then
+  echo "Windows not yet supported"
+  exit 1
+else
+  echo "Unsupported platform $PLATFORM"
+  exit 1
+fi
+
+mkdir -p bin/prebuilt/
+FILE_TO_DOWNLOAD="image-cli-$PLATFORM_FILE"
+echo "Downloading $FILE_TO_DOWNLOAD for version $VERSION..."
+curl -L -o "bin/prebuilt/$FILE_TO_DOWNLOAD" "https://github.com/ErisVentures/js-image/releases/download/v${VERSION}/$FILE_TO_DOWNLOAD"
+
+cd bin/prebuilt
+
+if [[ "$FILE_TO_DOWNLOAD" = *.tar.gz ]]; then
+  tar -xzf "$FILE_TO_DOWNLOAD"
+fi

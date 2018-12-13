@@ -4,6 +4,7 @@ coverage/
 dist/
 dist-es6/
 out/
+prebuilt/
 
 actual-*.jpg
 actual-*.png
