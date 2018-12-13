@@ -2,10 +2,14 @@ import * as path from 'path'
 import {spawn, ChildProcess} from 'child_process'
 import * as EventEmitter from 'events'
 import {IConfigEntry} from './config-entry'
+import {
+  IJsonReporterEntryFinishedLog,
+  IJsonReporterEntryErroredLog,
+} from './reporters/json-reporter'
 
-export interface IResultEntry {
-  failed?: boolean
-}
+export type IEntryResult =
+  | IJsonReporterEntryFinishedLog['data']
+  | IJsonReporterEntryErroredLog['data']
 
 export interface ICLIClientOptions {
   executablePath: string
@@ -18,7 +22,7 @@ export interface ICLIWaitForExitOptions {
 export class CLIInstance extends EventEmitter {
   private _finished: boolean
   private _error: Error | null
-  private readonly _entries: any[]
+  private readonly _entries: IEntryResult[]
   private _stdout: string
   private _stderr: string
   private readonly _childProcess: ChildProcess
@@ -88,20 +92,23 @@ export class CLIInstance extends EventEmitter {
     })
   }
 
-  private async _entriesToPromise(options: ICLIWaitForExitOptions = {}): Promise<IResultEntry[]> {
-    const failedEntry = this._entries.find(entry => entry.failed)
-    if (options.failLoudly && failedEntry) {
-      const error = new Error(failedEntry.message) as any
-      error.originalStack = error.stack
+  private async _entriesToPromise(options: ICLIWaitForExitOptions = {}): Promise<IEntryResult[]> {
+    const failedEntry = this._entries.find(entry => !!(entry as any).error) as
+      | IJsonReporterEntryErroredLog['data']
+      | null
+    if (options.failLoudly && failedEntry && failedEntry.error) {
+      const error = new Error(failedEntry.error.message) as any
+      error.originalStack = failedEntry.error.stack
       throw error
     }
 
     return this._entries
   }
 
-  public async waitForExit(options?: ICLIWaitForExitOptions): Promise<IResultEntry[]> {
+  public async waitForExit(options?: ICLIWaitForExitOptions): Promise<IEntryResult[]> {
     if (this._finished) {
-      return this._error ? Promise.reject(this._error) : this._entriesToPromise(options)
+      if (this._error) throw this._error
+      return this._entriesToPromise(options)
     }
 
     await new Promise<{}>(resolve => this.once('done', resolve))
