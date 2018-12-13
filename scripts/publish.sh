@@ -8,5 +8,10 @@ fi
 # Fake the Travis Node Version so npm-publish will work
 export TRAVIS_NODE_VERSION=v8
 
+PRERELEASE_FLAGS="--prerelease"
+if [[ git log "$TRAVIS_COMMIT_RANGE" | grep 'OFFICIAL RELEASE' ]]; then
+  PRERELEASE_FLAGS=""
+fi
+
 git checkout master
-hulk npm-publish --lerna --prerelease --yes
+hulk npm-publish --lerna --yes $PRERELEASE_FLAGS
