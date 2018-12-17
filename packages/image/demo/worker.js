@@ -1,6 +1,6 @@
 importScripts('bundle.js')
 
-const {Image, ImageData} = self['@eris/image']
+const {Image, ImageData} = self['@eris/image'].default
 
 async function loadWASM() {
   const response = await fetch('bundle.wasm')

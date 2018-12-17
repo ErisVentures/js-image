@@ -2,7 +2,7 @@ let imageData, imageMetadata, processStartTs, hideNotifierTimeout, isLoading
 
 const debounce = (self._ && self._.debounce) || (fn => fn)
 const BrowserImage = window['@eris/image'].Image
-const ImageData = window['@eris/image'].ImageData
+const ImageData = window['@eris/image'].default.ImageData
 
 const settings = {}
 const worker = new Worker('worker.js')
