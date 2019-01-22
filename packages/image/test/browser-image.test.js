@@ -400,6 +400,7 @@ describe('BrowserImage', () => {
   })
 
   describe('Performance', () => {
+    let imageData
     function buildImageData({width, height}) {
       const data = new Uint8Array(width * height)
       for (let i = 0; i < data.length; i++) {
@@ -411,6 +412,7 @@ describe('BrowserImage', () => {
 
     before(async () => {
       await enableWASM()
+      imageData = await fixtureDecode('source-yosemite.jpg')
     })
 
     after(async () => {
@@ -431,7 +433,6 @@ describe('BrowserImage', () => {
     }).timeout(5000)
 
     it('should not be hella slow calibrating', async () => {
-      const imageData = await fixtureDecode('source-yosemite.jpg')
       const image = BrowserImage.from(imageData)
         .tone({
           contrast: 0.5,

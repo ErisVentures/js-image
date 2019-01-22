@@ -764,64 +764,114 @@ export class ImageData {
 
     const dstImageData = {...srcImageData}
     const numPixels = srcImageData.width * srcImageData.height
-    const rawData = []
-    for (let i = 0; i < numPixels; i++) {
-      const offset = i * 3
-      const rLinear = gammaCorrect(srcImageData.data[offset] / 255)
-      const gLinear = gammaCorrect(srcImageData.data[offset + 1] / 255)
-      const bLinear = gammaCorrect(srcImageData.data[offset + 2] / 255)
 
-      // From https://en.wikipedia.org/wiki/SRGB#Specification_of_the_transformation
-      const X =
-        calibrationProfile.xRed * rLinear +
-        calibrationProfile.xGreen * gLinear +
-        calibrationProfile.xBlue * bLinear
-      const Y =
-        calibrationProfile.yRed * rLinear +
-        calibrationProfile.yGreen * gLinear +
-        calibrationProfile.yBlue * bLinear
-      const Z =
-        calibrationProfile.zRed * rLinear +
-        calibrationProfile.zGreen * gLinear +
-        calibrationProfile.zBlue * bLinear
+    if (hasWASM()) {
+      const {wasmModule} = getWASM()
 
-      rawData[offset + 0] = X
-      rawData[offset + 1] = Y
-      rawData[offset + 2] = Z
+      const numberOfElements = numPixels * 3
+      const byteSize = numberOfElements * 4
+      const pointer = wasmModule.instance.exports.alloc(byteSize)
+      const rawData = new Float32Array(wasmModule.instance.exports.memory.buffer, pointer,
+          numberOfElements)
+      for (let i = 0; i < srcImageData.data.length; i++) {
+        rawData[i] = srcImageData.data[i]
+      }
+
+      wasmModule.instance.exports.toXYZ(pointer, numPixels,
+        calibrationProfile.xRed,
+        calibrationProfile.xGreen,
+        calibrationProfile.xBlue,
+        calibrationProfile.yRed,
+        calibrationProfile.yGreen,
+        calibrationProfile.yBlue,
+        calibrationProfile.zRed,
+        calibrationProfile.zGreen,
+        calibrationProfile.zBlue
+      )
+
+      dstImageData.data = [...rawData]
+      wasmModule.instance.exports.dealloc(pointer, byteSize)
+    } else {
+      const rawData = []
+      for (let i = 0; i < numPixels; i++) {
+        const offset = i * 3
+        const rLinear = gammaCorrect(srcImageData.data[offset] / 255)
+        const gLinear = gammaCorrect(srcImageData.data[offset + 1] / 255)
+        const bLinear = gammaCorrect(srcImageData.data[offset + 2] / 255)
+
+        // From https://en.wikipedia.org/wiki/SRGB#Specification_of_the_transformation
+        const X =
+          calibrationProfile.xRed * rLinear +
+          calibrationProfile.xGreen * gLinear +
+          calibrationProfile.xBlue * bLinear
+        const Y =
+          calibrationProfile.yRed * rLinear +
+          calibrationProfile.yGreen * gLinear +
+          calibrationProfile.yBlue * bLinear
+        const Z =
+          calibrationProfile.zRed * rLinear +
+          calibrationProfile.zGreen * gLinear +
+          calibrationProfile.zBlue * bLinear
+
+        rawData[offset + 0] = X
+        rawData[offset + 1] = Y
+        rawData[offset + 2] = Z
+      }
+
+      dstImageData.data = rawData
     }
 
     dstImageData.colorspace = Colorspace.XYZ
     dstImageData.channels = 3
-    dstImageData.data = rawData
     return dstImageData
   }
 
   private static _XYZToRGB(srcImageData: IAnnotatedImageData): IAnnotatedImageData {
     const dstImageData = {...srcImageData}
     const numPixels = srcImageData.width * srcImageData.height
-    const rawData = new Uint8Array(numPixels * 3)
-    const gammaCorrect = (c: number) =>
-      c <= 0.0031308 ? 12.92 * c : 1.055 * Math.pow(c, 1 / 2.4) - 0.055
 
-    for (let i = 0; i < numPixels; i++) {
-      const offset = i * 3
-      const x = srcImageData.data[offset]
-      const y = srcImageData.data[offset + 1]
-      const z = srcImageData.data[offset + 2]
+    if (hasWASM()) {
+      const {wasmModule} = getWASM()
 
-      const rLinear = 3.2406 * x - 1.5372 * y - 0.4986 * z
-      const gLinear = -0.9689 * x + 1.8758 * y + 0.0415 * z
-      const bLinear = 0.0557 * x - 0.204 * y + 1.057 * z
+      const numberOfElements = numPixels * 3
+      const byteSize = numberOfElements * 4
+      const pointerIn = wasmModule.instance.exports.alloc(byteSize)
+      const pointerOut = wasmModule.instance.exports.alloc(numberOfElements)
+      const rawDataIn = new Float32Array(wasmModule.instance.exports.memory.buffer, pointerIn, numberOfElements)
+      const rawDataOut = new Uint8Array(wasmModule.instance.exports.memory.buffer, pointerOut, numberOfElements)
+      for (let i = 0; i < srcImageData.data.length; i++) {
+        rawDataIn[i] = srcImageData.data[i]
+      }
 
-      // From https://en.wikipedia.org/wiki/SRGB#Specification_of_the_transformation
-      rawData[offset + 0] = ImageData.clip(gammaCorrect(rLinear) * 255)
-      rawData[offset + 1] = ImageData.clip(gammaCorrect(gLinear) * 255)
-      rawData[offset + 2] = ImageData.clip(gammaCorrect(bLinear) * 255)
+      wasmModule.instance.exports.toRGBFromXYZ(pointerIn, pointerOut, numPixels)
+      dstImageData.data = new Uint8Array(rawDataOut)
+      wasmModule.instance.exports.dealloc(pointerIn, byteSize)
+      wasmModule.instance.exports.dealloc(pointerOut, byteSize)
+    } else {
+      const rawData = new Uint8Array(numPixels * 3)
+      const gammaCorrect = (c: number) =>
+        c <= 0.0031308 ? 12.92 * c : 1.055 * Math.pow(c, 1 / 2.4) - 0.055
+
+      for (let i = 0; i < numPixels; i++) {
+        const offset = i * 3
+        const x = srcImageData.data[offset]
+        const y = srcImageData.data[offset + 1]
+        const z = srcImageData.data[offset + 2]
+
+        const rLinear = 3.2406 * x - 1.5372 * y - 0.4986 * z
+        const gLinear = -0.9689 * x + 1.8758 * y + 0.0415 * z
+        const bLinear = 0.0557 * x - 0.204 * y + 1.057 * z
+
+        // From https://en.wikipedia.org/wiki/SRGB#Specification_of_the_transformation
+        rawData[offset + 0] = ImageData.clip(gammaCorrect(rLinear) * 255)
+        rawData[offset + 1] = ImageData.clip(gammaCorrect(gLinear) * 255)
+        rawData[offset + 2] = ImageData.clip(gammaCorrect(bLinear) * 255)
+      }
+      dstImageData.data = rawData
     }
 
     dstImageData.colorspace = Colorspace.RGB
     dstImageData.channels = 3
-    dstImageData.data = rawData
     return dstImageData
   }
 
@@ -881,9 +931,11 @@ export class ImageData {
     if (hasWASM()) {
       const {wasmModule} = getWASM()
 
-      const byteSize = numPixels * 3
+      const numberOfElements = numPixels * 3
+      const byteSize = numberOfElements
       const pointer = wasmModule.instance.exports.alloc(byteSize)
-      const rawData = new Uint8Array(wasmModule.instance.exports.memory.buffer, pointer, byteSize)
+      const rawData = new Uint8Array(wasmModule.instance.exports.memory.buffer, pointer,
+          numberOfElements)
       for (let i = 0; i < srcImageData.height * srcImageData.width * srcImageData.channels; i++) {
         rawData[i] = srcImageData.data[i]
       }
