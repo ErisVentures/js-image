@@ -759,9 +759,6 @@ export class ImageData {
       srcImageData = ImageData.toRGB(srcImageData)
     }
 
-    const gammaCorrect = (c: number) =>
-      c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4)
-
     const dstImageData = {...srcImageData}
     const numPixels = srcImageData.width * srcImageData.height
 
@@ -771,13 +768,19 @@ export class ImageData {
       const numberOfElements = numPixels * 3
       const byteSize = numberOfElements * 4
       const pointer = wasmModule.instance.exports.alloc(byteSize)
-      const rawData = new Float32Array(wasmModule.instance.exports.memory.buffer, pointer,
-          numberOfElements)
+      const rawData = new Float32Array(
+        wasmModule.instance.exports.memory.buffer,
+        pointer,
+        numberOfElements,
+      )
+
       for (let i = 0; i < srcImageData.data.length; i++) {
         rawData[i] = srcImageData.data[i]
       }
 
-      wasmModule.instance.exports.toXYZ(pointer, numPixels,
+      wasmModule.instance.exports.toXYZ(
+        pointer,
+        numPixels,
         calibrationProfile.xRed,
         calibrationProfile.xGreen,
         calibrationProfile.xBlue,
@@ -786,12 +789,24 @@ export class ImageData {
         calibrationProfile.yBlue,
         calibrationProfile.zRed,
         calibrationProfile.zGreen,
-        calibrationProfile.zBlue
+        calibrationProfile.zBlue,
       )
 
       dstImageData.data = [...rawData]
       wasmModule.instance.exports.dealloc(pointer, byteSize)
     } else {
+      // While this isn't 100% accurate, it's much, MUCH faster
+      // See https://www.desmos.com/calculator/scyl4fhjns
+      // Essentially...
+      //    v <= 0.2 ... y = x * x
+      //    v <= 0.6 ... y = x * x - 0.125 * x + .025
+      //    v <= 1.0 ... y = x * x + 0.125 * x - .125
+      const gammaCorrect = (c: number) => {
+        if (c <= 0.2) return c * c
+        if (c <= 0.6) return c * c - 0.125 * c + 0.025
+        return c * c + 0.125 * c - 0.125
+      }
+
       const rawData = []
       for (let i = 0; i < numPixels; i++) {
         const offset = i * 3
@@ -837,8 +852,18 @@ export class ImageData {
       const byteSize = numberOfElements * 4
       const pointerIn = wasmModule.instance.exports.alloc(byteSize)
       const pointerOut = wasmModule.instance.exports.alloc(numberOfElements)
-      const rawDataIn = new Float32Array(wasmModule.instance.exports.memory.buffer, pointerIn, numberOfElements)
-      const rawDataOut = new Uint8Array(wasmModule.instance.exports.memory.buffer, pointerOut, numberOfElements)
+      const rawDataIn = new Float32Array(
+        wasmModule.instance.exports.memory.buffer,
+        pointerIn,
+        numberOfElements,
+      )
+
+      const rawDataOut = new Uint8Array(
+        wasmModule.instance.exports.memory.buffer,
+        pointerOut,
+        numberOfElements,
+      )
+
       for (let i = 0; i < srcImageData.data.length; i++) {
         rawDataIn[i] = srcImageData.data[i]
       }
@@ -849,8 +874,17 @@ export class ImageData {
       wasmModule.instance.exports.dealloc(pointerOut, byteSize)
     } else {
       const rawData = new Uint8Array(numPixels * 3)
-      const gammaCorrect = (c: number) =>
-        c <= 0.0031308 ? 12.92 * c : 1.055 * Math.pow(c, 1 / 2.4) - 0.055
+
+      // Reverse our linear combination from before...
+      // Pluggin in our choke points to reverse the previous functions.
+      //    y <= 0.04 ... y = x * x
+      //    v <= 0.31 ... y = x * x - 0.125 * x + .025
+      //    v <= 1.00 ... y = x * x + 0.125 * x - .125
+      const gammaCorrect = (v: number) => {
+        if (v <= 0.04) return Math.sqrt(v)
+        if (v <= 0.31) return (Math.sqrt(6400.0 * v - 135.0) + 5.0) / 80.0
+        return (Math.sqrt(256.0 * v + 33.0) - 1.0) / 16.0
+      }
 
       for (let i = 0; i < numPixels; i++) {
         const offset = i * 3
@@ -934,8 +968,12 @@ export class ImageData {
       const numberOfElements = numPixels * 3
       const byteSize = numberOfElements
       const pointer = wasmModule.instance.exports.alloc(byteSize)
-      const rawData = new Uint8Array(wasmModule.instance.exports.memory.buffer, pointer,
-          numberOfElements)
+      const rawData = new Uint8Array(
+        wasmModule.instance.exports.memory.buffer,
+        pointer,
+        numberOfElements,
+      )
+
       for (let i = 0; i < srcImageData.height * srcImageData.width * srcImageData.channels; i++) {
         rawData[i] = srcImageData.data[i]
       }
