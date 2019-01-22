@@ -453,5 +453,19 @@ describe('BrowserImage', () => {
 
       await image.toImageData()
     }).timeout(20000)
+
+    it('should not be hella slow toning', async () => {
+      const image = BrowserImage.from(imageData)
+        .tone({
+          contrast: 0.5,
+          whites: 30,
+          highlights: -20,
+          midtones: 30,
+          shadows: 50,
+          blacks: -20,
+        })
+
+      await image.toImageData()
+    }).timeout(5000)
   })
 })

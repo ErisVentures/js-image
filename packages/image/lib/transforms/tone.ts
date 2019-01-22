@@ -81,32 +81,39 @@ export function curves(
     thirdDegreeCoefficients.push(magicNumber * dxInverse * dxInverse)
   }
 
+  const precomputedValues: number[] = []
+  for (let yValue = 0; yValue <= 255; yValue++) {
+    let closestIndex = -1
+    for (let i = 0; i < curve.length; i++) {
+      const curvePoint = curve[i][0]
+      if (curvePoint > yValue) break
+      closestIndex = i
+    }
+
+    if (closestIndex === -1) throw new Error('Error precomputing indexes')
+
+    const [xBase, yBase] = curve[closestIndex]
+    const xDiff = yValue - xBase
+
+    const c1 = firstDegreeCoefficients[closestIndex]
+    const c2 = secondDegreeCoefficients[closestIndex]
+    const c3 = thirdDegreeCoefficients[closestIndex]
+
+    let yPrime: number
+
+    if (xDiff === 0) yPrime = yBase
+    else if (closestIndex >= secondDegreeCoefficients.length) yPrime = yBase + c1 * xDiff
+    else yPrime = yBase + c1 * xDiff + c2 * xDiff * xDiff + c3 * xDiff * xDiff * xDiff
+
+    precomputedValues[yValue] = yPrime
+  }
+
   for (let x = 0; x < imageData.width; x++) {
     for (let y = 0; y < imageData.height; y++) {
       const offset = ImageData.indexFor(imageData, x, y)
       const yValue = imageData.data[offset]
 
-      let closestIndex = -1
-      for (let i = 0; i < curve.length; i++) {
-        const curvePoint = curve[i][0]
-        if (curvePoint > yValue) break
-        closestIndex = i
-      }
-
-      const [xBase, yBase] = curve[closestIndex]
-      const xDiff = yValue - xBase
-
-      const c1 = firstDegreeCoefficients[closestIndex]
-      const c2 = secondDegreeCoefficients[closestIndex]
-      const c3 = thirdDegreeCoefficients[closestIndex]
-
-      let yPrime: number
-
-      if (xDiff === 0) yPrime = yBase
-      else if (closestIndex >= secondDegreeCoefficients.length) yPrime = yBase + c1 * xDiff
-      else yPrime = yBase + c1 * xDiff + c2 * xDiff * xDiff + c3 * xDiff * xDiff * xDiff
-
-      imageData.data[offset] = yPrime
+      imageData.data[offset] = precomputedValues[yValue]
     }
   }
 
