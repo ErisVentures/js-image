@@ -796,7 +796,7 @@ export class ImageData {
       wasmModule.instance.exports.dealloc(pointer, byteSize)
     } else {
       // While this isn't 100% accurate, it's much, MUCH faster
-      // See https://www.desmos.com/calculator/scyl4fhjns
+      // See https://www.desmos.com/calculator/dip7dpicry
       // Essentially...
       //    v <= 0.2 ... y = x * x
       //    v <= 0.6 ... y = x * x - 0.125 * x + .025
