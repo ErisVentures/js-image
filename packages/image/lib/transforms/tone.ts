@@ -23,14 +23,7 @@ function validateCurvesInput(curve?: number[][]): number[][] {
  * @see https://en.wikipedia.org/wiki/Monotone_cubic_interpolation#Example_implementation
  * @param options
  */
-export function curves(
-  imageData: IAnnotatedImageData,
-  unsafeCurve: number[][],
-): IAnnotatedImageData {
-  if (imageData.colorspace !== Colorspace.YCbCr) throw new Error('Curves only works on YCbCr')
-  const curve = validateCurvesInput(unsafeCurve)
-  if (curve.every(([x, y]) => x === y)) return imageData
-
+function computeCurvesValues(curve: number[][]): number[] {
   const xDiffs: number[] = []
   const yDiffs: number[] = []
   const slopes: number[] = []
@@ -105,8 +98,17 @@ export function curves(
     else if (closestIndex >= secondDegreeCoefficients.length) yPrime = yBase + c1 * xDiff
     else yPrime = yBase + c1 * xDiff + c2 * xDiff * xDiff + c3 * xDiff * xDiff * xDiff
 
-    precomputedValues[yValue] = yPrime
+    precomputedValues[yValue] = ImageData.clip(yPrime)
   }
+
+  return precomputedValues
+}
+
+function runCurves(
+  imageData: IAnnotatedImageData,
+  precomputedValues: number[],
+): IAnnotatedImageData {
+  if (imageData.colorspace !== Colorspace.YCbCr) throw new Error('Curves only works on YCbCr')
 
   for (let x = 0; x < imageData.width; x++) {
     for (let y = 0; y < imageData.height; y++) {
@@ -118,6 +120,43 @@ export function curves(
   }
 
   return imageData
+}
+
+function flattenCurvesValues(unsafeCurves: number[][][]): number[] {
+  const inputOutputMappings: number[][] = []
+  for (const unsafeCurve of unsafeCurves) {
+    const curve = validateCurvesInput(unsafeCurve)
+    if (curve.every(([x, y]) => x === y)) continue
+    inputOutputMappings.push(computeCurvesValues(curve))
+  }
+
+  if (!inputOutputMappings.length) return []
+
+  const precomputedValues: number[] = []
+  for (let initialYValue = 0; initialYValue <= 255; initialYValue++) {
+    let finalYValue = initialYValue
+    for (const phase of inputOutputMappings) {
+      finalYValue = phase[finalYValue]
+    }
+    precomputedValues[initialYValue] = finalYValue
+  }
+
+  return precomputedValues
+}
+
+export function curves(
+  imageData: IAnnotatedImageData,
+  unsafeCurvesInput: number[][][] | number[][],
+): IAnnotatedImageData {
+  // @ts-ignore - TODO: look into why this is being dumb
+  unsafeCurvesInput = unsafeCurvesInput.filter((curve: number[] | number[][]) => curve.length)
+  if (!unsafeCurvesInput.length) return imageData
+  let unsafeCurves = unsafeCurvesInput as number[][][]
+  if (typeof unsafeCurvesInput[0][0] === 'number') unsafeCurves = [unsafeCurvesInput as number[][]]
+  const flattenedCurveValues = flattenCurvesValues(unsafeCurves)
+  if (!flattenedCurveValues.length) return imageData
+  if (flattenedCurveValues.length !== 256) throw new Error('Error computing flattened curve')
+  return runCurves(imageData, flattenedCurveValues)
 }
 
 function generateIdentityCurvesPoints(numPoints: number): number[][] {
@@ -178,12 +217,17 @@ function saturation(imageData: IAnnotatedImageData, options: IToneOptions): IAnn
 
 export function tone(imageData: IAnnotatedImageData, options: IToneOptions): IAnnotatedImageData {
   const {colorspace} = imageData
-  // Convert the image to YCbCr colorspace to just operate on luma channel
-  imageData = ImageData.toYCbCr(imageData)
 
-  imageData = curves(imageData, convertToneToCurves(options))
-  if (options.contrast) imageData = curves(imageData, convertContrastToCurves(options))
-  if (options.curve) imageData = curves(imageData, options.curve)
+  const unsafeCurves: number[][][] = []
+  const toneCurve = convertToneToCurves(options)
+  if (toneCurve) unsafeCurves.push(toneCurve)
+  if (options.contrast) unsafeCurves.push(convertContrastToCurves(options))
+  if (options.curve) unsafeCurves.push(options.curve)
+  if (unsafeCurves.length) {
+    imageData = ImageData.toYCbCr(imageData)
+    imageData = curves(imageData, unsafeCurves)
+  }
+
   if (options.saturation) imageData = saturation(imageData, options)
 
   return ImageData.toColorspace(imageData, colorspace)
