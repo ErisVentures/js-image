@@ -111,9 +111,9 @@ pub fn toRGBFromXYZ(
 
   for i in 0..num_pixels {
     let offset = i * 3;
-    let x = data_in[offset];
-    let y = data_in[offset];
-    let z = data_in[offset];
+    let x = data_in[offset + 0];
+    let y = data_in[offset + 1];
+    let z = data_in[offset + 2];
     let r_linear = 3.2406 * x - 1.5372 * y - 0.4986 * z;
     let g_linear = -0.9689 * x + 1.8758 * y + 0.0415 * z;
     let b_linear = 0.0557 * x - 0.204 * y + 1.057 * z;

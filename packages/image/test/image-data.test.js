@@ -778,4 +778,68 @@ describe('ImageData', () => {
       }).to.throw(/must be called in browser/)
     })
   })
+
+  describe('WASM', () => {
+    before(async () => {
+      await enableWASM()
+    })
+
+    after(async () => {
+      await disableWASM()
+    })
+
+    describe('#toXYZ', () => {
+      it('should handle simple cases', () => {
+        const imageData = {
+          width: 2,
+          height: 2,
+          channels: 3,
+          colorspace: Colorspace.RGB,
+          data: new Uint8Array([
+            255, 255, 255,
+            255, 0, 0,
+            0, 255, 0,
+            0, 0, 255,
+          ]),
+        }
+
+        const xyz = ImageData.toXYZ(imageData)
+        const rgb = ImageData.toRGB(xyz)
+        xyz.data = xyz.data.map(x => Math.round(x * 1000))
+        expect(xyz).to.eql({
+          width: 2,
+          height: 2,
+          channels: 3,
+          colorspace: Colorspace.XYZ,
+          data: [
+            951, 1000, 1089,
+            412, 213, 19,
+            358, 715, 119,
+            181, 72, 951,
+          ],
+        })
+
+        expect(rgb).to.eql({
+          width: 2,
+          height: 2,
+          channels: 3,
+          colorspace: Colorspace.RGB,
+          data: new Uint8Array([
+            255, 255, 255,
+            255, 1, 0,
+            0, 255, 1,
+            1, 0, 255,
+          ]),
+        })
+      })
+
+      it('should handle images', async () => {
+        const rainbowData = await fixtureDecode('source-rainbow.jpg')
+        const imageData = ImageData.normalize(rainbowData)
+        const xyz = ImageData.toXYZ(imageData)
+        const rgba = ImageData.toRGBA(xyz)
+        await compareToFixture(ImageData.toBuffer(rgba), 'rainbow.jpg', {strict: false})
+      })
+    })
+  })
 })
