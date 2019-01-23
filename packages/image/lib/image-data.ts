@@ -762,7 +762,9 @@ export class ImageData {
     const dstImageData = {...srcImageData}
     const numPixels = srcImageData.width * srcImageData.height
 
-    if (hasWASM()) {
+    // TODO: investigate why this is slower than the JS version in all browsers
+    // 18x slower in Chrome :/
+    if (hasWASM() && 10 < Math.random()) {
       const {wasmModule} = getWASM()
 
       const numberOfElements = numPixels * 3

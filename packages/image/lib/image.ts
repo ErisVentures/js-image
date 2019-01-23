@@ -17,6 +17,10 @@ import {instrumentation} from './instrumentation'
 /* tslint:disable-next-line */
 const fileType = require('file-type')
 
+function isEmpty<T extends string, K>(o: Partial<Record<T, K>>): boolean {
+  return Object.keys(o).every(key => !o[key as T])
+}
+
 export abstract class Image {
   protected _output: types.IImageOutputOptions
   protected _analyze?: types.IAnalysisOptions
@@ -167,7 +171,7 @@ export abstract class Image {
   }
 
   protected _applyCalibrate(image: IAnnotatedImageData): IAnnotatedImageData {
-    if (!this._output.calibrate) {
+    if (!this._output.calibrate || isEmpty(this._output.calibrate)) {
       return image
     }
 
@@ -175,7 +179,7 @@ export abstract class Image {
   }
 
   protected _applyTone(image: IAnnotatedImageData): IAnnotatedImageData {
-    if (!this._output.tone) {
+    if (!this._output.tone || isEmpty(this._output.tone)) {
       return image
     }
 
@@ -183,7 +187,7 @@ export abstract class Image {
   }
 
   protected _applySharpen(image: IAnnotatedImageData): IAnnotatedImageData {
-    if (!this._output.sharpen) {
+    if (!this._output.sharpen || isEmpty(this._output.sharpen)) {
       return image
     }
 
@@ -220,6 +224,7 @@ export abstract class Image {
       switch (effect.type) {
         case types.EffectType.Noise:
           const options = effect.options || {}
+          if (options.opacity === 0) continue
           const opacityValue = options.opacity || 0.05
           const noiseLayer = noise(imageWithEffects.width, imageWithEffects.height, effect.options)
           const noiseMatched = ImageData.toColorspace(noiseLayer, imageWithEffects.colorspace)
