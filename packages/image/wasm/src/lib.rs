@@ -8,7 +8,13 @@ use std::slice;
 use std::os::raw::c_void;
 use wasm_bindgen::prelude::*;
 
+fn round_to_int(v: f32) -> u8 {
+  return v.round() as u8
+}
+
 fn clip255(v: f32) -> u8 {
+  if (v > 255.0) { return 255; }
+  if (v < 0.0) { return 0; }
   return v.round() as u8
 }
 
@@ -43,9 +49,9 @@ pub fn toYCbCr(pointer: *mut u8, num_pixels: usize) {
     let g = data[offset + 1];
     let b = data[offset + 2];
 
-    data[offset + 0] = clip255(0.0 + 0.299 * (r as f32) + 0.587 * (g as f32) + 0.114 * (b as f32));
-    data[offset + 1] = clip255(128.0 - 0.169 * (r as f32) - 0.331 * (g as f32) + 0.501 * (b as f32));
-    data[offset + 2] = clip255(128.0 + 0.501 * (r as f32) - 0.419 * (g as f32) - 0.081 * (b as f32));
+    data[offset + 0] = round_to_int(0.0 + 0.299 * (r as f32) + 0.587 * (g as f32) + 0.114 * (b as f32));
+    data[offset + 1] = round_to_int(128.0 - 0.169 * (r as f32) - 0.331 * (g as f32) + 0.501 * (b as f32));
+    data[offset + 2] = round_to_int(128.0 + 0.501 * (r as f32) - 0.419 * (g as f32) - 0.081 * (b as f32));
   }
 }
 
