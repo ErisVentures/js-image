@@ -187,7 +187,7 @@ export abstract class Image {
   }
 
   protected _applySharpen(image: IAnnotatedImageData): IAnnotatedImageData {
-    if (!this._output.sharpen || isEmpty(this._output.sharpen)) {
+    if (!this._output.sharpen) {
       return image
     }
 
