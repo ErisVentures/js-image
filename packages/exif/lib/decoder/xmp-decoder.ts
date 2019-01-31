@@ -1,9 +1,4 @@
-import {
-  IBufferLike,
-  IGenericMetadata,
-  IIFDTagDefinition,
-  IFDTagName,
-} from '../utils/types'
+import {IBufferLike, IGenericMetadata, IIFDTagDefinition, IFDTagName} from '../utils/types'
 import {tags} from '../utils/tags'
 
 const EXIF_ATTR_GLOBAL_REGEX = /(exif|tiff):([0-9a-z]+?)="(.*?)"/gim
@@ -49,7 +44,7 @@ export class XMPDecoder {
       if (!ifdDefinition) continue
 
       const value = attributes[key]
-      let realValue: number|string|undefined
+      let realValue: number | string | undefined
       if (isSimpleNumber(value)) {
         realValue = Number(value)
       } else if (isComplexNumber(value)) {
@@ -68,7 +63,7 @@ export class XMPDecoder {
     const attributes: Record<string, string> = {}
     const matches = this._text.match(EXIF_ATTR_GLOBAL_REGEX)
 
-    for (const match of (matches || [])) {
+    for (const match of matches || []) {
       // @ts-ignore - guaranteed to match from above
       const [_, key, value] = match.match(EXIF_ATTR_REGEX)
       attributes[`exif:${key.toLowerCase()}`] = value

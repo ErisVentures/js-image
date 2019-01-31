@@ -8,7 +8,7 @@ describe('lib/encoders/tiff-encoder.js', () => {
       const metadata = {
         Orientation: 1,
         ImageWidth: 4936,
-        ImageHeight: 3288,
+        ImageLength: 3288,
         ISO: 160,
       }
 

@@ -36,7 +36,7 @@ describe('Decoder', () => {
       expect(metadata).to.have.property('Make', 'NIKON CORPORATION')
       expect(metadata).to.have.property('Model', 'NIKON D4S')
       expect(metadata).to.have.property('ImageWidth', 4936)
-      expect(metadata).to.have.property('ImageHeight', 3288)
+      expect(metadata).to.have.property('ImageLength', 3288)
       expect(metadata).to.have.property('ISO', 160)
       expect(metadata).to.have.property('FNumber', 2.8)
       expect(metadata).to.have.property('ExposureTime', 0.0125)
