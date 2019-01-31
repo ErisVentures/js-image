@@ -110,7 +110,7 @@ export class JPEGDecoder {
     this._readFileMarkers()
 
     const metadata: IGenericMetadata = {
-      ImageHeight: this._height,
+      ImageLength: this._height,
       ImageWidth: this._width,
     }
 

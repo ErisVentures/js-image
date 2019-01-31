@@ -17,7 +17,7 @@ const _tags: Array<[IFDTagName, number, IFDDataType, IFDGroup]> = [
   ['NewSubfileType', 254, 4, 1],
   ['SubfileType', 255, 3, 1],
   ['ImageWidth', 256, 4, 1],
-  ['ImageHeight', 257, 4, 1],
+  ['ImageLength', 257, 4, 1],
   ['BitsPerSample', 258, 3, 1],
   ['Compression', 259, 3, 1],
   ['PhotometricInterpretation', 262, 3, 1],

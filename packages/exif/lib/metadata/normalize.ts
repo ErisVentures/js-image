@@ -12,7 +12,7 @@ const properties: {[k: string]: PropertyDefn[]} = {
   model: ['Model'],
 
   width: ['ImageWidth'],
-  height: ['ImageHeight'],
+  height: ['ImageLength'],
   xResolution: ['XResolution'],
   yResolution: ['YResolution'],
 

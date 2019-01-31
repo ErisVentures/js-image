@@ -69,8 +69,6 @@ export interface IIFDTagDefinition {
 }
 
 export enum IFDTag {
-  ImageWidth = 256,
-  ImageHeight = 257,
   Compression = 259,
   StripOffsets = 273,
   SamplesPerPixel = 277,
@@ -172,7 +170,7 @@ export type IFDTagName =
   | 'NewSubfileType'
   | 'SubfileType'
   | 'ImageWidth'
-  | 'ImageHeight'
+  | 'ImageLength'
   | 'BitsPerSample'
   | 'Compression'
   | 'PhotometricInterpretation'
