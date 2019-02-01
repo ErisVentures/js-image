@@ -181,29 +181,36 @@ export class JPEGDecoder {
     return metadata
   }
 
-  public extractMetadataBuffer(): IBufferLike | undefined {
+  public extractEXIFBuffer(): IBufferLike | undefined {
     this._readFileMarkers()
     return this._exifBuffers![0]
+  }
+
+  public extractXMPBuffer(): IBufferLike | undefined {
+    this._readFileMarkers()
+    return this._xmpBuffers![0]
   }
 
   public static isJPEG(buffer: IBufferLike): boolean {
     return buffer[0] === 0xff && buffer[1] === 0xd8
   }
 
-  public static injectMetadata(jpegBuffer: IBufferLike, exifBuffer: IBufferLike): IBufferLike {
+  public static injectEXIFMetadata(jpegBuffer: IBufferLike, exifBuffer: IBufferLike): IBufferLike {
     const decoder = new JPEGDecoder(jpegBuffer)
     decoder._readFileMarkers()
 
+    const hasEXIFDataAlready = decoder._markers!.some(marker => marker.isEXIF)
+
     const buffers: IBufferLike[] = []
     for (const {marker, buffer, isEXIF} of decoder._markers!) {
-      if (marker === START_OF_IMAGE) {
-        buffers.push(bufferFromNumber(START_OF_IMAGE))
+      if (isEXIF || (marker === START_OF_IMAGE && !hasEXIFDataAlready)) {
+        if (marker === START_OF_IMAGE) buffers.push(bufferFromNumber(START_OF_IMAGE))
         buffers.push(bufferFromNumber(APP1))
         buffers.push(bufferFromNumber(exifBuffer.length + 8))
         buffers.push(bufferFromNumber(EXIF_HEADER, 4))
         buffers.push(bufferFromNumber(0, 2))
         buffers.push(exifBuffer)
-      } else if (!isEXIF) {
+      } else {
         buffers.push(bufferFromNumber(marker), buffer)
       }
     }

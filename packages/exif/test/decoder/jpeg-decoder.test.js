@@ -5,15 +5,20 @@ const xmpJpeg = fixture('xmp.jpg')
 const nikonJpeg = fixture('nikon.jpg')
 
 describe('lib/jpeg-decoder.js', () => {
-  describe('#injectMetadata', () => {
+  describe('#injectEXIFMetadata', () => {
     it('should reconstruct same image', () => {
-      const metadataBuffer = new JPEGDecoder(nikonJpeg).extractMetadataBuffer()
-      const result = JPEGDecoder.injectMetadata(nikonJpeg, metadataBuffer)
+      const metadataBuffer = new JPEGDecoder(nikonJpeg).extractEXIFBuffer()
+      const result = JPEGDecoder.injectEXIFMetadata(nikonJpeg, metadataBuffer)
       expect(result).to.eql(nikonJpeg)
     })
   })
 
   describe('.extractMetadata', () => {
+    it('should extract EXIF data', () => {
+      const metadata = new JPEGDecoder(nikonJpeg).extractMetadata()
+      expect(metadata).to.include({ISO: 2500})
+    })
+
     it('should extract XMP data', () => {
       const metadata = new JPEGDecoder(xmpJpeg).extractMetadata()
       expect(metadata).to.include({Rating: 4, Label: 'Blue'})
