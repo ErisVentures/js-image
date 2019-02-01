@@ -28,6 +28,12 @@ interface Marker {
   isXMP: boolean
 }
 
+interface DecoderState {
+  marker: number
+  length: number
+  nextPosition: number
+}
+
 export class JPEGDecoder {
   private readonly _buffer: IBufferLike
   private readonly _reader: IReader
@@ -44,16 +50,92 @@ export class JPEGDecoder {
     this._reader.setEndianess(Endian.Big)
   }
 
-  public _readFileMarkers(): void {
+  private _handleEXIFMarker(state: DecoderState): {nextMarker: number} {
+    const reader = this._reader
+    const lastMarker = this._markers![this._markers!.length - 1]
+    const exifBuffers = this._exifBuffers!
+
+    // mark the last marker as an EXIF marker
+    lastMarker.isEXIF = true
+
+    // skip over the 4 header bytes and 2 empty bytes
+    reader.skip(6)
+    // the data is the rest of the marker (-6 for 2 empty bytes and 4 for EXIF header)
+    exifBuffers.push(reader.readAsBuffer(state.length - 6))
+    return {nextMarker: reader.read(2)}
+  }
+
+  /**
+   * @see https://en.wikipedia.org/wiki/Extensible_Metadata_Platform#Example
+   * @see https://wwwimages2.adobe.com/content/dam/acom/en/devnet/xmp/pdfs/XMP%20SDK%20Release%20cc-2016-08/XMPSpecificationPart3.pdf
+   */
+  private _handleXMPMarker(state: DecoderState): {nextMarker: number} {
+    const reader = this._reader
+    const lastMarker = this._markers![this._markers!.length - 1]
+    const xmpBuffers = this._xmpBuffers!
+
+    // Let's double check we're actually looking at XMP data
+    const fullHeader = reader.readAsBuffer(XMP_URL.length).toString()
+    if (fullHeader !== XMP_URL) {
+      // We aren't actually looking at XMP data, let's abort
+      reader.seek(state.nextPosition)
+      return {nextMarker: reader.read(2)}
+    }
+
+    xmpBuffers.push(reader.readAsBuffer(state.length - XMP_URL.length))
+    // mark the last marker as an XMP marker
+    lastMarker.isXMP = true
+    return {nextMarker: reader.read(2)}
+  }
+
+  private _handleNonAppMarker(state: DecoderState): {nextMarker: number} {
+    const reader = this._reader
+    const {marker, nextPosition} = state
+
+    // Skip through the other header payloads that aren't APP1
+    // Width and Height information will be in the Start Of Frame (SOFx) payloads
+    if (marker === START_OF_FRAME0 || marker === START_OF_FRAME1 || marker === START_OF_FRAME2) {
+      reader.skip(1)
+      this._height = reader.read(2)
+      this._width = reader.read(2)
+    }
+
+    reader.seek(nextPosition)
+    return {nextMarker: reader.read(2)}
+  }
+
+  private _handleMarker(state: DecoderState): {nextMarker: number} {
+    const reader = this._reader
+    const {marker, nextPosition} = state
+
+    if (marker === APP1) {
+      // Read the EXIF/XMP data from APP1 Marker
+      const header = reader.use(() => reader.read(4))
+      if (header === EXIF_HEADER) {
+        return this._handleEXIFMarker(state)
+      } else if (header === XMP_HEADER) {
+        return this._handleXMPMarker(state)
+      } else {
+        reader.seek(nextPosition)
+        return {nextMarker: reader.read(2)}
+      }
+    } else if (marker >> 8 === 0xff) {
+      return this._handleNonAppMarker(state)
+    } else {
+      throw new Error(`Unrecognized marker: ${marker.toString(16)}`)
+    }
+  }
+
+  private _readFileMarkers(): void {
     if (this._markers) {
       return
     }
 
     const baseMarker = {isEXIF: false, isXMP: false}
-    const markers: Marker[] = [{marker: START_OF_IMAGE, buffer: Buffer.from([]), ...baseMarker}]
     const reader = this._reader
-    const exifBuffers: IBufferLike[] = []
-    const xmpBuffers: IBufferLike[] = []
+    this._markers = [{marker: START_OF_IMAGE, buffer: Buffer.from([]), ...baseMarker}]
+    this._exifBuffers = []
+    this._xmpBuffers = []
     reader.seek(2)
 
     let marker = reader.read(2)
@@ -67,74 +149,15 @@ export class JPEGDecoder {
       const length = reader.use(() => reader.read(2)) - 2
       const markerBuffer = reader.use(() => reader.readAsBuffer(length + 2))
       // Push the marker and data onto our markers list
-      markers.push({marker, buffer: markerBuffer, ...baseMarker})
+      this._markers.push({marker, buffer: markerBuffer, ...baseMarker})
       // Skip over the length we just read
       reader.skip(2)
 
-      if (marker === APP1) {
-        // Read the EXIF/XMP data from APP1 Marker
-        const nextPosition = reader.getPosition() + length
-        const header = reader.use(() => reader.read(4))
-        // Do a preliminary check if we're facing either situation
-        if (header !== EXIF_HEADER && header !== XMP_HEADER) {
-          reader.seek(nextPosition)
-          marker = reader.read(2)
-          continue
-        }
-
-        if (header === XMP_HEADER) {
-          // Let's double check we're actually looking at XMP data
-          const fullHeader = reader.readAsBuffer(XMP_URL.length).toString()
-          if (fullHeader !== XMP_URL) {
-            // We aren't actually looking at XMP data, let's abort
-            reader.seek(nextPosition)
-            marker = reader.read(2)
-            continue
-          }
-
-          xmpBuffers.push(reader.readAsBuffer(length - XMP_URL.length))
-          // mark the last marker as an XMP marker
-          markers[markers.length - 1].isXMP = true
-
-          marker = reader.read(2)
-          continue
-        }
-
-        // mark the last marker as an EXIF marker
-        markers[markers.length - 1].isEXIF = true
-
-        // skip over the 4 header bytes and 2 empty bytes
-        reader.skip(6)
-        // the data is the rest of the marker (-6 for 2 empty bytes and 4 for EXIF header)
-        exifBuffers.push(reader.readAsBuffer(length - 6))
-        marker = reader.read(2)
-      } else if (marker >> 8 === 0xff) {
-        // Skip through the other header payloads that aren't APP1
-        const nextPosition = reader.getPosition() + length
-
-        // Width and Height information will be in the Start Of Frame (SOFx) payloads
-        if (
-          marker === START_OF_FRAME0 ||
-          marker === START_OF_FRAME1 ||
-          marker === START_OF_FRAME2
-        ) {
-          reader.skip(1)
-          this._height = reader.read(2)
-          this._width = reader.read(2)
-        }
-
-        reader.seek(nextPosition)
-        marker = reader.read(2)
-      } else {
-        throw new Error(`Unrecognized marker: ${marker.toString(16)}`)
-      }
+      const nextPosition = reader.getPosition() + length
+      marker = this._handleMarker({marker, nextPosition, length}).nextMarker
     }
 
-    markers.push({marker, buffer: this._buffer.slice(reader.getPosition()), ...baseMarker})
-
-    this._markers = markers
-    this._exifBuffers = exifBuffers
-    this._xmpBuffers = xmpBuffers
+    this._markers.push({marker, buffer: this._buffer.slice(reader.getPosition()), ...baseMarker})
   }
 
   public extractMetadata(): IGenericMetadata {
