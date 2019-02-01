@@ -1,5 +1,6 @@
 import {JPEGDecoder} from './decoder/jpeg-decoder'
 import {TIFFDecoder} from './decoder/tiff-decoder'
+import {XMPDecoder} from './decoder/xmp-decoder'
 import {TIFFEncoder} from './encoder/tiff-encoder'
 import {normalizeMetadata} from './metadata/normalize'
 import {IDecoder, IBufferLike, INormalizedMetadata} from './utils/types'
@@ -19,6 +20,8 @@ export function createDecoder(bufferOrDecoder: IBufferLike | IDecoder): IDecoder
     return new TIFFDecoder(bufferOrDecoder)
   } else if (JPEGDecoder.isJPEG(bufferOrDecoder)) {
     return new JPEGDecoder(bufferOrDecoder)
+  } else if (XMPDecoder.isXMP(bufferOrDecoder)) {
+    return new XMPDecoder(bufferOrDecoder)
   } else {
     throw new Error('Unrecognizable file type')
   }

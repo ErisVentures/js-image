@@ -75,6 +75,13 @@ export class XMPDecoder {
   }
 
   public static isXMP(buffer: IBufferLike): boolean {
-    return buffer[0] === '<'.charCodeAt(0)
+    const xmpHeader = '<x:xmpmet'
+    const xmpAltHeader = '<?xpacket'
+    for (let i = 0; i < xmpHeader.length; i++) {
+      if (buffer[i] !== xmpHeader.charCodeAt(i) && buffer[i] !== xmpAltHeader.charCodeAt(i))
+        return false
+    }
+
+    return true
   }
 }

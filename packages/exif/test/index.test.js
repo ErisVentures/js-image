@@ -2,6 +2,8 @@ const {expect, fixture} = require('./utils')
 const TIFFDecoder = require('../dist/decoder/tiff-decoder').TIFFDecoder
 const parse = require('../dist').parse
 
+const xmpFile = fixture('d4s.xmp')
+const xmpJpeg = fixture('xmp-metadata.jpg')
 const nikonJpeg = fixture('nikon.jpg')
 const nikonNef = fixture('nikon.nef')
 const iphoneDng = fixture('iphone.dng')
@@ -99,6 +101,29 @@ describe('index.js', () => {
           focalLength: '99mm',
           aperture: undefined,
         },
+      })
+    })
+
+    it('should work on raw XMP files', () => {
+      const results = parse(xmpFile)
+      expect(results).to.have.property('_raw')
+      delete results._raw
+      expect(results).to.eql({
+        make: 'NIKON CORPORATION',
+        model: 'NIKON D4S',
+        width: 4928,
+        height: 3280,
+        xResolution: undefined,
+        yResolution: undefined,
+        createdAt: undefined,
+        modifiedAt: undefined,
+        iso: undefined,
+        exposureTime: 1 / 80,
+        fNumber: 2.8,
+        focalLength: 70,
+        normalizedFocalLength: 70,
+        exposureCompensation: undefined,
+        lens: undefined,
       })
     })
   })
