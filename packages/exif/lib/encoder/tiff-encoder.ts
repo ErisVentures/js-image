@@ -15,7 +15,7 @@ import {createLogger} from '../utils/log'
 const log = createLogger('encoder')
 
 export class TIFFEncoder {
-  public static isSupportedEntry(tag: IIFDTagDefinition, value: any): boolean {
+  public static isSupportedEntry(tag: IIFDTagDefinition | undefined, value: any): boolean {
     if (!tag) return false
     if (tag.group !== IFDGroup.EXIF) return false
     if (tag.dataType === IFDDataType.Short) return value < Math.pow(2, 16)

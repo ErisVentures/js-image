@@ -1,4 +1,4 @@
-import {IIFDTagDefinition, IFDTagName, IFDGroup, IFDDataType} from './types'
+import {IIFDTagDefinition, IFDTagName, IFDGroup, IFDDataType, XMPTagName} from './types'
 
 // From https://raw.githubusercontent.com/hMatoba/piexifjs/master/piexif.js
 // and exif-parser on npm
@@ -6,6 +6,12 @@ import {IIFDTagDefinition, IFDTagName, IFDGroup, IFDDataType} from './types'
 // @ts-ignore - filled below
 export const tags: Record<IFDTagName, IIFDTagDefinition> = {}
 export const tagsByCode: {[k: string]: IIFDTagDefinition} = {}
+
+export const xmpTags: Record<XMPTagName, boolean> = {
+  Rating: true,
+  Label: true,
+  MetadataDate: true,
+}
 
 // TODO: fill in all IFDDataTypes with -1
 const _tags: Array<[IFDTagName, number, IFDDataType, IFDGroup]> = [

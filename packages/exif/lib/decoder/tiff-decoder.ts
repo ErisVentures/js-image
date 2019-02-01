@@ -156,7 +156,7 @@ export class TIFFDecoder {
     const metadata = this.extractMetadata()
     const metadataBuffer = TIFFEncoder.encode(metadata)
 
-    this._cachedJPEG = JPEGDecoder.injectMetadata(jpeg, metadataBuffer)
+    this._cachedJPEG = JPEGDecoder.injectEXIFMetadata(jpeg, metadataBuffer)
     return this._cachedJPEG.slice()
   }
 

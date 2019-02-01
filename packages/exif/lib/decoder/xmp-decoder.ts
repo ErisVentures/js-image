@@ -1,5 +1,5 @@
 import {IBufferLike, IGenericMetadata, IFDTagName, XMPTagName} from '../utils/types'
-import {tags} from '../utils/tags'
+import {tags, xmpTags} from '../utils/tags'
 
 const EXIF_ATTR_GLOBAL_REGEX = /(xmp|exif|tiff):([0-9a-z]+?)="(.*?)"/gim
 const EXIF_ATTR_REGEX = /:([0-9a-z]+?)="(.*?)"$/i
@@ -12,12 +12,6 @@ function isComplexNumber(s: string): boolean {
   return /^[1-9]\d*\/[1-9]\d*$/.test(s)
 }
 
-const XMP_TAGS: Record<XMPTagName, boolean> = {
-  Rating: true,
-  Label: true,
-  MetadataDate: true,
-}
-
 export class XMPDecoder {
   private readonly _text: string
 
@@ -27,7 +21,7 @@ export class XMPDecoder {
 
   private _handleMatch(key: string, value: string, genericMetadata: IGenericMetadata): void {
     // TODO: support mixed case in the XMP
-    if (!(key in tags) && !(key in XMP_TAGS)) return
+    if (!(key in tags) && !(key in xmpTags)) return
     const knownKey = key as IFDTagName | XMPTagName
 
     let realValue: number | string | undefined
