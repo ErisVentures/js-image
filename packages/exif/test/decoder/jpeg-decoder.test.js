@@ -13,6 +13,14 @@ describe('lib/jpeg-decoder.js', () => {
     })
   })
 
+  describe('#injectXMPMetadata', () => {
+    it('should reconstruct same image', () => {
+      const metadataBuffer = new JPEGDecoder(xmpJpeg).extractXMPBuffer()
+      const result = JPEGDecoder.injectXMPMetadata(xmpJpeg, metadataBuffer)
+      expect(result).to.eql(xmpJpeg)
+    })
+  })
+
   describe('.extractMetadata', () => {
     it('should extract EXIF data', () => {
       const metadata = new JPEGDecoder(nikonJpeg).extractMetadata()

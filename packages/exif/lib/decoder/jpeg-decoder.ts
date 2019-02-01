@@ -206,10 +206,36 @@ export class JPEGDecoder {
       if (isEXIF || (marker === START_OF_IMAGE && !hasEXIFDataAlready)) {
         if (marker === START_OF_IMAGE) buffers.push(bufferFromNumber(START_OF_IMAGE))
         buffers.push(bufferFromNumber(APP1))
-        buffers.push(bufferFromNumber(exifBuffer.length + 8))
+        // add 8 bytes to the buffer length
+        // 4 bytes for header, 2 bytes of empty space, 2 bytes for length itself
+        buffers.push(bufferFromNumber(exifBuffer.length + 8, 2))
         buffers.push(bufferFromNumber(EXIF_HEADER, 4))
         buffers.push(bufferFromNumber(0, 2))
         buffers.push(exifBuffer)
+      } else {
+        buffers.push(bufferFromNumber(marker), buffer)
+      }
+    }
+
+    // @ts-ignore - TODO investigate why this is error-y
+    return Buffer.concat(buffers)
+  }
+
+  public static injectXMPMetadata(jpegBuffer: IBufferLike, xmpBuffer: IBufferLike): IBufferLike {
+    const decoder = new JPEGDecoder(jpegBuffer)
+    decoder._readFileMarkers()
+
+    const hasXMPDataAlready = decoder._markers!.some(marker => marker.isXMP)
+
+    const buffers: IBufferLike[] = []
+    for (const {marker, buffer, isXMP} of decoder._markers!) {
+      if (isXMP || (marker === START_OF_IMAGE && !hasXMPDataAlready)) {
+        if (marker === START_OF_IMAGE) buffers.push(bufferFromNumber(START_OF_IMAGE))
+        buffers.push(bufferFromNumber(APP1))
+        // add 2 bytes to the buffer length for length itself
+        buffers.push(bufferFromNumber(xmpBuffer.length + XMP_URL.length + 2, 2))
+        buffers.push(Buffer.from(XMP_URL))
+        buffers.push(xmpBuffer)
       } else {
         buffers.push(bufferFromNumber(marker), buffer)
       }
