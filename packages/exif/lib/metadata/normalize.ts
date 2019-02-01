@@ -68,5 +68,11 @@ export function normalizeMetadata(results: IGenericMetadata): INormalizedMetadat
     output[key as keyof INormalizedMetadata] = value
   }
 
+  if ((results.Orientation || 0) > 4) {
+    const height = output.width
+    output.width = output.height
+    output.height = height
+  }
+
   return output
 }

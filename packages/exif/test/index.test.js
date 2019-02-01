@@ -83,8 +83,8 @@ describe('index.js', () => {
       expect(results).to.deep.include({
         make: 'Apple',
         model: 'iPhone 7 Plus',
-        width: 4032,
-        height: 3024,
+        width: 3024,
+        height: 4032,
         xResolution: undefined,
         yResolution: undefined,
         createdAt: new Date('2017-10-07T16:25:39.000Z'),
