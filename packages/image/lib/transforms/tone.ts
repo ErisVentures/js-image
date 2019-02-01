@@ -107,12 +107,15 @@ function computeCurvesValues(curve: number[][]): number[] {
 function runCurves(
   imageData: IAnnotatedImageData,
   precomputedValues: number[],
+  channel: ColorChannel,
 ): IAnnotatedImageData {
-  if (imageData.colorspace !== Colorspace.YCbCr) throw new Error('Curves only works on YCbCr')
+  const channels = ImageData.channelsFor(imageData.colorspace)
+  const indexOfChannel = channels.indexOf(channel)
+  if (indexOfChannel === -1) throw new Error('Curves must operate on a channel in the image')
 
   for (let x = 0; x < imageData.width; x++) {
     for (let y = 0; y < imageData.height; y++) {
-      const offset = ImageData.indexFor(imageData, x, y)
+      const offset = ImageData.indexFor(imageData, x, y, indexOfChannel)
       const yValue = imageData.data[offset]
 
       imageData.data[offset] = precomputedValues[yValue]
@@ -147,6 +150,7 @@ function flattenCurvesValues(unsafeCurves: number[][][]): number[] {
 export function curves(
   imageData: IAnnotatedImageData,
   unsafeCurvesInput: number[][][] | number[][],
+  channel: ColorChannel = ColorChannel.Luminance255,
 ): IAnnotatedImageData {
   // @ts-ignore - TODO: look into why this is being dumb
   unsafeCurvesInput = unsafeCurvesInput.filter((curve: number[] | number[][]) => curve.length)
@@ -156,7 +160,7 @@ export function curves(
   const flattenedCurveValues = flattenCurvesValues(unsafeCurves)
   if (!flattenedCurveValues.length) return imageData
   if (flattenedCurveValues.length !== 256) throw new Error('Error computing flattened curve')
-  return runCurves(imageData, flattenedCurveValues)
+  return runCurves(imageData, flattenedCurveValues, channel)
 }
 
 function generateIdentityCurvesPoints(numPoints: number): number[][] {
@@ -229,6 +233,13 @@ export function tone(imageData: IAnnotatedImageData, options: IToneOptions): IAn
   }
 
   if (options.saturation) imageData = saturation(imageData, options)
+
+  if (options.redCurve || options.greenCurve || options.blueCurve) {
+    imageData = ImageData.toRGB(imageData)
+    if (options.redCurve) curves(imageData, options.redCurve, ColorChannel.Red)
+    if (options.greenCurve) curves(imageData, options.greenCurve, ColorChannel.Green)
+    if (options.blueCurve) curves(imageData, options.blueCurve, ColorChannel.Blue)
+  }
 
   return ImageData.toColorspace(imageData, colorspace)
 }
