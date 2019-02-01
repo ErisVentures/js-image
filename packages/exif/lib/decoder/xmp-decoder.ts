@@ -1,9 +1,4 @@
-import {
-  IBufferLike,
-  IGenericMetadata,
-  IFDTagName,
-  XMPTagName,
-} from '../utils/types'
+import {IBufferLike, IGenericMetadata, IFDTagName, XMPTagName} from '../utils/types'
 import {tags} from '../utils/tags'
 
 const EXIF_ATTR_GLOBAL_REGEX = /(xmp|exif|tiff):([0-9a-z]+?)="(.*?)"/gim
