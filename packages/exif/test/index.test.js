@@ -3,7 +3,7 @@ const TIFFDecoder = require('../dist/decoder/tiff-decoder').TIFFDecoder
 const parse = require('../dist').parse
 
 const xmpFile = fixture('d4s.xmp')
-const xmpJpeg = fixture('xmp-metadata.jpg')
+const xmpJpeg = fixture('xmp.jpg')
 const nikonJpeg = fixture('nikon.jpg')
 const nikonNef = fixture('nikon.nef')
 const iphoneDng = fixture('iphone.dng')
@@ -29,7 +29,7 @@ describe('index.js', () => {
       const results = parse(nikonJpeg)
       expect(results).to.have.property('_raw')
       delete results._raw
-      expect(results).to.eql({
+      expect(results).to.deep.include({
         make: 'NIKON CORPORATION',
         model: 'NIKON D610',
         width: 1498,
@@ -37,7 +37,7 @@ describe('index.js', () => {
         xResolution: 72,
         yResolution: 72,
         createdAt: new Date('2017-03-16T02:25:25.000Z'),
-        modifiedAt: new Date('2017-03-20T22:24:19.000Z'),
+        modifiedAt: new Date('2017-03-20T22:24:19-07:00'),
         iso: 2500,
         exposureTime: 0.1,
         fNumber: 5.6,
@@ -57,7 +57,7 @@ describe('index.js', () => {
       const results = parse(nikonNef)
       expect(results).to.have.property('_raw')
       delete results._raw
-      expect(results).to.eql({
+      expect(results).to.deep.include({
         make: 'NIKON CORPORATION',
         model: 'NIKON D4S',
         width: 3244,
@@ -80,7 +80,7 @@ describe('index.js', () => {
       const results = parse(iphoneDng)
       expect(results).to.have.property('_raw')
       delete results._raw
-      expect(results).to.eql({
+      expect(results).to.deep.include({
         make: 'Apple',
         model: 'iPhone 7 Plus',
         width: 4032,
@@ -108,15 +108,15 @@ describe('index.js', () => {
       const results = parse(xmpFile)
       expect(results).to.have.property('_raw')
       delete results._raw
-      expect(results).to.eql({
+      expect(results).to.deep.include({
         make: 'NIKON CORPORATION',
         model: 'NIKON D4S',
         width: 4928,
         height: 3280,
         xResolution: undefined,
         yResolution: undefined,
-        createdAt: undefined,
-        modifiedAt: undefined,
+        createdAt: new Date('2014-04-01T14:23:43.290Z'),
+        modifiedAt: new Date('2014-04-01T14:23:43.290Z'),
         iso: undefined,
         exposureTime: 1 / 80,
         fNumber: 2.8,
@@ -124,6 +124,16 @@ describe('index.js', () => {
         normalizedFocalLength: 70,
         exposureCompensation: undefined,
         lens: undefined,
+      })
+    })
+
+    it('should work on jpegs with XMP', () => {
+      const results = parse(xmpJpeg)
+      expect(results).to.have.property('_raw')
+      delete results._raw
+      expect(results).to.deep.include({
+        rating: 4,
+        colorLabel: 'Blue',
       })
     })
   })

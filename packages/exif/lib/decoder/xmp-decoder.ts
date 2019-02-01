@@ -1,7 +1,6 @@
 import {
   IBufferLike,
   IGenericMetadata,
-  IIFDTagDefinition,
   IFDTagName,
   XMPTagName,
 } from '../utils/types'
