@@ -107,7 +107,7 @@ export interface IJPEGOptions {
   skipMetadata?: boolean
 }
 
-export type IGenericMetadata = Partial<Record<IFDTagName, string | number | undefined>>
+export type IGenericMetadata = Partial<Record<IFDTagName|XMPTagName, string | number | undefined>>
 
 export interface IParsedLens {
   make?: string
@@ -139,6 +139,10 @@ export interface INormalizedMetadata {
   exposureCompensation?: number
 
   lens?: IParsedLens
+
+  // XMP metadata
+  rating?: number
+  colorLabel?: 'Blue'|'Red'|'Purple'|'Yellow'|'Green'
 }
 
 export function getDataTypeSize(dataType: number, name?: string | number): number {
@@ -163,6 +167,11 @@ export function getDataTypeSize(dataType: number, name?: string | number): numbe
     }
   }
 }
+
+export type XMPTagName =
+  | 'Rating'
+  | 'Label'
+  | 'MetadataDate'
 
 export type IFDTagName =
   | 'Unknown'

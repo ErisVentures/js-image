@@ -1,12 +1,18 @@
 import {parseDate} from '../metadata/date-parser'
 import {parseLens} from '../metadata/lens-parser'
-import {INormalizedMetadata, IGenericMetadata, IFDTagName} from '../utils/types'
+import {INormalizedMetadata, IGenericMetadata, IFDTagName, XMPTagName} from '../utils/types'
+
+type Omit<T, K> = Pick<T, Exclude<keyof T, K>>
+
+type TagName = IFDTagName | XMPTagName
 
 type ParseFn = (results: any) => any
 
-type PropertyDefn = IFDTagName | [IFDTagName, ParseFn] | ParseFn
+type PropertyDefn = TagName | [TagName, ParseFn] | ParseFn
 
-const properties: {[k: string]: PropertyDefn[]} = {
+type NormalizedKey = keyof Omit<INormalizedMetadata, '_raw'>
+
+const properties: Record<NormalizedKey, PropertyDefn[]> = {
   // TODO: look into how to normalize GPS coordinates
   make: ['Make'],
   model: ['Model'],
@@ -28,6 +34,9 @@ const properties: {[k: string]: PropertyDefn[]} = {
   exposureCompensation: ['ExposureCompensation'],
 
   lens: [parseLens],
+
+  rating: ['Rating'],
+  colorLabel: ['Label'],
 }
 
 function getResultValue(item: PropertyDefn, results: IGenericMetadata): any {
@@ -47,7 +56,7 @@ export function normalizeMetadata(results: IGenericMetadata): INormalizedMetadat
   const output: INormalizedMetadata = {_raw: results}
 
   for (const key of Object.keys(properties)) {
-    const candidates = properties[key]
+    const candidates = properties[key as NormalizedKey]
     let value = undefined
     for (const candidate of candidates) {
       value = getResultValue(candidate, results)
