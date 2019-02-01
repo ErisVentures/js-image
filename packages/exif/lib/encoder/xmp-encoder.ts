@@ -1,14 +1,5 @@
-import {
-  IGenericMetadata,
-  IBufferLike,
-  IFDTagName,
-  BIG_ENDIAN_MARKER,
-  getDataTypeSize,
-  IFDGroup,
-  IFDDataType,
-  IIFDTagDefinition,
-} from '../utils/types'
-import {tags, xmpTags} from '../utils/tags'
+import {IGenericMetadata, IBufferLike} from '../utils/types'
+import {xmpTags} from '../utils/tags'
 import {createLogger} from '../utils/log'
 
 const log = createLogger('xmp-encoder')
@@ -51,7 +42,7 @@ export class XMPEncoder {
   public static generateWhitespaceOfLength(length: number): string {
     let whitespace = ''
     while (whitespace.length < length) {
-      whitespace += (whitespace.length % 100 === 0 || whitespace.length === length - 1) ? '\n' : ' '
+      whitespace += whitespace.length % 100 === 0 || whitespace.length === length - 1 ? '\n' : ' '
     }
 
     return whitespace
@@ -76,10 +67,13 @@ export class XMPEncoder {
 
     for (const key of Object.keys(metadata)) {
       const tagName = key as keyof IGenericMetadata
+      log(`examining ${tagName}`)
       if (typeof metadata[tagName] === 'undefined') continue
       if (!(tagName in xmpTags)) continue
 
       const value = metadata[tagName]
+      log(`writing ${tagName} as "${value}"`)
+
       const existing = XMPEncoder._findExistingTag(xmpData, tagName)
       const replacement = `xmp:${tagName}="${value}"`
 
