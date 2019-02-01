@@ -6,7 +6,7 @@ function getCanvas(): HTMLCanvasElement {
   return document.createElement('canvas')
 }
 
-function read<T extends string|ArrayBuffer>(doRead: (reader: FileReader) => any): Promise<T> {
+function read<T extends string | ArrayBuffer>(doRead: (reader: FileReader) => any): Promise<T> {
   return new Promise<T>((resolve, reject) => {
     const reader = new FileReader()
     reader.addEventListener('loadend', () => resolve(reader.result as T))
