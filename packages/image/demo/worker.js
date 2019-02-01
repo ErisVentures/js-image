@@ -18,8 +18,8 @@ function parseOptions(rawOptions) {
     const section = options[sectionName] || {}
     section[propName] = Number.isFinite(valueAsNumber) ? valueAsNumber : value
     options[sectionName] = section
-    if (propName === 'curve' && value.trim()) {
-      section.curve = value
+    if ((propName === 'curve' || propName.endsWith('Curve')) && value.trim()) {
+      section[propName] = value
         .trim()
         .split('\n')
         .map(row => row.split(',').map(n => Number(n)))

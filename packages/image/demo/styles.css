@@ -30,6 +30,7 @@ div.editor {
   flex: 10;
   display: flex;
   flex-direction: row;
+  max-height: 80vh;
 }
 
 .editor--has-error .preview__canvas {
