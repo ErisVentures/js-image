@@ -2,10 +2,11 @@ import {JPEGDecoder} from './decoder/jpeg-decoder'
 import {TIFFDecoder} from './decoder/tiff-decoder'
 import {XMPDecoder} from './decoder/xmp-decoder'
 import {TIFFEncoder} from './encoder/tiff-encoder'
+import {XMPEncoder} from './encoder/xmp-encoder'
 import {normalizeMetadata} from './metadata/normalize'
 import {IDecoder, IBufferLike, INormalizedMetadata} from './utils/types'
 
-function isTIFFDecoder(obj: any): obj is IDecoder {
+function isDecoder(obj: any): obj is IDecoder {
   return typeof (obj as any).extractMetadata === 'function'
 }
 
@@ -14,7 +15,7 @@ function isLikelyTIFF(buffer: IBufferLike): boolean {
 }
 
 export function createDecoder(bufferOrDecoder: IBufferLike | IDecoder): IDecoder {
-  if (isTIFFDecoder(bufferOrDecoder)) {
+  if (isDecoder(bufferOrDecoder)) {
     return bufferOrDecoder
   } else if (isLikelyTIFF(bufferOrDecoder)) {
     return new TIFFDecoder(bufferOrDecoder)
@@ -31,6 +32,6 @@ export function parse(bufferOrDecoder: IBufferLike | IDecoder): INormalizedMetad
   return normalizeMetadata(createDecoder(bufferOrDecoder).extractMetadata())
 }
 
-export {normalizeMetadata, TIFFDecoder, JPEGDecoder, TIFFEncoder}
+export {normalizeMetadata, TIFFDecoder, JPEGDecoder, XMPDecoder, TIFFEncoder, XMPEncoder}
 
 export {IGenericMetadata, INormalizedMetadata, IParsedLens, IFDTagName} from './utils/types'
