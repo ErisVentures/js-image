@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TARGET=${PKG_TARGET:-node8-mac}
+TARGET=${PKG_TARGET:-node10-mac}
 rm -fR out/
 mkdir -p out/sharp/build/Release
 mkdir -p out/sharp/vendor/lib
