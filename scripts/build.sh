@@ -10,6 +10,11 @@ if [[ -n "$ENABLE_WASM" ]]; then
 fi
 
 if [[ -n "$TRAVIS_TAG" ]]; then
+  # We have to prevent lerna from complaining about a detached HEAD
+  # So we'll create a fake temporary branch
+  git branch -D _tmp_branch || echo 'No _tmp_branch'
+  git checkout -b _tmp_branch
+  # Update the versions in package.json so we deploy the right thing
   lerna version --yes \
     --exact \
     --no-push \
