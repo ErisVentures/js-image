@@ -9,6 +9,16 @@ if [[ -n "$ENABLE_WASM" ]]; then
   exit 0
 fi
 
+if [[ -n "$TRAVIS_TAG" ]]; then
+  lerna version --yes \
+    --exact \
+    --no-push \
+    --no-git-remote \
+    --no-git-tag-version \
+    --no-commit-hooks \
+    "$TRAVIS_TAG"
+fi
+
 cd packages/exif
 npm run build
 cd ../../
