@@ -28,10 +28,17 @@ class SharpImage {
 
   public static toMetadata(image: sharp.SharpInstance): Promise<IMetadata> {
     return image.metadata().then(metadata => {
+      let {width = 0, height = 0} = metadata
+      if ((metadata.orientation || 0) > 4) {
+        const realHeight = width
+        width = height
+        height = realHeight
+      }
+
       return {
-        width: metadata.width!,
-        height: metadata.height!,
-        aspectRatio: metadata.width! / metadata.height!,
+        width,
+        height,
+        aspectRatio: width / height,
       }
     })
   }
