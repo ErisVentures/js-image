@@ -19,3 +19,16 @@ Collection of image manipulation libraries for node and the browser.
 const Image = require('@eris/image').Image
 const img = await Image.from('./path-to-image.nef')
 ```
+
+## TODO Analysis Signals
+
+- shadow clipping
+- highlight clipping
+- rule of thirds weigted edges
+- center weigted edges
+- parallelism
+- symmetry
+- sharpest edge window
+- find faces
+- find eyes
+- find entity tags

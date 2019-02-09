@@ -264,6 +264,23 @@ describe('NodeImage', () => {
           expect(sharpness.upperVentileAverage).to.be.within(228, 232)
         })
     })
+
+    it('should compute histograms', async () => {
+      const analysis = NodeImage.from(skater)
+        .analyze({
+          histograms: {},
+        })
+        .toAnalysis()
+
+      expect(analysis).to.have.property('histograms')
+
+      const histograms = analysis.histograms
+      const sum = arr => arr.reduce((x, y) => x + y, 0)
+      const totalPixels = 256 * 256
+      expect(sum(histograms.hue)).to.be.within(totalPixels / 3, totalPixels)
+      expect(sum(histograms.saturation)).to.equal(totalPixels)
+      expect(sum(histograms.lightness)).to.equal(totalPixels)
+    })
   })
 
   describe('.toMetadata', () => {

@@ -84,6 +84,7 @@ export interface IImageOutputOptions {
 export interface IAnalysisOptions {
   hash?: IHashOptions
   sharpness?: ISharpnessOptions
+  histograms?: IHistogramOptions
 }
 
 export interface ISobelOptions {
@@ -116,6 +117,10 @@ export interface ISharpnessOptions {
   threshold?: number
 }
 
+export interface IHistogramOptions {
+  buckets?: number
+}
+
 export interface IMetadata {
   width: number
   height: number
@@ -133,9 +138,16 @@ export interface ISharpness {
   upperVentileAverage: number
 }
 
+export interface IHistogramsAnalysis {
+  hue: number[]
+  saturation: number[]
+  lightness: number[]
+}
+
 export interface IAnalysis {
   hash?: string
   sharpness?: ISharpness
+  histograms?: IHistogramsAnalysis
 }
 
 export interface ISubselectOptions {

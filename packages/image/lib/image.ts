@@ -4,6 +4,7 @@ import {writeFileAsync} from './fs-utils'
 import {sobel} from './transforms/sobel'
 import {phash} from './analyses/hash'
 import {sharpness as computeSharpness} from './analyses/sharpness'
+import {histograms as computeHistograms} from './analyses/histograms'
 import {parse as parseEXIF, TIFFDecoder, INormalizedMetadata} from '@eris/exif'
 import {tone} from './transforms/tone'
 import {gaussianBlur} from './transforms/blur'
@@ -127,33 +128,38 @@ export abstract class Image {
     return this
   }
 
-  public toAnalysis(): Promise<types.IAnalysis> {
+  public async toAnalysis(): Promise<types.IAnalysis> {
     if (!this._analyze) {
       return Promise.resolve({})
     }
 
-    const {hash, sharpness} = this._analyze
-    if (!hash && !sharpness) {
+    const {hash, sharpness, histograms} = this._analyze
+    if (Object.keys(this._analyze).length === 0) {
       return Promise.resolve({})
     }
 
-    return this.toImageData().then(imageData => {
-      const analysis: types.IAnalysis = {}
-      if (hash) {
-        switch (hash.method) {
-          case types.HashMethod.PHash:
-          default:
-            analysis.hash = phash(imageData, hash.hashSize)
-        }
-      }
+    const imageData = await this.toImageData()
 
-      if (sharpness) {
-        const edges = sobel(imageData, sharpness)
-        analysis.sharpness = computeSharpness(edges, sharpness)
-      }
+    const analysis: types.IAnalysis = {}
 
-      return analysis
-    })
+    if (hash) {
+      switch (hash.method) {
+        case types.HashMethod.PHash:
+        default:
+          analysis.hash = phash(imageData, hash.hashSize)
+      }
+    }
+
+    if (sharpness) {
+      const edges = sobel(imageData, sharpness)
+      analysis.sharpness = computeSharpness(edges, sharpness)
+    }
+
+    if (histograms) {
+      analysis.histograms = computeHistograms(imageData, histograms)
+    }
+
+    return analysis
   }
 
   protected _applyLayers(image: IAnnotatedImageData): IAnnotatedImageData {
