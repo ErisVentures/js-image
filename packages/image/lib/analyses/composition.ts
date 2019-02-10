@@ -1,4 +1,4 @@
-import {ICompositionAnalysis, ICompositionOptions, ISharpness} from '../types'
+import {ICompositionAnalysis, ICompositionOptions} from '../types'
 import {ImageData} from '../image-data'
 import {SobelImageData} from '../transforms/sobel'
 import {sharpness, computeAverage} from './sharpness'

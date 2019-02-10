@@ -1,5 +1,4 @@
-/* tslint:disable */
-import {ISharpness, ISharpnessOptions} from '../types'
+import {ISharpnessAnalysis, ISharpnessOptions} from '../types'
 import {ImageData} from '../image-data'
 import {SobelImageData} from '../transforms/sobel'
 
@@ -7,8 +6,8 @@ export function computeAverage(items: number[], from?: number, to?: number): num
   from = from || 0
   to = Math.min(to || items.length, items.length)
 
-  var sum = 0
-  for (var i = from; i < to; i++) {
+  let sum = 0
+  for (let i = from; i < to; i++) {
     sum += items[i]
   }
 
@@ -17,13 +16,13 @@ export function computeAverage(items: number[], from?: number, to?: number): num
   return sum / numItems
 }
 
-export function sharpness(imageData: SobelImageData, options?: ISharpnessOptions): ISharpness {
+export function sharpness(imageData: SobelImageData, options?: ISharpnessOptions): ISharpnessAnalysis {
   const threshold = (options && options.threshold) || 20
 
   let edgePixelIntensities: number[] = []
-  for (var y = 0; y < imageData.height; y++) {
-    for (var x = 0; x < imageData.width; x++) {
-      var pixel = ImageData.valueFor(imageData, x, y)
+  for (let y = 0; y < imageData.height; y++) {
+    for (let x = 0; x < imageData.width; x++) {
+      const pixel = ImageData.valueFor(imageData, x, y)
       if (pixel > threshold) {
         edgePixelIntensities.push(pixel)
       }

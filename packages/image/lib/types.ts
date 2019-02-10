@@ -127,7 +127,7 @@ export interface ICompositionOptions {
   ruleOfThirdsFalloffPoint?: number
   parallelismEdgeThreshold?: number
   parallelismStreakThreshold?: number
-  sharpnessAnalysis?: ISharpness
+  sharpnessAnalysis?: ISharpnessAnalysis
 }
 
 export interface IMetadata {
@@ -137,7 +137,7 @@ export interface IMetadata {
   exif?: INormalizedMetadata
 }
 
-export interface ISharpness {
+export interface ISharpnessAnalysis {
   percentEdges: number
   lowerQuartile: number
   median: number
@@ -161,7 +161,7 @@ export interface ICompositionAnalysis {
 
 export interface IAnalysis {
   hash?: string
-  sharpness?: ISharpness
+  sharpness?: ISharpnessAnalysis
   histograms?: IHistogramsAnalysis
   composition?: ICompositionAnalysis
 }
