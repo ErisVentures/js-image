@@ -85,6 +85,7 @@ export interface IAnalysisOptions {
   hash?: IHashOptions
   sharpness?: ISharpnessOptions
   histograms?: IHistogramOptions
+  composition?: ICompositionOptions
 }
 
 export interface ISobelOptions {
@@ -158,6 +159,7 @@ export interface IAnalysis {
   hash?: string
   sharpness?: ISharpness
   histograms?: IHistogramsAnalysis
+  composition?: ICompositionAnalysis
 }
 
 export interface ISubselectOptions {

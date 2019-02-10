@@ -266,7 +266,7 @@ describe('NodeImage', () => {
     })
 
     it('should compute histograms', async () => {
-      const analysis = NodeImage.from(skater)
+      const analysis = await NodeImage.from(skater)
         .analyze({
           histograms: {},
         })
@@ -280,6 +280,19 @@ describe('NodeImage', () => {
       expect(sum(histograms.hue)).to.be.within(totalPixels / 3, totalPixels)
       expect(sum(histograms.saturation)).to.equal(totalPixels)
       expect(sum(histograms.lightness)).to.equal(totalPixels)
+    })
+
+    it('should compute composition', async () => {
+      const analysis = await NodeImage.from(skater)
+        .analyze({
+          composition: {},
+        })
+        .toAnalysis()
+
+      expect(analysis).to.have.property('composition')
+
+      const composition = analysis.composition
+      expect(Math.round(100 * composition.ruleOfThirds)).to.equal(28)
     })
   })
 

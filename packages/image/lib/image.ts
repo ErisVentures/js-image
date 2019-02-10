@@ -5,6 +5,7 @@ import {sobel} from './transforms/sobel'
 import {phash} from './analyses/hash'
 import {sharpness as computeSharpness} from './analyses/sharpness'
 import {histograms as computeHistograms} from './analyses/histograms'
+import {composition as computeComposition} from './analyses/composition'
 import {parse as parseEXIF, TIFFDecoder, INormalizedMetadata} from '@eris/exif'
 import {tone} from './transforms/tone'
 import {gaussianBlur} from './transforms/blur'
@@ -133,12 +134,13 @@ export abstract class Image {
       return Promise.resolve({})
     }
 
-    const {hash, sharpness, histograms} = this._analyze
+    const {hash, sharpness, histograms, composition} = this._analyze
     if (Object.keys(this._analyze).length === 0) {
       return Promise.resolve({})
     }
 
     const imageData = await this.toImageData()
+    const edges = (sharpness || composition) ? sobel(imageData, sharpness) : null
 
     const analysis: types.IAnalysis = {}
 
@@ -151,12 +153,15 @@ export abstract class Image {
     }
 
     if (sharpness) {
-      const edges = sobel(imageData, sharpness)
-      analysis.sharpness = computeSharpness(edges, sharpness)
+      analysis.sharpness = computeSharpness(edges!, sharpness)
     }
 
     if (histograms) {
       analysis.histograms = computeHistograms(imageData, histograms)
+    }
+
+    if (composition) {
+      analysis.composition = computeComposition(edges!, composition)
     }
 
     return analysis

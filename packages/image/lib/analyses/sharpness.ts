@@ -38,7 +38,10 @@ export function sharpness(imageData: SobelImageData, options?: ISharpnessOptions
   const ventileBucketSize = Math.ceil(edgePixelIntensities.length / 20)
   const lowerVentileAverage = computeAverage(edgePixelIntensities, 0, ventileBucketSize)
   const average = computeAverage(edgePixelIntensities)
-  const upperVentileAverage = computeAverage(edgePixelIntensities, edgePixelIntensities.length - ventileBucketSize)
+  const upperVentileAverage = computeAverage(
+    edgePixelIntensities,
+    edgePixelIntensities.length - ventileBucketSize,
+  )
 
   return {
     percentEdges,
