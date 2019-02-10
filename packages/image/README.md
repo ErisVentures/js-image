@@ -22,13 +22,12 @@ const img = await Image.from('./path-to-image.nef')
 
 ## TODO Analysis Signals
 
-- shadow clipping
-- highlight clipping
-- rule of thirds weigted edges
-- center weigted edges
 - parallelism
 - symmetry
 - sharpest edge window
+- center weigted edges
 - find faces
 - find eyes
 - find entity tags
+- shadow clipping
+- highlight clipping

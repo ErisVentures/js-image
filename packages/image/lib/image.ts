@@ -140,7 +140,7 @@ export abstract class Image {
     }
 
     const imageData = await this.toImageData()
-    const edges = (sharpness || composition) ? sobel(imageData, sharpness) : null
+    const edges = sharpness || composition ? sobel(imageData, sharpness) : null
 
     const analysis: types.IAnalysis = {}
 
