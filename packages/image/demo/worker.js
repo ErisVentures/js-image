@@ -13,11 +13,15 @@ function parseOptions(rawOptions) {
   const options = {}
 
   for (const [name, value] of Object.entries(rawOptions)) {
+    if (value === '') continue
+
     const valueAsNumber = Number(value)
     const [_, sectionName, propName] = name.match(/^(.*)\[(.*)\]$/)
     const section = options[sectionName] || {}
     section[propName] = Number.isFinite(valueAsNumber) ? valueAsNumber : value
     options[sectionName] = section
+
+    if (sectionName === 'analysis') section[propName] = value ? {} : undefined
     if ((propName === 'curve' || propName.endsWith('Curve')) && value.trim()) {
       section[propName] = value
         .trim()
@@ -65,16 +69,7 @@ function processImage(imageData, rawOptions) {
         image = image.sharpen(options.sharpen)
       }
 
-      const analysis = {}
-      if (rawOptions['analysis[hash]']) {
-        analysis.hash = {}
-      }
-
-      if (rawOptions['analysis[sharpness]']) {
-        analysis.sharpness = {}
-      }
-
-      return image.analyze(analysis)
+      return image.analyze(options.analysis)
     })
     .then(image => Promise.all([image.toAnalysis(), image.toImageData().then(ImageData.toRGBA)]))
     .then(([analysis, imageData]) => {
