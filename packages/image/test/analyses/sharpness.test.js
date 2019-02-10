@@ -7,7 +7,11 @@ describe('#analyses/sharpness', () => {
   const outfocusPromise = fixtureDecode('source-sydney-out-focus.jpg')
 
   it('should compute the sharpness of a sharp horizontal line', () => {
-    const originalData = buildLinesImageData(21, 21, [9, 10, 11])
+    const originalData = buildLinesImageData(21, 21, [
+      {row: 9, value: 255},
+      {row: 10, value: 255},
+      {row: 11, value: 255},
+    ])
     const edgeData = sobel(originalData)
 
     const result = sharpness(edgeData)
