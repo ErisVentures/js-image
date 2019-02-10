@@ -12,7 +12,7 @@ export function computeAverage(items: number[], from?: number, to?: number): num
     sum += items[i]
   }
 
-  const numItems = (to - from)
+  const numItems = to - from
   if (numItems === 0) return 0
   return sum / numItems
 }
