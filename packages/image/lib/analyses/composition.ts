@@ -1,16 +1,13 @@
 import {ICompositionAnalysis, ICompositionOptions, ISharpness} from '../types'
 import {ImageData} from '../image-data'
 import {SobelImageData} from '../transforms/sobel'
-import {sharpness} from './sharpness'
+import {sharpness, computeAverage} from './sharpness'
 
 function computeRuleOfThirds(
   imageData: SobelImageData,
-  sharpnessAnalysis: ISharpness,
-  options?: ICompositionOptions,
+  options: Required<ICompositionOptions>,
 ): number {
-  const defaultEdgeThreshold = Math.min(Math.max(sharpnessAnalysis.average, 32), 128)
-  const {ruleOfThirdsEdgeThreshold = defaultEdgeThreshold, ruleOfThirdsFalloffPoint = 0.4} =
-    options || {}
+  const {ruleOfThirdsEdgeThreshold, ruleOfThirdsFalloffPoint} = options
   let ruleOfThirdsScore = 0
 
   const topThirdsLine = imageData.height / 3
@@ -71,13 +68,74 @@ function computeRuleOfThirds(
   return ruleOfThirdsScore / totalEdgePixels
 }
 
+function computeParallelism(
+  imageData: SobelImageData,
+  options: Required<ICompositionOptions>,
+  isHorizontal: boolean = false,
+): number {
+  const {parallelismStreakThreshold, parallelismEdgeThreshold} = options
+  const iMax = isHorizontal ? imageData.height : imageData.width
+  const jMax = isHorizontal ? imageData.width : imageData.height
+
+  const streaks: number[] = []
+  for (let i = 0; i < iMax; i++) {
+    let numConsecutiveEdgePixels = 0
+
+    const streaksInRowOrColumn: number[] = []
+    for (let j = 0; j < jMax; j++) {
+      const x = isHorizontal ? j : i
+      const y = isHorizontal ? i : j
+      const index = ImageData.indexFor(imageData, x, y)
+
+      // We are looking for gradient angles in the opposite direction
+      // i.e. for horizontal parallelism we want horizontal lines and vertical gradients (90°)
+      // i.e. for vertical parallelism we want vertical lines and horizontal gradients (0°)
+      const isCorrectEdgeAngle = isHorizontal
+        ? imageData.angles[index] === 90
+        : imageData.angles[index] === 0
+
+      const isStrongEnoughEdge = imageData.data[index] > parallelismEdgeThreshold
+      if (isCorrectEdgeAngle && isStrongEnoughEdge) {
+        // Our edge streak is continuing, increment our edge counter
+        numConsecutiveEdgePixels++
+      } else if (numConsecutiveEdgePixels) {
+        // Our edge streak is ending
+        // Add the streak to our set of streaks if it was long enough
+        if (numConsecutiveEdgePixels / jMax > parallelismStreakThreshold)
+          streaksInRowOrColumn.push(numConsecutiveEdgePixels)
+        // Reset our edge counter
+        numConsecutiveEdgePixels = 0
+      }
+    }
+
+    if (numConsecutiveEdgePixels) streaksInRowOrColumn.push(numConsecutiveEdgePixels)
+
+    const streak = computeAverage(streaksInRowOrColumn) / jMax
+    if (streak > parallelismStreakThreshold) streaks.push(streak)
+  }
+
+  return computeAverage(streaks)
+}
+
 export function composition(
   imageData: SobelImageData,
   options?: ICompositionOptions,
 ): ICompositionAnalysis {
   const sharpnessAnalysis = (options && options.sharpnessAnalysis) || sharpness(imageData)
 
+  const defaultEdgeThreshold = Math.min(Math.max(sharpnessAnalysis.average, 32), 128)
+  const optionsWithDefaults = {
+    ruleOfThirdsEdgeThreshold: defaultEdgeThreshold,
+    ruleOfThirdsFalloffPoint: 0.4,
+    parallelismEdgeThreshold: defaultEdgeThreshold,
+    parallelismStreakThreshold: 0.05,
+    sharpnessAnalysis,
+    ...options,
+  }
+
   return {
-    ruleOfThirds: computeRuleOfThirds(imageData, sharpnessAnalysis, options),
+    ruleOfThirds: computeRuleOfThirds(imageData, optionsWithDefaults),
+    horizontalParallelism: computeParallelism(imageData, optionsWithDefaults, true),
+    verticalParallelism: computeParallelism(imageData, optionsWithDefaults),
   }
 }

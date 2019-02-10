@@ -161,7 +161,10 @@ export abstract class Image {
     }
 
     if (composition) {
-      analysis.composition = computeComposition(edges!, composition)
+      analysis.composition = computeComposition(edges!, {
+        ...composition,
+        sharpnessAnalysis: analysis.sharpness,
+      })
     }
 
     return analysis

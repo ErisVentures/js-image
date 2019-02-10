@@ -22,7 +22,6 @@ const img = await Image.from('./path-to-image.nef')
 
 ## TODO Analysis Signals
 
-- parallelism
 - symmetry
 - sharpest edge window
 - center weigted edges

@@ -125,6 +125,8 @@ export interface IHistogramOptions {
 export interface ICompositionOptions {
   ruleOfThirdsEdgeThreshold?: number
   ruleOfThirdsFalloffPoint?: number
+  parallelismEdgeThreshold?: number
+  parallelismStreakThreshold?: number
   sharpnessAnalysis?: ISharpness
 }
 
@@ -153,6 +155,8 @@ export interface IHistogramsAnalysis {
 
 export interface ICompositionAnalysis {
   ruleOfThirds: number
+  horizontalParallelism: number
+  verticalParallelism: number
 }
 
 export interface IAnalysis {

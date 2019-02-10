@@ -3,7 +3,7 @@ import {ISharpness, ISharpnessOptions} from '../types'
 import {ImageData} from '../image-data'
 import {SobelImageData} from '../transforms/sobel'
 
-function computeAverage(items: number[], from?: number, to?: number): number {
+export function computeAverage(items: number[], from?: number, to?: number): number {
   from = from || 0
   to = Math.min(to || items.length, items.length)
 
@@ -12,7 +12,9 @@ function computeAverage(items: number[], from?: number, to?: number): number {
     sum += items[i]
   }
 
-  return sum / (to - from)
+  const numItems = (to - from)
+  if (numItems === 0) return 0
+  return sum / numItems
 }
 
 export function sharpness(imageData: SobelImageData, options?: ISharpnessOptions): ISharpness {
