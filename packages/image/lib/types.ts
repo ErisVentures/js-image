@@ -121,6 +121,12 @@ export interface IHistogramOptions {
   buckets?: number
 }
 
+export interface ICompositionOptions {
+  ruleOfThirdsEdgeThreshold?: number
+  ruleOfThirdsFalloffPoint?: number
+  sharpnessAnalysis?: ISharpness
+}
+
 export interface IMetadata {
   width: number
   height: number
@@ -142,6 +148,10 @@ export interface IHistogramsAnalysis {
   hue: number[]
   saturation: number[]
   lightness: number[]
+}
+
+export interface ICompositionAnalysis {
+  ruleOfThirds: number
 }
 
 export interface IAnalysis {
