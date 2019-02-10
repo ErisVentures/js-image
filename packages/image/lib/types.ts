@@ -110,23 +110,37 @@ export interface ISharpenOptions {
 
 export interface IHashOptions {
   method: HashMethod
+  /** The size of the hash in bits, must be a square multiple of 64. i.e. 64, 256, 1024 */
   hashSize?: number
 }
 
 export interface ISharpnessOptions {
+  /** The radius to use for the sobel filter, typically 1-5. */
   radius?: number
+  /** The minimum edge intensity to consider an edge to be counted in the stats, typically 10-30. */
   threshold?: number
 }
 
 export interface IHistogramOptions {
+  /** The number of histogram buckets to compute */
   buckets?: number
 }
 
+export interface IWindowsOptions {
+  /** The window size as a percentage of the smaller dimension. e.g. 0.125 for 12.5% */
+  windowSize?: number
+}
+
 export interface ICompositionOptions {
+  /** The minimum edge pixel intensity rule to be considered, typically a number 32-96 */
   ruleOfThirdsEdgeThreshold?: number
+  /** The percentage of the max distance from a rule of thirds point before the score starts decreasing, typically a number 0.4-0.6 */
   ruleOfThirdsFalloffPoint?: number
+  /** The minimum edge pixel intensity rule to be considered, typically a number 32-96 */
   parallelismEdgeThreshold?: number
+  /** The minimum size of a line to be considered a "streak" as a percentage of the width/height, typically a number .01-.10.  */
   parallelismStreakThreshold?: number
+  /** The precomputed sharpness data used for sensible defaults, will be computed internally if omitted. */
   sharpnessAnalysis?: ISharpnessAnalysis
 }
 
