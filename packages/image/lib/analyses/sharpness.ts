@@ -16,7 +16,10 @@ export function computeAverage(items: number[], from?: number, to?: number): num
   return sum / numItems
 }
 
-export function sharpness(imageData: SobelImageData, options?: ISharpnessOptions): ISharpnessAnalysis {
+export function sharpness(
+  imageData: SobelImageData,
+  options?: ISharpnessOptions,
+): ISharpnessAnalysis {
   const threshold = (options && options.threshold) || 20
 
   let edgePixelIntensities: number[] = []
