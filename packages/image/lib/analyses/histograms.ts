@@ -26,12 +26,17 @@ export function histograms(
       const saturation = imageData.data[index + 1]
       const lightness = imageData.data[index + 2]
 
+      const saturationOutOf1 = saturation / 256
+      const lightnessOutOf1 = lightness / 256
+      const lightnessDistanceToHalf = Math.abs(lightnessOutOf1 - 0.5)
+      const trueSaturationOutOf1 = Math.sqrt(saturationOutOf1 * (1 - lightnessDistanceToHalf))
+      const trueSaturationBucket = Math.floor((trueSaturationOutOf1 * 256) / bucketSize)
+
       const hueBucket = Math.floor(hue / bucketSize)
-      const saturationBucket = Math.floor(saturation / bucketSize)
       const lightnessBucket = Math.floor(lightness / bucketSize)
 
-      hueHistogram[hueBucket] += saturation / 128 + 0.5 - Math.abs(lightness - 128) / 128
-      saturationHistogram[saturationBucket] += 1
+      hueHistogram[hueBucket] += trueSaturationOutOf1
+      saturationHistogram[trueSaturationBucket] += 1
       lightnessHistogram[lightnessBucket] += 1
     }
   }
