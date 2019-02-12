@@ -14,5 +14,4 @@ if git log "$TRAVIS_COMMIT_RANGE" | grep 'OFFICIAL RELEASE'; then
 fi
 
 git checkout master
-git fetch --tags --unshallow
 hulk npm-publish --lerna --yes $PRERELEASE_FLAGS

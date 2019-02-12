@@ -64,6 +64,7 @@ cache:
 notifications:
   email: false
 git:
+  depth: false
   lfs_skip_smudge: true
 install:
   - yarn install --check-files
