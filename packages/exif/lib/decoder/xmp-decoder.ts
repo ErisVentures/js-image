@@ -12,6 +12,23 @@ function isComplexNumber(s: string): boolean {
   return /^[1-9]\d*\/[1-9]\d*$/.test(s)
 }
 
+function getXMLTagRegExp(tag: string, flags?: string): RegExp {
+  return new RegExp(`<${tag}>((.|\\s)*?)</${tag}>`, flags)
+}
+
+function findXMLTag(text: string, tag: string): {innerXML: string} | null {
+  const regex = getXMLTagRegExp(tag, 'i')
+  const match = text.match(regex)
+  if (!match) return null
+  return {innerXML: match[1]}
+}
+
+function findXMLTags(text: string, tag: string): Array<{innerXML: string}> {
+  const matches = text.match(getXMLTagRegExp(tag, 'ig'))
+  if (!matches) return []
+  return matches.map(item => findXMLTag(item, tag)!)
+}
+
 export class XMPDecoder {
   private readonly _text: string
 
@@ -37,6 +54,16 @@ export class XMPDecoder {
     genericMetadata[knownKey] = realValue
   }
 
+  private _decodeKeywords(genericMetadata: IGenericMetadata): void {
+    const subjectEl = findXMLTag(this._text, 'dc:subject')
+    if (!subjectEl) return
+    const bagEl = findXMLTag(subjectEl.innerXML, 'rdf:Bag')
+    if (!bagEl) return
+    const keywords = findXMLTags(bagEl.innerXML, 'rdf:li')
+    if (!keywords.length) return
+    genericMetadata.DCSubjectBagOfWords = JSON.stringify(keywords.map(item => item.innerXML))
+  }
+
   public extractMetadata(): IGenericMetadata {
     const metadata: IGenericMetadata = {}
     const matches = this._text.match(EXIF_ATTR_GLOBAL_REGEX)
@@ -47,6 +74,7 @@ export class XMPDecoder {
       this._handleMatch(key, value, metadata)
     }
 
+    this._decodeKeywords(metadata)
     return metadata
   }
 

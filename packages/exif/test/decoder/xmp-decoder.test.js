@@ -44,6 +44,7 @@ describe('lib/decoder/xmp-decoder.js', () => {
         ShutterSpeedValue: 6.321928,
         SubjectDistanceRange: 0,
         WhiteBalance: 0,
+        DCSubjectBagOfWords: '["portfolio","showcase","yosemite valley"]',
       })
     })
   })

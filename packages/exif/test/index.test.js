@@ -4,6 +4,7 @@ const parse = require('../dist').parse
 
 const xmpFile = fixture('d4s.xmp')
 const xmpJpeg = fixture('xmp.jpg')
+const copyrightJpeg = fixture('copyright.jpg')
 const nikonJpeg = fixture('nikon.jpg')
 const nikonNef = fixture('nikon.nef')
 const iphoneDng = fixture('iphone.dng')
@@ -134,6 +135,16 @@ describe('index.js', () => {
       expect(results).to.deep.include({
         rating: 4,
         colorLabel: 'Blue',
+      })
+    })
+
+    it('should work on jpegs with copyright profiles', () => {
+      const results = parse(copyrightJpeg)
+      expect(results).to.have.property('_raw')
+      expect(results).to.deep.include({
+        rating: 5,
+        colorLabel: 'Purple',
+        keywords: ['portfolio', 'showcase', 'yosemite valley'],
       })
     })
   })

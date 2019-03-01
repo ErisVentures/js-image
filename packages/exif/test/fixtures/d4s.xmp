@@ -192,6 +192,28 @@
     exif:Mode="0"
     exif:Function="False"
     exif:RedEyeMode="False"/>
+   <dc:creator>
+    <rdf:Seq>
+     <rdf:li>PATRICK HULCE</rdf:li>
+    </rdf:Seq>
+   </dc:creator>
+   <dc:title>
+    <rdf:Alt>
+     <rdf:li xml:lang="x-default">Moonrise over Half Dome</rdf:li>
+    </rdf:Alt>
+   </dc:title>
+   <dc:rights>
+    <rdf:Alt>
+     <rdf:li xml:lang="x-default">Hulce Photography</rdf:li>
+    </rdf:Alt>
+   </dc:rights>
+   <dc:subject>
+    <rdf:Bag>
+     <rdf:li>portfolio</rdf:li>
+     <rdf:li>showcase</rdf:li>
+     <rdf:li>yosemite valley</rdf:li>
+    </rdf:Bag>
+   </dc:subject>
    <xmpMM:History>
     <rdf:Seq>
      <rdf:li

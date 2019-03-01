@@ -1,5 +1,6 @@
-import {parseDate} from '../metadata/date-parser'
-import {parseLens} from '../metadata/lens-parser'
+import {parseDate} from './date-parser'
+import {parseKeywords} from './keywords-parser'
+import {parseLens} from './lens-parser'
 import {INormalizedMetadata, IGenericMetadata, IFDTagName, XMPTagName} from '../utils/types'
 
 type Omit<T, K> = Pick<T, Exclude<keyof T, K>>
@@ -37,6 +38,7 @@ const properties: Record<NormalizedKey, PropertyDefn[]> = {
 
   rating: ['Rating'],
   colorLabel: ['Label'],
+  keywords: [parseKeywords],
 }
 
 function getResultValue(item: PropertyDefn, results: IGenericMetadata): any {

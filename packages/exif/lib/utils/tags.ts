@@ -11,6 +11,7 @@ export const xmpTags: Record<XMPTagName, boolean> = {
   Rating: true,
   Label: true,
   MetadataDate: true,
+  DCSubjectBagOfWords: true,
 }
 
 // TODO: fill in all IFDDataTypes with -1

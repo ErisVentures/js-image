@@ -143,6 +143,7 @@ export interface INormalizedMetadata {
   // XMP metadata
   rating?: number
   colorLabel?: 'Blue' | 'Red' | 'Purple' | 'Yellow' | 'Green'
+  keywords?: string[]
 }
 
 export function getDataTypeSize(dataType: number, name?: string | number): number {
@@ -168,7 +169,7 @@ export function getDataTypeSize(dataType: number, name?: string | number): numbe
   }
 }
 
-export type XMPTagName = 'Rating' | 'Label' | 'MetadataDate'
+export type XMPTagName = 'Rating' | 'Label' | 'MetadataDate' | 'DCSubjectBagOfWords'
 
 export type IFDTagName =
   | 'Unknown'
