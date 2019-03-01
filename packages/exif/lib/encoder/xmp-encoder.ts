@@ -68,8 +68,16 @@ export class XMPEncoder {
     for (const key of Object.keys(metadata)) {
       const tagName = key as keyof IGenericMetadata
       log(`examining ${tagName}`)
-      if (typeof metadata[tagName] === 'undefined') continue
       if (!(tagName in xmpTags)) continue
+      if (typeof metadata[tagName] === 'undefined') {
+        const existing = XMPEncoder._findExistingTag(xmpData, tagName)
+        if (!existing) continue
+        let preamble = xmpData.slice(0, existing.start)
+        const postamble = xmpData.slice(existing.start + existing.length)
+        if (postamble.startsWith('\n')) preamble = preamble.replace(/\n +$/, '')
+        xmpData = `${preamble}${postamble}`
+        continue
+      }
 
       const value = metadata[tagName]
       log(`writing ${tagName} as "${value}"`)

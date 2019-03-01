@@ -35,6 +35,15 @@ describe('lib/encoders/xmp-encoder.js', () => {
       })
     })
 
+    it('should delete XMP keys', () => {
+      const xmp = XMPEncoder.encode({Rating: 3, Label: 'Red'})
+      const xmpAugmented = XMPEncoder.encode({Rating: undefined}, xmp)
+      const decoder = new XMPDecoder(xmpAugmented)
+      expect(decoder.extractMetadata()).to.eql({
+        Label: 'Red',
+      })
+    })
+
     it('should handle existing XMP wrapped in packet', () => {
       const xmp = XMPEncoder.wrapInPacket(XMPEncoder.encode({Rating: 3}))
       const xmpAugmented = XMPEncoder.encode({Label: 'Red'}, xmp)
