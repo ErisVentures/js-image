@@ -1,4 +1,4 @@
-import {IGenericMetadata, IBufferLike, XMPTagName} from '../utils/types'
+import {IGenericMetadata, IBufferLike} from '../utils/types'
 import {xmpTags} from '../utils/tags'
 import {createLogger} from '../utils/log'
 import {parseKeywords} from '../metadata/keywords-parser'
