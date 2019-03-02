@@ -50,6 +50,19 @@ describe('lib/encoders/xmp-encoder.js', () => {
       })
     })
 
+    it('should roundtrip with no impact', () => {
+      const xmpOriginal = XMPEncoder.wrapInPacket(XMPEncoder.encode({Rating: 3}))
+      const xmpAfter = XMPEncoder.encode({Label: 'Red', DCSubjectBagOfWords}, xmpOriginal)
+      const xmpRemoved = XMPEncoder.encode(
+        {Label: undefined, DCSubjectBagOfWords: undefined},
+        xmpAfter,
+      )
+
+      const truncatePacketEnd = xmp => xmp.toString().replace(/\s+<\?xpacket end.*$/, '')
+      expect(xmpOriginal.length).to.equal(xmpRemoved.length)
+      expect(truncatePacketEnd(xmpOriginal)).to.eql(truncatePacketEnd(xmpRemoved))
+    })
+
     it('should handle existing XMP wrapped in packet', () => {
       const xmp = XMPEncoder.wrapInPacket(XMPEncoder.encode({Rating: 3, DCSubjectBagOfWords}))
       const xmpAugmented = XMPEncoder.encode({Label: 'Red', Rating: undefined}, xmp)

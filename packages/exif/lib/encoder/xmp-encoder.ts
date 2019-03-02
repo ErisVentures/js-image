@@ -27,14 +27,6 @@ const XMP_PACKET_START = '<?xpacket begin="" id="W5M0MpCehiHzreSzNTczkc9d"?>'
 const XMP_PACKET_END = '<?xpacket end="w"?>'
 const BASE_NEWLINE = '\n   '
 
-interface TagLocation {
-  start: number
-  length: number
-  prefix: string
-  name: string
-  value: string
-}
-
 export class XMPEncoder {
   public static isWrappedInPacket(xmpData: IBufferLike | string): boolean {
     const firstBytes = xmpData.slice(0, XMP_PACKET_START.length).toString()
@@ -69,53 +61,15 @@ export class XMPEncoder {
 
     for (const key of Object.keys(metadata)) {
       const tagName = key as keyof IGenericMetadata
-      log(`examining ${tagName}`)
-      if (!(tagName in xmpTags)) continue
 
-      const value = metadata[tagName]
-
-      if (tagName === 'DCSubjectBagOfWords') {
-        const result = XMPEncoder._handleKeywords(xmpData, metadata)
-        xmpData = result.xmpData
-        extraLength += result.extraLength
+      if (!(tagName in xmpTags)) {
+        log(`skipping ${tagName} which is not an XMP tag`)
         continue
       }
 
-      if (typeof value === 'undefined') {
-        log(`unsetting ${tagName}`)
-        const existing = XMPEncoder._findExistingTag(xmpData, tagName)
-        if (!existing) continue
-        let preamble = xmpData.slice(0, existing.start)
-        const postamble = xmpData.slice(existing.start + existing.length)
-        if (postamble.startsWith('\n')) preamble = preamble.replace(/\n +$/, '')
-        const beforeLength = xmpData.length
-        xmpData = `${preamble}${postamble}`
-        const afterLength = xmpData.length
-        extraLength += afterLength - beforeLength
-        continue
-      }
-
-      log(`writing ${tagName} as "${value}"`)
-
-      const existing = XMPEncoder._findExistingTag(xmpData, tagName)
-      const replacement = `xmp:${tagName}="${value}"`
-
-      if (existing) {
-        log(`found existing ${tagName} - ${existing.value}`)
-        const preamble = xmpData.slice(0, existing.start)
-        const postamble = xmpData.slice(existing.start + existing.length)
-        const additionalLength = replacement.length - existing.length
-        xmpData = `${preamble}${replacement}${postamble}`
-        extraLength += additionalLength
-      } else {
-        log(`did not find existing ${tagName}`)
-        const rdfEnd = XMPEncoder._findIndexOfRdfDescriptionEnd(xmpData)
-        const preamble = xmpData.slice(0, rdfEnd)
-        const postamble = xmpData.slice(rdfEnd)
-        const replacementWithNewline = `${BASE_NEWLINE}${replacement}`
-        xmpData = `${preamble}${replacementWithNewline}${postamble}`
-        extraLength += replacementWithNewline.length
-      }
+      const newXmpData = XMPEncoder._processEntry(xmpData, tagName, metadata[tagName])
+      extraLength += newXmpData.length - xmpData.length
+      xmpData = newXmpData
     }
 
     if (XMPEncoder.isWrappedInPacket(xmpData)) {
@@ -139,59 +93,85 @@ export class XMPEncoder {
     return Buffer.from(xmpData)
   }
 
-  private static _findExistingTag(xmp: string, tagName: string): TagLocation | undefined {
-    const regex = new RegExp(`([a-z]+):(${tagName})="(.*?)"`, 'i')
-    const match = xmp.match(regex)
-    if (!match) return undefined
-    const [fullMatch, prefix, name, value] = match
-    const start = xmp.indexOf(fullMatch)
-    return {start, length: fullMatch.length, prefix, name, value}
-  }
-
-  private static _handleKeywords(
+  private static _processEntry(
     xmpData: string,
-    metadata: IGenericMetadata,
-  ): {xmpData: string; extraLength: number} {
-    const newKeywords = parseKeywords(metadata)
-    const existingKeywordsMatch = xmpData.match(/<dc:subject>(.|\s)*?<\/dc:subject>/)
-    if (!newKeywords || !newKeywords.length) {
-      // Nothing to remove, move on
-      if (!existingKeywordsMatch) return {xmpData, extraLength: 0}
-      // Remove the payload
-      const indexOfMatch = existingKeywordsMatch.index!
-      const original = existingKeywordsMatch[0]
-      const preamble = xmpData.slice(0, indexOfMatch)
-      const postamble = xmpData.slice(indexOfMatch + original.length)
-      return {
-        xmpData: `${preamble}${postamble}`,
-        extraLength: -original.length,
+    tagName: keyof IGenericMetadata,
+    value: string | number | undefined,
+  ): string {
+    log(`processing ${tagName}`)
+    const existing = XMPEncoder._findExisting(xmpData, tagName)
+
+    // If we are unsetting, branch.
+    if (typeof value === 'undefined') {
+      if (!existing) {
+        // If we didn't have an existing value to begin with, we're done.
+        log(`${tagName} already missing from XMP, skipping`)
+        return xmpData
       }
+
+      log(`unsetting ${tagName}`)
+
+      // Remove the existing reference and cleanup whitespace
+      let preamble = xmpData.slice(0, existing.start)
+      const postamble = xmpData.slice(existing.start + existing.length)
+      if (postamble.match(/^(\n|>)/)) preamble = preamble.replace(/\n +$/, '')
+
+      return `${preamble}${postamble}`
     }
 
-    const replacement = XMPEncoder._generateKeywordsPayload(newKeywords)
-    if (existingKeywordsMatch) {
-      const indexOfMatch = existingKeywordsMatch.index!
-      const original = existingKeywordsMatch[0]
-      const preamble = xmpData.slice(0, indexOfMatch)
-      const postamble = xmpData.slice(indexOfMatch + original.length)
-      return {
-        xmpData: `${preamble}${replacement}${postamble}`,
-        extraLength: replacement.length - original.length,
-      }
-    } else {
-      const rdfEnd = XMPEncoder._findIndexOfRdfDescriptionEnd(xmpData) + 1
-      const preamble = xmpData.slice(0, rdfEnd)
-      const postamble = xmpData.slice(rdfEnd)
-      const replacementWithNewline = `${BASE_NEWLINE}${replacement}`
+    log(`writing ${tagName} with value "${value}"`)
+    const replacement = XMPEncoder._buildReplacement(tagName, value)
 
-      return {
-        xmpData: `${preamble}${replacementWithNewline}${postamble}`,
-        extraLength: replacementWithNewline.length,
-      }
+    if (existing) {
+      // If we have an existing value, replace the token range with our new payload
+      log(`found existing ${tagName}`)
+      const preamble = xmpData.slice(0, existing.start)
+      const postamble = xmpData.slice(existing.start + existing.length)
+      return `${preamble}${replacement}${postamble}`
+    } else {
+      // If we don't have an existing value, inject the payload with appropriate whitespace.
+      log(`did not find existing ${tagName}`)
+      const insertionIndex = XMPEncoder._findInsertionPoint(xmpData, tagName).start
+      const preamble = xmpData.slice(0, insertionIndex)
+      const postamble = xmpData.slice(insertionIndex)
+      const replacementWithNewline = `${BASE_NEWLINE}${replacement}`
+      return `${preamble}${replacementWithNewline}${postamble}`
     }
   }
 
-  private static _generateKeywordsPayload(keywords: string[]): string {
+  private static _findExisting(
+    xmp: string,
+    tagName: string,
+  ): {start: number; length: number} | undefined {
+    const regex =
+      tagName === 'DCSubjectBagOfWords'
+        ? /<dc:subject>(.|\s)*?<\/dc:subject>/
+        : new RegExp(`([a-z]+):(${tagName})="(.*?)"`, 'i')
+    const match = xmp.match(regex)
+    if (!match) return
+    return {start: match.index!, length: match[0].length}
+  }
+
+  private static _findInsertionPoint(
+    xmp: string,
+    tagName: keyof IGenericMetadata,
+  ): {start: number} {
+    const regex = /<rdf:Description[^<]*?>/im
+    const match = xmp.match(regex)
+    if (!match) throw new Error('Unable to find end of rdf:description')
+    const rdfDescription = match[0]
+    const rdfDescriptionEndIndex = xmp.indexOf(rdfDescription) + rdfDescription.length - 1
+    const start = rdfDescriptionEndIndex + (tagName === 'DCSubjectBagOfWords' ? 1 : 0)
+    return {start}
+  }
+
+  private static _buildReplacement(
+    tagName: keyof IGenericMetadata,
+    value: string | number,
+  ): string {
+    if (tagName !== 'DCSubjectBagOfWords') return `xmp:${tagName}="${value}"`
+    const keywords = parseKeywords({DCSubjectBagOfWords: value})
+    if (!keywords) throw new Error('Invalid keywords payload')
     return [
       `<dc:subject>`,
       ` <rdf:Bag>`,
@@ -199,13 +179,5 @@ export class XMPEncoder {
       ` </rdf:Bag>`,
       `</dc:subject>`,
     ].join(BASE_NEWLINE)
-  }
-
-  private static _findIndexOfRdfDescriptionEnd(xmp: string): number {
-    const regex = /<rdf:Description(\s*(\w+:\w+=".*?")\s*)*?>/im
-    const match = xmp.match(regex)
-    if (!match) throw new Error('Unable to find end of rdf:description')
-    const rdfDescription = match[0]
-    return xmp.indexOf(rdfDescription) + rdfDescription.length - 1
   }
 }
