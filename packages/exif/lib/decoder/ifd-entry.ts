@@ -23,12 +23,15 @@ export class IFDEntry implements IIFDEntry {
   public getValue(reader?: IReader): string | number {
     const entryReader = this.getReader(reader)
     switch (this.dataType) {
+      // TODO: verify signed versions
       case IFDDataType.Byte:
       case IFDDataType.Short:
       case IFDDataType.Long:
+      case IFDDataType.SignedByte:
+      case IFDDataType.SignedShort:
+      case IFDDataType.SignedLong:
         return entryReader.read(this.lengthInBytes)
       case IFDDataType.Rational:
-      // TODO: fix signed rational repr
       case IFDDataType.SignedRational:
         return entryReader.read(4) / entryReader.read(4)
       case IFDDataType.String:
@@ -43,9 +46,9 @@ export class IFDEntry implements IIFDEntry {
         }
 
         return chars.join('')
-      case IFDDataType.SingleFloat:
+      case IFDDataType.Float:
         return new DataView(entryReader.readAsBuffer(4).buffer).getFloat32(0)
-      case IFDDataType.DoubleFloat:
+      case IFDDataType.Double:
         return new DataView(entryReader.readAsBuffer(8).buffer).getFloat64(0)
       case IFDDataType.Undefined:
         return ''

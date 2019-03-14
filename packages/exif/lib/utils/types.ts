@@ -95,12 +95,14 @@ export enum IFDDataType {
   Short = 3,
   Long = 4,
   Rational = 5,
+  SignedByte = 6,
   Undefined = 7,
+  SignedShort = 8,
   SignedLong = 9,
   SignedRational = 10,
   // From https://www.media.mit.edu/pia/Research/deepview/exif.html
-  SingleFloat = 11,
-  DoubleFloat = 12,
+  Float = 11,
+  Double = 12,
 }
 
 export interface IJPEGOptions {
@@ -151,16 +153,19 @@ export function getDataTypeSize(dataType: number, name?: string | number): numbe
     case IFDDataType.Unknown: // ???
     case IFDDataType.Byte: // byte
     case IFDDataType.String: // ASCII-string
+    case IFDDataType.SignedByte:
       return 1
     case IFDDataType.Short: // word
+    case IFDDataType.SignedShort:
       return 2
     case IFDDataType.Long: // double word
-    case IFDDataType.SingleFloat:
+    case IFDDataType.SignedLong:
+    case IFDDataType.Float:
     case IFDDataType.Undefined:
       return 4
     case IFDDataType.Rational: // rational number
     case IFDDataType.SignedRational:
-    case IFDDataType.DoubleFloat:
+    case IFDDataType.Double:
       return 8
     default: {
       const nameComponent = name ? ` for name (${name})` : ''
