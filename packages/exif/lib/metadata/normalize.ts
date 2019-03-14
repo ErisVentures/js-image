@@ -18,8 +18,8 @@ const properties: Record<NormalizedKey, PropertyDefn[]> = {
   make: ['Make'],
   model: ['Model'],
 
-  width: ['ImageWidth'],
-  height: ['ImageLength'],
+  width: ['EXIFImageWidth', 'ImageWidth'],
+  height: ['EXIFImageHeight', 'ImageLength'],
   xResolution: ['XResolution'],
   yResolution: ['YResolution'],
 

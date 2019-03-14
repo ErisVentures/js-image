@@ -7,6 +7,7 @@ const xmpJpeg = fixture('xmp.jpg')
 const copyrightJpeg = fixture('copyright.jpg')
 const nikonJpeg = fixture('nikon.jpg')
 const nikonNef = fixture('nikon.nef')
+const canonCr2 = fixture('1000d.cr2')
 const iphoneDng = fixture('iphone.dng')
 
 describe('index.js', () => {
@@ -74,6 +75,28 @@ describe('index.js', () => {
         normalizedFocalLength: 150,
         exposureCompensation: 0,
         lens: undefined,
+      })
+    })
+
+    it('should work on canon raw files', () => {
+      const results = parse(canonCr2)
+      expect(results).to.have.property('_raw')
+      delete results._raw
+      expect(results).to.deep.include({
+        make: 'Canon',
+        model: 'Canon EOS DIGITAL REBEL XS',
+        width: 2592,
+        height: 3888,
+        xResolution: 72,
+        yResolution: 72,
+        createdAt: new Date('2010-07-23T11:00:15.000Z'),
+        modifiedAt: new Date('2010-07-23T11:00:15.000Z'),
+        iso: 100,
+        exposureTime: 1 / 800,
+        fNumber: 5.6,
+        focalLength: 55,
+        normalizedFocalLength: 55,
+        exposureCompensation: 1 / 3,
       })
     })
 
