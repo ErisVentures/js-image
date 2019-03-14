@@ -146,11 +146,20 @@ export class TIFFDecoder {
   }
 
   private _readLargestJPEG(): IBufferLike {
-    const maxResolutionJPEG = this._readLargestJPEGThumbnail() || this._readStripOffsetsAsJPEG()
-    if (!maxResolutionJPEG) {
-      throw new Error('Could not find thumbnail or read StripOffsets IFDs')
-    }
-    return maxResolutionJPEG
+    // Try to read the JPEG thumbnail first
+    const maxThumbnailJPEG = this._readLargestJPEGThumbnail()
+    const thumbnailSize = (maxThumbnailJPEG && maxThumbnailJPEG.length) || 0
+    // Only return it immediately if it seems large enough (>500KB)
+    if (maxThumbnailJPEG && thumbnailSize > 500 * 1000) return maxThumbnailJPEG
+
+    // Otherwise we'll fallback to the JPEG strip offsets
+    const maxStripOffsetJPEG = this._readStripOffsetsAsJPEG()
+    // Only return it if it's larger than the thumbnail
+    if (maxStripOffsetJPEG && maxStripOffsetJPEG.length > thumbnailSize) return maxStripOffsetJPEG
+    // Fallback to the small thumbnail if that's all we found
+    if (maxThumbnailJPEG) return maxThumbnailJPEG
+    // Fail loudly if all else fails
+    throw new Error('Could not find thumbnail or read StripOffsets IFDs')
   }
 
   public extractJPEG(options: IJPEGOptions = {}): IBufferLike {
