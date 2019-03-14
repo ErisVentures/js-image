@@ -107,7 +107,7 @@ export class TIFFDecoder {
   }
 
   private _readStripOffsetsAsJPEG(): IBufferLike | undefined {
-    let maxResolutionJPEG: IThumbnailLocation | undefined
+    let maxResolutionJPEG: {buffer: IBufferLike; metadata: IGenericMetadata} | undefined
     this._ifds.forEach(ifd => {
       const compressionEntry = ifd.entries.find(entry => entry.tag === IFDTag.Compression)
       const stripOffsetsEntry = ifd.entries.find(entry => entry.tag === IFDTag.StripOffsets)
@@ -121,10 +121,20 @@ export class TIFFDecoder {
 
       const offset = stripOffsetsEntry.getValue(this._reader) as number
       const length = stripBytesEntry.getValue(this._reader) as number
+      const jpegBuffer = this._reader.use(() => {
+        this._reader.seek(offset)
+        return this._reader.readAsBuffer(length)
+      })
 
-      // TODO: throw if there's more than one strip
-      if (!maxResolutionJPEG || length > maxResolutionJPEG.length) {
-        maxResolutionJPEG = {offset, length, ifd}
+      if (!JPEGDecoder.isJPEG(jpegBuffer)) return
+
+      const jpeg = new JPEGDecoder(jpegBuffer)
+      const metadata = jpeg.extractMetadata()
+      if (!metadata.ImageLength || !metadata.ImageWidth) return
+
+      if (!maxResolutionJPEG || metadata.ImageWidth > maxResolutionJPEG.metadata.ImageWidth!) {
+        // TODO: throw if there's more than one strip
+        maxResolutionJPEG = {metadata, buffer: jpegBuffer}
       }
     })
 
@@ -132,8 +142,7 @@ export class TIFFDecoder {
       return undefined
     }
 
-    this._reader.seek(maxResolutionJPEG.offset)
-    return this._reader.readAsBuffer(maxResolutionJPEG.length)
+    return maxResolutionJPEG.buffer
   }
 
   private _readLargestJPEG(): IBufferLike {
