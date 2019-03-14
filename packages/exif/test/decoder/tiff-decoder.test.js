@@ -4,6 +4,18 @@ const {expect, fixture, compareToFixture} = require('../utils')
 
 describe('Decoder', () => {
   describe('.extractJPEG', () => {
+    it('should extract the canon thumbnail', () => {
+      const decoder = new Decoder(fixture('1000d.cr2'))
+      const thumbnail = decoder.extractJPEG()
+      compareToFixture(thumbnail, '1000d.jpg')
+    })
+
+    it('should extract the sony thumbnail', () => {
+      const decoder = new Decoder(fixture('a7rii.arw'))
+      const thumbnail = decoder.extractJPEG()
+      compareToFixture(thumbnail, 'a7rii.jpg')
+    })
+
     it('should extract the d4s thumbnail', () => {
       const decoder = new Decoder(fixture('d4s.nef'))
       const thumbnail = decoder.extractJPEG({skipMetadata: true})

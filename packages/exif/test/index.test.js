@@ -8,6 +8,7 @@ const copyrightJpeg = fixture('copyright.jpg')
 const nikonJpeg = fixture('nikon.jpg')
 const nikonNef = fixture('nikon.nef')
 const canonCr2 = fixture('1000d.cr2')
+const sonyArw = fixture('a7rii.arw')
 const iphoneDng = fixture('iphone.dng')
 
 describe('index.js', () => {
@@ -97,6 +98,34 @@ describe('index.js', () => {
         focalLength: 55,
         normalizedFocalLength: 55,
         exposureCompensation: 1 / 3,
+      })
+    })
+
+    it('should work on sony raw files', () => {
+      const results = parse(sonyArw)
+      expect(results).to.have.property('_raw')
+      delete results._raw
+      expect(results).to.deep.include({
+        make: 'SONY',
+        model: 'ILCE-7RM2',
+        width: 7952,
+        height: 5304,
+        xResolution: 72,
+        yResolution: 72,
+        createdAt: new Date('2015-09-07T17:43:08.000Z'),
+        modifiedAt: new Date('2015-09-07T17:43:08.000Z'),
+        iso: 1600,
+        exposureTime: 1 / 60,
+        fNumber: 8,
+        focalLength: 55,
+        normalizedFocalLength: 55,
+        exposureCompensation: 0,
+        lens: {
+          aperture: 'F1.8',
+          focalLength: '55mm',
+          make: 'FE',
+          model: 'FE 55mm F1.8 ZA',
+        },
       })
     })
 
