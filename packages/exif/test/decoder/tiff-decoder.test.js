@@ -1,4 +1,5 @@
 const JPEG = require('jpeg-js')
+const parse = require('../../dist/index').parse
 const Decoder = require('../../dist/decoder/tiff-decoder').TIFFDecoder
 const {expect, fixture, compareToFixture} = require('../utils')
 
@@ -14,6 +15,12 @@ describe('Decoder', () => {
       const decoder = new Decoder(fixture('a7rii.arw'))
       const thumbnail = decoder.extractJPEG()
       compareToFixture(thumbnail, 'a7rii.jpg')
+    })
+
+    it('should have correct width/height for the JPEG', () => {
+      const decoder = new Decoder(fixture('a7rii.arw'))
+      const thumbnail = decoder.extractJPEG()
+      expect(parse(thumbnail)).to.include({width: 1616, height: 1080})
     })
 
     it('should extract the d4s thumbnail', () => {

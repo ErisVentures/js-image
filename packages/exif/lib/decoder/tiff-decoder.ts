@@ -172,6 +172,10 @@ export class TIFFDecoder {
     if (options.skipMetadata) return jpeg
 
     const metadata = this.extractMetadata()
+    delete metadata.ImageWidth
+    delete metadata.ImageLength
+    delete metadata.EXIFImageWidth
+    delete metadata.EXIFImageHeight
     const metadataBuffer = TIFFEncoder.encode(metadata)
 
     this._cachedJPEG = JPEGDecoder.injectEXIFMetadata(jpeg, metadataBuffer)

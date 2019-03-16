@@ -7,6 +7,7 @@ import {
   IFDGroup,
   IFDDataType,
   IIFDTagDefinition,
+  IFDTag,
 } from '../utils/types'
 import {Writer} from '../utils/writer'
 import {tags} from '../utils/tags'
@@ -14,10 +15,21 @@ import {createLogger} from '../utils/log'
 
 const log = createLogger('encoder')
 
+const BLACKLISTED_TAGS = new Set([
+  IFDTag.SubIFD,
+  IFDTag.EXIFOffset,
+  IFDTag.StripOffsets,
+  IFDTag.StripByteCounts,
+  IFDTag.ThumbnailOffset,
+  IFDTag.ThumbnailLength,
+  IFDTag.RowsPerStrip,
+])
+
 export class TIFFEncoder {
   public static isSupportedEntry(tag: IIFDTagDefinition | undefined, value: any): boolean {
     if (!tag) return false
     if (tag.group !== IFDGroup.EXIF) return false
+    if (BLACKLISTED_TAGS.has(tag.code)) return false
     if (tag.dataType === IFDDataType.Short) return value < Math.pow(2, 16)
     if (tag.dataType === IFDDataType.Long) return value < Math.pow(2, 32)
     return false
