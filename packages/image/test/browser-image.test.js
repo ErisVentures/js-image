@@ -463,7 +463,7 @@ describe('BrowserImage', () => {
         ])
 
       await image.toImageData()
-    }).timeout(5000)
+    }).timeout(10000)
 
     it('should not be hella slow calibrating', async () => {
       const image = BrowserImage.from(imageData)
@@ -499,6 +499,6 @@ describe('BrowserImage', () => {
         })
 
       await image.toImageData()
-    }).timeout(5000)
+    }).timeout(10000)
   })
 })
