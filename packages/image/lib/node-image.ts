@@ -73,9 +73,11 @@ export class NodeImage extends Image {
       return image.jpeg(this._output.format)
     } else if (this._output.format.type === ImageFormat.PNG) {
       return image.png()
-    } else {
+    } else if (this._output.format.type !== ImageFormat.NoTranscode) {
       throw new Error(`Unsupported format: ${this._output.format.type}`)
     }
+
+    return image
   }
 
   private _applyResize(image: sharp.SharpInstance): sharp.SharpInstance {
@@ -168,8 +170,15 @@ export class NodeImage extends Image {
     return this._applyAll(this._image).then(SharpImage.toImageData)
   }
 
-  public toBuffer(): Promise<BufferLike> {
-    return this._applyAll(this._image).then(image => image.toBuffer())
+  public async toBuffer(): Promise<BufferLike> {
+    const image: any = await this._applyAll(this._image)
+    if (this._output.format.type === ImageFormat.NoTranscode) {
+      const buffer = image.options && image.options.input && image.options.input.buffer
+      if (!buffer) throw new Error('Unable to extract original buffer for NoTranscode')
+      return buffer
+    }
+
+    return image.toBuffer()
   }
 
   protected static _fromBuffer(buffer: BufferLike, metadata?: object): Image {

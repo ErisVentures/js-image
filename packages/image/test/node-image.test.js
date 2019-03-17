@@ -4,6 +4,7 @@ const ImageData = require('../dist/image-data').ImageData
 const NodeImage = require('../dist/node-image').NodeImage
 const {expect, fixture, compareToFixture, testImage} = require('./utils')
 
+const sourceNef = fixture('source-google.nef')
 const skater = fixture('source-skater.jpg')
 const sydney = fixture('source-sydney.jpg')
 const skaterRotated = fixture('source-skater-rotated.jpg')
@@ -411,6 +412,13 @@ describe('NodeImage', () => {
         expect(buffer.length).to.be.within(skater.length - 5000, skater.length + 5000)
       })
     })
+
+    it('should output the original buffer without transcoding', async () => {
+      const image = NodeImage.from(sourceNef).format('no-transcode')
+      const buffer = await image.toBuffer()
+      expect(buffer).to.be.instanceOf(Buffer)
+      expect(buffer.length).to.equal(1078539)
+    })
   })
 
   describe('#from', () => {
@@ -425,7 +433,7 @@ describe('NodeImage', () => {
     })
 
     it('should handle raw images', () => {
-      const image = NodeImage.from(fixture('source-google.nef'))
+      const image = NodeImage.from(sourceNef)
       expect(image).to.be.instanceOf(NodeImage)
       return image
         .resize({width: 604, height: 400})
@@ -442,7 +450,7 @@ describe('NodeImage', () => {
   })
 
   it('should support multiple sequential changes', () => {
-    const image = NodeImage.from(fixture('source-google.nef'))
+    const image = NodeImage.from(sourceNef)
     expect(image).to.be.instanceOf(NodeImage)
     return image
       .resize({width: 604, height: 400})

@@ -52,11 +52,16 @@ export abstract class Image {
       options = {type: options}
     }
 
-    if (options.type !== types.ImageFormat.JPEG && options.type !== types.ImageFormat.PNG) {
-      throw new Error(`Unrecognized format: ${options.type}`)
+    const {type} = options
+    if (
+      type !== types.ImageFormat.JPEG &&
+      type !== types.ImageFormat.PNG &&
+      type !== types.ImageFormat.NoTranscode
+    ) {
+      throw new Error(`Unrecognized format: ${type}`)
     }
 
-    const defaultOpts = options.type === types.ImageFormat.JPEG ? {quality: 90} : {}
+    const defaultOpts = type === types.ImageFormat.JPEG ? {quality: 90} : {}
     this._output.format = {...defaultOpts, ...options}
     return this
   }

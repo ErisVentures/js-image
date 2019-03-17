@@ -190,6 +190,7 @@ export interface ISubselectOptions {
 export enum ImageFormat {
   JPEG = 'jpeg',
   PNG = 'png',
+  NoTranscode = 'no-transcode',
 }
 
 export enum ImageResizeFit {

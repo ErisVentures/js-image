@@ -8,6 +8,7 @@ import {
   IPixelCoordinate,
   IGreyscalePixel,
   MapPixelFn,
+  ImageFormat,
 } from './types'
 import {hasWASM, getWASM} from './utils/env'
 
@@ -1153,15 +1154,16 @@ export class ImageData {
     imageData: IAnnotatedImageData,
     options?: IFormatOptions,
   ): Promise<BufferLike> {
-    const type = (options && options.type) || 'jpeg'
+    const type = (options && options.type) || ImageFormat.JPEG
 
-    let buffer
+    let buffer: BufferLike
     switch (type) {
-      case 'jpeg':
+      case ImageFormat.JPEG:
+      case ImageFormat.NoTranscode:
         const quality = (options && options.quality) || 90
         buffer = jpeg.encode(ImageData.toRGBA(imageData), quality).data
         break
-      case 'png':
+      case ImageFormat.PNG:
         buffer = PNG.sync.write(ImageData.toRGBA(imageData))
         break
       default:
