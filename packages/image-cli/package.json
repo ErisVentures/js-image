@@ -34,6 +34,7 @@
     ]
   },
   "devDependencies": {
+    "@eris/image": "^0.1.0-development",
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
     "cz-conventional-changelog": "^2.0.0",
@@ -46,7 +47,6 @@
     "sinon-chai": "^2.14.0"
   },
   "dependencies": {
-    "@eris/image": "^0.1.0-development",
     "yargs": "^9.0.1"
   }
 }
