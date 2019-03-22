@@ -26,7 +26,8 @@ describe('bin/index.js', () => {
   it('should run from a freeform config', async () => {
     const args = ['-c', FREEFORM_SCRIPT_PATH, '--mode=freeform', SKATER_PATH]
     const stdout = await execa.stdout(JS_EXE, args, {cwd: CWD})
-    expect(stdout).to.equal([
+    expect(stdout.replace(/File is .*/, 'File is <file>')).to.equal([
+      'File is <file>',
       'Processing 1 ...',
       'Processing 2 ...',
       'Processing 3 ...',

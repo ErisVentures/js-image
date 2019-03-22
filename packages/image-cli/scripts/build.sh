@@ -25,6 +25,11 @@ OUTPUT=$(./image-cli 2>&1)
 echo -e "$OUTPUT"
 echo $OUTPUT | grep Usage >/dev/null || exit 1
 
+if [[ -n "$TRAVIS" ]]; then
+  # Skip this next check in Travis because it requires the git lfs files
+  exit 0
+fi
+
 echo "Testing the default usage pattern..."
 OUTPUT=$(./image-cli --mode=freeform -c "$IMAGE_CLI_ROOT/test/fixtures/freeform.js" 2>&1)
 echo -e "$OUTPUT"

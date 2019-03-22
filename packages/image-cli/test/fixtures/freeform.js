@@ -4,6 +4,7 @@ const path = require('path')
 module.exports = async function(modules, argv) {
   const {Image, BrowserImage} = modules['@eris/image']
   const file = argv._[0] || path.join(__dirname, 'sydney.jpg')
+  console.log('File is', file)
   const imageData = await Image.from(fs.readFileSync(file)).toImageData()
 
   const size = Math.round(Math.min(imageData.height, imageData.width) / 6)
