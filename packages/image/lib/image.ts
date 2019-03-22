@@ -28,9 +28,12 @@ export abstract class Image {
   protected _analyze?: types.IAnalysisOptions
 
   public constructor() {
-    this._output = {
-      format: {type: types.ImageFormat.JPEG, quality: 90},
-    }
+    this._output = {}
+  }
+
+  public reset(): Image {
+    this._output = {}
+    return this
   }
 
   public options(options: types.IAllImageOptions): Image {

@@ -1,4 +1,4 @@
-import {BufferLike, IMetadata, ImageResizeMethod} from './types'
+import {BufferLike, IMetadata, ImageResizeMethod, DEFAULT_FORMAT} from './types'
 import {Image} from './image'
 import {IAnnotatedImageData, ImageData} from './image-data'
 import * as resize from './transforms/resize'
@@ -106,7 +106,7 @@ export class BrowserImage extends Image {
 
   public toBuffer(): Promise<BufferLike> {
     return this._applyAll(this._image).then(imageData =>
-      ImageData.toBuffer(imageData, this._output.format),
+      ImageData.toBuffer(imageData, this._output.format || DEFAULT_FORMAT),
     )
   }
 

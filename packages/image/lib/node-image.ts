@@ -1,6 +1,6 @@
 import * as sharp from 'sharp'
 
-import {BufferLike, IMetadata, Colorspace, ImageFormat, ImageResizeFit} from './types'
+import {BufferLike, IMetadata, Colorspace, ImageFormat, ImageResizeFit, DEFAULT_FORMAT} from './types'
 import {Image} from './image'
 import {IAnnotatedImageData, ImageData} from './image-data'
 import {instrumentation} from './instrumentation'
@@ -69,12 +69,13 @@ export class NodeImage extends Image {
   }
 
   private _applyFormat(image: sharp.SharpInstance): sharp.SharpInstance {
-    if (this._output.format.type === ImageFormat.JPEG) {
-      return image.jpeg(this._output.format)
-    } else if (this._output.format.type === ImageFormat.PNG) {
+    const {format = DEFAULT_FORMAT} = this._output
+    if (format.type === ImageFormat.JPEG) {
+      return image.jpeg(format)
+    } else if (format.type === ImageFormat.PNG) {
       return image.png()
-    } else if (this._output.format.type !== ImageFormat.NoTranscode) {
-      throw new Error(`Unsupported format: ${this._output.format.type}`)
+    } else if (format.type !== ImageFormat.NoTranscode) {
+      throw new Error(`Unsupported format: ${format.type}`)
     }
 
     return image
@@ -172,7 +173,8 @@ export class NodeImage extends Image {
 
   public async toBuffer(): Promise<BufferLike> {
     const image: any = await this._applyAll(this._image)
-    if (this._output.format.type === ImageFormat.NoTranscode) {
+    const format = this._output.format || DEFAULT_FORMAT
+    if (format.type === ImageFormat.NoTranscode) {
       const buffer = image.options && image.options.input && image.options.input.buffer
       if (!buffer) throw new Error('Unable to extract original buffer for NoTranscode')
       return buffer

@@ -70,7 +70,7 @@ export interface ILayerOptions {
 }
 
 export interface IImageOutputOptions {
-  format: IFormatOptions
+  format?: IFormatOptions
   resize?: IResizeOptions
   layers?: ILayerOptions[]
   calibrate?: ICalibrationOptions
@@ -291,4 +291,9 @@ export type IPixel = IRGBPixel | IGreyscalePixel | IHSLPixel | IBasePixel
 
 export interface IAllImageOptions extends IImageOutputOptions {
   analyze?: IAnalysisOptions
+}
+
+export const DEFAULT_FORMAT: IFormatOptions = {
+  type: ImageFormat.JPEG,
+  quality: 90,
 }
