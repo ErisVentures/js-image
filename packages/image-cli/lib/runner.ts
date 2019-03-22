@@ -54,7 +54,9 @@ export class Runner {
       return this._cachedFiles.get(filePath)!
     }
 
-    return fs.readFileSync(filePath)
+    const buffer = fs.readFileSync(filePath)
+    this._cachedFiles.set(filePath, buffer)
+    return buffer
   }
 
   private _processCachedEntry(entry: IConfigEntry): void {
@@ -87,7 +89,6 @@ export class Runner {
     }
 
     const input = this._getBufferFromCacheOrDisk(entry.input)
-
     const image = Image.from(input).options(entry.settings)
     const result = entry.action ? await image[entry.action]() : input
     let toDiskResult: Buffer | string = result as Buffer

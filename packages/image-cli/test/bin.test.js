@@ -5,8 +5,10 @@ const execa = require('execa')
 
 const CWD = path.join(__dirname, '..')
 const JS_EXE = path.join(__dirname, '../bin/run.js')
+const FREEFORM_SCRIPT_PATH = path.join(__dirname, 'fixtures/freeform.js')
 const CONFIG_PATH = path.join(__dirname, 'fixtures/config.json')
 const ANALYSIS_PATH = path.join(__dirname, 'fixtures/actual-skater-analysis.json')
+const SKATER_PATH = path.join(__dirname, 'fixtures/skater.jpg')
 
 describe('bin/index.js', () => {
   it('should run from a file config', () => {
@@ -19,5 +21,18 @@ describe('bin/index.js', () => {
       expect(analysis).to.have.property('hash').a('string')
       expect(analysis).to.have.property('sharpness').an('object')
     })
+  })
+
+  it('should run from a freeform config', async () => {
+    const args = ['-c', FREEFORM_SCRIPT_PATH, '--mode=freeform', SKATER_PATH]
+    const stdout = await execa.stdout(JS_EXE, args, {cwd: CWD})
+    expect(stdout).to.equal([
+      'Processing 1 ...',
+      'Processing 2 ...',
+      'Processing 3 ...',
+      'Processing 4 ...',
+      'Processing 5 ...',
+      'Done!'
+    ].join('\n'))
   })
 })
