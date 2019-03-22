@@ -5,6 +5,8 @@ import {Image} from './image'
 import {IAnnotatedImageData, ImageData} from './image-data'
 import {instrumentation} from './instrumentation'
 
+sharp.cache({memory: 200})
+
 class SharpImage {
   public static from(bufferOrImageData: BufferLike | IAnnotatedImageData): sharp.SharpInstance {
     if (ImageData.probablyIs(bufferOrImageData)) {
