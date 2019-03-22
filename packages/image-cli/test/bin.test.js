@@ -27,6 +27,7 @@ describe('bin/index.js', () => {
     const args = ['-c', FREEFORM_SCRIPT_PATH, '--mode=freeform', SKATER_PATH]
     const stdout = await execa.stdout(JS_EXE, args, {cwd: CWD})
     expect(stdout.replace(/File is .*/, 'File is <file>')).to.equal([
+      'EXIF is passed-through ✓',
       'File is <file>',
       'Processing 1 ...',
       'Processing 2 ...',

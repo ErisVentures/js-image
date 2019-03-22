@@ -35,6 +35,7 @@
     ]
   },
   "devDependencies": {
+    "@eris/exif": "^0.1.0-development",
     "@eris/image": "^0.1.0-development",
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",

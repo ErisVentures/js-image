@@ -36,6 +36,7 @@ const argv = yargs
 async function runFreeform(): Promise<void> {
   try {
     const imageModules = {
+      '@eris/exif': require('@eris/exif'), // tslint:disable-line
       '@eris/image': require('@eris/image'), // tslint:disable-line
       sharp: require('sharp'), // tslint:disable-line
     }

@@ -3,7 +3,9 @@ const path = require('path')
 
 module.exports = async function(modules, argv) {
   const {Image, BrowserImage} = modules['@eris/image']
+  const {TIFFDecoder} = modules['@eris/exif']
   const file = argv._[0] || path.join(__dirname, 'sydney.jpg')
+  if (TIFFDecoder) console.log('EXIF is passed-through ✓')
   console.log('File is', file)
   const imageData = await Image.from(fs.readFileSync(file)).toImageData()
 
