@@ -1,6 +1,13 @@
 import * as sharp from 'sharp'
 
-import {BufferLike, IMetadata, Colorspace, ImageFormat, ImageResizeFit, DEFAULT_FORMAT} from './types'
+import {
+  BufferLike,
+  IMetadata,
+  Colorspace,
+  ImageFormat,
+  ImageResizeFit,
+  DEFAULT_FORMAT,
+} from './types'
 import {Image} from './image'
 import {IAnnotatedImageData, ImageData} from './image-data'
 import {instrumentation} from './instrumentation'

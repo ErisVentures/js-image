@@ -1,5 +1,7 @@
 #!/bin/bash
 
+DIRNAME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+IMAGE_CLI_ROOT="$DIRNAME/.."
 TARGET=${PKG_TARGET:-node10-mac}
 rm -fR out/
 mkdir -p out/sharp/build/Release
@@ -18,7 +20,14 @@ mkdir /tmp/js_image_cli_test
 cp -R ./* /tmp/js_image_cli_test
 cd /tmp/js_image_cli_test
 
+echo "Testing the default usage pattern..."
 OUTPUT=$(./image-cli 2>&1)
 echo -e "$OUTPUT"
-rm -fR /tmp/js_image_cli_test
 echo $OUTPUT | grep Usage >/dev/null || exit 1
+
+echo "Testing the default usage pattern..."
+OUTPUT=$(./image-cli --mode=freeform -c "$IMAGE_CLI_ROOT/test/fixtures/freeform.js" 2>&1)
+echo -e "$OUTPUT"
+echo $OUTPUT | grep 'Done!' >/dev/null || exit 1
+
+rm -fR /tmp/js_image_cli_test
