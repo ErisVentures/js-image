@@ -168,11 +168,11 @@ export class NodeImage extends Image {
   }
 
   public toImageData(): Promise<IAnnotatedImageData> {
-    return this._applyAll(this._image).then(SharpImage.toImageData)
+    return this._applyAll(this._image.clone()).then(SharpImage.toImageData)
   }
 
   public async toBuffer(): Promise<BufferLike> {
-    const image: any = await this._applyAll(this._image)
+    const image: any = await this._applyAll(this._image.clone())
     const format = this._output.format || DEFAULT_FORMAT
     if (format.type === ImageFormat.NoTranscode) {
       const buffer = image.options && image.options.input && image.options.input.buffer

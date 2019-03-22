@@ -402,6 +402,16 @@ describe('NodeImage', () => {
           expect(imageData.data).to.have.length(120 * 120)
         })
     })
+
+    it('should use clones for output', async () => {
+      const image = NodeImage.from(skater)
+      const firstAttempt = await image.resize({width: 10, height: 10}).toImageData()
+      expect(firstAttempt).to.have.property('width', 10)
+      expect(firstAttempt).to.have.property('height', 10)
+      const secondAttempt = await image.reset().toImageData()
+      expect(secondAttempt).to.have.property('width', 256)
+      expect(secondAttempt).to.have.property('height', 256)
+    })
   })
 
   describe('.toBuffer', () => {
@@ -418,6 +428,14 @@ describe('NodeImage', () => {
       const buffer = await image.toBuffer()
       expect(buffer).to.be.instanceOf(Buffer)
       expect(buffer.length).to.equal(1078539)
+    })
+
+    it('should use clones for output', async () => {
+      const image = NodeImage.from(skater)
+      const firstAttempt = await image.resize({width: 10, height: 10}).toBuffer()
+      expect(firstAttempt.length).to.be.lessThan(1000)
+      const secondAttempt = await image.reset().toBuffer()
+      expect(secondAttempt.length).to.be.greaterThan(10000)
     })
   })
 

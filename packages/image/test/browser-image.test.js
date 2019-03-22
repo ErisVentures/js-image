@@ -389,6 +389,16 @@ describe('BrowserImage', () => {
       const imageData = await BrowserImage.from(skaterRotated).toImageData()
       await compareToFixture(ImageData.toRGBA(imageData), 'skater-rotated.jpg', {strict: false})
     })
+
+    it('should use clones for output', async () => {
+      const image = BrowserImage.from(skater)
+      const firstAttempt = await image.resize({width: 10, height: 10}).toImageData()
+      expect(firstAttempt).to.have.property('width', 10)
+      expect(firstAttempt).to.have.property('height', 10)
+      const secondAttempt = await image.reset().toImageData()
+      expect(secondAttempt).to.have.property('width', 256)
+      expect(secondAttempt).to.have.property('height', 256)
+    })
   })
 
   describe('.toBuffer', () => {
@@ -398,6 +408,14 @@ describe('BrowserImage', () => {
         expect(buffer).to.be.instanceOf(Buffer)
         expect(buffer.length).to.be.within(skater.length - 5000, skater.length + 5000)
       })
+    })
+
+    it('should use clones for output', async () => {
+      const image = BrowserImage.from(skater)
+      const firstAttempt = await image.resize({width: 10, height: 10}).toBuffer()
+      expect(firstAttempt.length).to.be.lessThan(1000)
+      const secondAttempt = await image.reset().toBuffer()
+      expect(secondAttempt.length).to.be.greaterThan(10000)
     })
   })
 
