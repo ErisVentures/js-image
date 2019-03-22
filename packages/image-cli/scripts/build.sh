@@ -25,7 +25,7 @@ OUTPUT=$(./image-cli 2>&1)
 echo -e "$OUTPUT"
 echo $OUTPUT | grep Usage >/dev/null || exit 1
 
-if [[ -n "$TRAVIS_BRANCH" ]]; then
+if [[ -n "$TRAVIS" ]]; then
   # Skip this next check in Travis because it requires the git lfs files
   exit 0
 fi
