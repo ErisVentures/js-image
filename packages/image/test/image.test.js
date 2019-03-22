@@ -15,15 +15,6 @@ describe('Image', () => {
     sandbox.reset()
   })
 
-  describe('#constructor', () => {
-    it('should default output', () => {
-      const output = new Image()._output
-      expect(output).to.eql({
-        format: {type: 'jpeg', quality: 90},
-      })
-    })
-  })
-
   describe('.options', () => {
     it('should set many options at once', () => {
       const image = new Image().options({format: 'png', greyscale: true, analyze: {hash: {}}})
