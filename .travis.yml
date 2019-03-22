@@ -10,6 +10,7 @@ jobs:
       os: osx
       language: node_js
       node_js: v8
+      before_script: git lfs pull -I "packages/image-cli/text/fixtures/*"
       script: npm run build
       after_success: ./scripts/add-asset-to-github.sh ./packages/image-cli/out/node8-mac.tar.gz
       env: PKG_TARGET=node8-mac
@@ -18,6 +19,7 @@ jobs:
       dist: trusty
       language: node_js
       node_js: v8
+      before_script: git lfs pull -I "packages/image-cli/text/fixtures/*"
       script: npm run build
       after_success: ./scripts/add-asset-to-github.sh ./packages/image-cli/out/node8-linux.tar.gz
       env: PKG_TARGET=node8-linux
