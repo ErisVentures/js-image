@@ -90,12 +90,18 @@ export class NodeImage extends Image {
     return image
   }
 
-  private _applyResize(image: sharp.SharpInstance): sharp.SharpInstance {
+  private async _applyResize(image: sharp.SharpInstance): Promise<sharp.SharpInstance> {
     if (!this._output.resize) {
       return image
     }
 
-    const {width, height, fit, subselect} = this._output.resize
+    const {width, height, fit, subselect, doNotEnlarge} = this._output.resize
+    if (doNotEnlarge) {
+      const {width: realWidth = 0, height: realHeight = 0} = await image.metadata()
+      if (typeof width === 'number' && realWidth < width) return image
+      if (typeof height === 'number' && realHeight < height) return image
+    }
+
     if (subselect) {
       image = image.extract({
         top: subselect.top,

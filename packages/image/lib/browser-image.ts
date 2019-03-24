@@ -52,6 +52,12 @@ export class BrowserImage extends Image {
 
     const options = resize.normalizeOptions(image, this._output.resize)
 
+    if (options.doNotEnlarge) {
+      const {width: realWidth = 0, height: realHeight = 0} = image
+      if (realWidth < options.width) return image
+      if (realHeight < options.height) return image
+    }
+
     if (options.subselect) {
       image = subselect(image, options.subselect)
     }

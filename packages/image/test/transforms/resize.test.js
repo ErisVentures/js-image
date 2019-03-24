@@ -65,6 +65,8 @@ describe('#transforms/resize', () => {
       const options = {width: 50, height: 40, fit: 'crop'}
       const result = resize.normalizeOptions(baseImageData, options)
       expect(result).to.eql({
+        doNotEnlarge: false,
+        method: 'bilinear',
         width: 50,
         height: 40,
         fit: 'crop',
@@ -81,6 +83,8 @@ describe('#transforms/resize', () => {
       const options = {width: 40, height: 50, fit: 'crop'}
       const result = resize.normalizeOptions(baseImageData, options)
       expect(result).to.eql({
+        doNotEnlarge: false,
+        method: 'bilinear',
         width: 40,
         height: 50,
         fit: 'crop',
@@ -103,6 +107,8 @@ describe('#transforms/resize', () => {
       const options = {subselect, fit: 'crop'}
       const result = resize.normalizeOptions(baseImageData, options)
       expect(result).to.eql({
+        doNotEnlarge: false,
+        method: 'bilinear',
         width: 80,
         height: 20,
         fit: 'crop',

@@ -1,11 +1,11 @@
 /* tslint:disable */
-import {IResizeOptions, ImageResizeFit, Colorspace} from '../types'
+import {IResizeOptions, ImageResizeFit, Colorspace, ImageResizeMethod} from '../types'
 import {IAnnotatedImageData, ImageData} from '../image-data'
 
 export function normalizeOptions(
   imageData: IAnnotatedImageData,
   options: IResizeOptions,
-): IResizeOptions {
+): Required<IResizeOptions> {
   const originalWidth = imageData.width
   const originalHeight = imageData.height
   const originalAspectRatio = originalWidth / originalHeight
@@ -72,11 +72,15 @@ export function normalizeOptions(
 
   if (!targetWidth || !targetHeight) throw new Error('Invalid dimensions for resize')
 
-  return Object.assign({}, options, {
+  return {
+    fit: ImageResizeFit.Exact,
+    method: ImageResizeMethod.Bilinear,
+    doNotEnlarge: !!options.doNotEnlarge,
+    ...options,
     width: Math.round(targetWidth),
     height: Math.round(targetHeight),
     subselect,
-  })
+  }
 }
 
 export function nearestNeighbor(

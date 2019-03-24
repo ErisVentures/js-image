@@ -14,6 +14,7 @@ export interface IResizeOptions {
   fit?: ImageResizeFit
   method?: ImageResizeMethod
   subselect?: ISubselectOptions
+  doNotEnlarge?: boolean
 }
 
 export interface IEdgeOptions {

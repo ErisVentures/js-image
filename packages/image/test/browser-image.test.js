@@ -118,6 +118,21 @@ describe('BrowserImage', () => {
         tolerance: 25,
       })
     })
+
+    it('should support doNotEnlarge', async () => {
+      const modify = img =>
+        img.resize({
+          width: 10000,
+          height: 10000,
+          fit: 'cover',
+          doNotEnlarge: true,
+        })
+
+      await testSkater('skater-image-data.jpg', modify, {
+        strict: false,
+        tolerance: 25,
+      })
+    })
   })
 
   describe('._applyGreyscale', () => {
