@@ -15,7 +15,7 @@ import {instrumentation} from './instrumentation'
 sharp.cache({memory: 200})
 
 class SharpImage {
-  public static from(bufferOrImageData: BufferLike | IAnnotatedImageData): sharp.SharpInstance {
+  public static from(bufferOrImageData: BufferLike | IAnnotatedImageData): sharp.Sharp {
     if (ImageData.probablyIs(bufferOrImageData)) {
       let imageData = ImageData.normalize(bufferOrImageData)
       ImageData.assert(imageData)
@@ -35,7 +35,7 @@ class SharpImage {
     }
   }
 
-  public static toMetadata(image: sharp.SharpInstance): Promise<IMetadata> {
+  public static toMetadata(image: sharp.Sharp): Promise<IMetadata> {
     return image.metadata().then(metadata => {
       let {width = 0, height = 0} = metadata
       if ((metadata.orientation || 0) > 4) {
@@ -52,7 +52,7 @@ class SharpImage {
     })
   }
 
-  public static async toImageData(image: sharp.SharpInstance): Promise<IAnnotatedImageData> {
+  public static async toImageData(image: sharp.Sharp): Promise<IAnnotatedImageData> {
     const rawData = await (image.clone().raw().toBuffer as any)({resolveWithObject: true})
     const {width, height, size} = rawData.info
     const channels = size / width / height
@@ -68,16 +68,16 @@ class SharpImage {
 }
 
 export class NodeImage extends Image {
-  private readonly _image: sharp.SharpInstance
+  private readonly _image: sharp.Sharp
   private readonly _metadata: object | undefined
 
-  public constructor(image: sharp.SharpInstance, metadata?: object) {
+  public constructor(image: sharp.Sharp, metadata?: object) {
     super()
     this._image = image
     this._metadata = metadata
   }
 
-  private _applyFormat(image: sharp.SharpInstance): sharp.SharpInstance {
+  private _applyFormat(image: sharp.Sharp): sharp.Sharp {
     const {format = DEFAULT_FORMAT} = this._output
     if (format.type === ImageFormat.JPEG) {
       return image.jpeg(format)
@@ -90,7 +90,7 @@ export class NodeImage extends Image {
     return image
   }
 
-  private async _applyResize(image: sharp.SharpInstance): Promise<sharp.SharpInstance> {
+  private async _applyResize(image: sharp.Sharp): Promise<sharp.Sharp> {
     if (!this._output.resize) {
       return image
     }
@@ -111,26 +111,26 @@ export class NodeImage extends Image {
       })
     }
 
-    image = image.resize(width, height)
+    let sharpFit: sharp.ResizeOptions['fit']
     switch (fit) {
       case ImageResizeFit.Contain:
-        image = image.max()
+        sharpFit = 'inside'
         break
       case ImageResizeFit.Cover:
-        image = image.min()
+        sharpFit = 'outside'
         break
       case ImageResizeFit.Exact:
-        image = image.ignoreAspectRatio()
+        sharpFit = 'fill'
         break
       case ImageResizeFit.Crop:
       default:
-        image = image.crop(sharp.gravity.center)
+        sharpFit = 'cover'
     }
 
-    return image
+    return image.resize(width, height, {fit: sharpFit})
   }
 
-  private _applyGreyscale(image: sharp.SharpInstance): sharp.SharpInstance {
+  private _applyGreyscale(image: sharp.Sharp): sharp.Sharp {
     if (!this._output.greyscale || this._output.edges) {
       return image
     }
@@ -138,9 +138,7 @@ export class NodeImage extends Image {
     return image.greyscale()
   }
 
-  private async _applyImageDataTransforms(
-    image: sharp.SharpInstance,
-  ): Promise<sharp.SharpInstance> {
+  private async _applyImageDataTransforms(image: sharp.Sharp): Promise<sharp.Sharp> {
     if (
       !this._output.effects &&
       !this._output.edges &&
@@ -163,7 +161,7 @@ export class NodeImage extends Image {
     return SharpImage.from(imageData)
   }
 
-  private async _applyAll(imagePromise: sharp.SharpInstance): Promise<sharp.SharpInstance> {
+  private async _applyAll(imagePromise: sharp.Sharp): Promise<sharp.Sharp> {
     let image = await imagePromise
 
     // Make sure the image is rotated according to EXIF

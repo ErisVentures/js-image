@@ -62,7 +62,7 @@ describe('NodeImage', () => {
 
       return testYosemite('yosemite-square-cover.jpg', modify, {
         strict: false,
-        tolerance: 25,
+        tolerance: 30,
       })
     })
 
@@ -148,7 +148,7 @@ describe('NodeImage', () => {
       ]
 
       const buffer = await imageA.layers(layers).toBuffer()
-      await compareToFixture(buffer, 'layers-merged.jpg', {strict: false, tolerance: 15})
+      await compareToFixture(buffer, 'layers-merged.jpg', {strict: false, tolerance: 20})
     })
   })
 
