@@ -152,6 +152,13 @@ export interface IMetadata {
   exif?: INormalizedMetadata
 }
 
+export interface IFaceAnalysisEntry {
+  confidence: number
+  happinessConfidence: number
+  boundingBox: IBoundingBox
+  eyes: IBoundingBox[]
+}
+
 export interface ISharpnessAnalysis {
   percentEdges: number
   lowerQuartile: number
@@ -265,6 +272,13 @@ export type BufferLike = Buffer | Uint8Array | number[]
 export interface IPixelCoordinate {
   x: number
   y: number
+}
+
+export interface IBoundingBox {
+  x: number
+  y: number
+  width: number
+  height: number
 }
 
 export interface IBasePixel extends IPixelCoordinate {
