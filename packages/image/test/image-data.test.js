@@ -601,7 +601,7 @@ describe('ImageData', () => {
     const yosemitePromise = fixtureDecode('source-yosemite.jpg').then(ImageData.normalize)
 
     describe.skip('with WASM', () => {
-      before(async () => {
+      beforeAll(async () => {
         await enableWASM()
       })
 
@@ -609,7 +609,7 @@ describe('ImageData', () => {
         ImageData.toYCbCr(await yosemitePromise)
       })
 
-      after(() => {
+      afterAll(() => {
         disableWASM()
       })
     })
@@ -780,11 +780,11 @@ describe('ImageData', () => {
   })
 
   describe('WASM', () => {
-    before(async () => {
+    beforeAll(async () => {
       await enableWASM()
     })
 
-    after(async () => {
+    afterAll(async () => {
       await disableWASM()
     })
 

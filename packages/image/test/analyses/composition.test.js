@@ -6,7 +6,7 @@ const {expect, fixtureDecode, buildLinesImageData} = require('../utils')
 describe('analyses/composition', () => {
   const realImageData = {}
 
-  before(async () => {
+  beforeAll(async () => {
     realImageData.skater = await fixtureDecode('source-skater.jpg')
     realImageData.yosemite = await fixtureDecode('source-yosemite.jpg')
     realImageData.sydney = await fixtureDecode('source-sydney.jpg')

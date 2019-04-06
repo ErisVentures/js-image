@@ -67,7 +67,8 @@ function getEyeBoxFromPointArray(points: faceapi.Point[], faceBox: IBoundingBox)
 export async function detectFaces(imageData: IAnnotatedImageData): Promise<IFaceAnalysisEntry[]> {
   await initializeIfNecessary()
 
-  const imageTensor = tf.tensor3d(ImageData.toRGB(imageData).data, [
+  const pixels = new Uint8Array(ImageData.toRGB(imageData).data)
+  const imageTensor = tf.tensor3d(pixels, [
     imageData.height,
     imageData.width,
     3,

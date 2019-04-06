@@ -5,7 +5,7 @@ describe('analyses/histograms', () => {
   let skaterImageData
   let rainbowImageData
 
-  before(async () => {
+  beforeAll(async () => {
     skaterImageData = await fixtureDecode('source-skater.jpg')
     rainbowImageData = await fixtureDecode('source-rainbow.jpg')
   })

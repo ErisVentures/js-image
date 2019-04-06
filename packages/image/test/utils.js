@@ -1,3 +1,5 @@
+jest.setTimeout(20000)
+
 const fs = require('fs')
 const memoize = require('lodash/memoize')
 const chai = require('chai')

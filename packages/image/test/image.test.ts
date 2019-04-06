@@ -1,7 +1,20 @@
-const fs = require('fs')
-const sinon = require('sinon')
-const Image = require('../dist/image').Image
-const {expect, fixture, fixturePath} = require('./utils')
+import * as fs from 'fs'
+import * as sinon from 'sinon'
+import {Image} from '../lib/image'
+import {expect, fixture, fixturePath} from './utils'
+import {ImageFormat, HashMethod} from '../lib/types'
+
+class ImageImpl extends Image {
+  public toMetadata(): Promise<import('../lib/types').IMetadata> {
+    throw new Error('Method not implemented.')
+  }
+  public toImageData(): Promise<import('../lib/image-data').IAnnotatedImageData> {
+    throw new Error('Method not implemented.')
+  }
+  public toBuffer(): Promise<import('../dist/types').BufferLike> {
+    throw new Error('Method not implemented.')
+  }
+}
 
 const skater = fixture('source-skater.jpg')
 describe('Image', () => {
@@ -17,13 +30,18 @@ describe('Image', () => {
 
   describe('.options', () => {
     it('should set many options at once', () => {
-      const image = new Image().options({format: 'png', greyscale: true, analyze: {hash: {}}})
+      const image = new ImageImpl().options({
+        format: {type: ImageFormat.PNG},
+        greyscale: true,
+        analyze: {hash: {method: HashMethod.PHash}},
+      }) as any
+
       expect(image._output).to.eql({
         format: {type: 'png'},
         greyscale: true,
       })
 
-      expect(image._analyze).to.eql({hash: {}})
+      expect(image._analyze).to.eql({hash: {method: 'phash'}})
     })
   })
 
@@ -31,23 +49,22 @@ describe('Image', () => {
     let image
 
     beforeEach(() => {
-      image = new Image()
+      image = new ImageImpl()
     })
 
     it('should set format', () => {
       image = image.format('png')
-      expect(image._output).to.have.property('format').eql({type: 'png'})
+      expect(image._output)
+        .to.have.property('format')
+        .eql({type: 'png'})
     })
 
     it('should set format options', () => {
       const opts = {type: 'jpeg', quality: 70}
       image = image.format(opts)
-      expect(image._output).to.have.property('format').eql(opts)
-    })
-
-    it('should throw on unexpected formats', () => {
-      expect(() => image.format('jpg')).to.throw
-      expect(() => image.format('gif')).to.throw
+      expect(image._output)
+        .to.have.property('format')
+        .eql(opts)
     })
   })
 
@@ -55,7 +72,7 @@ describe('Image', () => {
     let image
 
     beforeEach(() => {
-      image = new Image()
+      image = new ImageImpl()
     })
 
     it('should set resize', () => {
@@ -66,7 +83,9 @@ describe('Image', () => {
         method: 'nearest_neighbor',
       }
       image = image.resize(options)
-      expect(image._output).to.have.property('resize').eql(options)
+      expect(image._output)
+        .to.have.property('resize')
+        .eql(options)
     })
 
     it('should accept just width', () => {
@@ -77,7 +96,9 @@ describe('Image', () => {
         method: 'bilinear',
       }
       image = image.resize(options)
-      expect(image._output).to.have.property('resize').eql(options)
+      expect(image._output)
+        .to.have.property('resize')
+        .eql(options)
     })
 
     it('should accept just height', () => {
@@ -87,12 +108,14 @@ describe('Image', () => {
         fit: 'exact',
       }
       image = image.resize(options)
-      expect(image._output).to.have.property('resize').eql({
-        width: undefined,
-        height: 300,
-        fit: 'exact',
-        method: 'bilinear',
-      })
+      expect(image._output)
+        .to.have.property('resize')
+        .eql({
+          width: undefined,
+          height: 300,
+          fit: 'exact',
+          method: 'bilinear',
+        })
     })
 
     it('should throw if width and height are missing', () => {
@@ -109,7 +132,7 @@ describe('Image', () => {
   describe('.toFile', () => {
     let image
     beforeEach(() => {
-      image = new Image()
+      image = new ImageImpl()
       image.toBuffer = () => Promise.resolve(skater)
     })
 
