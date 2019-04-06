@@ -1,6 +1,5 @@
 import * as tf from '@tensorflow/tfjs-node'
 import * as path from 'path'
-import * as fs from 'fs'
 
 import * as faceapi from 'face-api.js'
 import {IAnnotatedImageData, ImageData} from '../image-data'
