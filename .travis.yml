@@ -26,7 +26,7 @@ jobs:
       dist: trusty
       language: rust
       rust: beta
-      env: PKG_TARGET=node8-linux ENABLE_WASM=1
+      env: PKG_TARGET=node8-linux ENABLE_WASM=1 TF_CPP_MIN_LOG_LEVEL=3
       before_install:
         - ./scripts/install-node-and-wasm.sh
         - nvm use v8

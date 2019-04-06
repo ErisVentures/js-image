@@ -1,3 +1,4 @@
+monkeyPatchConsoleWarn()
 import * as tf from '@tensorflow/tfjs-node'
 import * as path from 'path'
 
@@ -62,6 +63,25 @@ function getEyeBoxFromPointArray(points: faceapi.Point[], faceBox: IBoundingBox)
     width: xMax - xMin,
     height: yMax - yMin,
   })
+}
+
+/**
+ * Tensorflow spams console.warn unnecessarily, so we'll patch console.warn to ignore messages from them.
+ */
+function monkeyPatchConsoleWarn(): void {
+  const globalUnsafe = global as any
+  if (globalUnsafe.__console_warn__) return
+
+  process.env.TF_CPP_MIN_LOG_LEVEL = '2'
+
+  const consoleWarn = console.warn
+  console.warn = (...args: any[]) => {
+    const stack = new Error().stack || ''
+    if (stack.includes('tensorflow')) return
+    consoleWarn(...args)
+  }
+
+  globalUnsafe.__console_warn__ = consoleWarn
 }
 
 export async function detectFaces(imageData: IAnnotatedImageData): Promise<IFaceAnalysisEntry[]> {
