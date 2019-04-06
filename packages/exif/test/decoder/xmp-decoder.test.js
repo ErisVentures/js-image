@@ -1,4 +1,4 @@
-const {expect, fixture} = require('../utils')
+const {fixture} = require('../utils')
 const XMPDecoder = require('../../dist/decoder/xmp-decoder').XMPDecoder
 
 const xmpFile = fixture('d4s.xmp')
@@ -7,7 +7,7 @@ describe('lib/decoder/xmp-decoder.js', () => {
   describe('.extractMetadata', () => {
     it('should work', () => {
       const metadata = new XMPDecoder(xmpFile).extractMetadata()
-      expect(metadata).to.eql({
+      expect(metadata).toEqual({
         ApertureValue: 2.970854,
         Contrast: 0,
         CreateDate: '2014-04-01T09:23:43.29',

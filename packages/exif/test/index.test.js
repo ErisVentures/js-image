@@ -1,4 +1,4 @@
-const {expect, fixture} = require('./utils')
+const {fixture} = require('./utils')
 const TIFFDecoder = require('../dist/decoder/tiff-decoder').TIFFDecoder
 const parse = require('../dist').parse
 
@@ -16,7 +16,7 @@ describe('index.js', () => {
     it('should accept a TIFFDecoder as input', () => {
       const decoder = new TIFFDecoder(nikonNef)
       const results = parse(decoder)
-      expect(results).to.have.property('make', 'NIKON CORPORATION')
+      expect(results).toHaveProperty('make', 'NIKON CORPORATION')
     })
 
     it('should be idempotent', () => {
@@ -24,15 +24,15 @@ describe('index.js', () => {
       decoder.extractMetadata()
 
       const results = parse(decoder)
-      expect(results).to.have.property('make', 'NIKON CORPORATION')
-      expect(results).to.have.property('fNumber', 5.6)
+      expect(results).toHaveProperty('make', 'NIKON CORPORATION')
+      expect(results).toHaveProperty('fNumber', 5.6)
     })
 
     it('should work on Nikon jpeg files', () => {
       const results = parse(nikonJpeg)
-      expect(results).to.have.property('_raw')
+      expect(results).toHaveProperty('_raw')
       delete results._raw
-      expect(results).to.deep.include({
+      expect(results).toMatchObject({
         make: 'NIKON CORPORATION',
         model: 'NIKON D610',
         width: 1498,
@@ -58,9 +58,9 @@ describe('index.js', () => {
 
     it('should mostly work on Nikon nef files', () => {
       const results = parse(nikonNef)
-      expect(results).to.have.property('_raw')
+      expect(results).toHaveProperty('_raw')
       delete results._raw
-      expect(results).to.deep.include({
+      expect(results).toMatchObject({
         make: 'NIKON CORPORATION',
         model: 'NIKON D4S',
         width: 3244,
@@ -81,9 +81,9 @@ describe('index.js', () => {
 
     it('should work on canon raw files', () => {
       const results = parse(canonCr2)
-      expect(results).to.have.property('_raw')
+      expect(results).toHaveProperty('_raw')
       delete results._raw
-      expect(results).to.deep.include({
+      expect(results).toMatchObject({
         make: 'Canon',
         model: 'Canon EOS DIGITAL REBEL XS',
         width: 2592,
@@ -103,9 +103,9 @@ describe('index.js', () => {
 
     it('should work on sony raw files', () => {
       const results = parse(sonyArw)
-      expect(results).to.have.property('_raw')
+      expect(results).toHaveProperty('_raw')
       delete results._raw
-      expect(results).to.deep.include({
+      expect(results).toMatchObject({
         make: 'SONY',
         model: 'ILCE-7RM2',
         width: 7952,
@@ -131,9 +131,9 @@ describe('index.js', () => {
 
     it('should work on iphone dng files', () => {
       const results = parse(iphoneDng)
-      expect(results).to.have.property('_raw')
+      expect(results).toHaveProperty('_raw')
       delete results._raw
-      expect(results).to.deep.include({
+      expect(results).toMatchObject({
         make: 'Apple',
         model: 'iPhone 7 Plus',
         width: 3024,
@@ -159,9 +159,9 @@ describe('index.js', () => {
 
     it('should work on raw XMP files', () => {
       const results = parse(xmpFile)
-      expect(results).to.have.property('_raw')
+      expect(results).toHaveProperty('_raw')
       delete results._raw
-      expect(results).to.deep.include({
+      expect(results).toMatchObject({
         make: 'NIKON CORPORATION',
         model: 'NIKON D4S',
         width: 4928,
@@ -182,9 +182,9 @@ describe('index.js', () => {
 
     it('should work on jpegs with XMP', () => {
       const results = parse(xmpJpeg)
-      expect(results).to.have.property('_raw')
+      expect(results).toHaveProperty('_raw')
       delete results._raw
-      expect(results).to.deep.include({
+      expect(results).toMatchObject({
         rating: 4,
         colorLabel: 'Blue',
       })
@@ -192,8 +192,8 @@ describe('index.js', () => {
 
     it('should work on jpegs with copyright profiles', () => {
       const results = parse(copyrightJpeg)
-      expect(results).to.have.property('_raw')
-      expect(results).to.deep.include({
+      expect(results).toHaveProperty('_raw')
+      expect(results).toMatchObject({
         rating: 5,
         colorLabel: 'Purple',
         keywords: ['portfolio', 'showcase', 'yosemite valley'],

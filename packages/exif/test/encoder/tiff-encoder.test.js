@@ -1,4 +1,3 @@
-const {expect} = require('../utils')
 const TIFFEncoder = require('../../dist/encoder/tiff-encoder').TIFFEncoder
 const TIFFDecoder = require('../../dist/decoder/tiff-decoder').TIFFDecoder
 
@@ -14,7 +13,7 @@ describe('lib/encoders/tiff-encoder.js', () => {
 
       const tiff = TIFFEncoder.encode(metadata)
       const decoder = new TIFFDecoder(tiff)
-      expect(decoder.extractMetadata()).to.eql(metadata)
+      expect(decoder.extractMetadata()).toEqual(metadata)
     })
   })
 })

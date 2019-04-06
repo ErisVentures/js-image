@@ -1,9 +1,6 @@
 const fs = require('fs')
 const memoize = require('lodash/memoize')
-const chai = require('chai')
-chai.use(require('sinon-chai'))
 
-const expect = chai.expect
 const fixturePath = path => `${__dirname}/fixtures/${path}`
 const fixture = memoize(path => fs.readFileSync(fixturePath(path)))
 
@@ -14,11 +11,10 @@ function compareToFixture(buffer, path) {
   }
 
   const expectedData = fixture(path)
-  expect(buffer.length).to.equal(expectedData.length)
+  expect(buffer).toHaveLength(expectedData.length)
 }
 
 module.exports = {
-  expect,
   fixture,
   fixturePath,
   compareToFixture,

@@ -1,4 +1,3 @@
-const {expect} = require('../utils')
 const XMPEncoder = require('../../dist/encoder/xmp-encoder').XMPEncoder
 const XMPDecoder = require('../../dist/decoder/xmp-decoder').XMPDecoder
 
@@ -14,14 +13,14 @@ describe('lib/encoders/xmp-encoder.js', () => {
 
       const xmp = XMPEncoder.encode(metadata)
       const decoder = new XMPDecoder(xmp)
-      expect(decoder.extractMetadata()).to.eql(metadata)
+      expect(decoder.extractMetadata()).toEqual(metadata)
     })
 
     it('should augment an existing XMP file', () => {
       const xmp = XMPEncoder.encode({Rating: 3})
       const xmpAugmented = XMPEncoder.encode({Label: 'Red', DCSubjectBagOfWords}, xmp)
       const decoder = new XMPDecoder(xmpAugmented)
-      expect(decoder.extractMetadata()).to.eql({
+      expect(decoder.extractMetadata()).toEqual({
         Rating: 3,
         Label: 'Red',
         DCSubjectBagOfWords,
@@ -32,7 +31,7 @@ describe('lib/encoders/xmp-encoder.js', () => {
       const xmp = XMPEncoder.encode({Rating: 3})
       const xmpAugmented = XMPEncoder.encode({Rating: 2, Label: 'Red'}, xmp)
       const decoder = new XMPDecoder(xmpAugmented)
-      expect(decoder.extractMetadata()).to.eql({
+      expect(decoder.extractMetadata()).toEqual({
         Rating: 2,
         Label: 'Red',
       })
@@ -45,7 +44,7 @@ describe('lib/encoders/xmp-encoder.js', () => {
         xmp,
       )
       const decoder = new XMPDecoder(xmpAugmented)
-      expect(decoder.extractMetadata()).to.eql({
+      expect(decoder.extractMetadata()).toEqual({
         Label: 'Red',
       })
     })
@@ -59,16 +58,16 @@ describe('lib/encoders/xmp-encoder.js', () => {
       )
 
       const truncatePacketEnd = xmp => xmp.toString().replace(/\s+<\?xpacket end.*$/, '')
-      expect(xmpOriginal.length).to.equal(xmpRemoved.length)
-      expect(truncatePacketEnd(xmpOriginal)).to.eql(truncatePacketEnd(xmpRemoved))
+      expect(xmpOriginal.length).toBe(xmpRemoved.length)
+      expect(truncatePacketEnd(xmpOriginal)).toEqual(truncatePacketEnd(xmpRemoved))
     })
 
     it('should handle existing XMP wrapped in packet', () => {
       const xmp = XMPEncoder.wrapInPacket(XMPEncoder.encode({Rating: 3, DCSubjectBagOfWords}))
       const xmpAugmented = XMPEncoder.encode({Label: 'Red', Rating: undefined}, xmp)
-      expect(xmpAugmented.length).to.eql(xmp.length)
+      expect(xmpAugmented.length).toEqual(xmp.length)
       const decoder = new XMPDecoder(xmpAugmented)
-      expect(decoder.extractMetadata()).to.eql({
+      expect(decoder.extractMetadata()).toEqual({
         Label: 'Red',
         DCSubjectBagOfWords,
       })
