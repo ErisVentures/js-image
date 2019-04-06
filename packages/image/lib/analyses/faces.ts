@@ -74,6 +74,7 @@ function monkeyPatchConsoleWarn(): void {
 
   process.env.TF_CPP_MIN_LOG_LEVEL = '2'
 
+  /* tslint:disable no-console */
   const consoleWarn = console.warn
   console.warn = (...args: any[]) => {
     const stack = new Error().stack || ''
@@ -88,11 +89,7 @@ export async function detectFaces(imageData: IAnnotatedImageData): Promise<IFace
   await initializeIfNecessary()
 
   const pixels = new Uint8Array(ImageData.toRGB(imageData).data)
-  const imageTensor = tf.tensor3d(pixels, [
-    imageData.height,
-    imageData.width,
-    3,
-  ])
+  const imageTensor = tf.tensor3d(pixels, [imageData.height, imageData.width, 3])
 
   const detectionOptions = new faceapi.SsdMobilenetv1Options({
     minConfidence: FACE_CONFIDENCE_THRESHOLD,
