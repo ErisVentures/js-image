@@ -11,10 +11,9 @@
     "download-prebuilt": "./scripts/download-prebuilt.sh",
     "build": "tsc && bash ./scripts/build.sh",
     "test": "npm run test:lint && npm run test:unit",
-    "test:unit": "mocha --reporter spec --timeout 4000 'test/**/*.test.js'",
+    "test:unit": "jest",
     "test:lint": "lint",
-    "test:coverage": "nyc npm run test:unit",
-    "test:watch": "mocha --watch --reporter dot 'test/**/*.test.js'"
+    "test:watch": "jest --watch"
   },
   "publishConfig": {
     "access": "public"
@@ -40,12 +39,8 @@
     "@eris/image": "^0.1.0-development",
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
-    "cz-conventional-changelog": "^2.0.0",
     "execa": "^0.8.0",
-    "mocha": "^4.0.1",
-    "nyc": "^11.2.1",
     "pkg": "^4.3.7",
-    "semantic-release": "^8.0.3",
     "sinon": "^4.0.1",
     "sinon-chai": "^2.14.0"
   },

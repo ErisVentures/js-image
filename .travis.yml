@@ -36,9 +36,9 @@ jobs:
       script:
         - npm run build
         - npm run test:lint
-        - npm run test:coverage
-        - npm install -g coveralls nyc
-        - nyc report --reporter=text-lcov | coveralls || echo 'Failed to upload to coveralls...'
+        - npm run test:unit -- --coverage --runInBand --verbose
+        - npm install -g coveralls
+        - cat coverage/lcov.info | coveralls || echo 'Failed to upload to coveralls...'
     - stage: deploy
       os: linux
       dist: trusty

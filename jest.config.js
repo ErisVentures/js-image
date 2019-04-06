@@ -11,7 +11,8 @@ module.exports = {
     '\\.ts$': 'ts-jest',
   },
   moduleFileExtensions: ['ts', 'js', 'json'],
+  setupFilesAfterEnv: ['./packages/image/test/utils.js'],
   transformIgnorePatterns: ['/node_modules/(?!@tensorflow).*/'],
   testPathIgnorePatterns: ['/node_modules/', 'shared-image.test.ts'],
-  testMatch: ['**/exif/**/*.test.js', '**/image/**/*.test.js', '**/image/**/*.test.ts'],
+  testMatch: ['**/*.test.js', '**/*.test.ts'],
 }
