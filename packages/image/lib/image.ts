@@ -3,6 +3,7 @@ import {IAnnotatedImageData, ImageData} from './image-data'
 import {writeFileAsync} from './fs-utils'
 import {sobel} from './transforms/sobel'
 import {phash} from './analyses/hash'
+import {detectFaces as computeFaces} from './analyses/faces'
 import {sharpness as computeSharpness} from './analyses/sharpness'
 import {histograms as computeHistograms} from './analyses/histograms'
 import {composition as computeComposition} from './analyses/composition'
@@ -142,7 +143,7 @@ export abstract class Image {
       return Promise.resolve({})
     }
 
-    const {hash, sharpness, histograms, composition} = this._analyze
+    const {hash, faces, sharpness, histograms, composition} = this._analyze
     if (Object.keys(this._analyze).length === 0) {
       return Promise.resolve({})
     }
@@ -173,6 +174,10 @@ export abstract class Image {
         ...composition,
         sharpnessAnalysis: analysis.sharpness,
       })
+    }
+
+    if (faces) {
+      analysis.faces = await computeFaces(imageData)
     }
 
     return analysis

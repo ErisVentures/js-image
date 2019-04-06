@@ -84,6 +84,7 @@ export interface IImageOutputOptions {
 
 export interface IAnalysisOptions {
   hash?: IHashOptions
+  faces?: IFaceAnalysisOptions
   sharpness?: ISharpnessOptions
   histograms?: IHistogramOptions
   composition?: ICompositionOptions
@@ -119,6 +120,11 @@ export interface ISharpnessOptions {
   /** The radius to use for the sobel filter, typically 1-5. */
   radius?: number
   /** The minimum edge intensity to consider an edge to be counted in the stats, typically 10-30. */
+  threshold?: number
+}
+
+export interface IFaceAnalysisOptions {
+  /** The minimum confidence to include faces for analysis, typically a number 0.5-1.0. */
   threshold?: number
 }
 
@@ -183,6 +189,7 @@ export interface ICompositionAnalysis {
 
 export interface IAnalysis {
   hash?: string
+  faces?: IFaceAnalysisEntry[]
   sharpness?: ISharpnessAnalysis
   histograms?: IHistogramsAnalysis
   composition?: ICompositionAnalysis

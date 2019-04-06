@@ -7,6 +7,7 @@ const {expect, fixture, compareToFixture, testImage} = require('./utils')
 const sourceNef = fixture('source-google.nef')
 const skater = fixture('source-skater.jpg')
 const sydney = fixture('source-sydney.jpg')
+const couple = fixture('source-faces-couple.jpg')
 const skaterRotated = fixture('source-skater-rotated.jpg')
 const sydneyRotated = fixture('source-sydney-rotated.jpg')
 const yosemite = fixture('source-yosemite.jpg')
@@ -310,6 +311,19 @@ describe('NodeImage', () => {
       const composition = analysis.composition
       expect(Math.round(100 * composition.ruleOfThirds)).to.equal(28)
     })
+
+    it('should compute faces', async () => {
+      const analysis = await NodeImage.from(couple)
+        .analyze({
+          faces: {},
+        })
+        .toAnalysis()
+
+      expect(analysis).to.have.property('faces')
+
+      const faces = analysis.faces
+      expect(faces.length).to.equal(2)
+    }).timeout(10000)
   })
 
   describe('.toMetadata', () => {
