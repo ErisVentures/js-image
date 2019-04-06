@@ -31,7 +31,8 @@
   "homepage": "https://github.com/ErisVentures/js-image#readme",
   "pkg": {
     "assets": [
-      "presets/*.json"
+      "presets/*.json",
+      "../../node_modules/@eris/image/data/models/*"
     ]
   },
   "devDependencies": {
