@@ -22,6 +22,7 @@ module.exports = {
   plugins: [
     sourcemaps(),
     alias({
+      path: emptyshim,
       canvas: emptyshim,
       'face-api.js': emptyshim,
       '@tensorflow/tfjs-node': emptyshim,
