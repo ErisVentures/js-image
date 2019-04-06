@@ -45,7 +45,7 @@ describe('Decoder', () => {
       const decoder = new Decoder(fixture('d610.nef'))
       const thumbnail = decoder.extractJPEG()
       JPEG.decode(thumbnail)
-    }).timeout(20000)
+    }, 20000)
   })
 
   describe('.extractMetadata', () => {

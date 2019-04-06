@@ -8,10 +8,8 @@
     "test": "npm run test:lint && npm run test:unit",
     "test:lint": "lint",
     "test:update-expectations": "UPDATE_EXPECTATIONS=true npm run test:unit",
-    "test:unit": "mocha --reporter spec 'test/**/*.test.js'",
-    "test:watch": "mocha --watch --reporter dot 'test/**/*.test.js'",
-    "test:coverage": "nyc npm run test:unit",
-    "semantic-release": "semantic-release pre && npm publish --access public && semantic-release post"
+    "test:unit": "jest",
+    "test:watch": "jest --watch"
   },
   "publishConfig": {
     "access": "public"
