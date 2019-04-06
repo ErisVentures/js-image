@@ -20,11 +20,14 @@ export function sharpness(
   imageData: SobelImageData,
   options?: ISharpnessOptions,
 ): ISharpnessAnalysis {
-  const threshold = (options && options.threshold) || 20
+  const defaultSubselect = {x: 0, y: 0, width: imageData.width, height: imageData.height}
+  const {threshold = 20, subselect = defaultSubselect} = options || {}
+  const maxX = subselect.x + subselect.width
+  const maxY = subselect.y + subselect.height
 
   let edgePixelIntensities: number[] = []
-  for (let y = 0; y < imageData.height; y++) {
-    for (let x = 0; x < imageData.width; x++) {
+  for (let y = subselect.y; y < maxY; y++) {
+    for (let x = 0; x < maxX; x++) {
       const pixel = ImageData.valueFor(imageData, x, y)
       if (pixel > threshold) {
         edgePixelIntensities.push(pixel)

@@ -121,6 +121,7 @@ export interface ISharpnessOptions {
   radius?: number
   /** The minimum edge intensity to consider an edge to be counted in the stats, typically 10-30. */
   threshold?: number
+  subselect?: IBoundingBox
 }
 
 export interface IFaceAnalysisOptions {
@@ -163,6 +164,7 @@ export interface IFaceAnalysisEntry {
   happinessConfidence: number
   boundingBox: IBoundingBox
   eyes: IBoundingBox[]
+  sharpness?: ISharpnessAnalysis
 }
 
 export interface ISharpnessAnalysis {

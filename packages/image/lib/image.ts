@@ -178,6 +178,12 @@ export abstract class Image {
 
     if (faces) {
       analysis.faces = await computeFaces(imageData)
+
+      if (sharpness) {
+        for (const face of analysis.faces.slice(0, 3)) {
+          face.sharpness = computeSharpness(edges!, {...sharpness, subselect: face.boundingBox})
+        }
+      }
     }
 
     return analysis

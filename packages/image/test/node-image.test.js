@@ -315,6 +315,7 @@ describe('NodeImage', () => {
     it('should compute faces', async () => {
       const analysis = await NodeImage.from(couple)
         .analyze({
+          sharpness: {},
           faces: {},
         })
         .toAnalysis()
@@ -323,6 +324,7 @@ describe('NodeImage', () => {
 
       const faces = analysis.faces
       expect(faces.length).to.equal(2)
+      expect(faces[0].sharpness).to.include({median: 39})
     }).timeout(10000)
   })
 
