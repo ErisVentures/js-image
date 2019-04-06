@@ -18,7 +18,7 @@ describe('analyses/faces', () => {
     it('should find faces in large group shot', async () => {
       const imageData = await fixtureDecode('source-faces-large-group.jpg')
       const faces = await facesModule.detectFaces(imageData)
-      expect(faces).to.have.length(44)
+      expect(faces).to.have.length(42)
     }).timeout(10000)
 
     it('should not find faces in landscapes', async () => {

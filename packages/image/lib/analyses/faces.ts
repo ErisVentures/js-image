@@ -1,11 +1,9 @@
-import '@tensorflow/tfjs-node'
+import * as tf from '@tensorflow/tfjs-node'
 import * as path from 'path'
 import * as fs from 'fs'
 
-import * as canvas from 'canvas'
-
 import * as faceapi from 'face-api.js'
-import {IAnnotatedImageData} from '../image-data'
+import {IAnnotatedImageData, ImageData} from '../image-data'
 import {IFaceAnalysisEntry, IBoundingBox} from '../types'
 
 const FACE_CONFIDENCE_THRESHOLD = 0.75
@@ -16,7 +14,6 @@ async function initializeIfNecessary(): Promise<void> {
   if (initialized) return
 
   const modelPath = path.join(__dirname, '../../data/models')
-  faceapi.env.monkeyPatch(canvas as any)
 
   await faceapi.nets.ssdMobilenetv1.loadFromDisk(modelPath)
   await faceapi.nets.faceLandmark68Net.loadFromDisk(modelPath)
@@ -68,27 +65,23 @@ function getEyeBoxFromPointArray(points: faceapi.Point[], faceBox: IBoundingBox)
   })
 }
 
-export async function detectFaces(data: IAnnotatedImageData): Promise<IFaceAnalysisEntry[]> {
+export async function detectFaces(imageData: IAnnotatedImageData): Promise<IFaceAnalysisEntry[]> {
   await initializeIfNecessary()
 
-  const clampedImageData = new Uint8ClampedArray(data.data)
-  const image = canvas.createImageData(clampedImageData, data.width, data.height)
-  const canvasEl = faceapi.createCanvasFromMedia(image)
+  const imageTensor = tf.tensor3d(ImageData.toRGB(imageData).data, [
+    imageData.height,
+    imageData.width,
+    3,
+  ])
+
   const detectionOptions = new faceapi.SsdMobilenetv1Options({
     minConfidence: FACE_CONFIDENCE_THRESHOLD,
   })
 
   const results = await faceapi
-    .detectAllFaces(canvasEl, detectionOptions)
+    .detectAllFaces(imageTensor as any, detectionOptions)
     .withFaceExpressions()
     .withFaceLandmarks()
-
-  if (process.env.DEBUG) {
-    const out = faceapi.createCanvasFromMedia(image) as any
-    faceapi.drawDetection(out, results.map(d => d.detection))
-    faceapi.drawLandmarks(out, results.map(d => d.landmarks))
-    fs.writeFileSync('debug-output.jpg', out.toBuffer('image/jpeg'))
-  }
 
   return results.map(({detection, landmarks, expressions}) => {
     const faceBox = roundBoundingBox(detection.box)

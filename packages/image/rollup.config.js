@@ -6,6 +6,7 @@ const babili = require('rollup-plugin-babili')
 const sourcemaps = require('rollup-plugin-sourcemaps')
 
 // TODO: add Buffer shim
+const emptyshim = path.join(__dirname, 'dist/shims/empty.js')
 const debugshim = path.join(__dirname, 'dist/shims/debug.js')
 const fsshim = path.join(__dirname, 'dist/shims/fs.js')
 const pngshim = path.join(__dirname, 'dist/shims/png-js.js')
@@ -21,6 +22,10 @@ module.exports = {
   plugins: [
     sourcemaps(),
     alias({
+      canvas: emptyshim,
+      'face-api.js': emptyshim,
+      '@tensorflow/tfjs-node': emptyshim,
+
       debug: debugshim,
       fs: fsshim,
       pngjs: pngshim,

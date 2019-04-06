@@ -39,7 +39,6 @@
     "@tensorflow/tfjs-node": "^1.0.3",
     "@types/sharp": "^0.22.0",
     "buffer": "^5.2.0",
-    "canvas": "^2.4.1",
     "face-api.js": "^0.19.0",
     "file-type": "^7.0.1",
     "jpeg-js": "^0.3.4",
