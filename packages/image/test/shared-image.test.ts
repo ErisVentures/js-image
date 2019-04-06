@@ -318,8 +318,8 @@ export function runImageTests(ImageImpl: typeof NodeImage | typeof BrowserImage)
           .toAnalysis()
           .then(analysis => {
             const result = parseInt(analysis.hash, 2).toString(16)
-            expect(result).to.equal('c5b7535fe4cb7000')
-          })
+            expect(result).toBe('c5b7535fe4cb7000')
+          });
       })
 
       it('should compute sharpness', () => {
@@ -329,14 +329,18 @@ export function runImageTests(ImageImpl: typeof NodeImage | typeof BrowserImage)
           })
           .toAnalysis()
           .then(analysis => {
-            expect(analysis).to.have.property('sharpness')
+          expect(analysis).toHaveProperty('sharpness')
 
-            const sharpness = analysis.sharpness
-            expect(sharpness.percentEdges).to.be.within(0.27, 0.28)
-            expect(sharpness.median).to.be.within(74, 76)
-            expect(sharpness.average).to.be.within(90, 95)
-            expect(sharpness.upperVentileAverage).to.be.within(228, 232)
-          })
+          const sharpness = analysis.sharpness
+          expect(sharpness.percentEdges).toBeGreaterThanOrEqual(0.27);
+          expect(sharpness.percentEdges).toBeLessThanOrEqual(0.28)
+          expect(sharpness.median).toBeGreaterThanOrEqual(74);
+          expect(sharpness.median).toBeLessThanOrEqual(76)
+          expect(sharpness.average).toBeGreaterThanOrEqual(90);
+          expect(sharpness.average).toBeLessThanOrEqual(95)
+          expect(sharpness.upperVentileAverage).toBeGreaterThanOrEqual(228);
+          expect(sharpness.upperVentileAverage).toBeLessThanOrEqual(232)
+        });
       })
 
       it('should compute histograms', async () => {
@@ -346,14 +350,15 @@ export function runImageTests(ImageImpl: typeof NodeImage | typeof BrowserImage)
           })
           .toAnalysis()
 
-        expect(analysis).to.have.property('histograms')
+        expect(analysis).toHaveProperty('histograms')
 
         const histograms = analysis.histograms
         const sum = arr => arr.reduce((x, y) => x + y, 0)
         const totalPixels = 256 * 256
-        expect(sum(histograms.hue)).to.be.within(totalPixels / 3, totalPixels)
-        expect(sum(histograms.saturation)).to.equal(totalPixels)
-        expect(sum(histograms.lightness)).to.equal(totalPixels)
+        expect(sum(histograms.hue)).toBeGreaterThanOrEqual(totalPixels / 3);
+        expect(sum(histograms.hue)).toBeLessThanOrEqual(totalPixels)
+        expect(sum(histograms.saturation)).toBe(totalPixels)
+        expect(sum(histograms.lightness)).toBe(totalPixels)
       })
 
       it('should compute composition', async () => {
@@ -363,10 +368,10 @@ export function runImageTests(ImageImpl: typeof NodeImage | typeof BrowserImage)
           })
           .toAnalysis()
 
-        expect(analysis).to.have.property('composition')
+        expect(analysis).toHaveProperty('composition')
 
         const composition = analysis.composition
-        expect(Math.round(100 * composition.ruleOfThirds)).to.equal(28)
+        expect(Math.round(100 * composition.ruleOfThirds)).toBe(28)
       })
 
       it('should compute faces', async () => {
@@ -377,11 +382,11 @@ export function runImageTests(ImageImpl: typeof NodeImage | typeof BrowserImage)
           })
           .toAnalysis()
 
-        expect(analysis).to.have.property('faces')
+        expect(analysis).toHaveProperty('faces')
 
         const faces = analysis.faces
-        expect(faces.length).to.equal(2)
-        expect(faces[0].sharpness).to.include({median: 39})
+        expect(faces.length).toBe(2)
+        expect(faces[0].sharpness).toMatchObject({median: 39})
       })
     })
 
@@ -390,43 +395,43 @@ export function runImageTests(ImageImpl: typeof NodeImage | typeof BrowserImage)
         return ImageImpl.from(skater)
           .toMetadata()
           .then(metadata => {
-            expect(metadata).to.have.property('width', 256)
-            expect(metadata).to.have.property('height', 256)
-            expect(metadata).to.have.property('aspectRatio', 1)
-            expect(metadata).to.have.property('exif')
-          })
+            expect(metadata).toHaveProperty('width', 256)
+            expect(metadata).toHaveProperty('height', 256)
+            expect(metadata).toHaveProperty('aspectRatio', 1)
+            expect(metadata).toHaveProperty('exif')
+          });
       })
 
       it('should compute the metadata of a raw image', () => {
         return ImageImpl.from(fixture('source-google.nef'))
           .toMetadata()
           .then(metadata => {
-            expect(metadata).to.have.property('width', 4928)
-            expect(metadata).to.have.property('height', 3264)
-            expect(metadata).to.have.deep.property('exif.fNumber', 7.1)
-          })
+            expect(metadata).toHaveProperty('width', 4928)
+            expect(metadata).toHaveProperty('height', 3264)
+            expect(metadata).toHaveProperty('exif.fNumber', 7.1)
+          });
       })
 
       it('should compute the metadata of a portrait image', () => {
         return ImageImpl.from(yosemite)
           .toMetadata()
           .then(metadata => {
-            expect(metadata).to.have.property('width', 1080)
-            expect(metadata).to.have.property('height', 1350)
-            expect(metadata).to.have.property('aspectRatio', 0.8)
-            expect(metadata).to.have.property('exif')
-          })
+            expect(metadata).toHaveProperty('width', 1080)
+            expect(metadata).toHaveProperty('height', 1350)
+            expect(metadata).toHaveProperty('aspectRatio', 0.8)
+            expect(metadata).toHaveProperty('exif')
+          });
       })
 
       it.skip('should compute the metadata of a EXIF-rotated portrait image', () => {
         return ImageImpl.from(sydneyRotated)
           .toMetadata()
           .then(metadata => {
-            expect(metadata).to.have.property('width', 600)
-            expect(metadata).to.have.property('height', 1080)
-            expect(metadata).to.have.property('aspectRatio', 600 / 1080)
-            expect(metadata).to.have.property('exif')
-          })
+            expect(metadata).toHaveProperty('width', 600)
+            expect(metadata).toHaveProperty('height', 1080)
+            expect(metadata).toHaveProperty('aspectRatio', 600 / 1080)
+            expect(metadata).toHaveProperty('exif')
+          });
       })
     })
 
@@ -449,8 +454,8 @@ export function runImageTests(ImageImpl: typeof NodeImage | typeof BrowserImage)
         return ImageImpl.from(imageData)
           .toImageData()
           .then(data => {
-            expect(data).to.eql(imageData)
-          })
+            expect(data).toEqual(imageData)
+          });
       })
 
       it('should be fast', async () => {
@@ -462,9 +467,9 @@ export function runImageTests(ImageImpl: typeof NodeImage | typeof BrowserImage)
         const srcImageData = ImageData.normalize(jpeg.decode(skater))
         if (imageData.colorspace === Colorspace.RGB) {
           const rgbData = ImageData.removeAlphaChannel(srcImageData)
-          expect(imageData.data.length).to.equal(rgbData.data.length)
+          expect(imageData.data.length).toBe(rgbData.data.length)
         } else {
-          expect(imageData.data.length).to.equal(srcImageData.data.length)
+          expect(imageData.data.length).toBe(srcImageData.data.length)
         }
       })
 
@@ -485,22 +490,22 @@ export function runImageTests(ImageImpl: typeof NodeImage | typeof BrowserImage)
           .resize({width: 120, height: 120})
           .toImageData()
           .then(imageData => {
-            expect(imageData).to.have.property('channels', 1)
-            expect(imageData).to.have.property('colorspace', 'k')
-            expect(imageData).to.have.property('width', 120)
-            expect(imageData).to.have.property('height', 120)
-            expect(imageData.data).to.have.length(120 * 120)
-          })
+            expect(imageData).toHaveProperty('channels', 1)
+            expect(imageData).toHaveProperty('colorspace', 'k')
+            expect(imageData).toHaveProperty('width', 120)
+            expect(imageData).toHaveProperty('height', 120)
+            expect(imageData.data).toHaveLength(120 * 120)
+          });
       })
 
       it('should use clones for output', async () => {
         const image = ImageImpl.from(skater)
         const firstAttempt = await image.resize({width: 10, height: 10}).toImageData()
-        expect(firstAttempt).to.have.property('width', 10)
-        expect(firstAttempt).to.have.property('height', 10)
+        expect(firstAttempt).toHaveProperty('width', 10)
+        expect(firstAttempt).toHaveProperty('height', 10)
         const secondAttempt = await image.reset().toImageData()
-        expect(secondAttempt).to.have.property('width', 256)
-        expect(secondAttempt).to.have.property('height', 256)
+        expect(secondAttempt).toHaveProperty('width', 256)
+        expect(secondAttempt).toHaveProperty('height', 256)
       })
     })
 
@@ -508,41 +513,42 @@ export function runImageTests(ImageImpl: typeof NodeImage | typeof BrowserImage)
       it('should output the buffer', () => {
         const image = ImageImpl.from(skater)
         return image.toBuffer().then(buffer => {
-          expect(buffer).to.be.instanceOf(Buffer)
-          expect(buffer.length).to.be.within(skater.length - 5000, skater.length + 5000)
-        })
+          expect(buffer).toBeInstanceOf(Buffer)
+          expect(buffer.length).toBeGreaterThanOrEqual(skater.length - 5000);
+          expect(buffer.length).toBeLessThanOrEqual(skater.length + 5000)
+        });
       })
 
       it.skip('should output the original buffer without transcoding', async () => {
         const image = ImageImpl.from(sourceNef).format(ImageFormat.NoTranscode)
         const buffer = await image.toBuffer()
-        expect(buffer).to.be.instanceOf(Buffer)
-        expect(buffer.length).to.equal(1078539)
+        expect(buffer).toBeInstanceOf(Buffer)
+        expect(buffer.length).toBe(1078539)
       })
 
       it('should use clones for output', async () => {
         const image = ImageImpl.from(skater)
         const firstAttempt = await image.resize({width: 10, height: 10}).toBuffer()
-        expect(firstAttempt.length).to.be.lessThan(1000)
+        expect(firstAttempt.length).toBeLessThan(1000)
         const secondAttempt = await image.reset().toBuffer()
-        expect(secondAttempt.length).to.be.greaterThan(10000)
+        expect(secondAttempt.length).toBeGreaterThan(10000)
       })
     })
 
     describe('#from', () => {
       it('should return an image from image data', () => {
         const image = ImageImpl.from(jpeg.decode(skater) as any)
-        expect(image).to.be.instanceOf(ImageImpl)
+        expect(image).toBeInstanceOf(ImageImpl)
       })
 
       it('should return an image from buffer', () => {
         const image = ImageImpl.from(skater)
-        expect(image).to.be.instanceOf(ImageImpl)
+        expect(image).toBeInstanceOf(ImageImpl)
       })
 
       it('should handle raw images', () => {
         const image = ImageImpl.from(sourceNef)
-        expect(image).to.be.instanceOf(ImageImpl)
+        expect(image).toBeInstanceOf(ImageImpl)
         return image
           .resize({width: 604, height: 400})
           .format({type: ImageFormat.JPEG, quality: 80})
@@ -559,7 +565,7 @@ export function runImageTests(ImageImpl: typeof NodeImage | typeof BrowserImage)
 
     it('should support multiple sequential changes', () => {
       const image = ImageImpl.from(sourceNef)
-      expect(image).to.be.instanceOf(ImageImpl)
+      expect(image).toBeInstanceOf(ImageImpl)
       return image
         .resize({width: 604, height: 400})
         .greyscale()

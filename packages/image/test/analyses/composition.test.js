@@ -25,7 +25,7 @@ describe('analyses/composition', () => {
       ])
       const edgeData = sobel(originalData)
 
-      expect(round(composition(edgeData).ruleOfThirds)).to.eql(0.5)
+      expect(round(composition(edgeData).ruleOfThirds)).toBe(0.5)
     })
 
     it('should compute the ruleOfThirds of poorly composed image', () => {
@@ -35,7 +35,7 @@ describe('analyses/composition', () => {
       ])
       const edgeData = sobel(originalData)
 
-      expect(round(composition(edgeData).ruleOfThirds)).to.eql(0)
+      expect(round(composition(edgeData).ruleOfThirds)).toBe(0)
     })
   })
 
@@ -49,8 +49,8 @@ describe('analyses/composition', () => {
       const edgeData = sobel(originalData)
 
       const {verticalParallelism, horizontalParallelism} = composition(edgeData)
-      expect(round(horizontalParallelism)).to.eql(0.99)
-      expect(round(verticalParallelism)).to.eql(0)
+      expect(round(horizontalParallelism)).toBe(0.99)
+      expect(round(verticalParallelism)).toBe(0)
     })
 
     it('should compute the parallelism of vertical image', () => {
@@ -62,8 +62,8 @@ describe('analyses/composition', () => {
       const edgeData = sobel(ImageData.rotate(originalData, 90))
 
       const {verticalParallelism, horizontalParallelism} = composition(edgeData)
-      expect(round(horizontalParallelism)).to.eql(0)
-      expect(round(verticalParallelism)).to.eql(0.99)
+      expect(round(horizontalParallelism)).toBe(0)
+      expect(round(verticalParallelism)).toBe(0.99)
     })
   })
 
@@ -79,7 +79,7 @@ describe('analyses/composition', () => {
       verticalParallelism[key] = round(result.verticalParallelism)
     }
 
-    expect(ruleOfThirds).to.eql({
+    expect(ruleOfThirds).toEqual({
       skater: 0.28,
       yosemite: 0.25,
       sydney: 0.31,
@@ -88,7 +88,7 @@ describe('analyses/composition', () => {
       ruleOfThirds: 0.48,
     })
 
-    expect(horizontalParallelism).to.eql({
+    expect(horizontalParallelism).toEqual({
       face: 0,
       ruleOfThirds: 0,
       skater: 0.08,
@@ -97,7 +97,7 @@ describe('analyses/composition', () => {
       yosemite: 0,
     })
 
-    expect(verticalParallelism).to.eql({
+    expect(verticalParallelism).toEqual({
       face: 0.05,
       ruleOfThirds: 0.06,
       skater: 0.16,

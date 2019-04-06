@@ -44,7 +44,6 @@
     "@types/bluebird": "^3.5.3",
     "@types/node": "^7.0.18",
     "babili": "^0.1.2",
-    "chai": "^3.5.0",
     "cross-env": "^5.1.0",
     "lodash": "^4.17.4",
     "rollup": "^0.41.6",
@@ -53,8 +52,6 @@
     "rollup-plugin-commonjs": "^8.0.2",
     "rollup-plugin-node-resolve": "^3.0.0",
     "rollup-plugin-sourcemaps": "^0.4.2",
-    "sinon": "^2.1.0",
-    "sinon-chai": "^2.9.0",
     "tslint": "^5.2.0",
     "typescript": "^3.3.1"
   },

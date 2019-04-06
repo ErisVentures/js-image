@@ -1,5 +1,4 @@
 const _ = require('lodash')
-const {ImageResizeFit} = require('../../dist/types')
 const resize = require('../../dist/transforms/resize')
 const ImageData = require('../../dist/image-data').ImageData
 const {expect, fixtureDecode, compareToFixture} = require('../utils')
@@ -18,53 +17,53 @@ describe('#transforms/resize', () => {
     it('should autofill missing height', () => {
       const options = {width: 50, fit: 'exact'}
       const result = resize.normalizeOptions(baseImageData, options)
-      expect(result).to.have.property('height', 50)
+      expect(result).toHaveProperty('height', 50)
     })
 
     it('should autofill missing width', () => {
       const options = {height: 50, fit: 'exact'}
       const result = resize.normalizeOptions(baseImageData, options)
-      expect(result).to.have.property('width', 50)
+      expect(result).toHaveProperty('width', 50)
     })
 
     it('should round values', () => {
       const options = {height: 50, fit: 'exact'}
       const result = resize.normalizeOptions({...baseImageData, width: 133}, options)
-      expect(result).to.have.property('width', 67)
+      expect(result).toHaveProperty('width', 67)
     })
 
     it('should support height contain', () => {
       const options = {width: 125, height: 25, fit: 'contain'}
       const result = resize.normalizeOptions(baseImageData, options)
-      expect(result).to.have.property('width', 25)
-      expect(result).to.have.property('height', 25)
+      expect(result).toHaveProperty('width', 25)
+      expect(result).toHaveProperty('height', 25)
     })
 
     it('should support width contain', () => {
       const options = {width: 25, height: 125, fit: 'contain'}
       const result = resize.normalizeOptions(baseImageData, options)
-      expect(result).to.have.property('width', 25)
-      expect(result).to.have.property('height', 25)
+      expect(result).toHaveProperty('width', 25)
+      expect(result).toHaveProperty('height', 25)
     })
 
     it('should support height cover', () => {
       const options = {width: 125, height: 25, fit: 'cover'}
       const result = resize.normalizeOptions(baseImageData, options)
-      expect(result).to.have.property('width', 125)
-      expect(result).to.have.property('height', 125)
+      expect(result).toHaveProperty('width', 125)
+      expect(result).toHaveProperty('height', 125)
     })
 
     it('should support width cover', () => {
       const options = {width: 25, height: 125, fit: 'cover'}
       const result = resize.normalizeOptions(baseImageData, options)
-      expect(result).to.have.property('width', 125)
-      expect(result).to.have.property('height', 125)
+      expect(result).toHaveProperty('width', 125)
+      expect(result).toHaveProperty('height', 125)
     })
 
     it('should support auto height crop', () => {
       const options = {width: 50, height: 40, fit: 'crop'}
       const result = resize.normalizeOptions(baseImageData, options)
-      expect(result).to.eql({
+      expect(result).toEqual({
         doNotEnlarge: false,
         method: 'bilinear',
         width: 50,
@@ -82,7 +81,7 @@ describe('#transforms/resize', () => {
     it('should support auto width crop', () => {
       const options = {width: 40, height: 50, fit: 'crop'}
       const result = resize.normalizeOptions(baseImageData, options)
-      expect(result).to.eql({
+      expect(result).toEqual({
         doNotEnlarge: false,
         method: 'bilinear',
         width: 40,
@@ -106,7 +105,7 @@ describe('#transforms/resize', () => {
       }
       const options = {subselect, fit: 'crop'}
       const result = resize.normalizeOptions(baseImageData, options)
-      expect(result).to.eql({
+      expect(result).toEqual({
         doNotEnlarge: false,
         method: 'bilinear',
         width: 80,
@@ -128,7 +127,7 @@ describe('#transforms/resize', () => {
       }
 
       const output = resize.nearestNeighbor(input, {width: 2, height: 2})
-      expect(output.data).to.eql(new Uint8Array([
+      expect(output.data).toEqual(new Uint8Array([
         1, 5,
         17, 21,
       ]))
@@ -157,7 +156,7 @@ describe('#transforms/resize', () => {
       }
 
       const output = resize.bilinear(input, {width: 2, height: 2})
-      expect(output.data).to.eql(new Uint8Array([
+      expect(output.data).toEqual(new Uint8Array([
         1, (3 + 5) / 2,
         (7 + 13) / 2, (9 + 11 + 15 + 17) / 4,
       ]))
@@ -170,14 +169,14 @@ describe('#transforms/resize', () => {
         width: 3,
         height: 3,
         data: [
-          01, 03, 05, 07, 09, 11, 13, 15, 17,
+          1, 3, 5, 7, 9, 11, 13, 15, 17,
           19, 21, 23, 25, 27, 29, 31, 33, 35,
           37, 39, 41, 43, 45, 47, 49, 51, 53,
         ],
       }
 
       const output = resize.bilinear(input, {width: 2, height: 2})
-      expect(output.data).to.eql(new Uint8Array([
+      expect(output.data).toEqual(new Uint8Array([
         1, 3, 5, (7 + 13) / 2, (9 + 15) / 2, (11 + 17) / 2,
         (19 + 37) / 2, (21 + 39) / 2, (23 + 41) / 2, (25 + 31 + 43 + 49) / 4, (27 + 33 + 45 + 51) / 4, (29 + 47 + 35 + 53) / 4,
       ]))
@@ -190,14 +189,14 @@ describe('#transforms/resize', () => {
         width: 3,
         height: 3,
         data: new Uint8Array([
-          01, 03, 05, 07, 09, 11, 13, 15, 17,
+          1, 3, 5, 7, 9, 11, 13, 15, 17,
           19, 21, 23, 25, 27, 29, 31, 33, 35,
           37, 39, 41, 43, 45, 47, 49, 51, 53,
         ]),
       }
 
       const output = resize.bilinear(input, {width: 3, height: 3})
-      expect(output.data).to.eql(input.data)
+      expect(output.data).toEqual(input.data)
     })
 
     it('should resize an actual image', () => {
@@ -226,7 +225,7 @@ describe('#transforms/resize', () => {
       }
 
       const output = resize.box(input, {width: 2, height: 2})
-      expect(output.data).to.eql(new Uint8Array([
+      expect(output.data).toEqual(new Uint8Array([
         6, 10,
         22, 26,
       ]))

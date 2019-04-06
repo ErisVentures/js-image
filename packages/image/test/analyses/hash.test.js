@@ -29,7 +29,7 @@ describe('#analyses/hash', () => {
         0, 0, 0, 0,
       ]
 
-      expect(dct).to.eql(expectation)
+      expect(dct).toEqual(expectation)
     })
 
     it('should compute the DCT of a high-frequency image', () => {
@@ -53,7 +53,7 @@ describe('#analyses/hash', () => {
         0, 90, 0, 218,
       ]
 
-      expect(dct).to.eql(expectation)
+      expect(dct).toEqual(expectation)
     })
   })
 
@@ -72,7 +72,7 @@ describe('#analyses/hash', () => {
         2, 5,
       ]
 
-      expect(dct).to.eql(expectation)
+      expect(dct).toEqual(expectation)
     })
   })
 
@@ -86,7 +86,7 @@ describe('#analyses/hash', () => {
       ]
 
       const result = hashModule.averageAndThreshold(array)
-      expect(result).to.eql(`1111111100001000`)
+      expect(result).toEqual(`1111111100001000`)
     })
   })
 
@@ -94,13 +94,13 @@ describe('#analyses/hash', () => {
     it('should hash an image', async () => {
       const imageData = await skaterPromise
       const hash = hashModule.phash(imageData)
-      expect(parseInt(hash, 2).toString(16)).to.equal('c5b7535fe4cb7000')
+      expect(parseInt(hash, 2).toString(16)).toBe('c5b7535fe4cb7000')
     })
 
     it('should support larger hashes', async () => {
       const imageData = await skaterPromise
       const hash = hashModule.toHexString(hashModule.phash(imageData, 256))
-      expect(hash).to.equal('f1e21800a188a1f11c63dc63dc63dce8e695b1803182a0e8c21591b0903880')
+      expect(hash).toBe('f1e21800a188a1f11c63dc63dc63dce8e695b1803182a0e8c21591b0903880')
     })
 
     it('should be resilient to minor image changes', async () => {
@@ -112,7 +112,7 @@ describe('#analyses/hash', () => {
 
       const distance = hashModule.hammingDistance(hashA, hashB)
       // 62 of 64 bits match
-      expect(distance).to.equal(2)
+      expect(distance).toBe(2)
     })
 
     it('should match similar images closely', async () => {
@@ -124,7 +124,7 @@ describe('#analyses/hash', () => {
 
       const distance = hashModule.hammingDistance(hashA, hashB)
       // 61 of 64 bits match
-      expect(distance).to.equal(3)
+      expect(distance).toBe(3)
     })
 
     it('should distinguish different images', async () => {
@@ -136,7 +136,7 @@ describe('#analyses/hash', () => {
 
       const distance = hashModule.hammingDistance(hashA, hashB)
       // 29 of 64 bits match
-      expect(distance).to.equal(35)
+      expect(distance).toBe(35)
     })
   })
 })

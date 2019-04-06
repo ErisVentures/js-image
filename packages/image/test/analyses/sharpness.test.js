@@ -16,7 +16,7 @@ describe('#analyses/sharpness', () => {
 
     const result = sharpness(edgeData)
     result.percentEdges = Math.round(result.percentEdges * 1000) / 1000
-    expect(result).to.eql({
+    expect(result).toEqual({
       percentEdges: 0.172,
       lowerQuartile: 255,
       median: 255,
@@ -41,7 +41,7 @@ describe('#analyses/sharpness', () => {
 
     const result = sharpness(edgeData)
     result.percentEdges = Math.round(result.percentEdges * 1000) / 1000
-    expect(result).to.eql({
+    expect(result).toEqual({
       percentEdges: 0.345,
       lowerQuartile: 64,
       median: 96,
@@ -61,11 +61,11 @@ describe('#analyses/sharpness', () => {
         const sharpResult = sharpness(sharpEdges)
         const blurResult = sharpness(blurEdges)
 
-        expect(Math.round(sharpResult.percentEdges * 100)).to.equal(4)
-        expect(sharpResult.percentEdges).to.be.greaterThan(blurResult.percentEdges)
-        expect(sharpResult.average).to.be.greaterThan(blurResult.average)
-        expect(sharpResult.median).to.be.greaterThan(blurResult.median)
-        expect(sharpResult.upperVentileAverage).to.be.greaterThan(blurResult.upperVentileAverage)
-      })
+        expect(Math.round(sharpResult.percentEdges * 100)).toBe(4)
+        expect(sharpResult.percentEdges).toBeGreaterThan(blurResult.percentEdges)
+        expect(sharpResult.average).toBeGreaterThan(blurResult.average)
+        expect(sharpResult.median).toBeGreaterThan(blurResult.median)
+        expect(sharpResult.upperVentileAverage).toBeGreaterThan(blurResult.upperVentileAverage)
+      });
   })
 })

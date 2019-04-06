@@ -27,7 +27,7 @@ describe('#transforms/opacity', () => {
 
     const result = opacity(background, foreground, 0.5)
 
-    expect(result).to.eql({
+    expect(result).toEqual({
       width: 2,
       height: 2,
       channels: 3,
@@ -64,7 +64,7 @@ describe('#transforms/opacity', () => {
 
     const result = opacity(background, foreground, 1)
 
-    expect(result).to.eql({
+    expect(result).toEqual({
       width: 2,
       height: 2,
       channels: 4,
@@ -101,7 +101,7 @@ describe('#transforms/opacity', () => {
 
     const result = opacity(background, foreground, 1)
 
-    expect(result).to.eql({
+    expect(result).toEqual({
       width: 2,
       height: 2,
       channels: 4,

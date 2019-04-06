@@ -24,7 +24,7 @@ describe('#transforms/subselect', () => {
       right: 4,
     })
 
-    expect(result).to.eql({
+    expect(result).toEqual({
       width: 3,
       height: 3,
       channels: 3,

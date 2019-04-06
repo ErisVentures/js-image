@@ -36,7 +36,7 @@ describe('#transforms/convolve', () => {
       [0, 0.2, 0],
     ])
 
-    expect(output).to.eql({
+    expect(output).toEqual({
       width: 3,
       height: 3,
       channels: 4,

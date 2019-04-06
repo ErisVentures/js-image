@@ -17,7 +17,7 @@ describe('ImageData', () => {
 
       const result = ImageData.mapPixels(imageData, ({values}) => values.map(x => x + 1))
 
-      expect(result).to.eql({
+      expect(result).toEqual({
         width: 1,
         height: 1,
         channels: 3,
@@ -40,7 +40,7 @@ describe('ImageData', () => {
         ({values}) => [values[0] + 2],
       ])
 
-      expect(result).to.eql({
+      expect(result).toEqual({
         width: 1,
         height: 1,
         channels: 1,
@@ -64,9 +64,9 @@ describe('ImageData', () => {
       )
 
       const fn = imageData => Math.round(100 * transform(imageData).data[2]) / 100
-      expect(fn(hslImageData(180, 1, 0.5))).to.equal(1)
-      expect(fn(hslImageData(180, 0.5, 0.5))).to.equal(0.75)
-      expect(fn(hslImageData(0, 0, 0))).to.equal(0)
+      expect(fn(hslImageData(180, 1, 0.5))).toBe(1)
+      expect(fn(hslImageData(180, 0.5, 0.5))).toBe(0.75)
+      expect(fn(hslImageData(0, 0, 0))).toBe(0)
     })
 
     it('should handle wrap around hue', () => {
@@ -80,52 +80,52 @@ describe('ImageData', () => {
       )
 
       const fn = imageData => Math.round(100 * transform(imageData).data[2]) / 100
-      expect(fn(hslImageData(355, 1, 0.5))).to.equal(1)
-      expect(fn(hslImageData(0, 1, 0.5))).to.equal(0.99)
+      expect(fn(hslImageData(355, 1, 0.5))).toBe(1)
+      expect(fn(hslImageData(0, 1, 0.5))).toBe(0.99)
     })
   })
 
   describe('#probablyIs', () => {
     it('should identify invalid values', () => {
-      expect(ImageData.probablyIs()).to.be.false
-      expect(ImageData.probablyIs(null)).to.be.false
-      expect(ImageData.probablyIs(Buffer.from([]))).to.be.false
-      expect(ImageData.probablyIs(false)).to.be.false
-      expect(ImageData.probablyIs(2)).to.be.false
-      expect(ImageData.probablyIs({data: undefined})).to.be.false
-      expect(ImageData.probablyIs({width: '2', height: 1, data: []})).to.be.false
+      expect(ImageData.probablyIs()).toBe(false)
+      expect(ImageData.probablyIs(null)).toBe(false)
+      expect(ImageData.probablyIs(Buffer.from([]))).toBe(false)
+      expect(ImageData.probablyIs(false)).toBe(false)
+      expect(ImageData.probablyIs(2)).toBe(false)
+      expect(ImageData.probablyIs({data: undefined})).toBe(false)
+      expect(ImageData.probablyIs({width: '2', height: 1, data: []})).toBe(false)
     })
 
     it('should identify Array-based', () => {
       const pixels = [...pixel(128), ...pixel(255), ...pixel(0), ...pixel(0)]
-      expect(ImageData.probablyIs({width: 2, height: 2, data: pixels})).to.be.true
+      expect(ImageData.probablyIs({width: 2, height: 2, data: pixels})).toBe(true)
     })
 
     it('should identify Uint8Array-based', () => {
-      expect(ImageData.probablyIs({width: 10, height: 10, data: new Uint8Array(400)})).to.be.true
+      expect(ImageData.probablyIs({width: 10, height: 10, data: new Uint8Array(400)})).toBe(true)
     })
 
     it('should identify Buffer-based', () => {
       const pixels = Buffer.from([...pixel(128), ...pixel(255), ...pixel(0), ...pixel(0)])
-      expect(ImageData.probablyIs({width: 2, height: 2, data: pixels})).to.be.true
+      expect(ImageData.probablyIs({width: 2, height: 2, data: pixels})).toBe(true)
     })
 
     it('should enforce pixel length', () => {
-      expect(ImageData.probablyIs({width: 10, height: 10, data: new Uint8Array(87)})).to.be.false
+      expect(ImageData.probablyIs({width: 10, height: 10, data: new Uint8Array(87)})).toBe(false)
     })
   })
 
   describe('#is', () => {
     it('should identify invalid values', () => {
-      expect(ImageData.is()).to.be.false
-      expect(ImageData.is(null)).to.be.false
-      expect(ImageData.is(Buffer.from([]))).to.be.false
-      expect(ImageData.is(false)).to.be.false
-      expect(ImageData.is(2)).to.be.false
-      expect(ImageData.is({data: undefined})).to.be.false
-      expect(ImageData.is({width: '2', height: 1, data: []})).to.be.false
-      expect(ImageData.is({width: 1, height: 1, data: [0]})).to.be.false
-      expect(ImageData.is({width: 1, height: 1, data: [0], channels: 1})).to.be.false
+      expect(ImageData.is()).toBe(false)
+      expect(ImageData.is(null)).toBe(false)
+      expect(ImageData.is(Buffer.from([]))).toBe(false)
+      expect(ImageData.is(false)).toBe(false)
+      expect(ImageData.is(2)).toBe(false)
+      expect(ImageData.is({data: undefined})).toBe(false)
+      expect(ImageData.is({width: '2', height: 1, data: []})).toBe(false)
+      expect(ImageData.is({width: 1, height: 1, data: [0]})).toBe(false)
+      expect(ImageData.is({width: 1, height: 1, data: [0], channels: 1})).toBe(false)
     })
 
     it('should enforce format', () => {
@@ -137,8 +137,8 @@ describe('ImageData', () => {
         data: new Uint8Array(300),
       }
 
-      expect(ImageData.is(imageData)).to.be.false
-      expect(ImageData.is(Object.assign(imageData, {colorspace: Colorspace.RGB}))).to.be.true
+      expect(ImageData.is(imageData)).toBe(false)
+      expect(ImageData.is(Object.assign(imageData, {colorspace: Colorspace.RGB}))).toBe(true)
     })
 
     it('should enforce pixel length', () => {
@@ -150,8 +150,8 @@ describe('ImageData', () => {
         data: new Uint8Array(100),
       }
 
-      expect(ImageData.is(imageData)).to.be.false
-      expect(ImageData.is(Object.assign(imageData, {channels: 1}))).to.be.true
+      expect(ImageData.is(imageData)).toBe(false)
+      expect(ImageData.is(Object.assign(imageData, {channels: 1}))).toBe(true)
     })
   })
 
@@ -195,7 +195,7 @@ describe('ImageData', () => {
 
     it('should rotate an odd-size image 45 degrees', () => {
       const result = ImageData.rotate(simpleLineOdd, 45)
-      expect(result).to.eql({
+      expect(result).toEqual({
         width: 3,
         height: 3,
         channels: 1,
@@ -210,7 +210,7 @@ describe('ImageData', () => {
 
     it('should rotate an odd-size image 90 degrees', () => {
       const result = ImageData.rotate(simpleLineOdd, 90)
-      expect(result).to.eql({
+      expect(result).toEqual({
         width: 3,
         height: 3,
         channels: 1,
@@ -225,7 +225,7 @@ describe('ImageData', () => {
 
     it('should rotate an odd-size image 135 degrees', () => {
       const result = ImageData.rotate(simpleLineOdd, 135)
-      expect(result).to.eql({
+      expect(result).toEqual({
         width: 3,
         height: 3,
         channels: 1,
@@ -240,7 +240,7 @@ describe('ImageData', () => {
 
     it('should rotate an even-size image 90 degrees', () => {
       const result = ImageData.rotate(simpleLineEven, 90)
-      expect(result).to.eql({
+      expect(result).toEqual({
         width: 4,
         height: 4,
         channels: 1,
@@ -256,7 +256,7 @@ describe('ImageData', () => {
 
     it('should rotate an even-size image 270 degrees', () => {
       const result = ImageData.rotate(simpleLineEven, 270)
-      expect(result).to.eql({
+      expect(result).toEqual({
         width: 4,
         height: 4,
         channels: 1,
@@ -272,7 +272,7 @@ describe('ImageData', () => {
 
     it('should rotate a rectangular image 90 degrees', () => {
       const result = ImageData.rotate(simpleRectangle, 90)
-      expect(result).to.eql({
+      expect(result).toEqual({
         width: 3,
         height: 6,
         channels: 1,
@@ -290,7 +290,7 @@ describe('ImageData', () => {
 
     it('should rotate a rectangular image 180 degrees', () => {
       const result = ImageData.rotate(simpleRectangle, 180)
-      expect(result).to.eql({
+      expect(result).toEqual({
         width: 6,
         height: 3,
         channels: 1,
@@ -305,7 +305,7 @@ describe('ImageData', () => {
 
     it('should rotate a rectangular image 270 degrees', () => {
       const result = ImageData.rotate(simpleRectangle, 270)
-      expect(result).to.eql({
+      expect(result).toEqual({
         width: 3,
         height: 6,
         channels: 1,
@@ -332,7 +332,7 @@ describe('ImageData', () => {
         data: new Uint8Array(100),
       }
 
-      expect(ImageData.toGreyscale(imageData)).to.equal(imageData)
+      expect(ImageData.toGreyscale(imageData)).toBe(imageData)
     })
 
     it('should use luminance for RGB images', () => {
@@ -349,7 +349,7 @@ describe('ImageData', () => {
         ],
       }
 
-      expect(ImageData.toGreyscale(imageData)).to.eql({
+      expect(ImageData.toGreyscale(imageData)).toEqual({
         width: 2,
         height: 2,
         channels: 1,
@@ -373,7 +373,7 @@ describe('ImageData', () => {
       }
 
       const greyscale = ImageData.toGreyscale(imageData)
-      expect(ImageData.toYCbCr(greyscale)).to.eql(imageData)
+      expect(ImageData.toYCbCr(greyscale)).toEqual(imageData)
     })
 
     it('should cycle through back to RGBA', async () => {
@@ -395,7 +395,7 @@ describe('ImageData', () => {
         data: new Uint8Array([100, 50, 200, 30]),
       }
 
-      expect(ImageData.toHSL(imageData)).to.eql({
+      expect(ImageData.toHSL(imageData)).toEqual({
         width: 2,
         height: 2,
         channels: 3,
@@ -423,7 +423,7 @@ describe('ImageData', () => {
         ]),
       }
 
-      expect(ImageData.toHSL(imageData)).to.eql({
+      expect(ImageData.toHSL(imageData)).toEqual({
         width: 2,
         height: 2,
         channels: 3,
@@ -451,7 +451,7 @@ describe('ImageData', () => {
         ],
       }
 
-      expect(ImageData.toRGB(imageData)).to.eql({
+      expect(ImageData.toRGB(imageData)).toEqual({
         width: 2,
         height: 2,
         channels: 3,
@@ -493,7 +493,7 @@ describe('ImageData', () => {
       converted.data = converted.data.map(
         (x, idx) => idx % 3 === 0 ? Math.round(x) : Math.round(x * 100) / 100
       )
-      expect(converted).to.eql({
+      expect(converted).toEqual({
         width: 2,
         height: 2,
         channels: 3,
@@ -533,7 +533,7 @@ describe('ImageData', () => {
 
       const converted = ImageData.toXYZ(imageData)
       converted.data = converted.data.map(x => Math.round(x * 1000))
-      expect(converted).to.eql({
+      expect(converted).toEqual({
         width: 2,
         height: 2,
         channels: 3,
@@ -574,7 +574,7 @@ describe('ImageData', () => {
       })
 
       converted.data = converted.data.map(x => Math.round(x * 1000))
-      expect(converted).to.eql({
+      expect(converted).toEqual({
         width: 2,
         height: 2,
         channels: 3,
@@ -628,7 +628,7 @@ describe('ImageData', () => {
         ]),
       }
 
-      expect(ImageData.toYCbCr(imageData)).to.eql({
+      expect(ImageData.toYCbCr(imageData)).toEqual({
         width: 2,
         height: 2,
         channels: 3,
@@ -661,7 +661,7 @@ describe('ImageData', () => {
         data: new Uint8Array([100, 50, 200, 30]),
       }
 
-      expect(ImageData.toRGB(imageData)).to.eql({
+      expect(ImageData.toRGB(imageData)).toEqual({
         width: 2,
         height: 2,
         channels: 3,
@@ -689,7 +689,7 @@ describe('ImageData', () => {
         ]),
       }
 
-      expect(ImageData.toRGB(imageData)).to.eql({
+      expect(ImageData.toRGB(imageData)).toEqual({
         width: 2,
         height: 2,
         channels: 3,
@@ -708,8 +708,8 @@ describe('ImageData', () => {
     it('should be no-op on rgba images', () => {
       return fixtureDecode('source-skater.jpg').then(skaterData => {
         const imageData = ImageData.normalize(skaterData)
-        expect(ImageData.toRGBA(imageData)).to.equal(imageData)
-      })
+        expect(ImageData.toRGBA(imageData)).toBe(imageData)
+      });
     })
 
     it('should add full alpha channel to RGB', () => {
@@ -726,7 +726,7 @@ describe('ImageData', () => {
         ],
       }
 
-      expect(ImageData.toRGBA(imageData)).to.eql({
+      expect(ImageData.toRGBA(imageData)).toEqual({
         width: 2,
         height: 2,
         channels: 4,
@@ -756,7 +756,7 @@ describe('ImageData', () => {
         ],
       }
 
-      expect(ImageData.removeAlphaChannel(imageData)).to.eql({
+      expect(ImageData.removeAlphaChannel(imageData)).toEqual({
         width: 2,
         height: 2,
         channels: 3,
@@ -775,7 +775,7 @@ describe('ImageData', () => {
     it('should throw in node', () => {
       expect(() => {
         ImageData.toBrowserImageData({data: []})
-      }).to.throw(/must be called in browser/)
+      }).toThrowError(/must be called in browser/)
     })
   })
 
@@ -806,7 +806,7 @@ describe('ImageData', () => {
         const xyz = ImageData.toXYZ(imageData)
         const rgb = ImageData.toRGB(xyz)
         xyz.data = xyz.data.map(x => Math.round(x * 1000))
-        expect(xyz).to.eql({
+        expect(xyz).toEqual({
           width: 2,
           height: 2,
           channels: 3,
@@ -819,7 +819,7 @@ describe('ImageData', () => {
           ],
         })
 
-        expect(rgb).to.eql({
+        expect(rgb).toEqual({
           width: 2,
           height: 2,
           channels: 3,

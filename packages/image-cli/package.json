@@ -37,12 +37,8 @@
   "devDependencies": {
     "@eris/exif": "^0.1.0-development",
     "@eris/image": "^0.1.0-development",
-    "chai": "^4.1.2",
-    "chai-as-promised": "^7.1.1",
     "execa": "^0.8.0",
-    "pkg": "^4.3.7",
-    "sinon": "^4.0.1",
-    "sinon-chai": "^2.14.0"
+    "pkg": "^4.3.7"
   },
   "dependencies": {
     "yargs": "^9.0.1"

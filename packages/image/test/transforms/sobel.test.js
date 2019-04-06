@@ -7,7 +7,7 @@ describe('#transforms/sobel', () => {
 
   describe('#generateWeightMatrix', () => {
     it('should generate a 5x5 y-matrix', () => {
-      expect(generateWeightMatrix(2, false)).to.eql([
+      expect(generateWeightMatrix(2, false)).toEqual([
         1, 2, 4, 2, 1,
         2, 4, 8, 4, 2,
         0, 0, 0, 0, 0,
@@ -17,7 +17,7 @@ describe('#transforms/sobel', () => {
     })
 
     it('should generate a 5x5 x-matrix', () => {
-      expect(generateWeightMatrix(2, true)).to.eql([
+      expect(generateWeightMatrix(2, true)).toEqual([
         1, 2, 0, -2, -1,
         2, 4, 0, -4, -2,
         4, 8, 0, -8, -4,

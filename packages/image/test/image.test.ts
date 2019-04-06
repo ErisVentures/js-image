@@ -1,5 +1,4 @@
 import * as fs from 'fs'
-import * as sinon from 'sinon'
 import {Image} from '../lib/image'
 import {expect, fixture, fixturePath} from './utils'
 import {ImageFormat, HashMethod} from '../lib/types'
@@ -18,16 +17,6 @@ class ImageImpl extends Image {
 
 const skater = fixture('source-skater.jpg')
 describe('Image', () => {
-  let sandbox
-
-  beforeEach(() => {
-    sandbox = sinon.sandbox.create()
-  })
-
-  afterEach(() => {
-    sandbox.reset()
-  })
-
   describe('.options', () => {
     it('should set many options at once', () => {
       const image = new ImageImpl().options({
@@ -36,12 +25,12 @@ describe('Image', () => {
         analyze: {hash: {method: HashMethod.PHash}},
       }) as any
 
-      expect(image._output).to.eql({
+      expect(image._output).toEqual({
         format: {type: 'png'},
         greyscale: true,
       })
 
-      expect(image._analyze).to.eql({hash: {method: 'phash'}})
+      expect(image._analyze).toEqual({hash: {method: 'phash'}})
     })
   })
 
@@ -54,17 +43,13 @@ describe('Image', () => {
 
     it('should set format', () => {
       image = image.format('png')
-      expect(image._output)
-        .to.have.property('format')
-        .eql({type: 'png'})
+      expect(image._output).toMatchObject({format: {type: 'png'}})
     })
 
     it('should set format options', () => {
       const opts = {type: 'jpeg', quality: 70}
       image = image.format(opts)
-      expect(image._output)
-        .to.have.property('format')
-        .eql(opts)
+      expect(image._output).toMatchObject({format: opts})
     })
   })
 
@@ -83,9 +68,7 @@ describe('Image', () => {
         method: 'nearest_neighbor',
       }
       image = image.resize(options)
-      expect(image._output)
-        .to.have.property('resize')
-        .eql(options)
+      expect(image._output).toMatchObject({resize: options})
     })
 
     it('should accept just width', () => {
@@ -96,9 +79,7 @@ describe('Image', () => {
         method: 'bilinear',
       }
       image = image.resize(options)
-      expect(image._output)
-        .to.have.property('resize')
-        .eql(options)
+      expect(image._output).toMatchObject({resize: options})
     })
 
     it('should accept just height', () => {
@@ -108,24 +89,17 @@ describe('Image', () => {
         fit: 'exact',
       }
       image = image.resize(options)
-      expect(image._output)
-        .to.have.property('resize')
-        .eql({
-          width: undefined,
-          height: 300,
-          fit: 'exact',
-          method: 'bilinear',
-        })
+      expect(image._output).toMatchObject({resize: options})
     })
 
     it('should throw if width and height are missing', () => {
       const options = {fit: 'exact'}
-      expect(() => image.resize(options)).to.throw('Must specify')
+      expect(() => image.resize(options)).toThrow('Must specify')
     })
 
     it('should throw if width or height are missing', () => {
       const options = {width: 200, fit: 'cover'}
-      expect(() => image.resize(options)).to.throw('Must specify')
+      expect(() => image.resize(options)).toThrow('Must specify')
     })
   })
 
@@ -140,7 +114,7 @@ describe('Image', () => {
       const path = fixturePath('actual-to-file.jpg')
       return image.toFile(path).then(() => {
         const result = fs.readFileSync(path)
-        expect(result.length).to.equal(skater.length)
+        expect(result).toHaveLength(skater.length)
       })
     })
   })

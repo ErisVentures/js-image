@@ -2,16 +2,11 @@ jest.setTimeout(20000)
 
 const fs = require('fs')
 const memoize = require('lodash/memoize')
-const chai = require('chai')
-const jpeg = require('jpeg-js')
-const {Colorspace} = require('../dist/types')
 const ImageData = require('../dist/image-data').ImageData
 const {hasWASM, getWASM} = require('../dist/utils/env')
 const {registerNodeWASM} = require('../dist/utils/node-wasm')
-chai.use(require('sinon-chai'))
 
 const environmentTolerance = Number(process.env.LOOSE_COMPARISON_TOLERANCE) || 0
-const expect = chai.expect
 const fixturePath = path => `${__dirname}/fixtures/${path}`
 const fixture = memoize(path => fs.readFileSync(fixturePath(path)))
 const fixtureDecode = memoize(path => ImageData.from(fixture(path)))
@@ -25,7 +20,7 @@ function getImageDiff(actual, expectation, increment = 1) {
     expectation = expectation.data
   }
 
-  expect(actual.length).to.equal(expectation.length, 'lengths differ')
+  expect(actual).toHaveLength(expectation.length)
 
   let diff = 0
   for (let i = 0; i < actual.length; i += increment) {
@@ -63,11 +58,11 @@ async function compareToFixture(bufferOrImageData, path, options) {
 
   const diff = getImageDiff(imageData, expectedImageData, options.increment)
   if (options.strict) {
-    expect(diff).to.equal(0)
+    expect(diff).toBe(0)
   } else {
     const tolerance = Math.max(environmentTolerance, options.tolerance)
     const area = imageData.width * imageData.height
-    expect(diff).to.be.lessThan((tolerance * area) / options.increment)
+    expect(diff).toBeLessThan((tolerance * area) / options.increment)
   }
 }
 
