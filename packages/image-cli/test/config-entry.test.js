@@ -1,5 +1,4 @@
 const path = require('path')
-const expect = require('chai').expect
 const ConfigEntry = require('../dist/lib/config-entry')
 
 const fixturePath = name => path.join(__dirname, `fixtures/${name}`)
@@ -8,34 +7,34 @@ describe('lib/config-entry.js', () => {
   describe('#readAllFrom', () => {
     it('should read from disk', () => {
       const entries = ConfigEntry.readAllFrom(fixturePath('config.json'))
-      expect(entries).to.have.length(4)
+      expect(entries).toHaveLength(4)
 
       for (const entry of entries) {
-        expect(entry.id).to.be.a('number')
-        expect(entry.input).to.be.a('string')
-        expect(entry.output).to.be.a('string')
-        expect(entry.settings).to.be.an('object')
-        expect(entry.toDisk).to.be.a('boolean')
-        expect(entry.toReporter).to.be.a('boolean')
+        expect(typeof entry.id).toBe('number')
+        expect(typeof entry.input).toBe('string')
+        expect(typeof entry.output).toBe('string')
+        expect(typeof entry.settings).toBe('object')
+        expect(typeof entry.toDisk).toBe('boolean')
+        expect(typeof entry.toReporter).toBe('boolean')
       }
     })
 
     it('should read from object', () => {
       const config = {input: 'in', output: 'out', action: 'toBuffer'}
       const entries = ConfigEntry.readAllFrom(config)
-      expect(entries).to.have.length(1)
-      expect(entries[0].input).to.equal('in')
-      expect(entries[0].output).to.equal('out')
-      expect(entries[0].action).to.equal('toBuffer')
+      expect(entries).toHaveLength(1)
+      expect(entries[0].input).toBe('in')
+      expect(entries[0].output).toBe('out')
+      expect(entries[0].action).toBe('toBuffer')
     })
 
     it('should read from object string', () => {
       const config = {input: 'in', output: 'out', action: 'toBuffer'}
       const entries = ConfigEntry.readAllFrom(JSON.stringify(config))
-      expect(entries).to.have.length(1)
-      expect(entries[0].input).to.equal('in')
-      expect(entries[0].output).to.equal('out')
-      expect(entries[0].action).to.equal('toBuffer')
+      expect(entries).toHaveLength(1)
+      expect(entries[0].input).toBe('in')
+      expect(entries[0].output).toBe('out')
+      expect(entries[0].action).toBe('toBuffer')
     })
 
     it('should read from array string', () => {
@@ -45,14 +44,14 @@ describe('lib/config-entry.js', () => {
       ]
 
       const entries = ConfigEntry.readAllFrom(JSON.stringify(config))
-      expect(entries).to.have.length(2)
-      expect(entries[0].action).to.equal('toBuffer')
-      expect(entries[1].action).to.equal('toMetadata')
+      expect(entries).toHaveLength(2)
+      expect(entries[0].action).toBe('toBuffer')
+      expect(entries[1].action).toBe('toMetadata')
     })
 
     it('should validate configs', () => {
-      expect(() => ConfigEntry.readAllFrom([{}])).to.throw(/is not defined/)
-      expect(() => ConfigEntry.readAllFrom([null])).to.throw(/is not defined/)
+      expect(() => ConfigEntry.readAllFrom([{}])).toThrowError(/is not defined/)
+      expect(() => ConfigEntry.readAllFrom([null])).toThrowError(/is not defined/)
     })
   })
 })

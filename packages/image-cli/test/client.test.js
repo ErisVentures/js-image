@@ -1,9 +1,5 @@
 const path = require('path')
-const chai = require('chai')
 const Client = require('../dist/lib/client').CLIClient
-
-const expect = chai.expect
-chai.use(require('chai-as-promised'))
 
 const fixturePath = name => path.join(__dirname, 'fixtures/', name)
 
@@ -12,7 +8,7 @@ describe('lib/client.js', () => {
     it('should handle missing executable', () => {
       const client = new Client({executablePath: './made-up'})
       const promise = client.run().waitForExit()
-      return expect(promise).to.eventually.be.rejectedWith(/ENOENT/)
+      return expect(promise).rejects.toThrow('ENOENT')
     })
 
     it('should handle failing executable', () => {
@@ -22,9 +18,9 @@ describe('lib/client.js', () => {
         .waitForExit()
         .then(() => expect.fail(null, null, 'Promise should have failed'))
         .catch(err => {
-          expect(err.message).to.match(/exit code 1/)
-          expect(err.stdout).to.match(/Here is stdout/)
-          expect(err.stderr).to.match(/This fails/)
+          expect(err.message).toMatch(/exit code 1/)
+          expect(err.stdout).toMatch(/Here is stdout/)
+          expect(err.stderr).toMatch(/This fails/)
         })
     })
 
@@ -39,10 +35,8 @@ describe('lib/client.js', () => {
 
       const promise = client.run(config).waitForExit()
       return promise.then(entries => {
-        expect(entries).to.have.length(1)
-        expect(entries[0])
-          .to.have.property('result')
-          .that.includes({width: 256, height: 256})
+        expect(entries).toHaveLength(1)
+        expect(entries[0].result).toMatchObject({width: 256, height: 256})
       })
     })
 
@@ -52,10 +46,10 @@ describe('lib/client.js', () => {
 
       const promise = client.run(config).waitForExit()
       return promise.then(entries => {
-        expect(entries).to.have.length(4)
-        expect(entries[1]).to.have.property('error')
-        expect(entries[1].error).to.have.property('message')
-        expect(entries[1].error).to.have.property('stack')
+        expect(entries).toHaveLength(4)
+        expect(entries[1]).toHaveProperty('error')
+        expect(entries[1].error).toHaveProperty('message')
+        expect(entries[1].error).toHaveProperty('stack')
       })
     })
 
@@ -63,7 +57,7 @@ describe('lib/client.js', () => {
       const client = new Client()
       const config = fixturePath('config.json')
       const promise = client.run(config).waitForExit({failLoudly: true})
-      return expect(promise).to.eventually.be.rejectedWith(/no such file/)
+      return expect(promise).rejects.toThrow('no such file')
     })
   })
 })

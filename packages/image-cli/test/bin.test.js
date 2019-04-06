@@ -1,6 +1,5 @@
 const fs = require('fs')
 const path = require('path')
-const expect = require('chai').expect
 const execa = require('execa')
 
 const CWD = path.join(__dirname, '..')
@@ -14,19 +13,19 @@ describe('bin/index.js', () => {
   it('should run from a file config', () => {
     const args = ['-c', CONFIG_PATH]
     return execa.stdout(JS_EXE, args, {cwd: CWD}).then(stdout => {
-      expect(stdout).to.include('has finished')
-      expect(stdout).to.include('errored')
+      expect(stdout).toContain('has finished')
+      expect(stdout).toContain('errored')
 
       const analysis = JSON.parse(fs.readFileSync(ANALYSIS_PATH))
-      expect(analysis).to.have.property('hash').a('string')
-      expect(analysis).to.have.property('sharpness').an('object')
-    })
+      expect(typeof analysis.hash).toBe('string')
+      expect(typeof analysis.sharpness).toBe('object')
+    });
   })
 
   it('should run from a freeform config', async () => {
     const args = ['-c', FREEFORM_SCRIPT_PATH, '--mode=freeform', SKATER_PATH]
     const stdout = await execa.stdout(JS_EXE, args, {cwd: CWD})
-    expect(stdout.replace(/File is .*/, 'File is <file>')).to.equal([
+    expect(stdout.replace(/File is .*/, 'File is <file>')).toBe([
       'EXIF is passed-through ✓',
       'File is <file>',
       'Processing 1 ...',
