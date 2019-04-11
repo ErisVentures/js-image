@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>eye labeler</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.6.3/css/all.css"
+      integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/"
+      crossorigin="anonymous"
+    />
+    <style type="text/css"></style>
+  </head>
+
+  <body>
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.11/lodash.min.js"></script>
+    <script type="module">
+      import {html, render} from 'https://unpkg.com/lit-html?module'
+
+      let state = {
+        eyeFileName: '',
+        faceFileName: '',
+        eyeData: '',
+        faceData: '',
+      }
+
+      async function fetchNext(pathToFile, fallback) {
+        const response = await fetch('/next')
+        const data = await response.json()
+        Object.assign(state, data)
+      }
+
+      async function saveLabel(label) {
+        await fetch('/save', {
+          method: 'POST',
+          headers: {'content-type': 'application/json'},
+          body: JSON.stringify({file: state.eyeFileName, label}),
+        })
+      }
+
+      const EyeImage = state => html`
+        <div class="photo">
+          <img width="30" height="30" src="data:image/jpeg;base64,${state.eyeData}" />
+        </div>
+      `
+      const FaceImage = state => html`
+        <div class="photo">
+          <img
+            width="100"
+            height="100"
+            style="object-fit:contain;"
+            src="data:image/jpeg;base64,${state.faceData}"
+          />
+        </div>
+      `
+
+      const View = state => html`
+        <div class="container-fluid" style="max-width: 1200px">
+          <h1>Eye Labeler</h1>
+          <hr />
+          ${EyeImage(state)} ${FaceImage(state)}
+        </div>
+      `
+
+      async function fetchAndRender() {
+        await fetchNext()
+        rerender()
+      }
+
+      function rerender() {
+        console.log('Rendering', state)
+        render(View(state), document.body)
+      }
+
+      fetchAndRender()
+
+      document.addEventListener('keydown', async evt => {
+        console.log(evt.key)
+        if (evt.key === '3') {
+          await saveLabel('open')
+          await fetchAndRender()
+        } else if (evt.key === '2') {
+          await saveLabel('ambiguous')
+          await fetchAndRender()
+        } else if (evt.key === '1') {
+          await saveLabel('not-open')
+          await fetchAndRender()
+        }
+      })
+    </script>
+  </body>
+</html>

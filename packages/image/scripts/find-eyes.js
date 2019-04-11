@@ -6,7 +6,7 @@ const Bluebird = require('bluebird')
 const {BrowserImage} = require('../dist/browser-image')
 const {Image, ImageFormat, ImageResizeFit} = require('../dist/node-index')
 
-if (process.argv.length < 5) {
+if (process.argv.length !== 5) {
   console.error('USAGE: find-eyes.js <master|worker> <input_dir> <output_dir>')
   console.error(process.argv)
   process.exit(1)
