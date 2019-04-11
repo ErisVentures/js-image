@@ -4,22 +4,25 @@ import * as path from 'path'
 
 import * as faceapi from 'face-api.js'
 import {IAnnotatedImageData, ImageData} from '../image-data'
-import {IFaceAnalysisEntry, IBoundingBox} from '../types'
+import {IFaceAnalysisEntry, IBoundingBox, IFaceAnalysisEyeEntry} from '../types'
+import {subselect} from '../transforms/subselect'
+import {SharpImage} from '../sharp-image'
 
 const FACE_CONFIDENCE_THRESHOLD = 0.75
 
-let initialized = false
+let eyeModel: tf.LayersModel | undefined
 
 async function initializeIfNecessary(): Promise<void> {
-  if (initialized) return
+  if (eyeModel) return
 
-  const modelPath = path.join(__dirname, '../../data/models')
+  const modelDir = path.join(__dirname, '../../data/models')
 
-  await faceapi.nets.ssdMobilenetv1.loadFromDisk(modelPath)
-  await faceapi.nets.faceLandmark68Net.loadFromDisk(modelPath)
-  await faceapi.nets.faceExpressionNet.loadFromDisk(modelPath)
+  await faceapi.nets.ssdMobilenetv1.loadFromDisk(modelDir)
+  await faceapi.nets.faceLandmark68Net.loadFromDisk(modelDir)
+  await faceapi.nets.faceExpressionNet.loadFromDisk(modelDir)
 
-  initialized = true
+  const eyeModelPath = path.join(modelDir, 'eye-model/model.json')
+  eyeModel = await tf.loadLayersModel(`file://${eyeModelPath}`)
 }
 
 function roundBoundingBox(box: IBoundingBox): IBoundingBox {
@@ -85,6 +88,35 @@ function monkeyPatchConsoleWarn(): void {
   globalUnsafe.__console_warn__ = consoleWarn
 }
 
+async function runEyeOpenModel(
+  eye: IFaceAnalysisEyeEntry,
+  allImageData: IAnnotatedImageData,
+): Promise<void> {
+  const eyeImageData = subselect(allImageData, {
+    top: eye.y,
+    left: eye.x,
+    right: eye.x + eye.width,
+    bottom: eye.y + eye.height,
+  })
+
+  const normalizedImageData = await SharpImage.from(eyeImageData)
+    .greyscale()
+    .normalize()
+    .resize(30, 30, {fit: 'fill'})
+    .raw()
+    .toBuffer({resolveWithObject: true})
+
+  const tensorInputArray = new Float32Array(normalizedImageData.data.length)
+  for (let i = 0; i < normalizedImageData.data.length; i++) {
+    tensorInputArray[i] = normalizedImageData.data[i] / 255
+  }
+
+  const imageTensor = tf.tensor4d(tensorInputArray, [1, 30, 30, 1])
+  const prediction = eyeModel!.predict(imageTensor) as tf.Tensor
+  const data = await prediction.data()
+  eye.openConfidence = data[1]
+}
+
 export async function detectFaces(imageData: IAnnotatedImageData): Promise<IFaceAnalysisEntry[]> {
   await initializeIfNecessary()
 
@@ -100,7 +132,7 @@ export async function detectFaces(imageData: IAnnotatedImageData): Promise<IFace
     .withFaceExpressions()
     .withFaceLandmarks()
 
-  return results.map(({detection, landmarks, expressions}) => {
+  const faces = results.map(({detection, landmarks, expressions}) => {
     const faceBox = roundBoundingBox(detection.box)
     const happyExpression = expressions.find(item => item.expression === 'happy')
 
@@ -114,4 +146,12 @@ export async function detectFaces(imageData: IAnnotatedImageData): Promise<IFace
       ].filter(box => Number.isFinite(box.x)),
     }
   })
+
+  for (const face of faces) {
+    for (const eye of face.eyes) {
+      await runEyeOpenModel(eye, imageData)
+    }
+  }
+
+  return faces
 }

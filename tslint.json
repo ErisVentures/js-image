@@ -55,7 +55,7 @@
     "no-unsafe-finally": true,
     "no-unused-expression": true,
     "no-unused-variable": true,
-    "no-use-before-declare": true,
+    "no-use-before-declare": false, // buggy, flags typedefs which is stupid
     "no-var-keyword": true,
     "prefer-conditional-expression": true,
     "radix": true,

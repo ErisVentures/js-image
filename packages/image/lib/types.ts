@@ -159,11 +159,15 @@ export interface IMetadata {
   exif?: INormalizedMetadata
 }
 
+export interface IFaceAnalysisEyeEntry extends IBoundingBox {
+  openConfidence?: number
+}
+
 export interface IFaceAnalysisEntry {
   confidence: number
   happinessConfidence: number
   boundingBox: IBoundingBox
-  eyes: IBoundingBox[]
+  eyes: IFaceAnalysisEyeEntry[]
   sharpness?: ISharpnessAnalysis
 }
 
