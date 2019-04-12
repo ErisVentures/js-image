@@ -13,6 +13,11 @@ cp -R ../../node_modules/sharp/build/Release/* out/sharp/build/Release/ || { ech
 cp -R ../../node_modules/sharp/vendor/lib/* out/sharp/vendor/lib/ || { echo "sharp missing key files! rm -fR node_modules and try again"; exit 1; }
 cp -R ../../node_modules/@tensorflow/tfjs-node/build/Release/* out/@tensorflow/tfjs-node/build/Release/ || { echo "tfjs not built!"; exit 1; }
 
+ll ../../node_modules/@tensorflow/tfjs-node/build/Release/
+ll out/@tensorflow/tfjs-node/build/Release
+ll out/@tensorflow/tfjs-node/build/Release | grep libtensorflow.so || { echo "tfjs not built!"; exit 1; }
+
+
 cd out
 tar -czf $TARGET.tar.gz ./*
 

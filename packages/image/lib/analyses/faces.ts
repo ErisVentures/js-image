@@ -7,12 +7,13 @@ import {IAnnotatedImageData, ImageData} from '../image-data'
 import {IFaceAnalysisEntry, IBoundingBox, IFaceAnalysisEyeEntry} from '../types'
 import {subselect} from '../transforms/subselect'
 import {SharpImage} from '../sharp-image'
+import {instrumentation} from '../instrumentation'
 
 const FACE_CONFIDENCE_THRESHOLD = 0.75
 
 let eyeModel: tf.LayersModel | undefined
 
-async function initializeIfNecessary(): Promise<void> {
+async function initializeIfNecessary_(): Promise<void> {
   if (eyeModel) return
 
   const modelDir = path.join(__dirname, '../../data/models')
@@ -116,6 +117,11 @@ async function runEyeOpenModel(
   const data = await prediction.data()
   eye.openConfidence = data[1]
 }
+
+const initializeIfNecessary = instrumentation.wrapMethod(
+  'faces.initializeIfNecessary',
+  initializeIfNecessary_,
+)
 
 export async function detectFaces(imageData: IAnnotatedImageData): Promise<IFaceAnalysisEntry[]> {
   await initializeIfNecessary()
