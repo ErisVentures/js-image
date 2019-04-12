@@ -3,7 +3,7 @@
 DIRNAME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 IMAGE_CLI_ROOT="$DIRNAME/.."
 TARGET=${PKG_TARGET:-node10-mac}
-rm -fR out/
+rm -rf out/
 mkdir -p out/@tensorflow/tfjs-node/build/Release
 mkdir -p out/sharp/build/Release
 mkdir -p out/sharp/vendor/lib
@@ -11,15 +11,13 @@ mkdir -p out/sharp/vendor/lib
 pkg -t $TARGET -o out/image-cli . || { echo "pkg failed!"; exit 1; }
 cp -R ../../node_modules/sharp/build/Release/* out/sharp/build/Release/ || { echo "sharp not built!"; exit 1; }
 cp -R ../../node_modules/sharp/vendor/lib/* out/sharp/vendor/lib/ || { echo "sharp missing key files! rm -fR node_modules and try again"; exit 1; }
-cp -R ../../node_modules/@tensorflow/tfjs-node/build/Release/* out/@tensorflow/tfjs-node/build/Release/ || { echo "tfjs not built!"; exit 1; }
+cp -RL ../../node_modules/@tensorflow/tfjs-node/build/Release/* out/@tensorflow/tfjs-node/build/Release || { echo "tfjs not built!"; exit 1; }
 
-ls -ali ../../node_modules/@tensorflow/tfjs-node/build/Release/
-ls -ali out/@tensorflow/tfjs-node/build/Release
-ls -ali out/@tensorflow/tfjs-node/build/Release | grep libtensorflow.so || { echo "tfjs not built!"; exit 1; }
-
+rm -rf out/@tensorflow/tfjs-node/build/Release/.deps # Clear out the references to old symlinked deps
 
 cd out
 tar -czf $TARGET.tar.gz ./*
+tar -tzf $TARGET.tar.gz
 
 echo 'Creating tmp directory to test the executable...'
 mkdir /tmp/js_image_cli_test
