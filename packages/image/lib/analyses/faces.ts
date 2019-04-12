@@ -153,5 +153,5 @@ export async function detectFaces(imageData: IAnnotatedImageData): Promise<IFace
     }
   }
 
-  return faces
+  return faces.sort((a, b) => b.boundingBox.height - a.boundingBox.height)
 }
