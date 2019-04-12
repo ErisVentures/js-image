@@ -12,7 +12,7 @@ jobs:
       node_js: v8
       script: npm run build
       after_success: ./scripts/add-asset-to-github.sh ./packages/image-cli/out/node8-mac.tar.gz
-      env: PKG_TARGET=node8-mac
+      env: PKG_TARGET=node8-mac SKIP_IMAGE_CLI_FILE_TEST=1
     - stage: build
       os: linux
       dist: trusty
@@ -20,7 +20,7 @@ jobs:
       node_js: v8
       script: npm run build
       after_success: ./scripts/add-asset-to-github.sh ./packages/image-cli/out/node8-linux.tar.gz
-      env: PKG_TARGET=node8-linux
+      env: PKG_TARGET=node8-linux SKIP_IMAGE_CLI_FILE_TEST=1
     - stage: test
       os: linux
       dist: trusty
