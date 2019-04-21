@@ -1,6 +1,6 @@
 /* tslint:disable */
-import {IAnnotatedImageData, ImageData, IProximityAdjustment} from '../image-data'
-import {MapPixelFn, IToneOptions, ColorChannel, Colorspace, IHSLAdjustment} from '../types'
+import {IAnnotatedImageData, ImageData} from '../image-data'
+import {IToneOptions, ColorChannel, IHSLAdjustment} from '../types'
 
 function validateCurvesInput(curve?: number[][]): number[][] {
   if (!curve) throw new Error('curve is not defined')
@@ -203,6 +203,87 @@ function convertToneToCurves(options: IToneOptions): number[][] {
 
   if (!hasAdjustment) return []
   return curves
+}
+
+export function hslAdjustments(
+  imageData: IAnnotatedImageData,
+  adjustments: IHSLAdjustment[],
+): IAnnotatedImageData {
+  if (!adjustments.length) return imageData
+
+  const hueAdjustments = new Int8Array(360)
+  const saturationAdjustments = new Float32Array(360)
+  const lightnessAdjustments = new Float32Array(360)
+  for (let i = 0; i < 360; i++) {
+    hueAdjustments[i] = 0
+    saturationAdjustments[i] = 0
+    lightnessAdjustments[i] = 0
+  }
+
+  for (const adjustment of adjustments) {
+    const {
+      targetHue,
+      targetBreadth = 30,
+      hueShift = 0,
+      saturationShift = 0,
+      lightnessShift = 0,
+    } = adjustment
+    if (!Number.isInteger(targetHue) || !Number.isInteger(targetBreadth))
+      throw new Error('Invalid hue target range')
+    for (let i = targetHue - targetBreadth; i < targetHue + targetBreadth; i++) {
+      let hueToShift = i
+      while (hueToShift < 0) hueToShift += 360
+      hueToShift = hueToShift % 360
+
+      const distanceRatioFromTarget =
+        Math.min(
+          Math.abs(targetHue - hueToShift),
+          Math.abs(targetHue + 360 - hueToShift),
+          Math.abs(targetHue - 360 - hueToShift),
+        ) / targetBreadth
+        const percentageToApply = Math.sqrt(1 - distanceRatioFromTarget)
+      hueAdjustments[hueToShift] += hueShift * percentageToApply
+      saturationAdjustments[hueToShift] += saturationShift * percentageToApply
+      lightnessAdjustments[hueToShift] += lightnessShift * percentageToApply
+    }
+  }
+
+  for (let x = 0; x < imageData.width; x++) {
+    for (let y = 0; y < imageData.height; y++) {
+      const index = ImageData.indexFor(imageData, x, y)
+      const hue = imageData.data[index]
+      const saturation = imageData.data[index + 1]
+      const lightness = imageData.data[index + 2]
+
+      if (
+        hueAdjustments[hue] === 0 &&
+        saturationAdjustments[hue] === 0 &&
+        lightnessAdjustments[hue] === 0
+      )
+        continue
+
+      const saturationDistance = 1 - saturation
+      const lightnessDistance = Math.abs(0.5 - lightness) / 0.5
+      const overallDistance = Math.sqrt(saturationDistance ** 2 + lightnessDistance ** 2)
+      if (overallDistance >= 1) continue
+
+      const adjustmentPercentage = 1 - overallDistance
+      imageData.data[index + 0] = ImageData.clipChannel(
+        hue + adjustmentPercentage * hueAdjustments[hue],
+        ColorChannel.Hue,
+      )
+      imageData.data[index + 1] = ImageData.clipChannel(
+        saturation + adjustmentPercentage * saturationAdjustments[hue],
+        ColorChannel.Saturation,
+      )
+      imageData.data[index + 2] = ImageData.clipChannel(
+        lightness + adjustmentPercentage * lightnessAdjustments[hue],
+        ColorChannel.Lightness,
+      )
+    }
+  }
+
+  return imageData
 }
 
 function saturation(imageData: IAnnotatedImageData, options: IToneOptions): IAnnotatedImageData {

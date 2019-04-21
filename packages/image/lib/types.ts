@@ -39,6 +39,16 @@ export enum EffectType {
 // tslint:disable-next-line
 export type IEffect = {type: EffectType.Noise; options?: INoiseOptions}
 
+export interface IHSLAdjustment {
+  /** A hue degree number, 0-360 */
+  targetHue: number
+  /** The maximum distance from the targetHue that should be affected, defaults to 30 */
+  targetBreadth?: number
+  hueShift?: number
+  saturationShift?: number
+  lightnessShift?: number
+}
+
 export interface IToneOptions {
   /** Affects the overall contrast in the image, typically a number between -0.5 and 2, reasonable range of -0.1 to 0.3 */
   contrast?: number
@@ -49,6 +59,8 @@ export interface IToneOptions {
   greenCurve?: number[][]
   /** Affects the overall saturation in the image, typically a number between -1 and 2 */
   saturation?: number
+  /** Applies the HSL adjustments in the image. */
+  hsl?: IHSLAdjustment[]
   whites?: number
   highlights?: number
   midtones?: number
