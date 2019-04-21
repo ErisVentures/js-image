@@ -28,6 +28,8 @@ function parseOptions(rawOptions) {
         .split('\n')
         .map(row => row.split(',').map(n => Number(n)))
     }
+
+    if (propName === 'hsl') section[propName] = JSON.parse(value)
   }
 
   options.effects = []
