@@ -1,6 +1,6 @@
 /* tslint:disable */
 import {IAnnotatedImageData, ImageData, IProximityAdjustment} from '../image-data'
-import {MapPixelFn, IToneOptions, ColorChannel, Colorspace} from '../types'
+import {MapPixelFn, IToneOptions, ColorChannel, Colorspace, IHSLAdjustment} from '../types'
 
 function validateCurvesInput(curve?: number[][]): number[][] {
   if (!curve) throw new Error('curve is not defined')
@@ -98,7 +98,7 @@ function computeCurvesValues(curve: number[][]): number[] {
     else if (closestIndex >= secondDegreeCoefficients.length) yPrime = yBase + c1 * xDiff
     else yPrime = yBase + c1 * xDiff + c2 * xDiff * xDiff + c3 * xDiff * xDiff * xDiff
 
-    precomputedValues[yValue] = ImageData.clip(yPrime)
+    precomputedValues[yValue] = ImageData.clip255(yPrime)
   }
 
   return precomputedValues
@@ -212,7 +212,7 @@ function saturation(imageData: IAnnotatedImageData, options: IToneOptions): IAnn
     for (let y = 0; y < imageData.height; y++) {
       const index = ImageData.indexFor(imageData, x, y, 1)
       const saturation = imageData.data[index]
-      imageData.data[index] = ImageData.clip(saturation * (1 + options.saturation!))
+      imageData.data[index] = ImageData.clip255(saturation * (1 + options.saturation!))
     }
   }
 

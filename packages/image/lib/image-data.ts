@@ -173,7 +173,7 @@ export class ImageData {
    * Performant clip for standard 8-bit pixel values
    * @param value Pixel value to clip to 0-255
    */
-  public static clip(value: number): number {
+  public static clip255(value: number): number {
     const rounded = Math.round(value)
     // Manually do a min/max to clip, believe it or not this became bottleneck
     return rounded < 0 ? 0 : rounded > 255 ? 255 : rounded
@@ -580,9 +580,9 @@ export class ImageData {
         }
       }
 
-      rawData[offset + 0] = ImageData.clip((hue / 360) * 255)
-      rawData[offset + 1] = ImageData.clip(saturation * 255)
-      rawData[offset + 2] = ImageData.clip(lightness * 255)
+      rawData[offset + 0] = ImageData.clip255((hue / 360) * 255)
+      rawData[offset + 1] = ImageData.clip255(saturation * 255)
+      rawData[offset + 2] = ImageData.clip255(lightness * 255)
     }
 
     dstImageData.colorspace = ImageData.HSL
@@ -665,9 +665,9 @@ export class ImageData {
         b = -((h - 360) * spread) / 60 + minColor
       }
 
-      rawData[offset + 0] = ImageData.clip(r * 255)
-      rawData[offset + 1] = ImageData.clip(g * 255)
-      rawData[offset + 2] = ImageData.clip(b * 255)
+      rawData[offset + 0] = ImageData.clip255(r * 255)
+      rawData[offset + 1] = ImageData.clip255(g * 255)
+      rawData[offset + 2] = ImageData.clip255(b * 255)
     }
 
     dstImageData.colorspace = Colorspace.RGB
@@ -900,9 +900,9 @@ export class ImageData {
         const bLinear = 0.0557 * x - 0.204 * y + 1.057 * z
 
         // From https://en.wikipedia.org/wiki/SRGB#Specification_of_the_transformation
-        rawData[offset + 0] = ImageData.clip(gammaCorrect(rLinear) * 255)
-        rawData[offset + 1] = ImageData.clip(gammaCorrect(gLinear) * 255)
-        rawData[offset + 2] = ImageData.clip(gammaCorrect(bLinear) * 255)
+        rawData[offset + 0] = ImageData.clip255(gammaCorrect(rLinear) * 255)
+        rawData[offset + 1] = ImageData.clip255(gammaCorrect(gLinear) * 255)
+        rawData[offset + 2] = ImageData.clip255(gammaCorrect(bLinear) * 255)
       }
       dstImageData.data = rawData
     }
@@ -992,9 +992,9 @@ export class ImageData {
         const g = srcImageData.data[offset + 1]
         const b = srcImageData.data[offset + 2]
         // From https://en.wikipedia.org/wiki/YCbCr#JPEG_conversion
-        rawData[offset + 0] = ImageData.clip(0.0 + 0.299 * r + 0.587 * g + 0.114 * b)
-        rawData[offset + 1] = ImageData.clip(128 - 0.169 * r - 0.331 * g + 0.501 * b)
-        rawData[offset + 2] = ImageData.clip(128 + 0.501 * r - 0.419 * g - 0.081 * b)
+        rawData[offset + 0] = ImageData.clip255(0.0 + 0.299 * r + 0.587 * g + 0.114 * b)
+        rawData[offset + 1] = ImageData.clip255(128 - 0.169 * r - 0.331 * g + 0.501 * b)
+        rawData[offset + 2] = ImageData.clip255(128 + 0.501 * r - 0.419 * g - 0.081 * b)
       }
       dstImageData.data = rawData
     }
@@ -1015,9 +1015,9 @@ export class ImageData {
       const cr = srcImageData.data[offset + 2]
 
       // From https://en.wikipedia.org/wiki/YCbCr#JPEG_conversion
-      rawData[offset + 0] = ImageData.clip(y + 1.402 * (cr - 128))
-      rawData[offset + 1] = ImageData.clip(y - 0.344 * (cb - 128) - 0.714 * (cr - 128))
-      rawData[offset + 2] = ImageData.clip(y + 1.772 * (cb - 128))
+      rawData[offset + 0] = ImageData.clip255(y + 1.402 * (cr - 128))
+      rawData[offset + 1] = ImageData.clip255(y - 0.344 * (cb - 128) - 0.714 * (cr - 128))
+      rawData[offset + 2] = ImageData.clip255(y + 1.772 * (cb - 128))
     }
 
     dstImageData.colorspace = Colorspace.RGB

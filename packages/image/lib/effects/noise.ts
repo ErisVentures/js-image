@@ -14,7 +14,7 @@ export function noise(
   const imageData = {width, height, data, colorspace: Colorspace.Greyscale, channels: 1}
   for (let x = 0; x < width; x++) {
     for (let y = 0; y < height; y++) {
-      data[ImageData.indexFor(imageData, x, y)] = ImageData.clip(prng.next() * 255)
+      data[ImageData.indexFor(imageData, x, y)] = ImageData.clip255(prng.next() * 255)
     }
   }
 

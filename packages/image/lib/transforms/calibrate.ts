@@ -50,7 +50,7 @@ function saturate(
         if (c === channelIndex) continue
         const secondaryValue = imageData.data[offset + c]
         const diffToPrimary = Math.max(primaryValue - secondaryValue, 0)
-        imageData.data[offset + c] = ImageData.clip(secondaryValue - diffToPrimary * intensity)
+        imageData.data[offset + c] = ImageData.clip255(secondaryValue - diffToPrimary * intensity)
       }
     }
   }
@@ -78,7 +78,7 @@ function desaturate(
         const secondaryValue = imageData.data[offset + c]
         const diffToPrimary = Math.max(primaryValue - secondaryValue, 0)
         const multiplier = intensity * intensityByChannel[channelIndex]
-        imageData.data[offset + c] = ImageData.clip(secondaryValue + diffToPrimary * multiplier)
+        imageData.data[offset + c] = ImageData.clip255(secondaryValue + diffToPrimary * multiplier)
       }
 
       let r = imageData.data[offset + 0]
@@ -120,9 +120,9 @@ function desaturate(
       g *= 1 - saturationIntensity * 0.12
       b *= 1 - saturationIntensity * 0.12
 
-      imageData.data[offset + 0] = ImageData.clip(r)
-      imageData.data[offset + 1] = ImageData.clip(g)
-      imageData.data[offset + 2] = ImageData.clip(b)
+      imageData.data[offset + 0] = ImageData.clip255(r)
+      imageData.data[offset + 1] = ImageData.clip255(g)
+      imageData.data[offset + 2] = ImageData.clip255(b)
     }
   }
 

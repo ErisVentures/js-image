@@ -45,10 +45,10 @@ export function convolve(
       }
 
       var outputIndex = (y * imageWidth + x) * 4
-      dstPixels[outputIndex] = ImageData.clip(Math.round(r / totalWeight))
-      dstPixels[outputIndex + 1] = ImageData.clip(Math.round(g / totalWeight))
-      dstPixels[outputIndex + 2] = ImageData.clip(Math.round(b / totalWeight))
-      dstPixels[outputIndex + 3] = ImageData.clip(Math.round(a / totalWeight))
+      dstPixels[outputIndex] = ImageData.clip255(Math.round(r / totalWeight))
+      dstPixels[outputIndex + 1] = ImageData.clip255(Math.round(g / totalWeight))
+      dstPixels[outputIndex + 2] = ImageData.clip255(Math.round(b / totalWeight))
+      dstPixels[outputIndex + 3] = ImageData.clip255(Math.round(a / totalWeight))
     }
   }
 
