@@ -211,6 +211,8 @@ export function hslAdjustments(
 ): IAnnotatedImageData {
   if (!adjustments.length) return imageData
 
+  imageData = ImageData.toHSL(imageData)
+
   const hueAdjustments = new Int8Array(360)
   const saturationAdjustments = new Float32Array(360)
   const lightnessAdjustments = new Float32Array(360)
@@ -316,6 +318,7 @@ export function tone(imageData: IAnnotatedImageData, options: IToneOptions): IAn
     imageData = curves(imageData, unsafeCurves)
   }
 
+  if (options.hsl) imageData = hslAdjustments(imageData, options.hsl)
   if (options.saturation) imageData = saturation(imageData, options)
 
   if (options.redCurve || options.greenCurve || options.blueCurve) {

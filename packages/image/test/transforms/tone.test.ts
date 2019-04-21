@@ -70,6 +70,14 @@ describe('#transforms/tone', () => {
       expect(adjusted.data).toEqual([5, 0.5, 0.75])
     })
 
+    it('should clip the result', () => {
+      imageData.data = [350, 0.5, 0.5]
+      const adjusted = hsl(imageData, [
+        {targetHue: 350, saturationShift: 10, lightnessShift: 10},
+      ])
+      expect(adjusted.data).toEqual([350, 1, 1])
+    })
+
     it('should not adjustment when hue is different', () => {
       const adjusted = hsl(imageData, [{targetHue: 150, lightnessShift: 0.25}])
       expect(adjusted.data).toEqual([0, 1, 0.5])

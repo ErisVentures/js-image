@@ -247,6 +247,18 @@ export function runImageTests(ImageImpl: typeof NodeImage | typeof BrowserImage)
 
         await testSkater('skater-curves-rgb.jpg', modify, {strict: false, tolerance: 20})
       })
+
+      it('should apply HSL adjustments', async () => {
+        const modify = (img: NodeImage) =>
+          img.tone({
+            hsl: [
+              {targetHue: 220, targetBreadth: 60, hueShift: -30, saturationShift: 1, lightnessShift: -0.2},
+              {targetHue: 140, saturationShift: -1, lightnessShift: 0.1},
+            ]
+          })
+
+        await testSkater('skater-tone-hsl.jpg', modify, {strict: false, tolerance: 20})
+      })
     })
 
     describe('._applySharpen', () => {
