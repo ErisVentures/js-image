@@ -280,7 +280,7 @@ export interface ICalibrationProfile {
   zBlue: number
 }
 
-export type BufferLike = Buffer | Uint8Array | number[]
+export type BufferLike = Buffer | Uint8Array | Float32Array | number[]
 
 export interface IPixelCoordinate {
   x: number

@@ -8,7 +8,7 @@ function toXYZ(hue: number, saturation: number, lightness: number): number[] {
     height: 1,
     channels: 3,
     colorspace: Colorspace.HSL,
-    data: [(hue / 360) * 255, saturation * 255, lightness * 255],
+    data: [hue, saturation, lightness],
   }
 
   return ImageData.toXYZ(imageData).data as number[]

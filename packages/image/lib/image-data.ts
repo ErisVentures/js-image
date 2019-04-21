@@ -305,8 +305,8 @@ export class ImageData {
   }
 
   public static rotateSquareArray(
-    srcArray: number[] | Uint8Array,
-    dstArray: number[] | Uint8Array,
+    srcArray: number[] | Uint8Array | Float32Array,
+    dstArray: number[] | Uint8Array | Float32Array,
     width: number,
     height: number,
     angle: number,
@@ -556,7 +556,7 @@ export class ImageData {
 
     const dstImageData = {...srcImageData}
     const numPixels = srcImageData.width * srcImageData.height
-    const rawData = new Uint8Array(numPixels * 3)
+    const rawData = new Float32Array(numPixels * 3)
     for (let i = 0; i < numPixels; i++) {
       const offset = i * 3
       const r = srcImageData.data[offset] / 255
@@ -580,9 +580,9 @@ export class ImageData {
         }
       }
 
-      rawData[offset + 0] = ImageData.clip255((hue / 360) * 255)
-      rawData[offset + 1] = ImageData.clip255(saturation * 255)
-      rawData[offset + 2] = ImageData.clip255(lightness * 255)
+      rawData[offset + 0] = ImageData.clipChannel(hue, ColorChannel.Hue)
+      rawData[offset + 1] = ImageData.clipChannel(saturation, ColorChannel.Saturation)
+      rawData[offset + 2] = ImageData.clipChannel(lightness, ColorChannel.Lightness)
     }
 
     dstImageData.colorspace = ImageData.HSL
@@ -597,9 +597,9 @@ export class ImageData {
     const rawData = new Uint8Array(numPixels * 3)
     for (let i = 0; i < numPixels; i++) {
       const offset = i * 3
-      const h = (360 * srcImageData.data[offset]) / 255
-      const s = srcImageData.data[offset + 1] / 255
-      const l = srcImageData.data[offset + 2] / 255
+      const h = srcImageData.data[offset]
+      const s = srcImageData.data[offset + 1]
+      const l = srcImageData.data[offset + 2]
 
       // We know that...
       // S = (maxColor - minColor) / (1 - |2L - 1|)

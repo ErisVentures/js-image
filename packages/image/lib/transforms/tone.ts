@@ -191,7 +191,7 @@ function convertToneToCurves(options: IToneOptions): number[][] {
 
       hasAdjustment = true
       const cosDistance = Math.cos(distanceRatio * cosine0)
-      curves[i][1] = Math.min(255, Math.max(0, Math.round(y + adjustment * cosDistance)))
+      curves[i][1] = ImageData.clip255(y + adjustment * cosDistance)
     }
   }
 
@@ -212,7 +212,10 @@ function saturation(imageData: IAnnotatedImageData, options: IToneOptions): IAnn
     for (let y = 0; y < imageData.height; y++) {
       const index = ImageData.indexFor(imageData, x, y, 1)
       const saturation = imageData.data[index]
-      imageData.data[index] = ImageData.clip255(saturation * (1 + options.saturation!))
+      imageData.data[index] = ImageData.clipChannel(
+        saturation * (1 + options.saturation!),
+        ColorChannel.Saturation,
+      )
     }
   }
 

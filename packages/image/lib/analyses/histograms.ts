@@ -6,7 +6,7 @@ export function histograms(
   options?: IHistogramOptions,
 ): IHistogramsAnalysis {
   const {buckets: numBuckets = 8} = options || {}
-  const imageData = ImageData.toColorspace(rawImageData, Colorspace.HSL)
+  const imageData = ImageData.toHSL(rawImageData)
 
   const hueHistogram: number[] = []
   const saturationHistogram: number[] = []
@@ -22,18 +22,18 @@ export function histograms(
   for (let x = 0; x < imageData.width; x++) {
     for (let y = 0; y < imageData.height; y++) {
       const index = ImageData.indexFor(imageData, x, y)
-      const hue = imageData.data[index]
+      const hue = Math.round(imageData.data[index] / 360 * 255)
       const saturation = imageData.data[index + 1]
       const lightness = imageData.data[index + 2]
 
-      const saturationOutOf1 = saturation / 256
-      const lightnessOutOf1 = lightness / 256
+      const saturationOutOf1 = saturation
+      const lightnessOutOf1 = lightness
       const lightnessDistanceToHalf = Math.abs(lightnessOutOf1 - 0.5)
       const trueSaturationOutOf1 = Math.sqrt(saturationOutOf1 * (1 - lightnessDistanceToHalf))
-      const trueSaturationBucket = Math.floor((trueSaturationOutOf1 * 256) / bucketSize)
+      const trueSaturationBucket = Math.floor((trueSaturationOutOf1 * 255) / bucketSize)
 
       const hueBucket = Math.floor(hue / bucketSize)
-      const lightnessBucket = Math.floor(lightness / bucketSize)
+      const lightnessBucket = Math.floor(lightness * 255 / bucketSize)
 
       hueHistogram[hueBucket] += trueSaturationOutOf1
       saturationHistogram[trueSaturationBucket] += 1
