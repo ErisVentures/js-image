@@ -72,9 +72,7 @@ describe('#transforms/tone', () => {
 
     it('should clip the result', () => {
       imageData.data = [350, 0.5, 0.5]
-      const adjusted = hsl(imageData, [
-        {targetHue: 350, saturationShift: 10, lightnessShift: 10},
-      ])
+      const adjusted = hsl(imageData, [{targetHue: 350, saturationShift: 10, lightnessShift: 10}])
       expect(adjusted.data).toEqual([350, 1, 1])
     })
 

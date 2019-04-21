@@ -1,5 +1,5 @@
 import {IAnnotatedImageData, ImageData} from '../image-data'
-import {Colorspace, IHistogramsAnalysis, IHistogramOptions} from '../types'
+import {IHistogramsAnalysis, IHistogramOptions} from '../types'
 
 export function histograms(
   rawImageData: IAnnotatedImageData,
@@ -22,7 +22,7 @@ export function histograms(
   for (let x = 0; x < imageData.width; x++) {
     for (let y = 0; y < imageData.height; y++) {
       const index = ImageData.indexFor(imageData, x, y)
-      const hue = Math.round(imageData.data[index] / 360 * 255)
+      const hue = Math.round((imageData.data[index] / 360) * 255)
       const saturation = imageData.data[index + 1]
       const lightness = imageData.data[index + 2]
 
@@ -33,7 +33,7 @@ export function histograms(
       const trueSaturationBucket = Math.floor((trueSaturationOutOf1 * 255) / bucketSize)
 
       const hueBucket = Math.floor(hue / bucketSize)
-      const lightnessBucket = Math.floor(lightness * 255 / bucketSize)
+      const lightnessBucket = Math.floor((lightness * 255) / bucketSize)
 
       hueHistogram[hueBucket] += trueSaturationOutOf1
       saturationHistogram[trueSaturationBucket] += 1

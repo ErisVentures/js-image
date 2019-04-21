@@ -243,7 +243,7 @@ export function hslAdjustments(
           Math.abs(targetHue + 360 - hueToShift),
           Math.abs(targetHue - 360 - hueToShift),
         ) / targetBreadth
-        const percentageToApply = Math.sqrt(1 - distanceRatioFromTarget)
+      const percentageToApply = Math.sqrt(1 - distanceRatioFromTarget)
       hueAdjustments[hueToShift] += hueShift * percentageToApply
       saturationAdjustments[hueToShift] += saturationShift * percentageToApply
       lightnessAdjustments[hueToShift] += lightnessShift * percentageToApply
