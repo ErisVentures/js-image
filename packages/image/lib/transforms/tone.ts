@@ -225,7 +225,7 @@ export function hslAdjustments(
   for (const adjustment of adjustments) {
     const {
       targetHue,
-      targetBreadth = 30,
+      targetBreadth = 45,
       hueShift = 0,
       saturationShift = 0,
       lightnessShift = 0,

@@ -82,19 +82,19 @@ describe('#transforms/tone', () => {
     })
 
     it('should taper adjustment when hue is different', () => {
-      const adjusted = hsl(imageData, [{targetHue: 345, lightnessShift: 0.25}])
+      const adjusted = hsl(imageData, [{targetHue: 345, targetBreadth: 30, lightnessShift: 0.25}])
       expect(adjusted.data).toEqual([0, 1, 0.6767766922712326])
     })
 
     it('should taper adjustment when multiple dimensions are different', () => {
       imageData.data = [350, 0.5, 0.75]
-      const adjusted = hsl(imageData, [{targetHue: 0, lightnessShift: 0.25}])
+      const adjusted = hsl(imageData, [{targetHue: 0, targetBreadth: 30, lightnessShift: 0.25}])
       expect(adjusted.data).toEqual([350, 0.5, 0.8097865801102643])
     })
 
     it('should apply multiple adjustments at once', () => {
       imageData.data = [350, 0.5, 0.75]
-      const adjusted = hsl(imageData, [{targetHue: 0, lightnessShift: 0.25}])
+      const adjusted = hsl(imageData, [{targetHue: 0, targetBreadth: 30, lightnessShift: 0.25}])
       expect(adjusted.data).toEqual([350, 0.5, 0.8097865801102643])
     })
 
