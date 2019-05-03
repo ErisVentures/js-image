@@ -8,6 +8,7 @@ import {expect, fixture, compareToFixture, testImage} from './utils'
 import {ImageResizeFit, Colorspace, EdgeMethod, HashMethod, ImageFormat} from '../lib/types'
 
 const sourceNef = fixture('source-google.nef')
+const sourceCr2 = fixture('source-canon.cr2')
 const skater = fixture('source-skater.jpg')
 const sydney = fixture('source-sydney.jpg')
 const couple = fixture('source-faces-couple.jpg')
@@ -574,6 +575,13 @@ export function runImageTests(ImageImpl: typeof NodeImage | typeof BrowserImage)
               tolerance: 30,
             })
           })
+      })
+
+      it('should handle canon raw images', async () => {
+        const image = ImageImpl.from(sourceCr2)
+        expect(image).toBeInstanceOf(ImageImpl)
+        const buffer = await image.resize({width: 600, fit: ImageResizeFit.Auto}).toBuffer()
+        await compareToFixture(buffer, 'canon.jpg', {strict: false, increment: 10, tolerance: 40})
       })
     })
 

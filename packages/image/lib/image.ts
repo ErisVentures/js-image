@@ -291,6 +291,7 @@ export abstract class Image {
 
     const type = fileType(buffer) || {mime: 'unknown'}
     switch (type.mime) {
+      case 'image/x-canon-cr2':
       case 'image/tiff':
         const decoder = new TIFFDecoder(buffer)
         buffer = decoder.extractJPEG() as Buffer
