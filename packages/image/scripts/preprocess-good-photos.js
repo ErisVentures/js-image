@@ -40,12 +40,14 @@ function mkdirp(filePath) {
 
 async function run() {
   const inputDirPath = path.resolve(process.cwd(), process.argv[2])
+  const labelsPath = path.join(inputDirPath, '0000-labels.json')
   const sourceDirPath = path.join(inputDirPath, 'Source')
   const autogenDirPath = path.join(inputDirPath, 'Auto-Generated')
   if (!fs.existsSync(sourceDirPath)) throw new Error(`Expected ${sourceDirPath} to exist`)
 
   mkdirp(autogenDirPath)
 
+  const labels = []
   const sourceDirRatingFolderPaths = fs
     .readdirSync(sourceDirPath)
     .filter(folder => Number.isFinite(Number(folder)))
@@ -63,6 +65,7 @@ async function run() {
         if (!file.endsWith('.jpg') || file.startsWith('.')) return
 
         try {
+          labels.push({file: `${rating}/${file}`, label: rating >= 50 ? 'good' : 'bad'})
           const inputPath = path.join(ratingFolderPath, file)
           const outputPath = path.join(autogenRatingFolderPath, file)
           if (fs.existsSync(outputPath)) {
@@ -82,6 +85,7 @@ async function run() {
   }
 
   console.log('Done!')
+  fs.writeFileSync(labelsPath, JSON.stringify(labels, null, 2))
 }
 
 run().catch(err => {
