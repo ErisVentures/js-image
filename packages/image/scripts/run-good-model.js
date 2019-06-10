@@ -48,7 +48,7 @@ async function run() {
     const sorted = _.sortBy(allFileConfidence, 'confidence').reverse()
 
     if (fs.existsSync(TMP_PHOTOS_PATH)) fs.removeSync(TMP_PHOTOS_PATH)
-    else fs.mkdirpSync(TMP_PHOTOS_PATH)
+    fs.mkdirpSync(TMP_PHOTOS_PATH)
 
     let i = 0
     for (const {filePath, confidence} of sorted) {

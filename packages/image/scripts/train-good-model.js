@@ -1,7 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 const sharp = require('sharp')
-const lodash = require('lodash')
+const _ = require('lodash')
 const tf = require('@tensorflow/tfjs-node')
 const Bluebird = require('bluebird')
 
@@ -16,46 +16,63 @@ const IMAGE_HEIGHT = 150
 const IMAGE_CHANNELS = 1
 const IMAGE_SIZE = IMAGE_WIDTH * IMAGE_HEIGHT * IMAGE_CHANNELS
 const LABEL_SIZE = 2
+const NUMBER_OF_BATCHES = 50
 
 async function run() {
   const inputDir = process.argv[2]
-  const labelsAsJson = require(path.join(inputDir, '0000-labels.json'))
-
+  const labelsAsJson = _.uniqBy(require(path.join(inputDir, '0000-labels.json')), 'file')
   const PREPROCESSED_IMAGES_FILE = path.join(inputDir, '0000-images.uint8')
   const PREPROCESSED_LABELS_FILE = path.join(inputDir, '0000-labels.uint8')
+  const BATCH_SIZE = Math.ceil(labelsAsJson.length / NUMBER_OF_BATCHES)
 
-  async function loadImages() {
-    const goodFiles = new Set(labelsAsJson.filter(item => item.label === 'good').map(item => item.file))
-    const badFiles = new Set(labelsAsJson.filter(item => item.label === 'bad').map(item => item.file))
-    console.log(`${goodFiles.size} good, ${badFiles.size} not good`)
+  const fileDefinitions = labelsAsJson.map((item, idx) => ({...item, idx}))
+  const goodFiles = new Set(labelsAsJson.filter(item => item.label === 'good').map(i => i.file))
+  const badFiles = new Set(labelsAsJson.filter(item => item.label === 'bad').map(i => i.file))
+  console.log(`${goodFiles.size} good, ${badFiles.size} not good`)
 
-    if (fs.existsSync(PREPROCESSED_IMAGES_FILE)) {
+  function getFilePathForIndex(template, index) {
+    const prefix = _.padStart(index.toString(), 4, '0')
+    return template.replace(`0000`, prefix)
+  }
+
+  async function loadImages(index) {
+    const bufferFilePath = getFilePathForIndex(PREPROCESSED_IMAGES_FILE, index)
+    const labelsFilePath = getFilePathForIndex(PREPROCESSED_LABELS_FILE, index)
+
+    if (fs.existsSync(bufferFilePath)) {
       return {
-        imagesBuffer: fs.readFileSync(PREPROCESSED_IMAGES_FILE),
-        labelsBuffer: fs.readFileSync(PREPROCESSED_LABELS_FILE),
+        imagesBuffer: fs.readFileSync(bufferFilePath),
+        labelsBuffer: fs.readFileSync(labelsFilePath),
       }
     }
 
     const images = []
-    const allFiles = lodash.shuffle([...goodFiles, ...badFiles]).slice(0, 2000)
-    await Bluebird.map(allFiles, async (file, index) => {
-      const filePath = path.join(inputDir, 'Auto-Generated', file)
-      const rawImage = fs.readFileSync(filePath)
-      const imageData = await sharp(rawImage).greyscale().raw().toBuffer({resolveWithObject: true})
+    const filesToUseForBatch = fileDefinitions
+      .filter(item => item.idx % NUMBER_OF_BATCHES === index)
+      .map(item => item.file)
 
-      const labelBytes = [0, 0]
-      if (goodFiles.has(file)) labelBytes[1] = 1
-      else labelBytes[0] = 1
+    await Bluebird.map(filesToUseForBatch, async (file, index) => {
+      try {
+        const filePath = path.join(inputDir, 'Auto-Generated', file)
+        const rawImage = fs.readFileSync(filePath)
+        const imageData = await sharp(rawImage).greyscale().raw().toBuffer({resolveWithObject: true})
 
-      images.push({file, imageBuffer: imageData.data, labelBuffer: Buffer.from(labelBytes)})
-      console.log(`Done with ${file} (${allFiles.length - index} of ${allFiles.length})`)
+        const labelBytes = [0, 0]
+        if (goodFiles.has(file)) labelBytes[1] = 1
+        else labelBytes[0] = 1
+
+        images.push({file, imageBuffer: imageData.data, labelBuffer: Buffer.from(labelBytes)})
+        console.log(`Done with ${file} (${filesToUseForBatch.length - index} of ${filesToUseForBatch.length})`)
+      } catch (err) {
+        console.error(err)
+      }
     }, {concurrency: 4})
 
-    const shuffled = lodash.shuffle(images)
+    const shuffled = _.shuffle(images)
     const imagesBuffer = Buffer.concat(shuffled.map(x => x.imageBuffer))
     const labelsBuffer = Buffer.concat(shuffled.map(x => x.labelBuffer))
-    fs.writeFileSync(PREPROCESSED_IMAGES_FILE, imagesBuffer)
-    fs.writeFileSync(PREPROCESSED_LABELS_FILE, labelsBuffer)
+    fs.writeFileSync(bufferFilePath, imagesBuffer)
+    fs.writeFileSync(labelsFilePath, labelsBuffer)
 
     return {imagesBuffer, labelsBuffer}
   }
@@ -110,34 +127,55 @@ async function run() {
     return model
   }
 
-  function getTensorDatasets(imagesBuffer, labelsBuffer) {
-    const xs = new Float32Array(imagesBuffer.length)
-    const xsCount = xs.length / IMAGE_SIZE
-    const labelsCount = labelsBuffer.length / LABEL_SIZE
-    if (xsCount !== labelsCount) throw new Error(`Mismatch in labels and xs`)
-
-    for (let i = 0; i <imagesBuffer.length; i++) {
-      xs[i] = imagesBuffer[i] / 255
-    }
-
-    return {
-      n: xsCount,
-      xs: tf.tensor2d(xs, [xsCount, IMAGE_SIZE]),
-      labels: tf.tensor2d(new Uint8Array(labelsBuffer), [labelsCount, LABEL_SIZE])
+  async function prebuildAll() {
+    for (let i = 0; i < NUMBER_OF_BATCHES; i++) {
+      await loadImages(i)
     }
   }
 
-  const model = getTensorModel()
-  const {imagesBuffer, labelsBuffer} = await loadImages()
-  const [dataX, dataY] = tf.tidy(() => {
-    const {n, xs, labels} = getTensorDatasets(imagesBuffer, labelsBuffer)
-    return [xs.reshape([n, IMAGE_WIDTH, IMAGE_HEIGHT, IMAGE_CHANNELS]), labels]
-  })
+  async function *xsGenerator() {
+    for (let i = 0; i < NUMBER_OF_BATCHES; i++) {
+      const {imagesBuffer, labelsBuffer} = await loadImages(i)
+      const xs = new Float32Array(imagesBuffer.length)
+      const xsCount = xs.length / IMAGE_SIZE
+      const labelsCount = labelsBuffer.length / LABEL_SIZE
+      if (xsCount !== labelsCount) throw new Error(`Mismatch in labels and xs`)
 
-  await model.fit(dataX, dataY, {
-    batchSize: 100,
-    epochs: 20,
-    shuffle: true,
+      for (let i = 0; i < imagesBuffer.length; i++) {
+        xs[i] = imagesBuffer[i] / 255
+      }
+
+      for (let i = 0; i < xsCount; i++) {
+        const xBuffer = xs.slice(i * IMAGE_SIZE, (i + 1) * IMAGE_SIZE)
+        if (!xBuffer.length) console.log({i, xBuffer, IMAGE_SIZE, xsCount})
+        yield tf
+          .tensor1d(xBuffer)
+          .reshape([IMAGE_WIDTH, IMAGE_HEIGHT, IMAGE_CHANNELS])
+      }
+    }
+  }
+
+  async function *labelsGenerator() {
+    for (let i = 0; i < NUMBER_OF_BATCHES; i++) {
+      const {labelsBuffer} = await loadImages(i)
+      const labelsCount = labelsBuffer.length / LABEL_SIZE
+
+      for (let i = 0; i < labelsCount; i++) {
+        const data = new Uint8Array([labelsBuffer[i * LABEL_SIZE], labelsBuffer[i * LABEL_SIZE + 1]])
+        yield tf.tensor1d(data)
+      }
+    }
+  }
+
+  console.log('Prebuilding labels...')
+  await prebuildAll()
+  const model = getTensorModel()
+  const xs = tf.data.generator(xsGenerator)
+  const labels = tf.data.generator(labelsGenerator)
+  const dataStream = tf.data.zip({xs, ys: labels}).shuffle(BATCH_SIZE).batch(100)
+
+  await model.fitDataset(dataStream, {
+    epochs: 15,
   })
 
   const MODEL_DIR = path.join(__dirname, '../data/models')
