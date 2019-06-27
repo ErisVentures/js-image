@@ -177,8 +177,11 @@ export interface IFaceAnalysisEyeEntry extends IBoundingBox {
 
 export interface IFaceAnalysisEntry {
   confidence: number
+  expression: 'neutral' | 'happy' | 'sad' | 'angry' | 'surprised' | 'disgusted' | 'fearful'
+  expressionConfidence: number
   happinessConfidence: number
   boundingBox: IBoundingBox
+  descriptor: number[]
   eyes: IFaceAnalysisEyeEntry[]
   sharpness?: ISharpnessAnalysis
 }

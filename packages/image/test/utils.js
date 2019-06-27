@@ -1,15 +1,16 @@
 jest.setTimeout(20000)
 
 const fs = require('fs')
+const path = require('path')
 const memoize = require('lodash/memoize')
 const ImageData = require('../dist/image-data').ImageData
 const {hasWASM, getWASM} = require('../dist/utils/env')
 const {registerNodeWASM} = require('../dist/utils/node-wasm')
 
 const environmentTolerance = Number(process.env.LOOSE_COMPARISON_TOLERANCE) || 0
-const fixturePath = path => `${__dirname}/fixtures/${path}`
-const fixture = memoize(path => fs.readFileSync(fixturePath(path)))
-const fixtureDecode = memoize(path => ImageData.from(fixture(path)))
+const fixturePath = filePath => path.resolve(__dirname, 'fixtures', filePath)
+const fixture = memoize(filePath => fs.readFileSync(fixturePath(filePath)))
+const fixtureDecode = memoize(filePath => ImageData.from(fixture(filePath)))
 
 function getImageDiff(actual, expectation, increment = 1) {
   if (actual.data) {

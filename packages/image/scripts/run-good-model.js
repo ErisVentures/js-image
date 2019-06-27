@@ -13,21 +13,27 @@ if (process.argv.length !== 3) {
 }
 
 async function runModelOnImage(imagePath, model) {
-  const rawImage = fs.readFileSync(imagePath)
-  const imageData = await sharp(rawImage)
-    .greyscale()
-    .resize(150, 150, {fit: 'fill'})
-    .raw()
-    .toBuffer({resolveWithObject: true})
-  const tensorInputArray = new Float32Array(imageData.data.length)
-  for (let i = 0; i < imageData.data.length; i++) {
-    tensorInputArray[i] = imageData.data[i] / 255
+  const fileName = path.basename(imagePath)
+  try {
+    const rawImage = fs.readFileSync(imagePath)
+    const imageData = await sharp(rawImage)
+      .greyscale()
+      .resize(150, 150, {fit: 'fill'})
+      .raw()
+      .toBuffer({resolveWithObject: true})
+    const tensorInputArray = new Float32Array(imageData.data.length)
+    for (let i = 0; i < imageData.data.length; i++) {
+      tensorInputArray[i] = imageData.data[i] / 255
+    }
+
+    const imageTensor = tf.tensor4d(tensorInputArray, [1, 150, 150, 1])
+
+    console.log('Predicting on', fileName)
+    const data = await model.predict(imageTensor).data()
+    return data[1]
+  } catch (err) {
+    console.error('Failed on', fileName, err.stack)
   }
-
-  const imageTensor = tf.tensor4d(tensorInputArray, [1, 150, 150, 1])
-
-  const data = await model.predict(imageTensor).data()
-  return data[1]
 }
 
 async function run() {
@@ -42,6 +48,7 @@ async function run() {
     for (const file of fs.readdirSync(inputPath)) {
       const filePath = path.resolve(inputPath, file)
       const confidence = await runModelOnImage(filePath, model)
+      if (confidence === undefined) continue
       allFileConfidence.push({filePath, confidence})
     }
 

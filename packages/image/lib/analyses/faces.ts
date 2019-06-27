@@ -1,6 +1,7 @@
 monkeyPatchConsoleWarn()
 import * as tf from '@tensorflow/tfjs-node'
 import * as path from 'path'
+import * as _ from 'lodash'
 
 import * as faceapi from 'face-api.js'
 import {IAnnotatedImageData, ImageData} from '../image-data'
@@ -21,6 +22,7 @@ async function initializeIfNecessary_(): Promise<void> {
   await faceapi.nets.ssdMobilenetv1.loadFromDisk(modelDir)
   await faceapi.nets.faceLandmark68Net.loadFromDisk(modelDir)
   await faceapi.nets.faceExpressionNet.loadFromDisk(modelDir)
+  await faceapi.nets.faceRecognitionNet.loadFromDisk(modelDir)
 
   const eyeModelPath = path.join(modelDir, 'eye-model/model.json')
   eyeModel = await tf.loadLayersModel(`file://${eyeModelPath}`)
@@ -123,6 +125,16 @@ const initializeIfNecessary = instrumentation.wrapMethod(
   initializeIfNecessary_,
 )
 
+function convertFaceDescriptor(descriptor: Float32Array): number[] {
+  const output: number[] = []
+  for (let i = 0; i < descriptor.length; i++) {
+    // The complete range is ~[-0.5, 0.5] but in practice nearly all values are in ~[-0.3, 0.3]
+    // We'll remap [-0.4, 0.4] to [0, 256] and live with the clipping in exchange for greater resolution at the center
+    output[i] = ImageData.clip255(descriptor[i] * 320 + 128)
+  }
+  return output
+}
+
 export async function detectFaces(imageData: IAnnotatedImageData): Promise<IFaceAnalysisEntry[]> {
   await initializeIfNecessary()
 
@@ -137,15 +149,20 @@ export async function detectFaces(imageData: IAnnotatedImageData): Promise<IFace
     .detectAllFaces(imageTensor as any, detectionOptions)
     .withFaceExpressions()
     .withFaceLandmarks()
+    .withFaceDescriptors()
 
-  const faces = results.map(({detection, landmarks, expressions}) => {
+  const faces = results.map(({detection, landmarks, expressions, descriptor}) => {
     const faceBox = roundBoundingBox(detection.box)
     const happyExpression = expressions.find(item => item.expression === 'happy')
+    const maxExpression = _.maxBy(expressions, x => x.probability)
 
     return {
       confidence: detection.score,
+      expression: (maxExpression && maxExpression.expression) || 'neutral',
+      expressionConfidence: (maxExpression && maxExpression.probability) || 0,
       happinessConfidence: (happyExpression && happyExpression.probability) || 0,
       boundingBox: faceBox,
+      descriptor: convertFaceDescriptor(descriptor),
       eyes: [
         getEyeBoxFromPointArray(landmarks.getLeftEye(), faceBox),
         getEyeBoxFromPointArray(landmarks.getRightEye(), faceBox),

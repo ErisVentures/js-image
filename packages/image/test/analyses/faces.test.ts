@@ -6,6 +6,7 @@ describe('analyses/faces', () => {
     it('should find faces in clear shot', async () => {
       const imageData = await fixtureDecode('source-faces-couple.jpg')
       const faces = await facesModule.detectFaces(imageData)
+      faces.forEach(face => (face.descriptor = face.descriptor.slice(0, 2)))
       expect(faces).toMatchInlineSnapshot(`
         Array [
           Object {
@@ -16,6 +17,12 @@ describe('analyses/faces', () => {
               "y": 150,
             },
             "confidence": 0.9888889789581299,
+            "descriptor": Array [
+              81,
+              180,
+            ],
+            "expression": "happy",
+            "expressionConfidence": 1,
             "eyes": Array [
               Object {
                 "height": 10,
@@ -42,6 +49,12 @@ describe('analyses/faces', () => {
               "y": 166,
             },
             "confidence": 0.9870948791503906,
+            "descriptor": Array [
+              93,
+              172,
+            ],
+            "expression": "happy",
+            "expressionConfidence": 1,
             "eyes": Array [
               Object {
                 "height": 8,
@@ -67,6 +80,7 @@ describe('analyses/faces', () => {
     it('should find faces in cluttered shot', async () => {
       const imageData = await fixtureDecode('source-faces-closed-eyes.jpg')
       const faces = await facesModule.detectFaces(imageData)
+      faces.forEach(face => (face.descriptor = face.descriptor.slice(0, 2)))
       expect(faces).toMatchInlineSnapshot(`
         Array [
           Object {
@@ -77,6 +91,12 @@ describe('analyses/faces', () => {
               "y": 121,
             },
             "confidence": 0.9829439520835876,
+            "descriptor": Array [
+              116,
+              154,
+            ],
+            "expression": "sad",
+            "expressionConfidence": 0.9999020099639893,
             "eyes": Array [
               Object {
                 "height": 20,
