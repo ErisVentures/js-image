@@ -208,9 +208,15 @@ export interface ICompositionAnalysis {
   verticalParallelism: number
 }
 
+export interface ISceneAnalysisEntry {
+  scene: string
+  confidence: number
+}
+
 export interface IAnalysis {
   hash?: string
   faces?: IFaceAnalysisEntry[]
+  scenes?: ISceneAnalysisEntry[]
   sharpness?: ISharpnessAnalysis
   histograms?: IHistogramsAnalysis
   composition?: ICompositionAnalysis
