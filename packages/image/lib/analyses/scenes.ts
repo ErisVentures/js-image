@@ -383,7 +383,7 @@ let scenesModel: tf.GraphModel | undefined
 async function initializeIfNecessary_(): Promise<void> {
   if (scenesModel) return
 
-  const modelDir = path.join(__dirname, '../../data/models')
+  const modelDir = path.join(__dirname, '../../data/beta-models')
 
   const scenesModelPath = path.join(modelDir, 'scenes-model/model.json')
   scenesModel = await tf.loadGraphModel(`file://${scenesModelPath}`)

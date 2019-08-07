@@ -3,7 +3,7 @@ const path = require('path')
 const sharp = require('sharp')
 const tf = require('@tensorflow/tfjs-node')
 
-const SCENES_MODEL_DIR = path.join(__dirname, '../data/models/scenes-model')
+const SCENES_MODEL_DIR = path.join(__dirname, '../data/beta-models/scenes-model')
 const SCENES_TXT = path.join(SCENES_MODEL_DIR, 'scenes.txt')
 
 if (process.argv.length !== 3) {

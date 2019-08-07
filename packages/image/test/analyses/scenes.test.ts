@@ -1,7 +1,7 @@
 import * as scenesModule from '../../lib/analyses/scenes'
 import {expect, fixtureDecode} from '../utils'
 
-describe('analyses/scenes', () => {
+describe.skip('analyses/scenes', () => {
   describe('detectScenes()', () => {
     it('should identify an indoor scene', async () => {
       const imageData = await fixtureDecode('source-scenes-food-court.jpg')
