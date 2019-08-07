@@ -178,7 +178,7 @@ async function run() {
     epochs: 15,
   })
 
-  const MODEL_DIR = path.join(__dirname, '../data/models')
+  const MODEL_DIR = path.join(__dirname, '../data/beta-models')
   await model.save(`file://${path.join(MODEL_DIR, 'photo-model')}`)
 }
 

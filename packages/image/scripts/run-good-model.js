@@ -39,7 +39,7 @@ async function runModelOnImage(imagePath, model) {
 async function run() {
   const inputPath = path.resolve(process.cwd(), process.argv[2])
   const model = await tf.loadLayersModel(
-    `file://${path.join(__dirname, '../data/models/photo-model/model.json')}`,
+    `file://${path.join(__dirname, '../data/beta-models/photo-model/model.json')}`,
   )
 
 
