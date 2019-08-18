@@ -2,12 +2,25 @@ const fs = require('fs')
 const path = require('path')
 
 module.exports = async function(modules, argv) {
+  const totalStart = Date.now()
+  let start = Date.now()
+
   const {Image, BrowserImage} = modules['@eris/image']
   const {TIFFDecoder} = modules['@eris/exif']
   const file = argv._[0] || path.join(__dirname, 'sydney.jpg')
   if (TIFFDecoder) console.log('EXIF is passed-through ✓')
-  console.log('File is', file)
-  const imageData = await Image.from(fs.readFileSync(file)).toImageData()
+
+  const fileBuffer = fs.readFileSync(file)
+  console.log(`${file} read in ${Date.now() - start}ms ✓`)
+  start = Date.now()
+
+  await Image.from(fileBuffer).toMetadata()
+  console.log(`Metadata processed in ${Date.now() - start}ms ✓`)
+  start = Date.now()
+
+  const imageData = await Image.from(fileBuffer).toImageData()
+  console.log(`Image data read in ${Date.now() - start}ms ✓`)
+  start = Date.now()
 
   const size = Math.round(Math.min(imageData.height, imageData.width) / 6)
   const image = BrowserImage.from(imageData)
@@ -28,5 +41,6 @@ module.exports = async function(modules, argv) {
     fs.writeFileSync(path.join(__dirname, `actual-freeform-${i}.jpg`), buffer)
   }
 
-  console.log('Done!')
+  console.log(`Subslices processed in ${Date.now() - start}ms ✓`)
+  console.log(`Done! Took ${Date.now() - totalStart}ms!`)
 }

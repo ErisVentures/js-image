@@ -34,9 +34,12 @@ if [[ -n "$SKIP_IMAGE_CLI_FILE_TEST" ]]; then
   exit 0
 fi
 
+FREEFORM_TEST_START=$(date +%s)
 echo "Testing the freeform usage pattern..."
 OUTPUT=$(./image-cli --mode=freeform -c "$IMAGE_CLI_ROOT/test/fixtures/freeform.js" 2>&1)
 echo -e "$OUTPUT"
 echo $OUTPUT | grep 'Done!' >/dev/null || exit 1
+FREEFORM_TEST_END=$(date +%s)
+echo "Freeform test took $((FREEFORM_TEST_END - FREEFORM_TEST_START))s"
 
 rm -fR /tmp/js_image_cli_test
