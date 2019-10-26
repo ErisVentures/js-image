@@ -24,6 +24,7 @@ module.exports = {
     alias({
       path: emptyshim,
       './analyses/faces': emptyshim,
+      './analyses/objects': emptyshim,
 
       debug: debugshim,
       fs: fsshim,

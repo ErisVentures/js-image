@@ -241,7 +241,7 @@ async function load(modelUrl: string): Promise<ObjectDetection> {
 }
 
 class ObjectDetection {
-  private modelPath: string
+  private readonly modelPath: string
   private model: tfconv.GraphModel
 
   public constructor(modelUrl: string) {
