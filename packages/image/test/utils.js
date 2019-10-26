@@ -119,6 +119,14 @@ function buildLinesImageData(width, height, lines) {
   }
 }
 
+function roundNumbersToHundredths(o) {
+  if (typeof o !== 'object') return
+  for (const key of Object.keys(o)) {
+    const value = o[key]
+    if (typeof value === 'number') o[key] = Math.round(value * 100) / 100
+    roundNumbersToHundredths(value)
+  }
+}
 
 let _wasmModule
 async function enableWASM() {
@@ -150,4 +158,5 @@ module.exports = {
   buildLinesImageData,
   enableWASM,
   disableWASM,
+  roundNumbersToHundredths,
 }
