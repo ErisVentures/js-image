@@ -213,6 +213,12 @@ export interface ISceneAnalysisEntry {
   confidence: number
 }
 
+export interface IObjectAnalysisEntry {
+  object: string
+  confidence: number
+  boundingBox: IBoundingBox
+}
+
 export interface IAnalysis {
   hash?: string
   faces?: IFaceAnalysisEntry[]
