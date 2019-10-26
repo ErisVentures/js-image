@@ -19,21 +19,25 @@ describe('bin/index.js', () => {
       const analysis = JSON.parse(fs.readFileSync(ANALYSIS_PATH))
       expect(typeof analysis.hash).toBe('string')
       expect(typeof analysis.sharpness).toBe('object')
-    });
+    })
   })
 
   it('should run from a freeform config', async () => {
     const args = ['-c', FREEFORM_SCRIPT_PATH, '--mode=freeform', SKATER_PATH]
     const stdout = await execa.stdout(JS_EXE, args, {cwd: CWD})
-    expect(stdout.replace(/File is .*/, 'File is <file>')).toBe([
-      'EXIF is passed-through ✓',
-      'File is <file>',
-      'Processing 1 ...',
-      'Processing 2 ...',
-      'Processing 3 ...',
-      'Processing 4 ...',
-      'Processing 5 ...',
-      'Done!'
-    ].join('\n'))
+    const stdoutClean = stdout.replace(/.* read in/, '<file> read in').replace(/\d+ms/g, 'Xms')
+    expect(stdoutClean).toMatchInlineSnapshot(`
+      "EXIF is passed-through ✓
+      <file> read in Xms ✓
+      Metadata processed in Xms ✓
+      Image data read in Xms ✓
+      Processing 1 ...
+      Processing 2 ...
+      Processing 3 ...
+      Processing 4 ...
+      Processing 5 ...
+      Subslices processed in Xms ✓
+      Done! Took Xms!"
+    `)
   })
 })
