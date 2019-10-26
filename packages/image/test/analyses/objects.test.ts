@@ -32,6 +32,35 @@ describe('analyses/objects', () => {
       `)
     })
 
+    it('should work with alternate sizes', async () => {
+      const imageData = await fixtureDecode('source-faces-couple.jpg')
+      const objects = await objectsModule.detectObjects(imageData, {size: 200})
+      expect(objects).toMatchInlineSnapshot(`
+        Array [
+          Object {
+            "boundingBox": Object {
+              "height": 0.7900130748748779,
+              "width": 0.47114843130111694,
+              "x": 0.12344557046890259,
+              "y": 0.20625454187393188,
+            },
+            "confidence": 0.8520854711532593,
+            "object": "person",
+          },
+          Object {
+            "boundingBox": Object {
+              "height": 0.7380645275115967,
+              "width": 0.3944873809814453,
+              "x": 0.45160138607025146,
+              "y": 0.2574465274810791,
+            },
+            "confidence": 0.7829182147979736,
+            "object": "person",
+          },
+        ]
+      `)
+    })
+
     it('should identify an object', async () => {
       const imageData = await fixtureDecode('source-objects-toothbrush.jpg')
       const objects = await objectsModule.detectObjects(imageData)

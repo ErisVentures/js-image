@@ -97,6 +97,7 @@ export interface IImageOutputOptions {
 export interface IAnalysisOptions {
   hash?: IHashOptions
   faces?: IFaceAnalysisOptions
+  objects?: IObjectAnalysisOptions
   sharpness?: ISharpnessOptions
   histograms?: IHistogramOptions
   composition?: ICompositionOptions
@@ -139,6 +140,10 @@ export interface ISharpnessOptions {
 export interface IFaceAnalysisOptions {
   /** The minimum confidence to include faces for analysis, typically a number 0.5-1.0. */
   threshold?: number
+}
+
+export interface IObjectAnalysisOptions {
+  size?: number
 }
 
 export interface IHistogramOptions {
@@ -222,6 +227,7 @@ export interface IObjectAnalysisEntry {
 export interface IAnalysis {
   hash?: string
   faces?: IFaceAnalysisEntry[]
+  objects?: IObjectAnalysisEntry[]
   scenes?: ISceneAnalysisEntry[]
   sharpness?: ISharpnessAnalysis
   histograms?: IHistogramsAnalysis

@@ -403,6 +403,20 @@ export function runImageTests(ImageImpl: typeof NodeImage | typeof BrowserImage)
         expect(faces.length).toBe(2)
         expect(faces[0].sharpness).toMatchObject({median: 39})
       })
+
+      it('should compute objects', async () => {
+        const analysis = await ImageImpl.from(couple)
+          .analyze({
+            objects: {},
+          })
+          .toAnalysis()
+
+        expect(analysis).toHaveProperty('objects')
+
+        const objects = analysis.objects
+        expect(objects.length).toBe(2)
+        expect(objects).toMatchObject([{object: 'person'}, {object: 'person'}])
+      })
     })
 
     describe('.toMetadata', () => {
