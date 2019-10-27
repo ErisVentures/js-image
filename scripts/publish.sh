@@ -15,6 +15,4 @@ fi
 
 git checkout -f master
 git status
-git reset --hard HEAD 
-git status
 hulk npm-publish --lerna --yes $PRERELEASE_FLAGS
