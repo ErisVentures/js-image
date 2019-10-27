@@ -4,6 +4,7 @@ coverage/
 test/
 demo/
 
+data/beta-models/
 wasm/target/
 wasm/bin/
 *.log
