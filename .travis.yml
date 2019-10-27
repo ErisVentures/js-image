@@ -1,6 +1,6 @@
 stages:
-  - build
-  - test
+  # - build
+  # - test
   - name: deploy
     # Only deploy changes that landed on master, i.e. not PRs too
     if: (type = push) AND (branch = master)
@@ -46,6 +46,9 @@ jobs:
       node_js: v8
       env: PKG_TARGET=node8-linux SKIP_IMAGE_CLI_FILE_TEST=1
       before_script:
+        - git lfs uninstall
+        - git reset --hard
+        - git lfs install
         - git lfs pull
       script:
         - npm install -g @patrickhulce/scripts
