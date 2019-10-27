@@ -13,6 +13,8 @@ if git log "$TRAVIS_COMMIT_RANGE" | grep 'OFFICIAL RELEASE'; then
   PRERELEASE_FLAGS=""
 fi
 
-git checkout master
+git checkout -f master
+git status
+git reset --hard HEAD 
 git status
 hulk npm-publish --lerna --yes $PRERELEASE_FLAGS
