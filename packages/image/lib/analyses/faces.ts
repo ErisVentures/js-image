@@ -37,7 +37,11 @@ function roundBoundingBox(box: IBoundingBox): IBoundingBox {
   }
 }
 
-function convertToPercentageCoordinates(box: IBoundingBox, width: number, height: number): IBoundingBox {
+function convertToPercentageCoordinates(
+  box: IBoundingBox,
+  width: number,
+  height: number,
+): IBoundingBox {
   return {
     x: box.x / width,
     y: box.y / height,
