@@ -37,6 +37,15 @@ function roundBoundingBox(box: IBoundingBox): IBoundingBox {
   }
 }
 
+function convertToPercentageCoordinates(box: IBoundingBox, width: number, height: number): IBoundingBox {
+  return {
+    x: box.x / width,
+    y: box.y / height,
+    width: box.width / width,
+    height: box.height / height,
+  }
+}
+
 function getEyeBoxFromPointArray(points: faceapi.Point[], faceBox: IBoundingBox): IBoundingBox {
   if (!points.length) return {x: NaN, y: NaN, width: NaN, height: NaN}
 
@@ -161,7 +170,7 @@ export async function detectFaces(imageData: IAnnotatedImageData): Promise<IFace
       expression: (maxExpression && maxExpression.expression) || 'neutral',
       expressionConfidence: (maxExpression && maxExpression.probability) || 0,
       happinessConfidence: (happyExpression && happyExpression.probability) || 0,
-      boundingBox: faceBox,
+      boundingBox: convertToPercentageCoordinates(faceBox, imageData.width, imageData.height),
       descriptor: convertFaceDescriptor(descriptor),
       eyes: [
         getEyeBoxFromPointArray(landmarks.getLeftEye(), faceBox),
@@ -173,6 +182,7 @@ export async function detectFaces(imageData: IAnnotatedImageData): Promise<IFace
   for (const face of faces) {
     for (const eye of face.eyes) {
       await runEyeOpenModel(eye, imageData)
+      Object.assign(eye, convertToPercentageCoordinates(eye, imageData.width, imageData.height))
     }
   }
 

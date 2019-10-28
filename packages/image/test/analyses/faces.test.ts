@@ -11,10 +11,10 @@ describe('analyses/faces', () => {
         Array [
           Object {
             "boundingBox": Object {
-              "height": 70,
-              "width": 54,
-              "x": 171,
-              "y": 150,
+              "height": 0.11666666666666667,
+              "width": 0.135,
+              "x": 0.4275,
+              "y": 0.25,
             },
             "confidence": 0.9888889789581299,
             "descriptor": Array [
@@ -25,28 +25,28 @@ describe('analyses/faces', () => {
             "expressionConfidence": 1,
             "eyes": Array [
               Object {
-                "height": 10,
+                "height": 0.016666666666666666,
                 "openConfidence": 0.5158189535140991,
-                "width": 14,
-                "x": 187,
-                "y": 174,
+                "width": 0.035,
+                "x": 0.4675,
+                "y": 0.29,
               },
               Object {
-                "height": 10,
+                "height": 0.016666666666666666,
                 "openConfidence": 0.6646197438240051,
-                "width": 14,
-                "x": 208,
-                "y": 178,
+                "width": 0.035,
+                "x": 0.52,
+                "y": 0.2966666666666667,
               },
             ],
             "happinessConfidence": 1,
           },
           Object {
             "boundingBox": Object {
-              "height": 67,
-              "width": 44,
-              "x": 224,
-              "y": 166,
+              "height": 0.11166666666666666,
+              "width": 0.11,
+              "x": 0.56,
+              "y": 0.27666666666666667,
             },
             "confidence": 0.9870948791503906,
             "descriptor": Array [
@@ -57,18 +57,18 @@ describe('analyses/faces', () => {
             "expressionConfidence": 1,
             "eyes": Array [
               Object {
-                "height": 8,
+                "height": 0.013333333333333334,
                 "openConfidence": 0.7949417233467102,
-                "width": 11,
-                "x": 226,
-                "y": 191,
+                "width": 0.0275,
+                "x": 0.565,
+                "y": 0.31833333333333336,
               },
               Object {
-                "height": 8,
+                "height": 0.013333333333333334,
                 "openConfidence": 0.9452188611030579,
-                "width": 11,
-                "x": 247,
-                "y": 192,
+                "width": 0.0275,
+                "x": 0.6175,
+                "y": 0.32,
               },
             ],
             "happinessConfidence": 1,
@@ -85,10 +85,10 @@ describe('analyses/faces', () => {
         Array [
           Object {
             "boundingBox": Object {
-              "height": 130,
-              "width": 109,
-              "x": 261,
-              "y": 121,
+              "height": 0.325,
+              "width": 0.18166666666666667,
+              "x": 0.435,
+              "y": 0.3025,
             },
             "confidence": 0.9829439520835876,
             "descriptor": Array [
@@ -99,18 +99,18 @@ describe('analyses/faces', () => {
             "expressionConfidence": 0.9999020099639893,
             "eyes": Array [
               Object {
-                "height": 20,
+                "height": 0.05,
                 "openConfidence": 0.007234196178615093,
-                "width": 27,
-                "x": 287,
-                "y": 172,
+                "width": 0.045,
+                "x": 0.47833333333333333,
+                "y": 0.43,
               },
               Object {
-                "height": 20,
+                "height": 0.05,
                 "openConfidence": 0.01330363005399704,
-                "width": 27,
-                "x": 334,
-                "y": 167,
+                "width": 0.045,
+                "x": 0.5566666666666666,
+                "y": 0.4175,
               },
             ],
             "happinessConfidence": 0.000010031476449512411,
