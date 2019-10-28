@@ -186,7 +186,13 @@ export abstract class Image {
 
       if (sharpness) {
         for (const face of analysis.faces.slice(0, 3)) {
-          face.sharpness = computeSharpness(edges!, {...sharpness, subselect: face.boundingBox})
+          const boundingBox = {
+            x: Math.round(imageData.width * face.boundingBox.x),
+            y: Math.round(imageData.height * face.boundingBox.y),
+            width: Math.round(imageData.width * face.boundingBox.width),
+            height: Math.round(imageData.height * face.boundingBox.height),
+          }
+          face.sharpness = computeSharpness(edges!, {...sharpness, subselect: boundingBox})
         }
       }
     }
