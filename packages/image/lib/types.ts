@@ -127,6 +127,7 @@ export interface IHashOptions {
   method: HashMethod
   /** The size of the hash in bits, must be a square multiple of 64. i.e. 64, 256, 1024 */
   hashSize?: number
+  lumaHashThreshold?: number
 }
 
 export interface ISharpnessOptions {
@@ -239,6 +240,14 @@ export interface ISubselectOptions {
   bottom: number
   left: number
   right: number
+}
+
+export interface INormalizeOptions {
+  blackPointPercentage?: number
+  whitePointPercentage?: number
+  strength?: number
+  /** The multiplier used to adjust the midpoint of the photograph, a number 0-1, defaults to 0 which is no effect. */
+  midpointNormalization?: number
 }
 
 export enum ImageFormat {

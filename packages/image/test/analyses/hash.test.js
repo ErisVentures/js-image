@@ -1,4 +1,6 @@
 const hashModule = require('../../dist/analyses/hash')
+const {sobel} = require('../../dist/transforms/sobel')
+const {normalize} = require('../../dist/transforms/normalize')
 const {expect, fixtureDecode} = require('../utils')
 
 describe('#analyses/hash', () => {
@@ -100,7 +102,7 @@ describe('#analyses/hash', () => {
     it('should support larger hashes', async () => {
       const imageData = await skaterPromise
       const hash = hashModule.toHexString(hashModule.phash(imageData, 256))
-      expect(hash).toBe('f1e21800a188a1f11c63dc63dc63dce8e695b1803182a0e8c21591b0903880')
+      expect(hash).toBe('f10e218000a188a1f11c63dc63dc63dce8e695b1803182a0e8c21591b0903880')
     })
 
     it('should be resilient to minor image changes', async () => {
@@ -137,6 +139,76 @@ describe('#analyses/hash', () => {
       const distance = hashModule.hammingDistance(hashA, hashB)
       // 29 of 64 bits match
       expect(distance).toBe(35)
+    })
+  })
+
+  describe('#lumaHash', () => {
+    let skaterSobel
+    let sydneySobelA
+    let sydneySobelB
+    let faceSobelA
+    let faceSobelB
+
+    beforeAll(async () => {
+      skaterSobel = sobel(await skaterPromise)
+      sydneySobelA = sobel(await sydneyPromiseA)
+      sydneySobelB = sobel(await sydneyPromiseB)
+      faceSobelA = sobel(await facePromiseA)
+      faceSobelB = sobel(await facePromiseB)
+    })
+
+    it('should hash an image', async () => {
+      const hash = hashModule.toHexString(hashModule.lumaHash(skaterSobel))
+      expect(hash).toMatchInlineSnapshot(
+        `"0000f840fc00fd80ff80ffb8fb70fb70fb70ffdfffdfe7e0bc233e3c7b409b80"`,
+      )
+    })
+
+    it('should support larger hashes', async () => {
+      const hash = hashModule.toHexString(hashModule.lumaHash(skaterSobel, {hashSize: 1024}))
+      expect(hash).toMatchInlineSnapshot(
+        `"000000001c0020003f0020007fc070007fc01000fee00000fff00000fff78000ffffc000fdffc0007ddfc500fddf8f80fdc71f00fdc53c00fdc52400fdc52780fdc52780fde5b400ffede61fffffe1fee7fff0d0e63ff37fc0000878f87ffc00fff01c0707f80507079807b00f8c0e00198e180031863000c187c00081de0000"`,
+      )
+    })
+
+    it('should be resilient to minor image changes', async () => {
+      const imageA = await sydneySobelA
+      const imageB = await sydneySobelB
+
+      const hashA = hashModule.lumaHash(imageA)
+      const hashB = hashModule.lumaHash(imageB)
+
+      expect(hashModule.subsetDistance(hashA, hashB)).toMatchInlineSnapshot(`0.07142857142857142`)
+    })
+
+    it('should match similar images closely', async () => {
+      const imageA = await faceSobelA
+      const imageB = await faceSobelB
+
+      const hashA = hashModule.lumaHash(imageA)
+      const hashB = hashModule.lumaHash(imageB)
+
+      expect(hashModule.subsetDistance(hashA, hashB)).toMatchInlineSnapshot(`0.21621621621621623`)
+    })
+
+    it('should match similar edge images closely', async () => {
+      const imageA = sobel(await fixtureDecode('source-wedding-1.jpg'))
+      const imageB = sobel(await fixtureDecode('source-wedding-2.jpg'))
+
+      const hashA = hashModule.lumaHash(normalize(imageA))
+      const hashB = hashModule.lumaHash(normalize(imageB))
+
+      expect(hashModule.subsetDistance(hashA, hashB)).toMatchInlineSnapshot(`0.04697986577181208`)
+    })
+
+    it('should distinguish different images', async () => {
+      const imageA = await sydneySobelA
+      const imageB = await skaterSobel
+
+      const hashA = hashModule.lumaHash(imageA)
+      const hashB = hashModule.lumaHash(imageB)
+
+      expect(hashModule.subsetDistance(hashA, hashB)).toMatchInlineSnapshot(`0.24285714285714285`)
     })
   })
 })

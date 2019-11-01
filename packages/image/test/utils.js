@@ -2,6 +2,7 @@ jest.setTimeout(20000)
 
 const fs = require('fs')
 const path = require('path')
+const assert = require('assert')
 const memoize = require('lodash/memoize')
 const ImageData = require('../dist/image-data').ImageData
 const {hasWASM, getWASM} = require('../dist/utils/env')
@@ -21,7 +22,7 @@ function getImageDiff(actual, expectation, increment = 1) {
     expectation = expectation.data
   }
 
-  expect(actual).toHaveLength(expectation.length)
+  assert.equal(actual.length, expectation.length)
 
   let diff = 0
   for (let i = 0; i < actual.length; i += increment) {
@@ -45,9 +46,11 @@ async function compareToFixture(bufferOrImageData, path, options) {
   let imageData = await bufferOrImageData
   let buffer = await bufferOrImageData
   if (ImageData.probablyIs(bufferOrImageData)) {
+    imageData = ImageData.toColorspace(imageData, 'rgba')
     buffer = await ImageData.toBuffer(bufferOrImageData)
   } else {
     imageData = await ImageData.from(buffer)
+    imageData = ImageData.toColorspace(imageData, 'rgba')
   }
 
   fs.writeFileSync(fixturePath(`actual-${path}`), buffer)

@@ -1,6 +1,7 @@
 import {IAnnotatedImageData, ImageData} from '../image-data'
 import {bilinear} from '../transforms/resize'
-import {Colorspace} from '../types'
+import {Colorspace, IHashOptions} from '../types'
+import {normalize} from '../transforms/normalize'
 
 const DCT_COEFFICIENT = 1 / Math.sqrt(2)
 
@@ -15,7 +16,7 @@ function hexToBinary(hex: string): string {
 
 export function toHexString(binaryString: string): string {
   return binaryString
-    .match(/.{8}/gm)!
+    .match(/.{4}/gm)!
     .map(s => parseInt(s, 2).toString(16))
     .join('')
 }
@@ -132,6 +133,35 @@ export function phash(imageData: IAnnotatedImageData, hashSize?: number): string
   return hashes.join('')
 }
 
+export function lumaHash(imageData: IAnnotatedImageData, options?: IHashOptions): string {
+  const {hashSize = 256, lumaHashThreshold = 30} = options || {}
+  const thumbnailWidth = Math.sqrt(hashSize)
+  if (!Number.isInteger(thumbnailWidth)) {
+    throw new Error('Hash size must be a square')
+  }
+
+  let thumbnail = imageData
+  if (
+    imageData.width !== thumbnailWidth ||
+    imageData.height !== thumbnailWidth ||
+    imageData.colorspace !== Colorspace.Greyscale
+  ) {
+    const colorThumbnail = bilinear(imageData, {width: thumbnailWidth, height: thumbnailWidth})
+    thumbnail = ImageData.toGreyscale(colorThumbnail)
+  }
+
+  thumbnail = normalize(thumbnail, {strength: 0.5})
+
+  const bits: string[] = []
+  for (let y = 0; y < thumbnailWidth; y++) {
+    for (let x = 0; x < thumbnailWidth; x++) {
+      bits.push(thumbnail.data[y * thumbnailWidth + x] >= lumaHashThreshold ? '1' : '0')
+    }
+  }
+
+  return bits.join('')
+}
+
 export function hammingDistance(hashA: string | Uint8Array, hashB: string | Uint8Array): number {
   const stringA = toBinaryString(hashA)
   const stringB = toBinaryString(hashB)
@@ -144,4 +174,24 @@ export function hammingDistance(hashA: string | Uint8Array, hashB: string | Uint
   }
 
   return distance
+}
+
+export function subsetDistance(hashA: string | Uint8Array, hashB: string | Uint8Array): number {
+  const stringA = toBinaryString(hashA)
+  const stringB = toBinaryString(hashB)
+
+  let distanceA = 0
+  let distanceB = 0
+  let onA = 0
+  let onB = 0
+  for (let i = 0; i < stringA.length; i++) {
+    const aIsOn = stringA[i] === '1'
+    const bIsOn = stringB[i] === '1'
+    if (aIsOn) onA++
+    if (bIsOn) onB++
+    if (aIsOn && !bIsOn) distanceA++
+    if (!aIsOn && bIsOn) distanceB++
+  }
+
+  return Math.min(distanceA / onA, distanceB / onB)
 }
