@@ -28,7 +28,7 @@ function findClipPoint(
 
 export function normalize(
   imageData: IAnnotatedImageData,
-  options?: INormalizeOptions,
+  options: INormalizeOptions = {},
 ): IAnnotatedImageData {
   if (imageData.colorspace !== Colorspace.Greyscale && imageData.colorspace !== Colorspace.YCbCr) {
     imageData = ImageData.toColorspace(imageData, Colorspace.YCbCr)
@@ -39,7 +39,7 @@ export function normalize(
     blackPointPercentage = 0.02,
     whitePointPercentage = 0.02,
     midpointNormalization = 0,
-  } = options || {}
+  } = options
   const blackPoint = findClipPoint(imageData, blackPointPercentage, 'min')
   const whitePoint = findClipPoint(imageData, whitePointPercentage, 'max')
   const greyPoint = findClipPoint(imageData, 0.5, 'min')

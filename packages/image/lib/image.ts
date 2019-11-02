@@ -2,7 +2,7 @@ import * as types from './types'
 import {IAnnotatedImageData, ImageData} from './image-data'
 import {writeFileAsync} from './fs-utils'
 import {sobel} from './transforms/sobel'
-import {phash} from './analyses/hash'
+import {phash, lumaHash} from './analyses/hash'
 import {detectFaces as computeFaces} from './analyses/faces'
 import {detectObjects as computeObjects} from './analyses/objects'
 import {sharpness as computeSharpness} from './analyses/sharpness'
@@ -163,6 +163,9 @@ export abstract class Image {
 
     if (hash) {
       switch (hash.method) {
+        case types.HashMethod.LumaHash:
+          analysis.hash = lumaHash(imageData, hash)
+          break
         case types.HashMethod.PHash:
         default:
           analysis.hash = phash(imageData, hash.hashSize)

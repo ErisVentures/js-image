@@ -177,8 +177,7 @@ export function runImageTests(ImageImpl: typeof NodeImage | typeof BrowserImage)
 
     describe('._applyNormalize', () => {
       it('should apply a calibration profile', async () => {
-        const modify = img =>
-          img.normalize({strength: 1})
+        const modify = img => img.normalize({strength: 1})
 
         await testWedding('wedding-1-normalized.jpg', modify, {
           strict: false,
@@ -347,6 +346,18 @@ export function runImageTests(ImageImpl: typeof NodeImage | typeof BrowserImage)
           .then(analysis => {
             const result = parseInt(analysis.hash, 2).toString(16)
             expect(result).toBe('c5b7535fe4cb7000')
+          })
+      })
+
+      it('should luma hash an image', () => {
+        return ImageImpl.from(skater)
+          .analyze({
+            hash: {method: HashMethod.LumaHash, hashSize: 64},
+          })
+          .toAnalysis()
+          .then(analysis => {
+            const result = parseInt(analysis.hash, 2).toString(16)
+            expect(result).toBe('ffffffffff1a8000')
           })
       })
 

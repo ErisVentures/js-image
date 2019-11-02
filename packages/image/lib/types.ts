@@ -278,6 +278,7 @@ export enum EdgeMethod {
 
 export enum HashMethod {
   PHash = 'phash',
+  LumaHash = 'luma',
 }
 
 export enum ColorChannel {
