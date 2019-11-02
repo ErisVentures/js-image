@@ -357,7 +357,7 @@ export function runImageTests(ImageImpl: typeof NodeImage | typeof BrowserImage)
           .toAnalysis()
           .then(analysis => {
             const result = parseInt(analysis.hash, 2).toString(16)
-            expect(result).toBe('ffffffffff1a8000')
+            expect(result).toBe('c8e0fcfcffff7800')
           })
       })
 

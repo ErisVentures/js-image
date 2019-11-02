@@ -157,14 +157,17 @@ export abstract class Image {
     }
 
     const imageData = await this.toImageData()
-    const edges = sharpness || composition ? sobel(imageData, sharpness) : null
+    const edges =
+      sharpness || composition || (hash && hash.method === types.HashMethod.LumaHash)
+        ? sobel(imageData, sharpness)
+        : null
 
     const analysis: types.IAnalysis = {}
 
     if (hash) {
       switch (hash.method) {
         case types.HashMethod.LumaHash:
-          analysis.hash = lumaHash(imageData, hash)
+          analysis.hash = lumaHash(edges!, hash)
           break
         case types.HashMethod.PHash:
         default:
