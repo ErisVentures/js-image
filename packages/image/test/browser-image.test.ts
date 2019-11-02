@@ -10,6 +10,11 @@ const testSkater = (...args) => testImage(BrowserImage, 'source-skater.jpg', ...
 runImageTests(BrowserImage)
 
 describe('WASM', () => {
+  if (!process.env.ENABLE_WASM) {
+    it.skip('should enable WASM for these tests', () => undefined)
+    return
+  }
+
   beforeAll(async () => {
     await enableWASM()
   })
@@ -34,6 +39,11 @@ describe('WASM', () => {
 })
 
 describe('Performance', () => {
+  if (!process.env.ENABLE_WASM) {
+    it.skip('should enable WASM for these tests', () => undefined)
+    return
+  }
+
   let imageData
   function buildImageData({width, height}: {width: number; height: number}): IAnnotatedImageData {
     const data = new Uint8Array(width * height)

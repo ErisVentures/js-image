@@ -780,6 +780,11 @@ describe('ImageData', () => {
   })
 
   describe('WASM', () => {
+    if (!process.env.ENABLE_WASM) {
+      it.skip('should enable WASM for these tests', () => undefined)
+      return
+    }
+
     beforeAll(async () => {
       await enableWASM()
     })
