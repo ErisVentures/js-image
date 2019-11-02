@@ -83,6 +83,7 @@ export class NodeImage extends Image {
       !this._output.edges &&
       !this._output.layers &&
       !this._output.tone &&
+      !this._output.normalize &&
       !this._output.sharpen &&
       !this._output.calibrate
     ) {
@@ -92,6 +93,7 @@ export class NodeImage extends Image {
     let imageData = await SharpImage.toImageData(image)
     imageData = ImageData.toRGBA(imageData)
     imageData = await this._applyLayers(imageData)
+    imageData = await this._applyNormalize(imageData)
     imageData = await this._applyCalibrate(imageData)
     imageData = await this._applyTone(imageData)
     imageData = await this._applySharpen(imageData)

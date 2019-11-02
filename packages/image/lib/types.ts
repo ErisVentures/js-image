@@ -92,6 +92,7 @@ export interface IImageOutputOptions {
   sharpen?: ISharpenOptions
   edges?: IEdgeOptions
   effects?: IEffect[]
+  normalize?: INormalizeOptions
 }
 
 export interface IAnalysisOptions {

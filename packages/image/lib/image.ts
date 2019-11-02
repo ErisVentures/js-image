@@ -17,6 +17,7 @@ import {calibrate} from './transforms/calibrate'
 import {opacity} from './transforms/opacity'
 import {noise} from './effects/noise'
 import {instrumentation} from './instrumentation'
+import {normalize} from './transforms/normalize'
 
 /* tslint:disable-next-line */
 const fileType = require('file-type')
@@ -43,6 +44,7 @@ export abstract class Image {
     if (options.format) this.format(options.format)
     if (options.resize) this.resize(options.resize)
     if (options.layers) this.layers(options.layers)
+    if (options.normalize) this.normalize(options.normalize)
     if (options.calibrate) this.calibrate(options.calibrate)
     if (options.tone) this.tone(options.tone)
     if (options.greyscale) this.greyscale(options.greyscale)
@@ -92,6 +94,11 @@ export abstract class Image {
 
   public layers(layers: types.ILayerOptions[]): Image {
     this._output.layers = layers
+    return this
+  }
+
+  public normalize(normalize: types.INormalizeOptions): Image {
+    this._output.normalize = normalize
     return this
   }
 
@@ -212,6 +219,14 @@ export abstract class Image {
     }
 
     return imageWithLayers
+  }
+
+  protected _applyNormalize(image: IAnnotatedImageData): IAnnotatedImageData {
+    if (!this._output.normalize || isEmpty(this._output.normalize)) {
+      return image
+    }
+
+    return normalize(image, this._output.normalize)
   }
 
   protected _applyCalibrate(image: IAnnotatedImageData): IAnnotatedImageData {

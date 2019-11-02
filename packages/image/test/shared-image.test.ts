@@ -21,6 +21,7 @@ export function runImageTests(ImageImpl: typeof NodeImage | typeof BrowserImage)
   const testSkater = (...args: any[]) => testImage(ImageImpl, 'source-skater.jpg', ...args)
   const testYosemite = (...args: any[]) => testImage(ImageImpl, 'source-yosemite.jpg', ...args)
   const testOpera = (...args: any[]) => testImage(ImageImpl, 'source-sydney.jpg', ...args)
+  const testWedding = (...args: any[]) => testImage(ImageImpl, 'source-wedding-1.jpg', ...args)
 
   describe(ImageImpl.name, () => {
     describe('._applyFormat', () => {
@@ -171,6 +172,18 @@ export function runImageTests(ImageImpl: typeof NodeImage | typeof BrowserImage)
 
         const buffer = await imageA.layers(layers).toBuffer()
         await compareToFixture(buffer, 'layers-merged.jpg', {strict: false, tolerance: 20})
+      })
+    })
+
+    describe('._applyNormalize', () => {
+      it('should apply a calibration profile', async () => {
+        const modify = img =>
+          img.normalize({strength: 1})
+
+        await testWedding('wedding-1-normalized.jpg', modify, {
+          strict: false,
+          tolerance: 10,
+        })
       })
     })
 
