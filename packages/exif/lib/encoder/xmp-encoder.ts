@@ -1,7 +1,12 @@
-import {IGenericMetadata, IBufferLike} from '../utils/types'
+import {IGenericMetadata, IBufferLike, XMPTagName, IFDTagName} from '../utils/types'
 import {xmpTags} from '../utils/tags'
 import {createLogger} from '../utils/log'
 import {parseKeywords} from '../metadata/keywords-parser'
+
+const writableTags: Record<XMPTagName | 'DateTimeOriginal', boolean> = {
+  ...xmpTags,
+  DateTimeOriginal: true,
+}
 
 const log = createLogger('xmp-encoder')
 
@@ -62,8 +67,8 @@ export class XMPEncoder {
     for (const key of Object.keys(metadata)) {
       const tagName = key as keyof IGenericMetadata
 
-      if (!(tagName in xmpTags)) {
-        log(`skipping ${tagName} which is not an XMP tag`)
+      if (!(tagName in writableTags)) {
+        log(`skipping ${tagName} which is not a writable tag`)
         continue
       }
 
@@ -169,6 +174,7 @@ export class XMPEncoder {
     tagName: keyof IGenericMetadata,
     value: string | number,
   ): string {
+    if (tagName === 'DateTimeOriginal') return `exif:DateTimeOriginal="${value}"`
     if (tagName !== 'DCSubjectBagOfWords') return `xmp:${tagName}="${value}"`
     const keywords = parseKeywords({DCSubjectBagOfWords: value})
     if (!keywords) throw new Error('Invalid keywords payload')
