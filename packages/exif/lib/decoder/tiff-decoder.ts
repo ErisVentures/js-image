@@ -14,8 +14,11 @@ import {
   IReader,
   IIFD,
   IJPEGOptions,
+  IIFDEntry,
+  IFDTagName,
 } from '../utils/types'
 import {createLogger} from '../utils/log'
+import {IFDEntry} from './ifd-entry'
 
 const log = createLogger('decoder')
 
@@ -26,12 +29,14 @@ interface IThumbnailLocation {
 }
 
 export class TIFFDecoder {
+  private readonly _buffer: IBufferLike
   private readonly _reader: IReader
   private _ifds: IIFD[]
   private _cachedMetadata: IGenericMetadata
   private _cachedJPEG: IBufferLike
 
   public constructor(buffer: IBufferLike) {
+    this._buffer = buffer
     this._reader = new Reader(buffer)
   }
 
@@ -202,5 +207,17 @@ export class TIFFDecoder {
 
     this._cachedMetadata = {...tags, ...exifTags}
     return {...this._cachedMetadata}
+  }
+
+  public extractIFDEntries(): IIFDEntry[] {
+    this._readAndValidateHeader()
+    this._readIFDs()
+    return this._ifds.map(ifd => ifd.entries).reduce((a, b) => a.concat(b), [])
+  }
+
+  public static replaceIFDEntry(decoder: TIFFDecoder, tag: IFDTagName, data: Buffer): Buffer {
+    const ifd = decoder.extractIFDEntries().find(ifd => getFriendlyName(ifd.tag) === tag)
+    if (!ifd) throw new Error(`Could not find "${tag}" in buffer`)
+    return IFDEntry.mutate(Buffer.from(decoder._buffer), ifd, data, decoder._reader.getEndianess())
   }
 }
