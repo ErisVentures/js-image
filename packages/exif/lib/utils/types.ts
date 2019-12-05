@@ -105,6 +105,10 @@ export enum IFDDataType {
   Double = 12,
 }
 
+export interface IWriterOptions {
+  dangerouslyAvoidCopy?: boolean
+}
+
 export interface IJPEGOptions {
   skipMetadata?: boolean
 }

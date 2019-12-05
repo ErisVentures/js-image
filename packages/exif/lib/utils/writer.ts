@@ -1,16 +1,19 @@
-import {IBufferLike, IWriter, Endian} from '../utils/types'
+import {IBufferLike, IWriter, Endian, IWriterOptions} from '../utils/types'
 
 export class Writer implements IWriter {
-  private readonly _bytes: number[]
+  private readonly _bytes: number[] | IBufferLike
   private _position: number
   private _endianness: Endian
 
-  public constructor(buffer?: IBufferLike) {
+  public constructor(buffer?: IBufferLike, options: IWriterOptions = {}) {
     this._bytes = []
     this._position = 0
     this._endianness = Endian.Big
 
-    if (buffer) this.writeBuffer(buffer)
+    if (buffer) {
+      if (options.dangerouslyAvoidCopy) this._bytes = buffer
+      else this.writeBuffer(buffer)
+    }
   }
 
   public getPosition(): number {
@@ -74,5 +77,16 @@ export class Writer implements IWriter {
 
   public toBuffer(): IBufferLike {
     return new Uint8Array(this._bytes)
+  }
+
+  public static spliceBufferRange(
+    buffer: Buffer,
+    replacement: Buffer,
+    start: number,
+    end: number,
+  ): Buffer {
+    const preamble = buffer.slice(0, start)
+    const postamble = buffer.slice(end)
+    return Buffer.concat([preamble, replacement, postamble])
   }
 }
