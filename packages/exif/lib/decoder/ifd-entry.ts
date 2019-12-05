@@ -1,11 +1,14 @@
 import {getFriendlyName} from '../utils/tags'
-import {IFDDataType, IIFDEntry, IReader, IFDTagName, getDataTypeSize} from '../utils/types'
+import {IFDDataType, IIFDEntry, IReader, IFDTagName, getDataTypeSize, Endian} from '../utils/types'
 import {createLogger} from '../utils/log'
+import {Writer} from '../utils/writer'
+import {Reader} from '../utils/reader'
 
 const log = createLogger('ifd-entry')
 
 export class IFDEntry implements IIFDEntry {
   public constructor(
+    public startOffset: number,
     public tag: number,
     public dataType: number,
     public length: number,
@@ -76,12 +79,41 @@ export class IFDEntry implements IIFDEntry {
   }
 
   public static read(reader: IReader): IFDEntry {
+    const startOffset = reader.getPosition()
     const tag = reader.read(2)
     const dataType = reader.read(2)
     const length = reader.read(4)
     const dataReader = reader.readAsReader(4)
 
     log.verbose(`read tag ${tag}`, dataReader)
-    return new IFDEntry(tag, dataType, length, dataReader)
+    return new IFDEntry(startOffset, tag, dataType, length, dataReader)
+  }
+
+  public static mutate(
+    buffer: Buffer,
+    simpleEntry: IIFDEntry,
+    data: Buffer,
+    endianness: Endian,
+  ): Buffer {
+    if (simpleEntry.dataType !== IFDDataType.String) throw new Error('Can only mutate strings')
+    // Always ensure the string ends with null terminator
+    if (data[data.length - 1] !== 0) data = Buffer.concat([data, Buffer.from([0])])
+    // Read the real IFD so we have something better to work with
+    const reader = new Reader(buffer, simpleEntry.startOffset)
+    reader.setEndianess(endianness)
+    const entry = IFDEntry.read(reader)
+    if (entry.lengthInBytes <= 4) throw new Error('Can only change strings of length >3')
+
+    // Replace the length with the new length
+    const newLength = data.length
+    const writer = new Writer(buffer, {dangerouslyAvoidCopy: true})
+    writer.setEndianess(endianness)
+    writer.seek(entry.startOffset + 4)
+    writer.write(newLength, 4)
+
+    // Replace the data itself
+    entry.dataReader.seek(0)
+    const dataOffset = entry.dataReader.read(4)
+    return Writer.spliceBufferRange(buffer, data, dataOffset, dataOffset + entry.lengthInBytes)
   }
 }

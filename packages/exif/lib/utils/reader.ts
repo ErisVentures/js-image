@@ -15,6 +15,10 @@ export class Reader implements IReader {
     return this._position
   }
 
+  public getEndianess(): Endian {
+    return this._endianness
+  }
+
   public setEndianess(endian: Endian): void {
     this._endianness = endian
   }

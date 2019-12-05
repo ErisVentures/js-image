@@ -16,6 +16,7 @@ export const LITTLE_ENDIAN_MARKER = 0x4949
 export interface IReader {
   hasNext(): boolean
   getPosition(): number
+  getEndianess(): Endian
   setEndianess(endian: Endian): void
   read(length: number): number
   readAsBuffer(length: number): IBufferLike
@@ -50,6 +51,7 @@ export interface IIFD {
 }
 
 export interface IIFDEntry {
+  startOffset: number
   tag: number
   dataType: number
   length: number

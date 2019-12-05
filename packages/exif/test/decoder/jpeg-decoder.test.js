@@ -1,5 +1,7 @@
 const {fixture} = require('../utils')
+const IFDEntry = require('../../dist/decoder/ifd-entry').IFDEntry
 const JPEGDecoder = require('../../dist/decoder/jpeg-decoder').JPEGDecoder
+const TIFFDecoder = require('../../dist/decoder/tiff-decoder').TIFFDecoder
 const XMPEncoder = require('../../dist/encoder/xmp-encoder').XMPEncoder
 
 const xmpJpeg = fixture('xmp.jpg')
@@ -11,6 +13,24 @@ describe('lib/decoder/jpeg-decoder.js', () => {
       const metadataBuffer = new JPEGDecoder(nikonJpeg).extractEXIFBuffer()
       const result = JPEGDecoder.injectEXIFMetadata(nikonJpeg, metadataBuffer)
       expect(result).toEqual(nikonJpeg)
+    })
+
+    it('should replace some data', () => {
+      const decoder = new JPEGDecoder(nikonJpeg)
+      const metadata = decoder.extractMetadata()
+      const metadataBuffer = decoder.extractEXIFBuffer()
+      const replaced = TIFFDecoder.replaceIFDEntry(
+        new TIFFDecoder(metadataBuffer),
+        'DateTimeOriginal',
+        Buffer.from('2019-12-04T22:01:15'),
+      )
+      const result = JPEGDecoder.injectEXIFMetadata(nikonJpeg, replaced)
+
+      const newMetadata = new JPEGDecoder(result).extractMetadata()
+      expect(newMetadata).toEqual({
+        ...metadata,
+        DateTimeOriginal: '2019-12-04T22:01:15',
+      })
     })
   })
 
