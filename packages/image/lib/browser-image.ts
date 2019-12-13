@@ -1,4 +1,4 @@
-import {BufferLike, IMetadata, ImageResizeMethod, DEFAULT_FORMAT} from './types'
+import {BufferLike, IMetadata, ImageResizeMethod, DEFAULT_FORMAT, ImageFormat} from './types'
 import {Image} from './image'
 import {IAnnotatedImageData, ImageData} from './image-data'
 import * as resize from './transforms/resize'
@@ -8,14 +8,17 @@ import {instrumentation} from './instrumentation'
 export class BrowserImage extends Image {
   private readonly _image: Promise<IAnnotatedImageData>
   private readonly _metadata: Partial<IMetadata> | undefined
+  private readonly _buffer: BufferLike | undefined
 
   public constructor(
     image: Promise<IAnnotatedImageData> | IAnnotatedImageData,
     metadata?: Partial<IMetadata>,
+    buffer?: BufferLike
   ) {
     super()
     this._image = Promise.resolve(image)
     this._metadata = metadata
+    this._buffer = buffer
   }
 
   private _applyEXIFOrientation(image: IAnnotatedImageData): IAnnotatedImageData {
@@ -111,14 +114,19 @@ export class BrowserImage extends Image {
     return this._applyAll(this._image)
   }
 
-  public toBuffer(): Promise<BufferLike> {
+  public async toBuffer(): Promise<BufferLike> {
+    if (this._output.format && this._output.format.type === ImageFormat.NoTranscode) {
+      if (!this._buffer) throw new Error('Unable to return original buffer')
+      return this._buffer
+    }
+
     return this._applyAll(this._image).then(imageData =>
       ImageData.toBuffer(imageData, this._output.format || DEFAULT_FORMAT),
     )
   }
 
   protected static _fromBuffer(buffer: BufferLike, metadata?: Partial<IMetadata>): Image {
-    return new BrowserImage(ImageData.from(buffer), metadata)
+    return new BrowserImage(ImageData.from(buffer), metadata, buffer)
   }
 
   protected static _fromImageData(imageData: IAnnotatedImageData): Image {

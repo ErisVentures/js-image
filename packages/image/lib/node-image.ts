@@ -9,11 +9,13 @@ import {SharpImage} from './sharp-image'
 export class NodeImage extends Image {
   private readonly _image: sharp.Sharp
   private readonly _metadata: object | undefined
+  private readonly _buffer: BufferLike | undefined
 
-  public constructor(image: sharp.Sharp, metadata?: object) {
+  public constructor(image: sharp.Sharp, metadata?: object, buffer?: BufferLike) {
     super()
     this._image = image
     this._metadata = metadata
+    this._buffer = buffer
   }
 
   private _applyFormat(image: sharp.Sharp): sharp.Sharp {
@@ -129,7 +131,8 @@ export class NodeImage extends Image {
     const image: any = await this._applyAll(this._image.clone())
     const format = this._output.format || DEFAULT_FORMAT
     if (format.type === ImageFormat.NoTranscode) {
-      const buffer = image.options && image.options.input && image.options.input.buffer
+      const buffer = this._buffer ||
+        (image.options && image.options.input && image.options.input.buffer)
       if (!buffer) throw new Error('Unable to extract original buffer for NoTranscode')
       return buffer
     }
@@ -138,7 +141,7 @@ export class NodeImage extends Image {
   }
 
   protected static _fromBuffer(buffer: BufferLike, metadata?: object): Image {
-    return new NodeImage(SharpImage.from(buffer), metadata)
+    return new NodeImage(SharpImage.from(buffer), metadata, buffer)
   }
 
   protected static _fromImageData(imageData: IAnnotatedImageData): Image {
