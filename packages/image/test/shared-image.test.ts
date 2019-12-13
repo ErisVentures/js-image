@@ -1,4 +1,5 @@
 import * as jpeg from 'jpeg-js'
+import {TIFFDecoder} from '@eris/exif'
 
 import {ImageData} from '../lib/image-data'
 import {NodeImage} from '../lib/node-image'
@@ -572,8 +573,10 @@ export function runImageTests(ImageImpl: typeof NodeImage | typeof BrowserImage)
         })
       })
 
-      it.skip('should output the original buffer without transcoding', async () => {
+      it('should output the original buffer without transcoding', async () => {
         const image = ImageImpl.from(sourceNef).format(ImageFormat.NoTranscode)
+        const original = new TIFFDecoder(sourceNef).extractJPEG()
+        expect(original.length).toBe(1078539)
         const buffer = await image.toBuffer()
         expect(buffer).toBeInstanceOf(Buffer)
         expect(buffer.length).toBe(1078539)
