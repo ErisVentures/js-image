@@ -9,27 +9,29 @@ jobs:
     - stage: build
       os: osx
       language: node_js
-      node_js: v8
+      node_js: "v10.15.3"
+      before_script: tree ./node_modules/@tensorflow/tfjs-node
       script: npm run build
-      after_success: ./scripts/add-asset-to-github.sh ./packages/image-cli/out/node8-mac.tar.gz
-      env: PKG_TARGET=node8-mac SKIP_IMAGE_CLI_FILE_TEST=1
+      after_success: ./scripts/add-asset-to-github.sh ./packages/image-cli/out/node10-mac.tar.gz
+      env: PKG_TARGET=node10-mac SKIP_IMAGE_CLI_FILE_TEST=1
     - stage: build
       os: linux
       dist: trusty
       language: node_js
-      node_js: v8
+      node_js: "v10.15.3"
+      before_script: tree ./node_modules/@tensorflow/tfjs-node
       script: npm run build
-      after_success: ./scripts/add-asset-to-github.sh ./packages/image-cli/out/node8-linux.tar.gz
-      env: PKG_TARGET=node8-linux SKIP_IMAGE_CLI_FILE_TEST=1
+      after_success: ./scripts/add-asset-to-github.sh ./packages/image-cli/out/node10-linux.tar.gz
+      env: PKG_TARGET=node10-linux SKIP_IMAGE_CLI_FILE_TEST=1
     - stage: test
       os: linux
       dist: trusty
       language: rust
       rust: beta
-      env: PKG_TARGET=node8-linux ENABLE_WASM=1 TF_CPP_MIN_LOG_LEVEL=3
+      env: PKG_TARGET=node10-linux ENABLE_WASM=1 TF_CPP_MIN_LOG_LEVEL=3
       before_install:
         - ./scripts/install-node-and-wasm.sh
-        - nvm use v8
+        - nvm use "v10.15.3"
         - npm install -g yarn
       before_script:
         - git lfs pull
@@ -43,8 +45,8 @@ jobs:
       os: linux
       dist: trusty
       language: node_js
-      node_js: v8
-      env: PKG_TARGET=node8-linux SKIP_IMAGE_CLI_FILE_TEST=1
+      node_js: "v10.15.3"
+      env: PKG_TARGET=node10-linux SKIP_IMAGE_CLI_FILE_TEST=1
       script:
         - npm install -g @patrickhulce/scripts
         - npm run build
@@ -55,6 +57,13 @@ jobs:
         skip_cleanup: true
         github_token: $GH_TOKEN
         local_dir: packages/image/demo
+addons:
+  apt:
+    packages:
+      - tree
+  homebrew:
+    packages:
+      - tree
 cache:
   cargo: true
   yarn: true
