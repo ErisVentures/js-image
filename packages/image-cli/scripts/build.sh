@@ -3,6 +3,12 @@
 DIRNAME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 IMAGE_CLI_ROOT="$DIRNAME/.."
 TARGET=${PKG_TARGET:-node10-mac}
+
+# Make sure the node version you're using locally is the same NAPI as the TARGET node version
+#   - https://nodejs.org/api/n-api.html#n_api_n_api_version_matrix
+#   - https://github.com/zeit/pkg-fetch/releases
+#   - https://www.npmjs.com/package/node-pre-gyp#the-napi_versions-array-property
+
 rm -rf out/
 mkdir -p out/@tensorflow/tfjs-node/deps
 mkdir -p out/@tensorflow/tfjs-node/lib

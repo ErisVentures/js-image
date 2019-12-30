@@ -214,8 +214,9 @@ function mergeModelResults(
 
   // If IoU is >70% consider it a duplicate and skip
   for (const automl of automlMapped) {
-    const isDuplicate = cocoMapped
-      .some(coco => computeIoU(automl.boundingBox, coco.boundingBox) > deduplicationThreshold)
+    const isDuplicate = cocoMapped.some(
+      coco => computeIoU(automl.boundingBox, coco.boundingBox) > deduplicationThreshold,
+    )
     if (!isDuplicate) output.push(automl)
   }
 
