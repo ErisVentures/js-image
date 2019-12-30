@@ -36,7 +36,7 @@ module.exports = async function(modules, argv) {
 
     console.log('Processing', i + 1, '...')
     const selectedImageData = await image.toImageData()
-    await Image.from(selectedImageData).analyze({faces: {}}).toAnalysis()
+    await Image.from(selectedImageData).analyze({faces: {}, objects: {}}).toAnalysis()
     const buffer = await Image.from(selectedImageData).toBuffer()
     fs.writeFileSync(path.join(__dirname, `actual-freeform-${i}.jpg`), buffer)
   }
