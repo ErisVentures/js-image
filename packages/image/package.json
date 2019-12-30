@@ -31,10 +31,10 @@
   "homepage": "https://github.com/ErisVentures/js-image#readme",
   "dependencies": {
     "@eris/exif": "^0.1.0-development",
-    "@tensorflow/tfjs-node": "^1.0.3",
+    "@tensorflow/tfjs-node": "1.5.1",
     "@types/sharp": "^0.22.0",
     "buffer": "^5.2.0",
-    "face-api.js": "^0.19.0",
+    "face-api.js": "^0.22.0",
     "file-type": "^7.0.1",
     "jpeg-js": "^0.3.4",
     "pngjs": "^3.3.0",

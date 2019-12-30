@@ -33,7 +33,7 @@ describe('analyses/faces', () => {
               },
               Object {
                 "height": 0.016666666666666666,
-                "openConfidence": 0.6646197438240051,
+                "openConfidence": 0.6646198034286499,
                 "width": 0.035,
                 "x": 0.52,
                 "y": 0.2966666666666667,
@@ -54,7 +54,7 @@ describe('analyses/faces', () => {
               172,
             ],
             "expression": "happy",
-            "expressionConfidence": 1,
+            "expressionConfidence": 0.9999966621398926,
             "eyes": Array [
               Object {
                 "height": 0.013333333333333334,
@@ -71,7 +71,7 @@ describe('analyses/faces', () => {
                 "y": 0.32,
               },
             ],
-            "happinessConfidence": 1,
+            "happinessConfidence": 0.9999966621398926,
           },
         ]
       `)
@@ -90,30 +90,30 @@ describe('analyses/faces', () => {
               "x": 0.435,
               "y": 0.3025,
             },
-            "confidence": 0.9829439520835876,
+            "confidence": 0.9829438924789429,
             "descriptor": Array [
               116,
               154,
             ],
             "expression": "sad",
-            "expressionConfidence": 0.9999020099639893,
+            "expressionConfidence": 0.9999539852142334,
             "eyes": Array [
               Object {
                 "height": 0.05,
-                "openConfidence": 0.007234196178615093,
+                "openConfidence": 0.007234203163534403,
                 "width": 0.045,
                 "x": 0.47833333333333333,
                 "y": 0.43,
               },
               Object {
                 "height": 0.05,
-                "openConfidence": 0.01330363005399704,
+                "openConfidence": 0.01330364216119051,
                 "width": 0.045,
                 "x": 0.5566666666666666,
                 "y": 0.4175,
               },
             ],
-            "happinessConfidence": 0.000010031476449512411,
+            "happinessConfidence": 2.3540910376596003e-7,
           },
         ]
       `)

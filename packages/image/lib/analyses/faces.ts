@@ -160,20 +160,22 @@ export async function detectFaces(imageData: IAnnotatedImageData): Promise<IFace
 
   const results = await faceapi
     .detectAllFaces(imageTensor as any, detectionOptions)
-    .withFaceExpressions()
     .withFaceLandmarks()
+    .withFaceExpressions()
     .withFaceDescriptors()
 
   const faces = results.map(({detection, landmarks, expressions, descriptor}) => {
     const faceBox = roundBoundingBox(detection.box)
-    const happyExpression = expressions.find(item => item.expression === 'happy')
-    const maxExpression = _.maxBy(expressions, x => x.probability)
+    const happyExpression = expressions.happy
+    const maxExpression = _.maxBy(expressions.asSortedArray(), x => x.probability)
 
     return {
       confidence: detection.score,
-      expression: (maxExpression && maxExpression.expression) || 'neutral',
+      expression:
+        (maxExpression && (maxExpression.expression as IFaceAnalysisEntry['expression'])) ||
+        'neutral',
       expressionConfidence: (maxExpression && maxExpression.probability) || 0,
-      happinessConfidence: (happyExpression && happyExpression.probability) || 0,
+      happinessConfidence: happyExpression || 0,
       boundingBox: convertToPercentageCoordinates(faceBox, imageData.width, imageData.height),
       descriptor: convertFaceDescriptor(descriptor),
       eyes: [
