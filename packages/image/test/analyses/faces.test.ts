@@ -77,6 +77,48 @@ describe('analyses/faces', () => {
       `)
     })
 
+    it('should find faces in different angled shot', async () => {
+      const imageData = await fixtureDecode('source-bride.jpg')
+      const faces = await facesModule.detectFaces(imageData)
+      faces.forEach(face => (face.descriptor = face.descriptor.slice(0, 2)))
+      expect(faces).toMatchInlineSnapshot(`
+        Array [
+          Object {
+            "boundingBox": Object {
+              "height": 0.1915367483296214,
+              "width": 0.22333333333333333,
+              "x": 0.39,
+              "y": 0.22494432071269488,
+            },
+            "confidence": 0.926069438457489,
+            "descriptor": Array [
+              113,
+              141,
+            ],
+            "expression": "sad",
+            "expressionConfidence": 0.974626898765564,
+            "eyes": Array [
+              Object {
+                "height": 0.028953229398663696,
+                "openConfidence": 0.002654049312695861,
+                "width": 0.056666666666666664,
+                "x": 0.44333333333333336,
+                "y": 0.30734966592427615,
+              },
+              Object {
+                "height": 0.028953229398663696,
+                "openConfidence": 0.07856439799070358,
+                "width": 0.056666666666666664,
+                "x": 0.5233333333333333,
+                "y": 0.3028953229398664,
+              },
+            ],
+            "happinessConfidence": 0.0005799425998702645,
+          },
+        ]
+      `)
+    })
+
     it('should find faces in cluttered shot', async () => {
       const imageData = await fixtureDecode('source-faces-closed-eyes.jpg')
       const faces = await facesModule.detectFaces(imageData)

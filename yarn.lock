@@ -909,6 +909,11 @@
     prettier "^1.13.7"
     yargs "^12.0.1"
 
+"@tensorflow/tfjs-automl@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@tensorflow/tfjs-automl/-/tfjs-automl-1.0.0.tgz#554e37c4ee25e2db6a24ba3c4acd9083e229e8da"
+  integrity sha512-h+IUbZktD5FYR8RYKnFyPcsEujekLxyGpjm4Lgt5q57j5how7dAHO6+HTSoa7OgH0lOiYyOBCFtB5YZHlZhSUg==
+
 "@tensorflow/tfjs-converter@1.5.1":
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/@tensorflow/tfjs-converter/-/tfjs-converter-1.5.1.tgz#13b76266d51c7e7f3aeee27cdc65444a48e01538"
