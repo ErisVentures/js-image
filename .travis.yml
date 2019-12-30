@@ -38,7 +38,7 @@ jobs:
       script:
         - npm run build
         - npm run test:lint
-        - npm run test:unit -- --coverage --runInBand --verbose
+        - npm run test:unit:ci
         - npm install -g coveralls
         - cat coverage/lcov.info | coveralls || echo 'Failed to upload to coveralls...'
     - stage: deploy

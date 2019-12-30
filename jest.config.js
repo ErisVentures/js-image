@@ -4,6 +4,7 @@ module.exports = {
   globals: {
     'ts-jest': {
       diagnostics: false,
+      isolatedModules: true,
     },
   },
   collectCoverageFrom: ['**/*.ts', '!**/*.d.ts', '!**/lib/index.ts'],
