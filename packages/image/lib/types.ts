@@ -145,7 +145,12 @@ export interface IFaceAnalysisOptions {
 }
 
 export interface IObjectAnalysisOptions {
+  /** The number of pixels of the side of the single-shot detection square, typically a number 200-400 */
   size?: number
+  /** The IoU detection threshold to deduplicate results from multiple models, typically a number 0.5-0.7 */
+  deduplicationThreshold?: number
+  /** The maximum number of *detection* objects to consider for *each* model, does not directly limit the number of returned items. */
+  maxDetectionObjects?: number
 }
 
 export interface IHistogramOptions {

@@ -1,5 +1,7 @@
 monkeyPatchConsoleWarn()
+monkeyPatchDictionaryLoader()
 import * as tf from '@tensorflow/tfjs-node'
+import * as automl from '@tensorflow/tfjs-automl'
 import * as tfconv from '@tensorflow/tfjs-converter'
 import * as path from 'path'
 import * as _ from 'lodash'
@@ -9,15 +11,132 @@ import {IObjectAnalysisEntry, IObjectAnalysisOptions} from '../types'
 import {SharpImage} from '../sharp-image'
 import {instrumentation} from '../instrumentation'
 
-let ssdModel: ObjectDetection | undefined
+let cocoSsdModel: ObjectDetection | undefined
+let openmlSsdModel: automl.ObjectDetectionModel | undefined
 
 async function initializeIfNecessary_(): Promise<void> {
-  if (ssdModel) return
+  if (cocoSsdModel) return
 
-  const modelDir = path.join(__dirname, '../../data/models/coco-ssd')
+  const cocoModelDir = path.join(__dirname, '../../data/models/coco-ssd')
+  const openmlModelDir = path.join(__dirname, '../../data/models/openml-ssd')
 
-  const ssdModelPath = path.join(modelDir, 'model.json')
-  ssdModel = await load(`file://${ssdModelPath}`)
+  const ssdModelPath = path.join(cocoModelDir, 'model.json')
+  cocoSsdModel = await load(`file://${ssdModelPath}`)
+
+  const openmlModelPath = path.join(openmlModelDir, 'model.json')
+  openmlSsdModel = await automl.loadObjectDetection(`file://${openmlModelPath}`)
+}
+
+function monkeyPatchDictionaryLoader(): void {
+  // tslint:disable-next-line
+  require('@tensorflow/tfjs-automl/dist/util').loadDictionary = () => {
+    return [
+      'background',
+      'billboard',
+      'building',
+      'food',
+      'gun',
+      'reptile',
+      'drink',
+      'dress',
+      'camera',
+      'hat',
+      'human_mouth',
+      'watch',
+      'traffic_sign',
+      'skirt',
+      'plant',
+      'pants',
+      'human_eye',
+      'tap',
+      'human_hand',
+      'pastry',
+      'watercraft',
+      'tie',
+      'human_arm',
+      'bus',
+      'table',
+      'train',
+      'human_foot',
+      'candle',
+      'jet_ski',
+      'bird',
+      'human_ear',
+      'headphones',
+      'sports_equipment',
+      'bicycle',
+      'jacket',
+      'tablet_computer',
+      'flower',
+      'flag',
+      'motorcycle',
+      'houseware',
+      'door',
+      'shorts',
+      'melon',
+      'traffic_light',
+      'human_face',
+      'glasses',
+      'swimwear',
+      'animal',
+      'scarf',
+      'footwear',
+      'fountain',
+      'tree',
+      'pen',
+      'shirt',
+      'plate',
+      'furniture',
+      'kitchen_utensil',
+      'human_leg',
+      'toy',
+      'plant', // group version
+      'swimming_pool',
+      'brassiere',
+      'helmet',
+      'insect',
+      'dog',
+      'stairs',
+      'chair',
+      'bag',
+      'clock',
+      'curtain',
+      'marinelife',
+      'vegetable',
+      'necklace',
+      'book',
+      'person', // group version
+      'car',
+      'flowerpot',
+      'tool',
+      'tableware',
+      'umbrella',
+      'ball',
+      'human_hair',
+      'instrument',
+      'lamp',
+      'mobile_phone',
+      'window',
+      'clothing',
+      'appliance',
+      'balloon',
+      'cosmetics',
+      'human_head',
+      'truck',
+      'aircraft',
+      'picture_frame',
+      'human_nose',
+      'person',
+      'fruit',
+      'wheel',
+      'weapon',
+      'tree', // group version
+      'box',
+      'sculpture',
+      'cat',
+      'earrings',
+    ]
+  }
 }
 
 /**
@@ -40,11 +159,74 @@ function monkeyPatchConsoleWarn(): void {
   globalUnsafe.__console_warn__ = consoleWarn
 }
 
+function computeIoU(
+  boxA: IObjectAnalysisEntry['boundingBox'],
+  boxB: IObjectAnalysisEntry['boundingBox'],
+): number {
+  const x1 = Math.max(boxA.x, boxB.x)
+  const x2 = Math.min(boxA.x + boxA.width, boxB.x + boxB.width)
+  const y1 = Math.max(boxA.y, boxB.y)
+  const y2 = Math.min(boxA.y + boxA.height, boxB.y + boxB.height)
+
+  // If there's no intersection at all just short-circuit now
+  if (x2 <= x1 || y2 <= y1) return 0
+
+  const intersection = (x2 - x1) * (y2 - y1)
+  const union = boxA.width * boxA.height + boxB.width * boxB.height - intersection
+  // console.log({intersection, union, iou: intersection / union, boxA, boxB, x1, x2, y1, y2})
+  return intersection / union
+}
+
+function mergeModelResults(
+  cocoResults: DetectedObject[],
+  automlResults: automl.PredictedObject[],
+  size: number,
+  deduplicationThreshold: number,
+): IObjectAnalysisEntry[] {
+  const cocoMapped = cocoResults.map(prediction => {
+    return {
+      object: prediction.class,
+      confidence: prediction.score,
+      boundingBox: {
+        x: prediction.bbox[0] / size,
+        y: prediction.bbox[1] / size,
+        width: prediction.bbox[2] / size,
+        height: prediction.bbox[3] / size,
+      },
+    }
+  })
+
+  // These results are much lower confidence
+  const automlMapped = automlResults.map(prediction => {
+    return {
+      object: prediction.label,
+      confidence: Math.min(prediction.score * 2, 1),
+      boundingBox: {
+        x: prediction.box.left / size,
+        y: prediction.box.top / size,
+        width: prediction.box.width / size,
+        height: prediction.box.height / size,
+      },
+    }
+  })
+
+  const output = [...cocoMapped]
+
+  // If IoU is >70% consider it a duplicate and skip
+  for (const automl of automlMapped) {
+    const isDuplicate = cocoMapped
+      .some(coco => computeIoU(automl.boundingBox, coco.boundingBox) > deduplicationThreshold)
+    if (!isDuplicate) output.push(automl)
+  }
+
+  return output
+}
+
 async function runCocoSsdModel(
   imageData: IAnnotatedImageData,
   options: IObjectAnalysisOptions = {},
 ): Promise<IObjectAnalysisEntry[]> {
-  const {size = 300} = options
+  const {size = 300, maxDetectionObjects = 20, deduplicationThreshold = 0.5} = options
   const normalizedImageData = await SharpImage.from(imageData)
     .resize(size, size, {fit: 'fill'})
     .normalize()
@@ -57,20 +239,13 @@ async function runCocoSsdModel(
   }
 
   const imageTensor = tf.tensor3d(tensorInputArray, [size, size, 3])
-  const predictions = await ssdModel!.detect(imageTensor)
 
-  return predictions.map(prediction => {
-    return {
-      object: prediction.class,
-      confidence: prediction.score,
-      boundingBox: {
-        x: prediction.bbox[0] / size,
-        y: prediction.bbox[1] / size,
-        width: prediction.bbox[2] / size,
-        height: prediction.bbox[3] / size,
-      },
-    }
-  })
+  return mergeModelResults(
+    await cocoSsdModel!.detect(imageTensor, maxDetectionObjects),
+    await openmlSsdModel!.detect(imageTensor, {score: 0.2, iou: 0.1, topk: maxDetectionObjects}),
+    size,
+    deduplicationThreshold,
+  ).sort((a, b) => b.confidence - a.confidence)
 }
 
 const initializeIfNecessary = instrumentation.wrapMethod(

@@ -31,6 +31,7 @@
   "homepage": "https://github.com/ErisVentures/js-image#readme",
   "dependencies": {
     "@eris/exif": "^0.1.0-development",
+    "@tensorflow/tfjs-automl": "^1.0.0",
     "@tensorflow/tfjs-node": "1.5.1",
     "@types/sharp": "^0.22.0",
     "buffer": "^5.2.0",
