@@ -13,7 +13,7 @@ export class BrowserImage extends Image {
   public constructor(
     image: Promise<IAnnotatedImageData> | IAnnotatedImageData,
     metadata?: Partial<IMetadata>,
-    buffer?: BufferLike
+    buffer?: BufferLike,
   ) {
     super()
     this._image = Promise.resolve(image)

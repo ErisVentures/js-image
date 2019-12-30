@@ -131,8 +131,8 @@ export class NodeImage extends Image {
     const image: any = await this._applyAll(this._image.clone())
     const format = this._output.format || DEFAULT_FORMAT
     if (format.type === ImageFormat.NoTranscode) {
-      const buffer = this._buffer ||
-        (image.options && image.options.input && image.options.input.buffer)
+      const buffer =
+        this._buffer || (image.options && image.options.input && image.options.input.buffer)
       if (!buffer) throw new Error('Unable to extract original buffer for NoTranscode')
       return buffer
     }
