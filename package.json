@@ -11,6 +11,7 @@
     "test": "npm run build && npm run test:lint && npm run test:unit",
     "test:lint": "lint",
     "test:unit": "jest",
+    "test:unit:ci": "jest --coverage --runInBand --verbose",
     "test:coverage": "nyc npm run test:unit"
   },
   "devDependencies": {

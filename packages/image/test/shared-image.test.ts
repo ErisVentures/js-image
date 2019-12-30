@@ -439,8 +439,14 @@ export function runImageTests(ImageImpl: typeof NodeImage | typeof BrowserImage)
         expect(analysis).toHaveProperty('objects')
 
         const objects = analysis.objects
-        expect(objects.length).toBe(2)
-        expect(objects).toMatchObject([{object: 'person'}, {object: 'person'}])
+        expect(objects.length).toBe(5)
+        expect(objects).toMatchObject([
+          {object: 'person'},
+          {object: 'person'},
+          {object: 'pants'},
+          {object: 'human_face'},
+          {object: 'human_face'},
+        ])
       })
     })
 
