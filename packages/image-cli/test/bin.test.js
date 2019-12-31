@@ -25,7 +25,11 @@ describe('bin/index.js', () => {
   it('should run from a freeform config', async () => {
     const args = ['-c', FREEFORM_SCRIPT_PATH, '--mode=freeform', SKATER_PATH]
     const stdout = await execa.stdout(JS_EXE, args, {cwd: CWD})
-    const stdoutClean = stdout.replace(/.* read in/, '<file> read in').replace(/\d+ms/g, 'Xms')
+    const stdoutClean = stdout
+      .replace(/.* read in/, '<file> read in')
+      .replace(/\d+ms/g, 'Xms')
+      .replace(/(7|8) objects/, '7 objects')
+
     expect(stdoutClean).toMatchInlineSnapshot(`
       "EXIF is passed-through ✓
       <file> read in Xms ✓

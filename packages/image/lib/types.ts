@@ -226,7 +226,7 @@ export interface ISceneAnalysisEntry {
 }
 
 export interface IObjectAnalysisEntry {
-  source: 'coco'|'openml'
+  source: 'coco' | 'openml'
   object: string
   confidence: number
   boundingBox: IBoundingBox
