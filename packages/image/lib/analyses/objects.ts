@@ -173,7 +173,6 @@ function computeIoU(
 
   const intersection = (x2 - x1) * (y2 - y1)
   const union = boxA.width * boxA.height + boxB.width * boxB.height - intersection
-  // console.log({intersection, union, iou: intersection / union, boxA, boxB, x1, x2, y1, y2})
   return intersection / union
 }
 

@@ -15,7 +15,10 @@ mkdir -p out/@tensorflow/tfjs-node/lib
 mkdir -p out/sharp/build/Release
 mkdir -p out/sharp/vendor/lib
 
-pkg -t $TARGET -o out/image-cli . || { echo "pkg failed!"; exit 1; }
+cat ../../node_modules/@tensorflow/tfjs-core/package.json
+cat ../../node_modules/@tensorflow/tfjs-node/package.json
+
+pkg --debug -t $TARGET -o out/image-cli . || { echo "pkg failed!"; exit 1; }
 cp -R ../../node_modules/sharp/build/Release/* out/sharp/build/Release/ || { echo "sharp not built!"; exit 1; }
 cp -R ../../node_modules/sharp/vendor/lib/* out/sharp/vendor/lib/ || { echo "sharp missing key files! rm -fR node_modules and try again"; exit 1; }
 cp -RL ../../node_modules/@tensorflow/tfjs-node/deps/* out/@tensorflow/tfjs-node/deps || { echo "tfjs not built!"; exit 1; }
@@ -29,20 +32,16 @@ echo 'Creating tmp directory to test the executable...'
 mkdir /tmp/js_image_cli_test
 cp -R ./* /tmp/js_image_cli_test
 cd /tmp/js_image_cli_test
+curl https://media.githubusercontent.com/media/ErisVentures/js-image/v0.4.2-alpha.0/packages/image/test/fixtures/source-wedding-1.jpg > file.jpg
 
 echo "Testing the basic CLI help..."
 OUTPUT=$(./image-cli 2>&1)
 echo -e "$OUTPUT"
 echo $OUTPUT | grep Usage >/dev/null || exit 1
 
-if [[ -n "$SKIP_IMAGE_CLI_FILE_TEST" ]]; then
-  # Skip this next check in Travis because it requires the git lfs files
-  exit 0
-fi
-
 FREEFORM_TEST_START=$(date +%s)
 echo "Testing the freeform usage pattern..."
-OUTPUT=$(./image-cli --mode=freeform -c "$IMAGE_CLI_ROOT/test/fixtures/freeform.js" 2>&1)
+OUTPUT=$(./image-cli --mode=freeform -c "$IMAGE_CLI_ROOT/test/fixtures/freeform.js" file.jpg 2>&1)
 echo -e "$OUTPUT"
 echo $OUTPUT | grep 'Done!' >/dev/null || exit 1
 FREEFORM_TEST_END=$(date +%s)

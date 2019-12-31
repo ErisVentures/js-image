@@ -13,7 +13,7 @@ jobs:
       before_script: tree ./node_modules/@tensorflow/tfjs-node
       script: npm run build
       after_success: ./scripts/add-asset-to-github.sh ./packages/image-cli/out/node10-mac.tar.gz
-      env: PKG_TARGET=node10-mac SKIP_IMAGE_CLI_FILE_TEST=1
+      env: PKG_TARGET=node10-mac
     - stage: build
       os: linux
       dist: trusty
@@ -22,7 +22,7 @@ jobs:
       before_script: tree ./node_modules/@tensorflow/tfjs-node
       script: npm run build
       after_success: ./scripts/add-asset-to-github.sh ./packages/image-cli/out/node10-linux.tar.gz
-      env: PKG_TARGET=node10-linux SKIP_IMAGE_CLI_FILE_TEST=1
+      env: PKG_TARGET=node10-linux
     - stage: test
       os: linux
       dist: trusty
@@ -46,7 +46,7 @@ jobs:
       dist: trusty
       language: node_js
       node_js: "v10.15.3"
-      env: PKG_TARGET=node10-linux SKIP_IMAGE_CLI_FILE_TEST=1
+      env: PKG_TARGET=node10-linux
       script:
         - npm install -g @patrickhulce/scripts
         - npm run build

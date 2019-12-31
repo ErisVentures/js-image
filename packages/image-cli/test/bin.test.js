@@ -37,6 +37,9 @@ describe('bin/index.js', () => {
       Processing 4 ...
       Processing 5 ...
       Subslices processed in Xms ✓
+      Running face analysis...
+      0 faces, 7 objects
+      Face analysis took Xms!
       Done! Took Xms!"
     `, 60000)
   })

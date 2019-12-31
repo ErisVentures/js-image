@@ -5,7 +5,7 @@ module.exports = async function(modules, argv) {
   const totalStart = Date.now()
   let start = Date.now()
 
-  const {Image, BrowserImage} = modules['@eris/image']
+  const {Image, BrowserImage, ImageResizeFit} = modules['@eris/image']
   const {TIFFDecoder} = modules['@eris/exif']
   const file = argv._[0] || path.join(__dirname, 'sydney.jpg')
   if (TIFFDecoder) console.log('EXIF is passed-through ✓')
@@ -42,5 +42,19 @@ module.exports = async function(modules, argv) {
   }
 
   console.log(`Subslices processed in ${Date.now() - start}ms ✓`)
+
+  const faceStart = Date.now()
+  console.log('Running face analysis...')
+  const analysis = await Image.from(fs.readFileSync(file))
+    .resize({fit: ImageResizeFit.Contain, doNotEnlarge: true, width: 1000, height: 1000})
+    .analyze({
+      faces: {},
+      objects: {},
+      sharpness: {},
+    })
+    .toAnalysis()
+  console.log(`${analysis.faces.length} faces, ${analysis.objects.length} objects`)
+  console.log(`Face analysis took ${Date.now() - faceStart}ms!`)
+
   console.log(`Done! Took ${Date.now() - totalStart}ms!`)
 }
