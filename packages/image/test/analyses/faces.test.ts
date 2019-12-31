@@ -1,5 +1,5 @@
 import * as facesModule from '../../lib/analyses/faces'
-import {expect, fixtureDecode} from '../utils'
+import {expect, fixtureDecode, roundNumbersToHundredths} from '../utils'
 
 describe('analyses/faces', () => {
   describe('detectFaces()', () => {
@@ -7,16 +7,17 @@ describe('analyses/faces', () => {
       const imageData = await fixtureDecode('source-faces-couple.jpg')
       const faces = await facesModule.detectFaces(imageData)
       faces.forEach(face => (face.descriptor = face.descriptor.slice(0, 2)))
+      roundNumbersToHundredths(faces)
       expect(faces).toMatchInlineSnapshot(`
         Array [
           Object {
             "boundingBox": Object {
-              "height": 0.11666666666666667,
-              "width": 0.135,
-              "x": 0.4275,
+              "height": 0.12,
+              "width": 0.14,
+              "x": 0.43,
               "y": 0.25,
             },
-            "confidence": 0.9888889789581299,
+            "confidence": 0.99,
             "descriptor": Array [
               81,
               180,
@@ -25,53 +26,53 @@ describe('analyses/faces', () => {
             "expressionConfidence": 1,
             "eyes": Array [
               Object {
-                "height": 0.016666666666666666,
-                "openConfidence": 0.5158189535140991,
-                "width": 0.035,
-                "x": 0.4675,
+                "height": 0.02,
+                "openConfidence": 0.52,
+                "width": 0.04,
+                "x": 0.47,
                 "y": 0.29,
               },
               Object {
-                "height": 0.016666666666666666,
-                "openConfidence": 0.6646198034286499,
-                "width": 0.035,
+                "height": 0.02,
+                "openConfidence": 0.66,
+                "width": 0.04,
                 "x": 0.52,
-                "y": 0.2966666666666667,
+                "y": 0.3,
               },
             ],
             "happinessConfidence": 1,
           },
           Object {
             "boundingBox": Object {
-              "height": 0.11166666666666666,
+              "height": 0.11,
               "width": 0.11,
               "x": 0.56,
-              "y": 0.27666666666666667,
+              "y": 0.28,
             },
-            "confidence": 0.9870948791503906,
+            "confidence": 0.99,
             "descriptor": Array [
               93,
               172,
             ],
             "expression": "happy",
-            "expressionConfidence": 0.9999966621398926,
+            "expressionConfidence": 1,
             "eyes": Array [
               Object {
-                "height": 0.013333333333333334,
-                "openConfidence": 0.7949417233467102,
-                "width": 0.0275,
-                "x": 0.565,
-                "y": 0.31833333333333336,
+                "height": 0.01,
+                "openConfidence": 0.79,
+                "width": 0.03,
+                "x": 0.56,
+                "y": 0.32,
               },
               Object {
-                "height": 0.013333333333333334,
-                "openConfidence": 0.9452188611030579,
-                "width": 0.0275,
-                "x": 0.6175,
+                "height": 0.01,
+                "openConfidence": 0.95,
+                "width": 0.03,
+                "x": 0.62,
                 "y": 0.32,
               },
             ],
-            "happinessConfidence": 0.9999966621398926,
+            "happinessConfidence": 1,
           },
         ]
       `)
@@ -81,39 +82,40 @@ describe('analyses/faces', () => {
       const imageData = await fixtureDecode('source-bride.jpg')
       const faces = await facesModule.detectFaces(imageData)
       faces.forEach(face => (face.descriptor = face.descriptor.slice(0, 2)))
+      roundNumbersToHundredths(faces)
       expect(faces).toMatchInlineSnapshot(`
         Array [
           Object {
             "boundingBox": Object {
-              "height": 0.1915367483296214,
-              "width": 0.22333333333333333,
+              "height": 0.19,
+              "width": 0.22,
               "x": 0.39,
-              "y": 0.22494432071269488,
+              "y": 0.22,
             },
-            "confidence": 0.926069438457489,
+            "confidence": 0.93,
             "descriptor": Array [
               113,
               141,
             ],
             "expression": "sad",
-            "expressionConfidence": 0.974626898765564,
+            "expressionConfidence": 0.97,
             "eyes": Array [
               Object {
-                "height": 0.028953229398663696,
-                "openConfidence": 0.002654049312695861,
-                "width": 0.056666666666666664,
-                "x": 0.44333333333333336,
-                "y": 0.30734966592427615,
+                "height": 0.03,
+                "openConfidence": 0,
+                "width": 0.06,
+                "x": 0.44,
+                "y": 0.31,
               },
               Object {
-                "height": 0.028953229398663696,
-                "openConfidence": 0.07856439799070358,
-                "width": 0.056666666666666664,
-                "x": 0.5233333333333333,
-                "y": 0.3028953229398664,
+                "height": 0.03,
+                "openConfidence": 0.08,
+                "width": 0.06,
+                "x": 0.52,
+                "y": 0.3,
               },
             ],
-            "happinessConfidence": 0.0005799425998702645,
+            "happinessConfidence": 0,
           },
         ]
       `)
@@ -123,39 +125,40 @@ describe('analyses/faces', () => {
       const imageData = await fixtureDecode('source-faces-closed-eyes.jpg')
       const faces = await facesModule.detectFaces(imageData)
       faces.forEach(face => (face.descriptor = face.descriptor.slice(0, 2)))
+      roundNumbersToHundredths(faces)
       expect(faces).toMatchInlineSnapshot(`
         Array [
           Object {
             "boundingBox": Object {
-              "height": 0.325,
-              "width": 0.18166666666666667,
-              "x": 0.435,
-              "y": 0.3025,
+              "height": 0.33,
+              "width": 0.18,
+              "x": 0.44,
+              "y": 0.3,
             },
-            "confidence": 0.9829438924789429,
+            "confidence": 0.98,
             "descriptor": Array [
               116,
               154,
             ],
             "expression": "sad",
-            "expressionConfidence": 0.9999539852142334,
+            "expressionConfidence": 1,
             "eyes": Array [
               Object {
                 "height": 0.05,
-                "openConfidence": 0.007234203163534403,
-                "width": 0.045,
-                "x": 0.47833333333333333,
+                "openConfidence": 0.01,
+                "width": 0.05,
+                "x": 0.48,
                 "y": 0.43,
               },
               Object {
                 "height": 0.05,
-                "openConfidence": 0.01330364216119051,
-                "width": 0.045,
-                "x": 0.5566666666666666,
-                "y": 0.4175,
+                "openConfidence": 0.01,
+                "width": 0.05,
+                "x": 0.56,
+                "y": 0.42,
               },
             ],
-            "happinessConfidence": 2.3540910376596003e-7,
+            "happinessConfidence": 0,
           },
         ]
       `)
