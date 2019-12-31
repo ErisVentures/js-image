@@ -18,7 +18,7 @@ mkdir -p out/sharp/vendor/lib
 cat ../../node_modules/@tensorflow/tfjs-core/package.json
 cat ../../node_modules/@tensorflow/tfjs-node/package.json
 
-pkg --debug -t $TARGET -o out/image-cli . || { echo "pkg failed!"; exit 1; }
+pkg -t $TARGET -o out/image-cli . || { echo "pkg failed!"; exit 1; }
 cp -R ../../node_modules/sharp/build/Release/* out/sharp/build/Release/ || { echo "sharp not built!"; exit 1; }
 cp -R ../../node_modules/sharp/vendor/lib/* out/sharp/vendor/lib/ || { echo "sharp missing key files! rm -fR node_modules and try again"; exit 1; }
 cp -RL ../../node_modules/@tensorflow/tfjs-node/deps/* out/@tensorflow/tfjs-node/deps || { echo "tfjs not built!"; exit 1; }
