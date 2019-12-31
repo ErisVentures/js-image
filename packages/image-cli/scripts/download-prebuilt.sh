@@ -11,9 +11,9 @@ VERSION=$(node -e 'console.log(require("./package.json").version)')
 
 PLATFORM_FILE=""
 if [[ "$PLATFORM" == "darwin" ]]; then
-  PLATFORM_FILE="node8-mac.tar.gz"
+  PLATFORM_FILE="node10-mac.tar.gz"
 elif [[ "$PLATFORM" == "linux" ]]; then
-  PLATFORM_FILE="node8-linux.tar.gz"
+  PLATFORM_FILE="node10-linux.tar.gz"
 elif [[ "$PLATFORM" == "win32" ]]; then
   echo "Windows not yet supported"
   exit 1
