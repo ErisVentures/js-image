@@ -38,6 +38,6 @@ describe('bin/index.js', () => {
       Processing 5 ...
       Subslices processed in Xms ✓
       Done! Took Xms!"
-    `)
+    `, 60000)
   })
 })
