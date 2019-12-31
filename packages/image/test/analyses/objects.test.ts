@@ -19,6 +19,7 @@ describe('analyses/objects', () => {
             },
             "confidence": 0.95,
             "object": "person",
+            "source": "coco",
           },
           Object {
             "boundingBox": Object {
@@ -29,6 +30,7 @@ describe('analyses/objects', () => {
             },
             "confidence": 0.94,
             "object": "person",
+            "source": "coco",
           },
           Object {
             "boundingBox": Object {
@@ -37,8 +39,9 @@ describe('analyses/objects', () => {
               "x": 0.17,
               "y": 0.69,
             },
-            "confidence": 0.78,
+            "confidence": 0.39,
             "object": "pants",
+            "source": "openml",
           },
           Object {
             "boundingBox": Object {
@@ -47,8 +50,9 @@ describe('analyses/objects', () => {
               "x": 0.56,
               "y": 0.28,
             },
-            "confidence": 0.7,
+            "confidence": 0.35,
             "object": "human_face",
+            "source": "openml",
           },
           Object {
             "boundingBox": Object {
@@ -57,8 +61,9 @@ describe('analyses/objects', () => {
               "x": 0.42,
               "y": 0.27,
             },
-            "confidence": 0.55,
+            "confidence": 0.27,
             "object": "human_face",
+            "source": "openml",
           },
         ]
       `)
@@ -80,16 +85,7 @@ describe('analyses/objects', () => {
             },
             "confidence": 0.85,
             "object": "person",
-          },
-          Object {
-            "boundingBox": Object {
-              "height": 0.29,
-              "width": 0.43,
-              "x": 0.18,
-              "y": 0.69,
-            },
-            "confidence": 0.8,
-            "object": "pants",
+            "source": "coco",
           },
           Object {
             "boundingBox": Object {
@@ -100,6 +96,18 @@ describe('analyses/objects', () => {
             },
             "confidence": 0.78,
             "object": "person",
+            "source": "coco",
+          },
+          Object {
+            "boundingBox": Object {
+              "height": 0.29,
+              "width": 0.43,
+              "x": 0.18,
+              "y": 0.69,
+            },
+            "confidence": 0.4,
+            "object": "pants",
+            "source": "openml",
           },
           Object {
             "boundingBox": Object {
@@ -108,8 +116,9 @@ describe('analyses/objects', () => {
               "x": 0.56,
               "y": 0.28,
             },
-            "confidence": 0.66,
+            "confidence": 0.33,
             "object": "human_face",
+            "source": "openml",
           },
           Object {
             "boundingBox": Object {
@@ -118,8 +127,9 @@ describe('analyses/objects', () => {
               "x": 0.42,
               "y": 0.27,
             },
-            "confidence": 0.5,
+            "confidence": 0.25,
             "object": "human_face",
+            "source": "openml",
           },
           Object {
             "boundingBox": Object {
@@ -128,8 +138,9 @@ describe('analyses/objects', () => {
               "x": 0.53,
               "y": 0.82,
             },
-            "confidence": 0.47,
+            "confidence": 0.24,
             "object": "pants",
+            "source": "openml",
           },
         ]
       `)
@@ -151,6 +162,7 @@ describe('analyses/objects', () => {
             },
             "confidence": 0.85,
             "object": "toothbrush",
+            "source": "coco",
           },
         ]
       `)
@@ -165,16 +177,6 @@ describe('analyses/objects', () => {
         Array [
           Object {
             "boundingBox": Object {
-              "height": 0.21,
-              "width": 0.27,
-              "x": 0.37,
-              "y": 0.2,
-            },
-            "confidence": 0.83,
-            "object": "human_face",
-          },
-          Object {
-            "boundingBox": Object {
               "height": 0.97,
               "width": 0.97,
               "x": 0.01,
@@ -182,6 +184,18 @@ describe('analyses/objects', () => {
             },
             "confidence": 0.52,
             "object": "person",
+            "source": "coco",
+          },
+          Object {
+            "boundingBox": Object {
+              "height": 0.21,
+              "width": 0.27,
+              "x": 0.37,
+              "y": 0.2,
+            },
+            "confidence": 0.41,
+            "object": "human_face",
+            "source": "openml",
           },
           Object {
             "boundingBox": Object {
@@ -190,8 +204,9 @@ describe('analyses/objects', () => {
               "x": 0.5,
               "y": 0.37,
             },
-            "confidence": 0.45,
+            "confidence": 0.22,
             "object": "clothing",
+            "source": "openml",
           },
         ]
       `)

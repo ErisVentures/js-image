@@ -184,6 +184,7 @@ function mergeModelResults(
 ): IObjectAnalysisEntry[] {
   const cocoMapped = cocoResults.map(prediction => {
     return {
+      source: 'coco' as 'coco',
       object: prediction.class,
       confidence: prediction.score,
       boundingBox: {
@@ -198,8 +199,9 @@ function mergeModelResults(
   // These results are much lower confidence
   const automlMapped = automlResults.map(prediction => {
     return {
+      source: 'openml' as 'openml',
       object: prediction.label,
-      confidence: Math.min(prediction.score * 2, 1),
+      confidence: prediction.score,
       boundingBox: {
         x: prediction.box.left / size,
         y: prediction.box.top / size,
@@ -209,7 +211,7 @@ function mergeModelResults(
     }
   })
 
-  const output = [...cocoMapped]
+  const output: IObjectAnalysisEntry[] = [...cocoMapped]
 
   // If IoU is >70% consider it a duplicate and skip
   for (const automl of automlMapped) {
