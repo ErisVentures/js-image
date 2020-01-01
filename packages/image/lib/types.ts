@@ -249,6 +249,22 @@ export interface ISubselectOptions {
   right: number
 }
 
+export interface IBlockifyOptions {
+  threshold?: number
+  blurRadius?: number | 'auto'
+}
+
+export interface IBlock {
+  x: number
+  y: number
+  width: number
+  height: number
+  count: number
+  r: number
+  g: number
+  b: number
+}
+
 export interface INormalizeOptions {
   blackPointPercentage?: number
   whitePointPercentage?: number

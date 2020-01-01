@@ -179,6 +179,18 @@ export class ImageData {
     return rounded < 0 ? 0 : rounded > 255 ? 255 : rounded
   }
 
+  public static clipX(x: number, imageData: IAnnotatedImageData): number {
+    if (x < 0) return 0
+    if (x >= imageData.width) return imageData.width - 1
+    return x
+  }
+
+  public static clipY(y: number, imageData: IAnnotatedImageData): number {
+    if (y < 0) return 0
+    if (y >= imageData.height) return imageData.height - 1
+    return y
+  }
+
   public static isBorder(
     imageData: IAnnotatedImageData,
     x: number,
