@@ -12,15 +12,10 @@ function incrementalAverageColor(
   return [(rA * n + r) / (n + 1), (gA * n + g) / (n + 1), (bA * n + b) / (n + 1)]
 }
 
-function isCloseEnough(
-  averageColor: [number, number, number],
-  newColor: [number, number, number],
-  threshold: number,
-): boolean {
-  const [rA, gA, bA] = averageColor
-  const [r, g, b] = newColor
-  const distance = Math.pow(rA - r, 2) + Math.pow(gA - g, 2) + Math.pow(bA - b, 2)
-  return Math.sqrt(distance) < threshold
+function colorDistance(colorA: [number, number, number], colorB: [number, number, number]): number {
+  const [rA, gA, bA] = colorA
+  const [r, g, b] = colorB
+  return Math.sqrt(Math.pow(rA - r, 2) + Math.pow(gA - g, 2) + Math.pow(bA - b, 2))
 }
 
 function processBlockStartingAt(
@@ -52,7 +47,7 @@ function processBlockStartingAt(
       number,
     ]
 
-    if (isCloseEnough(currentColor, color, threshold)) {
+    if (colorDistance(currentColor, color) <= threshold) {
       processedBitMask[x + imageData.width * y] = 1
       currentColor = incrementalAverageColor(currentColor, color, blockCount)
       blockCount++
@@ -98,10 +93,98 @@ function processBlockStartingAt(
   }
 }
 
+function doBlockBoxesOverlap(blockA: IBlock, blockB: IBlock): boolean {
+  const leftBlock = blockA.x <= blockB.x ? blockA : blockB
+  const rightBlock = leftBlock === blockA ? blockB : blockA
+  const topBlock = blockA.y <= blockB.y ? blockA : blockB
+  const bottomBlock = leftBlock === blockA ? blockB : blockA
+
+  return (
+    leftBlock.x + leftBlock.width >= rightBlock.x && topBlock.y + topBlock.height >= bottomBlock.y
+  )
+}
+
+function mergeBlocks(blocks: IBlock[], options: IBlockifyOptions): IBlock[] {
+  const {mergeThresholdMultiplier = 1, threshold = 20} = options
+  const mergeThreshold = mergeThresholdMultiplier * threshold
+  if (mergeThreshold === 0) return blocks
+
+  const queue = blocks.slice()
+  const output: IBlock[] = []
+
+  while (queue.length) {
+    let block = queue.shift()!
+    for (let i = 0; i < queue.length; i++) {
+      const candidate = queue[i]
+      if (!doBlockBoxesOverlap(block, candidate)) continue
+      const colorA = [block.r, block.g, block.b] as [number, number, number]
+      const colorB = [candidate.r, candidate.g, candidate.b] as [number, number, number]
+      if (colorDistance(colorA, colorB) > mergeThreshold) continue
+
+      // We're merging!!
+      queue.splice(i, 1)
+      i--
+
+      const newX = Math.min(block.x, candidate.x)
+      const newY = Math.min(block.y, candidate.y)
+      const newCount = block.count + candidate.count
+
+      block = {
+        x: newX,
+        y: newY,
+        width: Math.max(block.x + block.width, candidate.x + candidate.width) - newX,
+        height: Math.max(block.y + block.height, candidate.y + candidate.height) - newY,
+        count: newCount,
+        r: Math.round((block.r * block.count + candidate.r * candidate.count) / newCount),
+        g: Math.round((block.g * block.count + candidate.g * candidate.count) / newCount),
+        b: Math.round((block.b * block.count + candidate.b * candidate.count) / newCount),
+      }
+    }
+
+    output.push(block)
+  }
+
+  return output
+}
+
+function colorizeByMergedBlocks(
+  imageData: IAnnotatedImageData,
+  blocks: IBlock[],
+): IAnnotatedImageData {
+  for (let y = 0; y < imageData.height; y++) {
+    for (let x = 0; x < imageData.width; x++) {
+      const fakeBlock: IBlock = {x, y, width: 0, height: 0, count: 0, r: 0, g: 0, b: 0}
+      const index = ImageData.indexFor(imageData, x, y)
+      const color = [
+        imageData.data[index],
+        imageData.data[index + 1],
+        imageData.data[index + 2],
+      ] as [number, number, number]
+
+      let minDistance = Infinity
+      let minBlock = blocks[0]
+      for (const block of blocks) {
+        if (!doBlockBoxesOverlap(block, fakeBlock)) continue
+        const distance = colorDistance(color, [block.r, block.g, block.b])
+        if (distance < minDistance) {
+          minBlock = block
+          minDistance = distance
+        }
+      }
+
+      imageData.data[index] = minBlock.r
+      imageData.data[index + 1] = minBlock.g
+      imageData.data[index + 2] = minBlock.b
+    }
+  }
+
+  return imageData
+}
+
 export async function blockify(
   imageData: IAnnotatedImageData,
   options: IBlockifyOptions = {},
-): Promise<{imageData: IAnnotatedImageData, blocks: IBlock[]}> {
+): Promise<{imageData: IAnnotatedImageData; blocks: IBlock[]}> {
   const {blurRadius: blurRadiusRaw = 'auto', threshold = 20} = options
   const blurRadius =
     blurRadiusRaw === 'auto' ? Math.min(imageData.width, imageData.height) / 20 : blurRadiusRaw
@@ -128,5 +211,11 @@ export async function blockify(
     }
   }
 
-  return {imageData: output, blocks}
+  const mergedBlocks = mergeBlocks(blocks, options)
+
+  return {
+    imageData:
+      !options.recolorAfterMerge || mergedBlocks.length === blocks.length ? output : colorizeByMergedBlocks(output, mergedBlocks),
+    blocks: mergedBlocks,
+  }
 }

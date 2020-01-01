@@ -5,8 +5,9 @@ import {Colorspace} from '../../lib/types'
 
 describe('#effects/blockify', () => {
   it('should blockify an image', async () => {
-    const {imageData} = await blockify(await fixtureDecode('source-faces-couple.jpg'))
-    await compareToFixture(imageData, 'blockify-faces-couple.jpg')
+    const options = {recolorAfterMerge: true, mergeThresholdMultiplier: 1.5}
+    const {imageData} = await blockify(await fixtureDecode('source-faces-couple.jpg'), options)
+    await compareToFixture(imageData, 'blockify-faces-couple.jpg', {strict: false})
   }, 60000)
 
   it('should blockify a small square of same colors', async () => {
@@ -44,6 +45,40 @@ describe('#effects/blockify', () => {
     ])
   })
 
+  it('should merge blocks', async () => {
+    const r2 = (v: number) => [v, 0, 0]
+    const pixels = [
+      ...[...r2(199), ...r2(190), ...r2(181), ...r2(190)],
+      ...[...r2(190), ...r2(181), ...r2(190), ...r2(190)],
+      ...[...r2(181), ...r2(190), ...r2(190), ...r2(190)],
+      ...[...r2(190), ...r2(190), ...r2(190), ...r2(190)],
+    ].map(r => Math.round(r))
+
+    const expected = new Uint8Array(
+      [
+        ...[...r2(193), ...r2(193), ...r2(188), ...r2(188)],
+        ...[...r2(193), ...r2(188), ...r2(188), ...r2(188)],
+        ...[...r2(188), ...r2(188), ...r2(188), ...r2(188)],
+        ...[...r2(188), ...r2(188), ...r2(188), ...r2(188)],
+      ].map(r => Math.round(r)),
+    )
+
+    const input = {width: 4, height: 4, data: pixels, colorspace: Colorspace.RGB, channels: 3}
+    const nonMergeOptions = {
+      threshold: 10,
+      blurRadius: 0,
+      mergeThresholdMultiplier: 0,
+      recolorAfterMerge: true,
+    }
+    const mergeOptions = {...nonMergeOptions, mergeThresholdMultiplier: 1}
+    const {imageData: nonMergeData, blocks: nonMergeBlocks} = await blockify(input, nonMergeOptions)
+    expect(nonMergeData.data).toEqual(expected)
+    const {imageData: mergeData, blocks: mergeBlocks} = await blockify(input, mergeOptions)
+    expect(mergeData.data).toEqual(expected.map((_, i) => (i % 3 === 0 ? 189 : 0)))
+    expect(mergeBlocks).toHaveLength(1)
+    expect(nonMergeBlocks.length).toBeGreaterThan(mergeBlocks.length)
+  })
+
   it('should blockify a large rectangle of random colors', async () => {
     const random = createPRNG('blockify')
     const color = () => [random.next() * 255, random.next() * 255, random.next() * 255]
@@ -55,7 +90,7 @@ describe('#effects/blockify', () => {
     }
 
     const imageData = {width, height, data: pixels, colorspace: Colorspace.RGB, channels: 3}
-    const {blocks} = await blockify(imageData, {blurRadius: 0})
+    const {blocks} = await blockify(imageData, {blurRadius: 0, mergeThresholdMultiplier: 0})
     expect(blocks.length).toBeGreaterThan(200 * 300 * 0.9)
   })
 })

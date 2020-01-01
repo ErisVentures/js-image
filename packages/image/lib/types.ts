@@ -251,6 +251,8 @@ export interface ISubselectOptions {
 
 export interface IBlockifyOptions {
   threshold?: number
+  mergeThresholdMultiplier?: number
+  recolorAfterMerge?: boolean
   blurRadius?: number | 'auto'
 }
 
