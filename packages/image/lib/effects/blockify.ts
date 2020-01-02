@@ -112,7 +112,7 @@ function computeBlockVibrance(block: IBlock): number {
   const lightness = (max + min) / 2 / 255
   const saturation = delta / (1 - Math.abs(2 * lightness - 1))
   // The most vibrant color is the one that's closest to 100% saturation 50% lightness
-  const vibrance = (1 - saturation) / 2 + Math.abs(0.5 - lightness) / 0.5 / 2
+  const vibrance = saturation * (1 - Math.abs(0.5 - lightness) / 0.5)
   return vibrance
 }
 

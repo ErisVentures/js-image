@@ -74,7 +74,7 @@ describe('#effects/blockify', () => {
     const {imageData: nonMergeData, blocks: nonMergeBlocks} = await blockify(input, nonMergeOptions)
     expect(nonMergeData.data).toEqual(expected)
     const {imageData: mergeData, blocks: mergeBlocks} = await blockify(input, mergeOptions)
-    expect(mergeData.data).toEqual(expected.map((_, i) => (i % 3 === 0 ? 189 : 0)))
+    expect(mergeData.data).toEqual(expected.map((_, i) => (i % 3 === 0 ? 193 : 0)))
     expect(mergeBlocks).toHaveLength(1)
     expect(nonMergeBlocks.length).toBeGreaterThan(mergeBlocks.length)
   })
