@@ -4,15 +4,55 @@ import {createPRNG} from '../../lib/third-party/alea'
 import {Colorspace} from '../../lib/types'
 
 describe('#effects/blockify', () => {
-  it.only(
-    'should blockify an image',
-    async () => {
-      const options = {recolorAfterMerge: true, mergeThresholdMultiplier: 2}
-      const {imageData} = await blockify(await fixtureDecode('source-faces-couple.jpg'), options)
-      await compareToFixture(imageData, 'blockify-faces-couple.jpg', {strict: false})
-    },
-    60000,
-  )
+  it('should blockify an portrait image', async () => {
+    const options = {
+      recolorAfterMerge: true,
+      mergeThresholdMultiplier: 1.5,
+      minimumBlockSize: 0.001,
+    }
+    const {imageData} = await blockify(await fixtureDecode('source-faces-couple.jpg'), options)
+    await compareToFixture(imageData, 'blockify-faces-couple.jpg', {strict: false})
+  })
+
+  it('should blockify a landscape image', async () => {
+    const options = {
+      recolorAfterMerge: true,
+      mergeThresholdMultiplier: 1.5,
+      minimumBlockSize: 0.001,
+    }
+    const {imageData} = await blockify(await fixtureDecode('source-yosemite.jpg'), options)
+    await compareToFixture(imageData, 'blockify-yosemite.jpg', {strict: false})
+  })
+
+  it('should blockify a skater image', async () => {
+    const options = {
+      recolorAfterMerge: true,
+      mergeThresholdMultiplier: 1.5,
+      minimumBlockSize: 0.001,
+    }
+    const {imageData} = await blockify(await fixtureDecode('source-skater.jpg'), options)
+    await compareToFixture(imageData, 'blockify-skater.jpg', {strict: false, tolerance: 10})
+  })
+
+  it('should blockify a sydney image', async () => {
+    const options = {
+      recolorAfterMerge: true,
+      mergeThresholdMultiplier: 1.5,
+      minimumBlockSize: 0.001,
+    }
+    const {imageData} = await blockify(await fixtureDecode('source-sydney.jpg'), options)
+    await compareToFixture(imageData, 'blockify-sydney.jpg', {strict: false, tolerance: 10})
+  })
+
+  it('should blockify a night image', async () => {
+    const options = {
+      recolorAfterMerge: true,
+      mergeThresholdMultiplier: 1.5,
+      minimumBlockSize: 0.001,
+    }
+    const {imageData} = await blockify(await fixtureDecode('source-sydney-in-focus.jpg'), options)
+    await compareToFixture(imageData, 'blockify-sydney-night.jpg', {strict: false})
+  })
 
   it('should blockify a small square of same colors', async () => {
     const random = createPRNG('blockify')
@@ -99,34 +139,34 @@ describe('#effects/blockify', () => {
   })
 
   describe('#hueColorDistance_', () => {
-    it.only('should have lower distance for similar hues', () => {
+    it('should have lower distance for similar hues', () => {
       expect(hueColorDistance_([255, 0, 0], [230, 0, 0])).toMatchInlineSnapshot(`6.25`)
       // Blue hues in couple shot
       expect(hueColorDistance_([5, 31, 50], [44, 74, 94])).toMatchInlineSnapshot(
-        `19.289718968598702`,
+        `18.750146410036507`,
       )
       expect(hueColorDistance_([5, 31, 50], [83, 92, 106])).toMatchInlineSnapshot(
-        `42.58158950481536`,
+        `35.51060927299831`,
       )
       expect(hueColorDistance_([44, 74, 94], [83, 92, 106])).toMatchInlineSnapshot(
-        `17.3545193854566`,
+        `14.252035472972741`,
       )
       // Green hues in couple shot
       expect(hueColorDistance_([76, 86, 38], [39, 45, 6])).toMatchInlineSnapshot(
-        `18.27550799341211`,
+        `17.116240695322528`,
       )
       expect(hueColorDistance_([76, 86, 38], [97, 110, 61])).toMatchInlineSnapshot(
-        `11.323218199183048`,
+        `10.576509912425898`,
       )
       expect(hueColorDistance_([39, 45, 6], [97, 110, 61])).toMatchInlineSnapshot(
-        `33.411455104015545`,
+        `29.583761175197303`,
       )
       // Green vs brown
       expect(hueColorDistance_([132, 103, 80], [39, 45, 6])).toMatchInlineSnapshot(
-        `95.79356455519681`,
+        `64.42753014331821`,
       )
       expect(hueColorDistance_([175, 140, 115], [79, 80, 40])).toMatchInlineSnapshot(
-        `89.02289967568268`,
+        `61.48615528447576`,
       )
     })
   })

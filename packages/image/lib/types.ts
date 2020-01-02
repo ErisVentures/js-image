@@ -253,7 +253,7 @@ export interface IBlockifyOptions {
   threshold?: number
   mergeThresholdMultiplier?: number
   recolorAfterMerge?: boolean
-  /** A percentage of the image that the smallest block can be, usually .005-.01 */
+  /** A percentage of the image that the smallest block can be, usually .0005-.01 */
   minimumBlockSize?: number
   blurRadius?: number | 'auto'
 }
