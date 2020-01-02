@@ -1,4 +1,4 @@
-import {blockify} from '../../lib/effects/blockify'
+import {blockify, hueColorDistance_} from '../../lib/effects/blockify'
 import {fixtureDecode, compareToFixture} from '../utils'
 import {createPRNG} from '../../lib/third-party/alea'
 import {Colorspace} from '../../lib/types'
@@ -92,5 +92,31 @@ describe('#effects/blockify', () => {
     const imageData = {width, height, data: pixels, colorspace: Colorspace.RGB, channels: 3}
     const {blocks} = await blockify(imageData, {blurRadius: 0, mergeThresholdMultiplier: 0})
     expect(blocks.length).toBeGreaterThan(200 * 300 * 0.9)
+  })
+
+  describe('#hueColorDistance_', () => {
+    it('should have lower distance for similar hues', () => {
+      expect(hueColorDistance_([255, 0, 0], [230, 0, 0])).toMatchInlineSnapshot(`6.25`)
+      // Blue hues in couple shot
+      expect(hueColorDistance_([5, 31, 50], [44, 74, 94])).toMatchInlineSnapshot(
+        `18.750146410036507`,
+      )
+      expect(hueColorDistance_([5, 31, 50], [83, 92, 106])).toMatchInlineSnapshot(
+        `35.51060927299831`,
+      )
+      expect(hueColorDistance_([44, 74, 94], [83, 92, 106])).toMatchInlineSnapshot(
+        `14.252035472972741`,
+      )
+      // Green hues in couple shot
+      expect(hueColorDistance_([76, 86, 38], [39, 45, 6])).toMatchInlineSnapshot(
+        `17.116240695322528`,
+      )
+      expect(hueColorDistance_([76, 86, 38], [97, 110, 61])).toMatchInlineSnapshot(
+        `10.576509912425898`,
+      )
+      expect(hueColorDistance_([39, 45, 6], [97, 110, 61])).toMatchInlineSnapshot(
+        `29.583761175197303`,
+      )
+    })
   })
 })

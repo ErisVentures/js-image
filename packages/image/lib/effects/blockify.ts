@@ -12,11 +12,39 @@ function incrementalAverageColor(
   return [(rA * n + r) / (n + 1), (gA * n + g) / (n + 1), (bA * n + b) / (n + 1)]
 }
 
-// IDEA: compute color distance based on hue delta, not s/l/vibrance delta
 function colorDistance(colorA: [number, number, number], colorB: [number, number, number]): number {
   const [rA, gA, bA] = colorA
   const [r, g, b] = colorB
   return Math.sqrt(Math.pow(rA - r, 2) + Math.pow(gA - g, 2) + Math.pow(bA - b, 2))
+}
+
+function computeHue_(color: [number, number, number]): number {
+  const [r, g, b] = color.map(c => c / 255)
+  const min = Math.min(r, g, b)
+  const max = Math.max(r, g, b)
+  const delta = max - min
+  if (delta === 0) return 0
+
+  let hue = 0
+  if (max === r) {
+    hue = (360 + (60 * (g - b)) / delta) % 360
+  } else if (max === g) {
+    hue = 60 * ((b - r) / delta + 2)
+  } else {
+    hue = 60 * ((r - g) / delta + 4)
+  }
+
+  return hue
+}
+
+export function hueColorDistance_(
+  colorA: [number, number, number],
+  colorB: [number, number, number],
+): number {
+  const hueA = computeHue_(colorA)
+  const hueB = computeHue_(colorB)
+  const hueDistance = Math.min(Math.abs(hueA - hueB), hueA + 360 - hueB, hueB + 360 - hueA) / 180
+  return colorDistance(colorA, colorB) * (hueDistance + 0.25)
 }
 
 function processBlockStartingAt(
@@ -105,7 +133,7 @@ function doBlockBoxesOverlap(blockA: IBlock, blockB: IBlock): boolean {
   )
 }
 
-function computeBlockVibrance(block: IBlock): number {
+function computeBlockVibrance(block: Pick<IBlock, 'r'|'g'|'b'>): number {
   const min = Math.min(block.r, block.g, block.b)
   const max = Math.max(block.r, block.g, block.b)
   const delta = (max - min) / 255
@@ -184,7 +212,8 @@ function mergeBlocks(
       // Only merge if the color distance is low enough
       const colorA = [block.r, block.g, block.b] as [number, number, number]
       const colorB = [candidate.r, candidate.g, candidate.b] as [number, number, number]
-      if (colorDistance(colorA, colorB) > mergeThreshold) continue
+      const distance = hueColorDistance_(colorA, colorB)
+      if (distance > mergeThreshold) continue
 
       // We're going to merge!
       const newX = Math.min(block.x, candidate.x)
