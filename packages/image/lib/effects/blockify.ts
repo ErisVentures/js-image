@@ -254,7 +254,7 @@ export async function blockify(
   imageData: IAnnotatedImageData,
   options: IBlockifyOptions = {},
 ): Promise<{imageData: IAnnotatedImageData; blocks: IBlock[]}> {
-  const {blurRadius: blurRadiusRaw = 'auto', threshold = 20} = options
+  const {blurRadius: blurRadiusRaw = 'auto', threshold = 20, minimumBlockSize = 0} = options
   const blurRadius =
     blurRadiusRaw === 'auto' ? Math.min(imageData.width, imageData.height) / 20 : blurRadiusRaw
   const blurred =
@@ -280,7 +280,9 @@ export async function blockify(
     }
   }
 
-  const {blocks: mergedBlocks, merges} = mergeBlocks(blocks, options)
+  const minBlockSize = output.height * output.width * minimumBlockSize
+  const filteredBlocks = minBlockSize ? blocks.filter(block => block.count >= minBlockSize) : blocks
+  const {blocks: mergedBlocks, merges} = mergeBlocks(filteredBlocks, options)
 
   return {
     imageData:
