@@ -60,7 +60,7 @@ function processBlockStartingAt(
   let currentColor = ImageData.pixelFor(imageData, xStart, yStart).values as [
     number,
     number,
-    number,
+    number
   ]
   const matchedIndexes = [] as Array<[number, number]>
   const indexQueue = [[xStart, yStart]] as Array<[number, number]>
@@ -73,7 +73,7 @@ function processBlockStartingAt(
     const color = [imageData.data[index], imageData.data[index + 1], imageData.data[index + 2]] as [
       number,
       number,
-      number,
+      number
     ]
 
     if (colorDistance(currentColor, color) <= threshold) {
