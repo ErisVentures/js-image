@@ -5,7 +5,7 @@ import {Colorspace} from '../../lib/types'
 
 describe('#effects/blockify', () => {
   it('should blockify an image', async () => {
-    const options = {recolorAfterMerge: true, mergeThresholdMultiplier: 1.5}
+    const options = {recolorAfterMerge: true, mergeThresholdMultiplier: 2}
     const {imageData} = await blockify(await fixtureDecode('source-faces-couple.jpg'), options)
     await compareToFixture(imageData, 'blockify-faces-couple.jpg', {strict: false})
   }, 60000)

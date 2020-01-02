@@ -104,53 +104,118 @@ function doBlockBoxesOverlap(blockA: IBlock, blockB: IBlock): boolean {
   )
 }
 
-function mergeBlocks(blocks: IBlock[], options: IBlockifyOptions): IBlock[] {
+function computeBlockVibrance(block: IBlock): number {
+  const min = Math.min(block.r, block.g, block.b)
+  const max = Math.max(block.r, block.g, block.b)
+  const delta = (max - min) / 255
+  const lightness = (max + min) / 2 / 255
+  const saturation = delta / (1 - Math.abs(2 * lightness - 1))
+  // The most vibrant color is the one that's closest to 100% saturation 50% lightness
+  const vibrance = (1 - saturation) / 2 + Math.abs(0.5 - lightness) / 0.5 / 2
+  return vibrance
+}
+
+/**
+ * When merging colors by averaging, everything tends to become gray/brown which is undesirable for preserving what makes blocks unique.
+ * Instead we vote for the hue based on the saturation of each block and attempt to preserve brighter colors
+ */
+function mergeBlockCandidates(blocks: Set<IBlock>, masterBlock: IBlock): IBlock {
+  let count = 0
+  let rVotes = 0
+  let gVotes = 0
+  let bVotes = 0
+
+  for (const block of blocks) {
+    count += block.count
+    const vibrance = computeBlockVibrance(block)
+    const max = Math.max(block.r, block.g, block.b)
+    if (max === block.r) rVotes += vibrance * block.count
+    else if (max === block.g) gVotes += vibrance * block.count
+    else if (max === block.b) bVotes += vibrance * block.count
+  }
+
+  const maxVotes = Math.max(rVotes, gVotes, bVotes)
+  const maxProp = rVotes === maxVotes ? 'r' : gVotes === maxVotes ? 'g' : 'b'
+
+  let winningVibrance = -Infinity
+  let winningBlock = masterBlock
+  for (const block of blocks) {
+    // If the block doesn't have the right winning dominant color, skip it
+    const max = Math.max(block.r, block.g, block.b)
+    if (max !== block[maxProp]) continue
+
+    // If the block isn't more vibrant, skip it
+    const vibrance = computeBlockVibrance(block)
+    if (vibrance < winningVibrance) continue
+
+    // It's the most vibrant block so far, keep it!
+    winningVibrance = vibrance
+    winningBlock = block
+  }
+
+  return {...masterBlock, count, r: winningBlock.r, g: winningBlock.g, b: winningBlock.b}
+}
+
+function mergeBlocks(
+  blocks: IBlock[],
+  options: IBlockifyOptions,
+): {blocks: IBlock[]; merges: Map<IBlock, IBlock>} {
   const {mergeThresholdMultiplier = 1, threshold = 20} = options
   const mergeThreshold = mergeThresholdMultiplier * threshold
-  if (mergeThreshold === 0) return blocks
+  if (mergeThreshold === 0) return {blocks, merges: new Map()}
 
-  const queue = blocks.slice()
+  let queue = blocks
+    .slice()
+    .sort((a, b) => b.y - a.y || b.x - a.x || b.width - a.width || b.height - a.height)
   const output: IBlock[] = []
+  const merges = new Map<IBlock, IBlock>()
 
   while (queue.length) {
-    let block = queue.shift()!
+    let block = queue.pop()!
+    const blocksToMerge = new Set([block])
+
     for (let i = 0; i < queue.length; i++) {
-      const candidate = queue[i]
+      const candidate = queue[queue.length - 1 - i]
+      // All blocks from now on are going to start after this one ends, break
+      if (candidate.y > block.y + block.height) break
+      // Only consider merging if the bounding boxes overlap at all
       if (!doBlockBoxesOverlap(block, candidate)) continue
+      // Only merge if the color distance is low enough
       const colorA = [block.r, block.g, block.b] as [number, number, number]
       const colorB = [candidate.r, candidate.g, candidate.b] as [number, number, number]
       if (colorDistance(colorA, colorB) > mergeThreshold) continue
 
-      // We're merging!!
-      queue.splice(i, 1)
-      i--
-
+      // We're going to merge!
       const newX = Math.min(block.x, candidate.x)
       const newY = Math.min(block.y, candidate.y)
-      const newCount = block.count + candidate.count
 
+      blocksToMerge.add(candidate)
       block = {
         x: newX,
         y: newY,
         width: Math.max(block.x + block.width, candidate.x + candidate.width) - newX,
         height: Math.max(block.y + block.height, candidate.y + candidate.height) - newY,
-        count: newCount,
-        r: Math.round((block.r * block.count + candidate.r * candidate.count) / newCount),
-        g: Math.round((block.g * block.count + candidate.g * candidate.count) / newCount),
-        b: Math.round((block.b * block.count + candidate.b * candidate.count) / newCount),
+        count: 0,
+        r: 0,
+        g: 0,
+        b: 0,
       }
     }
 
+    block = mergeBlockCandidates(blocksToMerge, block)
+    queue = queue.filter(block => !blocksToMerge.has(block))
     output.push(block)
+    for (const original of blocksToMerge) merges.set(original, block)
   }
 
-  return output
+  return {blocks: output, merges}
 }
 
 function colorizeByMergedBlocks(
   imageData: IAnnotatedImageData,
-  blocks: IBlock[],
+  merges: Map<IBlock, IBlock>,
 ): IAnnotatedImageData {
+  const originalBlocks = [...merges.keys()]
   for (let y = 0; y < imageData.height; y++) {
     for (let x = 0; x < imageData.width; x++) {
       const fakeBlock: IBlock = {x, y, width: 0, height: 0, count: 0, r: 0, g: 0, b: 0}
@@ -161,15 +226,18 @@ function colorizeByMergedBlocks(
         imageData.data[index + 2],
       ] as [number, number, number]
 
-      let minDistance = Infinity
-      let minBlock = blocks[0]
-      for (const block of blocks) {
-        if (!doBlockBoxesOverlap(block, fakeBlock)) continue
-        const distance = colorDistance(color, [block.r, block.g, block.b])
-        if (distance < minDistance) {
-          minBlock = block
-          minDistance = distance
-        }
+      let minBlock = fakeBlock
+      for (const originalBlock of originalBlocks) {
+        if (color[0] !== originalBlock.r) continue
+        if (color[1] !== originalBlock.g) continue
+        if (color[2] !== originalBlock.b) continue
+        if (x < originalBlock.x) continue
+        if (y < originalBlock.y) continue
+        if (x > originalBlock.x + originalBlock.width) continue
+        if (y > originalBlock.y + originalBlock.height) continue
+
+        minBlock = merges.get(originalBlock)!
+        break
       }
 
       imageData.data[index] = minBlock.r
@@ -211,11 +279,13 @@ export async function blockify(
     }
   }
 
-  const mergedBlocks = mergeBlocks(blocks, options)
+  const {blocks: mergedBlocks, merges} = mergeBlocks(blocks, options)
 
   return {
     imageData:
-      !options.recolorAfterMerge || mergedBlocks.length === blocks.length ? output : colorizeByMergedBlocks(output, mergedBlocks),
+      !options.recolorAfterMerge || mergedBlocks.length === blocks.length
+        ? output
+        : colorizeByMergedBlocks(output, merges),
     blocks: mergedBlocks,
   }
 }
