@@ -133,7 +133,7 @@ function doBlockBoxesOverlap(blockA: IBlock, blockB: IBlock): boolean {
   )
 }
 
-function computeBlockVibrance(block: Pick<IBlock, 'r'|'g'|'b'>): number {
+function computeBlockVibrance(block: Pick<IBlock, 'r' | 'g' | 'b'>): number {
   const min = Math.min(block.r, block.g, block.b)
   const max = Math.max(block.r, block.g, block.b)
   const delta = (max - min) / 255
@@ -188,16 +188,16 @@ function mergeBlockCandidates(blocks: Set<IBlock>, masterBlock: IBlock): IBlock 
 function mergeBlocks(
   blocks: IBlock[],
   options: IBlockifyOptions,
-): {blocks: IBlock[]; merges: Map<IBlock, IBlock>} {
+  merges: Map<IBlock, IBlock>,
+): IBlock[] {
   const {mergeThresholdMultiplier = 1, threshold = 20} = options
   const mergeThreshold = mergeThresholdMultiplier * threshold
-  if (mergeThreshold === 0) return {blocks, merges: new Map()}
+  if (mergeThreshold === 0) return blocks
 
   let queue = blocks
     .slice()
     .sort((a, b) => b.y - a.y || b.x - a.x || b.width - a.width || b.height - a.height)
   const output: IBlock[] = []
-  const merges = new Map<IBlock, IBlock>()
 
   while (queue.length) {
     let block = queue.pop()!
@@ -238,7 +238,7 @@ function mergeBlocks(
     for (const original of blocksToMerge) merges.set(original, block)
   }
 
-  return {blocks: output, merges}
+  return output
 }
 
 function colorizeByMergedBlocks(
@@ -266,7 +266,8 @@ function colorizeByMergedBlocks(
         if (x > originalBlock.x + originalBlock.width) continue
         if (y > originalBlock.y + originalBlock.height) continue
 
-        minBlock = merges.get(originalBlock)!
+        minBlock = originalBlock
+        while (merges.has(minBlock)) minBlock = merges.get(minBlock)!
         break
       }
 
@@ -311,7 +312,15 @@ export async function blockify(
 
   const minBlockSize = output.height * output.width * minimumBlockSize
   const filteredBlocks = minBlockSize ? blocks.filter(block => block.count >= minBlockSize) : blocks
-  const {blocks: mergedBlocks, merges} = mergeBlocks(filteredBlocks, options)
+  const merges = new Map<IBlock, IBlock>()
+  let mergedBlocks = filteredBlocks
+  let lastMergedBlocks = filteredBlocks
+  let steps = 0
+  do {
+    steps++
+    lastMergedBlocks = mergedBlocks
+    mergedBlocks = mergeBlocks(mergedBlocks, options, merges)
+  } while (mergedBlocks.length < lastMergedBlocks.length && steps < 10)
 
   return {
     imageData:
