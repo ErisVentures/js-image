@@ -280,6 +280,20 @@ function colorizeByMergedBlocks(
   return imageData
 }
 
+function normalizeBlockDimensions(blocks: IBlock[], imageData: IAnnotatedImageData): IBlock[] {
+  const pixelCount = imageData.height * imageData.width
+  return blocks.map(block => {
+    return {
+      ...block,
+      x: block.x / imageData.width,
+      y: block.y / imageData.height,
+      width: block.width / imageData.width,
+      height: block.height / imageData.height,
+      count: block.count / pixelCount,
+    }
+  })
+}
+
 export async function blockify(
   imageData: IAnnotatedImageData,
   options: IBlockifyOptions = {},
@@ -327,6 +341,6 @@ export async function blockify(
       !options.recolorAfterMerge || mergedBlocks.length === blocks.length
         ? output
         : colorizeByMergedBlocks(output, merges),
-    blocks: mergedBlocks,
+    blocks: normalizeBlockDimensions(mergedBlocks, imageData),
   }
 }

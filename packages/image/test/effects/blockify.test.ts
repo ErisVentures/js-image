@@ -1,5 +1,5 @@
 import {blockify, hueColorDistance_} from '../../lib/effects/blockify'
-import {fixtureDecode, compareToFixture} from '../utils'
+import {fixtureDecode, compareToFixture, roundNumbersToHundredths} from '../utils'
 import {createPRNG} from '../../lib/third-party/alea'
 import {Colorspace} from '../../lib/types'
 
@@ -82,10 +82,12 @@ describe('#effects/blockify', () => {
     const input = {width: 6, height: 6, data: pixels, colorspace: Colorspace.RGB, channels: 3}
     const {imageData, blocks} = await blockify(input, {threshold: 30, blurRadius: 0})
     expect(imageData.data).toEqual(expected)
+
+    roundNumbersToHundredths(blocks)
     expect(blocks).toEqual([
-      {b: 0, count: 10, g: 0, height: 4, r: 233, width: 4, x: 0, y: 0},
-      {b: 228, count: 13, g: 0, height: 6, r: 0, width: 6, x: 0, y: 0},
-      {b: 0, count: 13, g: 230, height: 4, r: 0, width: 4, x: 2, y: 2},
+      {b: 0, count: 0.28, g: 0, height: 0.67, r: 233, width: 0.67, x: 0, y: 0},
+      {b: 228, count: 0.36, g: 0, height: 1, r: 0, width: 1, x: 0, y: 0},
+      {b: 0, count: 0.36, g: 230, height: 0.67, r: 0, width: 0.67, x: 0.33, y: 0.33},
     ])
   })
 
