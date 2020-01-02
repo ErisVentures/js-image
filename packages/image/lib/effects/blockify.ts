@@ -12,6 +12,7 @@ function incrementalAverageColor(
   return [(rA * n + r) / (n + 1), (gA * n + g) / (n + 1), (bA * n + b) / (n + 1)]
 }
 
+// IDEA: compute color distance based on hue delta, not s/l/vibrance delta
 function colorDistance(colorA: [number, number, number], colorB: [number, number, number]): number {
   const [rA, gA, bA] = colorA
   const [r, g, b] = colorB
