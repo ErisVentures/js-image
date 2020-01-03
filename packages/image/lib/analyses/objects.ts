@@ -15,7 +15,7 @@ let cocoSsdModel: ObjectDetection | undefined
 let openmlSsdModel: automl.ObjectDetectionModel | undefined
 
 async function initializeIfNecessary_(): Promise<void> {
-  if (cocoSsdModel) return
+  if (cocoSsdModel && openmlSsdModel) return
 
   const cocoModelDir = path.join(__dirname, '../../data/models/coco-ssd')
   const openmlModelDir = path.join(__dirname, '../../data/models/openml-ssd')
@@ -224,7 +224,7 @@ function mergeModelResults(
   return output
 }
 
-async function runCocoSsdModel(
+async function runSsdModels(
   imageData: IAnnotatedImageData,
   options: IObjectAnalysisOptions = {},
 ): Promise<IObjectAnalysisEntry[]> {
@@ -260,7 +260,7 @@ export async function detectObjects(
   options?: IObjectAnalysisOptions,
 ): Promise<IObjectAnalysisEntry[]> {
   await initializeIfNecessary()
-  return runCocoSsdModel(imageData, options)
+  return runSsdModels(imageData, options)
 }
 
 /*
