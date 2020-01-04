@@ -10,8 +10,12 @@ describe('#effects/blockify', () => {
       mergeThresholdMultiplier: 1.5,
       minimumBlockSize: 0.001,
     }
-    const {imageData} = await blockify(await fixtureDecode('source-faces-couple.jpg'), options)
+    const {imageData, blocks} = await blockify(
+      await fixtureDecode('source-faces-couple.jpg'),
+      options,
+    )
     await compareToFixture(imageData, 'blockify-faces-couple.jpg', {strict: false})
+    expect(blocks.reduce((a, b) => a + b.count, 0)).toBeCloseTo(1, 1)
   })
 
   it('should blockify a landscape image', async () => {
@@ -20,8 +24,9 @@ describe('#effects/blockify', () => {
       mergeThresholdMultiplier: 1.5,
       minimumBlockSize: 0.001,
     }
-    const {imageData} = await blockify(await fixtureDecode('source-yosemite.jpg'), options)
+    const {imageData, blocks} = await blockify(await fixtureDecode('source-yosemite.jpg'), options)
     await compareToFixture(imageData, 'blockify-yosemite.jpg', {strict: false})
+    expect(blocks.reduce((a, b) => a + b.count, 0)).toBeCloseTo(1, 1)
   })
 
   it('should blockify a skater image', async () => {
@@ -30,8 +35,9 @@ describe('#effects/blockify', () => {
       mergeThresholdMultiplier: 1.5,
       minimumBlockSize: 0.001,
     }
-    const {imageData} = await blockify(await fixtureDecode('source-skater.jpg'), options)
+    const {imageData, blocks} = await blockify(await fixtureDecode('source-skater.jpg'), options)
     await compareToFixture(imageData, 'blockify-skater.jpg', {strict: false, tolerance: 10})
+    expect(blocks.reduce((a, b) => a + b.count, 0)).toBeCloseTo(1, 1)
   })
 
   it('should blockify a sydney image', async () => {

@@ -341,6 +341,6 @@ export async function blockify(
       !options.recolorAfterMerge || mergedBlocks.length === blocks.length
         ? output
         : colorizeByMergedBlocks(output, merges),
-    blocks: normalizeBlockDimensions(mergedBlocks, imageData),
+    blocks: normalizeBlockDimensions(mergedBlocks, output),
   }
 }
