@@ -10,7 +10,7 @@ import {subselect} from '../transforms/subselect'
 import {SharpImage} from '../sharp-image'
 import {instrumentation} from '../instrumentation'
 
-const FACE_CONFIDENCE_THRESHOLD = 0.75
+const FACE_CONFIDENCE_THRESHOLD = 0.4
 
 let eyeModel: tf.LayersModel | undefined
 

@@ -126,6 +126,7 @@ describe('analyses/faces', () => {
       const faces = await facesModule.detectFaces(imageData)
       faces.forEach(face => (face.descriptor = face.descriptor.slice(0, 2)))
       roundNumbersToHundredths(faces)
+      // Only the first face is real, the others are false positives :(
       expect(faces).toMatchInlineSnapshot(`
         Array [
           Object {
@@ -160,6 +161,102 @@ describe('analyses/faces', () => {
             ],
             "happinessConfidence": 0,
           },
+          Object {
+            "boundingBox": Object {
+              "height": 0.16,
+              "width": 0.07,
+              "x": 0.33,
+              "y": 0.04,
+            },
+            "confidence": 0.65,
+            "descriptor": Array [
+              123,
+              135,
+            ],
+            "expression": "sad",
+            "expressionConfidence": 0.92,
+            "eyes": Array [
+              Object {
+                "height": 0.02,
+                "openConfidence": 0.07,
+                "width": 0.02,
+                "x": 0.34,
+                "y": 0.12,
+              },
+              Object {
+                "height": 0.02,
+                "openConfidence": 0.32,
+                "width": 0.02,
+                "x": 0.35,
+                "y": 0.08,
+              },
+            ],
+            "happinessConfidence": 0.01,
+          },
+          Object {
+            "boundingBox": Object {
+              "height": 0.13,
+              "width": 0.08,
+              "x": 0.86,
+              "y": 0.02,
+            },
+            "confidence": 0.56,
+            "descriptor": Array [
+              121,
+              146,
+            ],
+            "expression": "sad",
+            "expressionConfidence": 0.8,
+            "eyes": Array [
+              Object {
+                "height": 0.02,
+                "openConfidence": 0.08,
+                "width": 0.02,
+                "x": 0.89,
+                "y": 0.05,
+              },
+              Object {
+                "height": 0.02,
+                "openConfidence": 0.41,
+                "width": 0.02,
+                "x": 0.92,
+                "y": 0.04,
+              },
+            ],
+            "happinessConfidence": 0,
+          },
+          Object {
+            "boundingBox": Object {
+              "height": 0.05,
+              "width": 0.02,
+              "x": 0.74,
+              "y": 0.01,
+            },
+            "confidence": 0.66,
+            "descriptor": Array [
+              117,
+              169,
+            ],
+            "expression": "neutral",
+            "expressionConfidence": 0.73,
+            "eyes": Array [
+              Object {
+                "height": 0.01,
+                "openConfidence": 0,
+                "width": 0.01,
+                "x": 0.75,
+                "y": 0.04,
+              },
+              Object {
+                "height": 0.01,
+                "openConfidence": 0.01,
+                "width": 0.01,
+                "x": 0.75,
+                "y": 0.04,
+              },
+            ],
+            "happinessConfidence": 0,
+          },
         ]
       `)
     })
@@ -167,10 +264,10 @@ describe('analyses/faces', () => {
     it('should find faces in large group shot', async () => {
       const imageData = await fixtureDecode('source-faces-large-group.jpg')
       const faces = await facesModule.detectFaces(imageData)
-      expect(faces).toHaveLength(42)
+      expect(faces).toHaveLength(58)
       const openEyes = faces.map(face => face.eyes.filter(e => e.openConfidence > 0.5))
       const openEyesFlat = [].concat(...openEyes)
-      expect(openEyesFlat).toHaveLength(14)
+      expect(openEyesFlat).toHaveLength(18)
     })
 
     it('should not find faces in landscapes', async () => {
