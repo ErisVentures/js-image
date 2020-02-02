@@ -9,16 +9,23 @@ jobs:
     - stage: build
       os: osx
       language: node_js
-      node_js: "v10.15.3"
+      node_js: 'v10.15.3'
       before_script: tree ./node_modules/@tensorflow/tfjs-node
       script: npm run build
       after_success: ./scripts/add-asset-to-github.sh ./packages/image-cli/out/node10-mac.tar.gz
       env: PKG_TARGET=node10-mac
     - stage: build
+      os: windows
+      language: node_js
+      node_js: 'v10.15.3'
+      script: npm run build
+      after_success: ./scripts/add-asset-to-github.sh ./packages/image-cli/out/node10-win.tar.gz
+      env: YARN_GPG=no PKG_TARGET=node10-win
+    - stage: build
       os: linux
       dist: trusty
       language: node_js
-      node_js: "v10.15.3"
+      node_js: 'v10.15.3'
       before_script: tree ./node_modules/@tensorflow/tfjs-node
       script: npm run build
       after_success: ./scripts/add-asset-to-github.sh ./packages/image-cli/out/node10-linux.tar.gz
@@ -45,7 +52,7 @@ jobs:
       os: linux
       dist: trusty
       language: node_js
-      node_js: "v10.15.3"
+      node_js: 'v10.15.3'
       env: PKG_TARGET=node10-linux
       script:
         - npm install -g @patrickhulce/scripts
