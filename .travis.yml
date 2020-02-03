@@ -33,12 +33,15 @@ jobs:
     - stage: test
       os: linux
       dist: trusty
-      language: rust
-      rust: beta
-      env: PKG_TARGET=node10-linux ENABLE_WASM=1 TF_CPP_MIN_LOG_LEVEL=3
+      language: node_js
+      node_js: 'v10.15.3'
+      # language: rust
+      # rust: beta
+      # env: PKG_TARGET=node10-linux ENABLE_WASM=1 TF_CPP_MIN_LOG_LEVEL=3
+      env: PKG_TARGET=node10-linux TF_CPP_MIN_LOG_LEVEL=3
       before_install:
-        - ./scripts/install-node-and-wasm.sh
-        - nvm use "v10.15.3"
+        # - ./scripts/install-node-and-wasm.sh
+        # - nvm use "v10.15.3"
         - npm install -g yarn
       before_script:
         - git lfs pull
