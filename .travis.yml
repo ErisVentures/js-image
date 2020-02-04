@@ -19,7 +19,7 @@ jobs:
       language: node_js
       node_js: 'v10.15.3'
       script: npm run build
-      after_success: ./scripts/add-asset-to-github.sh ./packages/image-cli/out/node10-win.tar.gz
+      after_success: bash ./scripts/add-asset-to-github.sh ./packages/image-cli/out/node10-win.tar.gz
       env: YARN_GPG=no PKG_TARGET=node10-win
     - stage: build
       os: linux

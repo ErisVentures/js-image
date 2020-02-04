@@ -15,8 +15,7 @@ if [[ "$PLATFORM" == "darwin" ]]; then
 elif [[ "$PLATFORM" == "linux" ]]; then
   PLATFORM_FILE="node10-linux.tar.gz"
 elif [[ "$PLATFORM" == "win32" ]]; then
-  echo "Windows not yet supported"
-  exit 1
+  PLATFORM_FILE="node10-win.tar.gz"
 else
   echo "Unsupported platform $PLATFORM"
   exit 1
