@@ -6,67 +6,67 @@ stages:
     if: (type = push) AND (branch = master)
 jobs:
   include:
-    - stage: build
-      os: osx
-      language: node_js
-      node_js: 'v10.15.3'
-      before_script: tree ./node_modules/@tensorflow/tfjs-node
-      script: npm run build
-      after_success: ./scripts/add-asset-to-github.sh ./packages/image-cli/out/node10-mac.tar.gz
-      env: PKG_TARGET=node10-mac
+    # - stage: build
+    #   os: osx
+    #   language: node_js
+    #   node_js: 'v10.15.3'
+    #   before_script: tree ./node_modules/@tensorflow/tfjs-node
+    #   script: npm run build
+    #   after_success: ./scripts/add-asset-to-github.sh ./packages/image-cli/out/node10-mac.tar.gz
+    #   env: PKG_TARGET=node10-mac
     - stage: build
       os: windows
       language: node_js
       node_js: 'v10.15.3'
       script: npm run build
-      after_success: bash ./scripts/add-asset-to-github.sh ./packages/image-cli/out/node10-win.tar.gz
+      after_success: ./scripts/add-asset-to-github.sh ./packages/image-cli/out/node10-win.tar.gz
       env: YARN_GPG=no PKG_TARGET=node10-win
-    - stage: build
-      os: linux
-      dist: trusty
-      language: node_js
-      node_js: 'v10.15.3'
-      before_script: tree ./node_modules/@tensorflow/tfjs-node
-      script: npm run build
-      after_success: ./scripts/add-asset-to-github.sh ./packages/image-cli/out/node10-linux.tar.gz
-      env: PKG_TARGET=node10-linux
-    - stage: test
-      os: linux
-      dist: trusty
-      language: node_js
-      node_js: 'v10.15.3'
-      # language: rust
-      # rust: beta
-      # env: PKG_TARGET=node10-linux ENABLE_WASM=1 TF_CPP_MIN_LOG_LEVEL=3
-      env: PKG_TARGET=node10-linux TF_CPP_MIN_LOG_LEVEL=3
-      before_install:
-        # - ./scripts/install-node-and-wasm.sh
-        # - nvm use "v10.15.3"
-        - npm install -g yarn
-      before_script:
-        - git lfs pull
-      script:
-        - npm run build
-        - npm run test:lint
-        - npm run test:unit:ci
-        - npm install -g coveralls
-        - cat coverage/lcov.info | coveralls || echo 'Failed to upload to coveralls...'
-    - stage: deploy
-      os: linux
-      dist: trusty
-      language: node_js
-      node_js: 'v10.15.3'
-      env: PKG_TARGET=node10-linux
-      script:
-        - npm install -g @patrickhulce/scripts
-        - npm run build
-      after_success:
-        - ./scripts/publish.sh
-      deploy:
-        provider: pages
-        skip_cleanup: true
-        github_token: $GH_TOKEN
-        local_dir: packages/image/demo
+    # - stage: build
+    #   os: linux
+    #   dist: trusty
+    #   language: node_js
+    #   node_js: 'v10.15.3'
+    #   before_script: tree ./node_modules/@tensorflow/tfjs-node
+    #   script: npm run build
+    #   after_success: ./scripts/add-asset-to-github.sh ./packages/image-cli/out/node10-linux.tar.gz
+    #   env: PKG_TARGET=node10-linux
+    # - stage: test
+    #   os: linux
+    #   dist: trusty
+    #   language: node_js
+    #   node_js: 'v10.15.3'
+    #   # language: rust
+    #   # rust: beta
+    #   # env: PKG_TARGET=node10-linux ENABLE_WASM=1 TF_CPP_MIN_LOG_LEVEL=3
+    #   env: PKG_TARGET=node10-linux TF_CPP_MIN_LOG_LEVEL=3
+    #   before_install:
+    #     # - ./scripts/install-node-and-wasm.sh
+    #     # - nvm use "v10.15.3"
+    #     - npm install -g yarn
+    #   before_script:
+    #     - git lfs pull
+    #   script:
+    #     - npm run build
+    #     - npm run test:lint
+    #     - npm run test:unit:ci
+    #     - npm install -g coveralls
+    #     - cat coverage/lcov.info | coveralls || echo 'Failed to upload to coveralls...'
+    # - stage: deploy
+    #   os: linux
+    #   dist: trusty
+    #   language: node_js
+    #   node_js: 'v10.15.3'
+    #   env: PKG_TARGET=node10-linux
+    #   script:
+    #     - npm install -g @patrickhulce/scripts
+    #     - npm run build
+    #   after_success:
+    #     - ./scripts/publish.sh
+    #   deploy:
+    #     provider: pages
+    #     skip_cleanup: true
+    #     github_token: $GH_TOKEN
+    #     local_dir: packages/image/demo
 addons:
   apt:
     packages:
