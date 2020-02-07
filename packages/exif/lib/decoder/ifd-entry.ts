@@ -85,7 +85,7 @@ export class IFDEntry implements IIFDEntry {
     const length = reader.read(4)
     const dataReader = reader.readAsReader(4)
 
-    log.verbose(`read tag ${tag}`, dataReader)
+    log.verbose(`read tag ${getFriendlyName(tag)} (${tag})`)
     return new IFDEntry(startOffset, tag, dataType, length, dataReader)
   }
 

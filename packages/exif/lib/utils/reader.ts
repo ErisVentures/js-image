@@ -45,6 +45,12 @@ export class Reader implements IReader {
     return value
   }
 
+  public readAsString(length: number): string {
+    const value = this._buffer.slice(this._position, this._position + length)
+    this._position += length
+    return value.toString()
+  }
+
   public readAsBuffer(length: number): IBufferLike {
     const value = this._buffer.slice(this._position, this._position + length)
     this._position += length

@@ -1,4 +1,5 @@
 import {JPEGDecoder} from './decoder/jpeg-decoder'
+import {FUJI_MAGIC_STRING, FujiDecoder} from './decoder/fuji-decoder'
 import {TIFFDecoder} from './decoder/tiff-decoder'
 import {XMPDecoder} from './decoder/xmp-decoder'
 import {TIFFEncoder} from './encoder/tiff-encoder'
@@ -14,9 +15,19 @@ function isLikelyTIFF(buffer: IBufferLike): boolean {
   return (buffer[0] === 0x49 && buffer[1] === 0x49) || (buffer[0] === 0x4d && buffer[1] === 0x4d)
 }
 
+function isLikelyFuji(buffer: IBufferLike): boolean {
+  for (let i = 0; i < FUJI_MAGIC_STRING.length; i++) {
+    if (buffer[i] !== FUJI_MAGIC_STRING.charCodeAt(i)) return false
+  }
+
+  return true
+}
+
 export function createDecoder(bufferOrDecoder: IBufferLike | IDecoder): IDecoder {
   if (isDecoder(bufferOrDecoder)) {
     return bufferOrDecoder
+  } else if (isLikelyFuji(bufferOrDecoder)) {
+    return new FujiDecoder(bufferOrDecoder)
   } else if (isLikelyTIFF(bufferOrDecoder)) {
     return new TIFFDecoder(bufferOrDecoder)
   } else if (JPEGDecoder.isJPEG(bufferOrDecoder)) {
@@ -32,6 +43,14 @@ export function parse(bufferOrDecoder: IBufferLike | IDecoder): INormalizedMetad
   return normalizeMetadata(createDecoder(bufferOrDecoder).extractMetadata())
 }
 
-export {normalizeMetadata, TIFFDecoder, JPEGDecoder, XMPDecoder, TIFFEncoder, XMPEncoder}
+export {
+  normalizeMetadata,
+  TIFFDecoder,
+  FujiDecoder,
+  JPEGDecoder,
+  XMPDecoder,
+  TIFFEncoder,
+  XMPEncoder,
+}
 
 export {IGenericMetadata, INormalizedMetadata, IParsedLens, IFDTagName} from './utils/types'
