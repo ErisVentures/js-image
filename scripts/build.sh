@@ -22,6 +22,8 @@ if [[ -n "$TRAVIS_TAG" ]]; then
     --no-git-tag-version \
     --no-commit-hooks \
     "$TRAVIS_TAG"
+
+  git checkout lerna.json
 fi
 
 cd packages/exif
