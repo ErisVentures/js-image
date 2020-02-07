@@ -20,6 +20,13 @@ import {
 import {createLogger} from '../utils/log'
 import {IFDEntry} from './ifd-entry'
 
+const TIFF_MAGIC_VERSION = 42
+/**
+ * Olympus raw files are basically TIFFs but with a replaced magic text
+ * @see https://libopenraw.freedesktop.org/formats/orf/
+ */
+const OLYMPUS_MAGIC_VERSION = 0x4f52
+
 const log = createLogger('decoder')
 
 interface IThumbnailLocation {
@@ -50,12 +57,12 @@ export class TIFFDecoder {
       log('interpreting as big endian')
       this._reader.setEndianess(Endian.Big)
     } else {
-      throw new Error('Unrecognized format')
+      throw new Error('Unrecognized TIFF format')
     }
 
     const version = this._reader.read(2)
-    if (version !== 42) {
-      throw new Error(`Unrecognized format: ${version.toString(16)}`)
+    if (version !== TIFF_MAGIC_VERSION && version !== OLYMPUS_MAGIC_VERSION) {
+      throw new Error(`Unrecognized TIFF version: ${version.toString(16)}`)
     }
   }
 
