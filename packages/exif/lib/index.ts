@@ -23,7 +23,7 @@ function isLikelyFuji(buffer: IBufferLike): boolean {
   return true
 }
 
-export function createDecoder(bufferOrDecoder: IBufferLike | IDecoder): IDecoder {
+function createDecoder_(bufferOrDecoder: IBufferLike | IDecoder): IDecoder | undefined {
   if (isDecoder(bufferOrDecoder)) {
     return bufferOrDecoder
   } else if (isLikelyFuji(bufferOrDecoder)) {
@@ -34,9 +34,17 @@ export function createDecoder(bufferOrDecoder: IBufferLike | IDecoder): IDecoder
     return new JPEGDecoder(bufferOrDecoder)
   } else if (XMPDecoder.isXMP(bufferOrDecoder)) {
     return new XMPDecoder(bufferOrDecoder)
-  } else {
-    throw new Error('Unrecognizable file type')
   }
+}
+
+export function isParseable(buffer: IBufferLike): boolean {
+  return !!createDecoder_(buffer)
+}
+
+export function createDecoder(bufferOrDecoder: IBufferLike | IDecoder): IDecoder {
+  const decoder = createDecoder_(bufferOrDecoder)
+  if (!decoder) throw new Error('Unrecognizable file type')
+  return decoder
 }
 
 export function parse(bufferOrDecoder: IBufferLike | IDecoder): INormalizedMetadata {

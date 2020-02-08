@@ -8,7 +8,7 @@ import {detectObjects as computeObjects} from './analyses/objects'
 import {sharpness as computeSharpness} from './analyses/sharpness'
 import {histograms as computeHistograms} from './analyses/histograms'
 import {composition as computeComposition} from './analyses/composition'
-import {parse as parseEXIF, TIFFDecoder, INormalizedMetadata} from '@eris/exif'
+import {parse as parseEXIF, createDecoder, isParseable, INormalizedMetadata} from '@eris/exif'
 import {tone} from './transforms/tone'
 import {gaussianBlur} from './transforms/blur'
 import {canny} from './transforms/canny'
@@ -18,9 +18,6 @@ import {opacity} from './transforms/opacity'
 import {noise} from './effects/noise'
 import {instrumentation} from './instrumentation'
 import {normalize} from './transforms/normalize'
-
-/* tslint:disable-next-line */
-const fileType = require('file-type')
 
 function isEmpty<T extends string, K>(o: Partial<Record<T, K>>): boolean {
   return Object.keys(o).every(key => !o[key as T])
@@ -321,17 +318,12 @@ export abstract class Image {
     let buffer = bufferOrImageData as Buffer
     let exif: INormalizedMetadata | undefined
 
-    const type = fileType(buffer) || {mime: 'unknown'}
-    switch (type.mime) {
-      case 'image/x-canon-cr2':
-      case 'image/tiff':
-        const decoder = new TIFFDecoder(buffer)
-        buffer = decoder.extractJPEG() as Buffer
-        exif = parseEXIF(decoder)
-        break
-      default:
-        exif = parseEXIF(buffer)
+    if (isParseable(buffer)) {
+      const decoder = createDecoder(buffer)
+      buffer = decoder.extractJPEG() as Buffer
+      exif = parseEXIF(decoder)
     }
+
     return this._fromBuffer(buffer, {exif})
   }
 

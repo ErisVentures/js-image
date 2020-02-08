@@ -64,6 +64,10 @@ export class XMPDecoder {
     genericMetadata.DCSubjectBagOfWords = JSON.stringify(keywords.map(item => item.innerXML))
   }
 
+  public extractJPEG(): IBufferLike {
+    throw new Error('No image preview available from XMP')
+  }
+
   public extractMetadata(): IGenericMetadata {
     const metadata: IGenericMetadata = {}
     const matches = this._text.match(EXIF_ATTR_GLOBAL_REGEX)

@@ -160,6 +160,10 @@ export class JPEGDecoder {
     this._markers.push({marker, buffer: this._buffer.slice(reader.getPosition()), ...baseMarker})
   }
 
+  public extractJPEG(): IBufferLike {
+    return this._buffer
+  }
+
   public extractMetadata(): IGenericMetadata {
     this._readFileMarkers()
 

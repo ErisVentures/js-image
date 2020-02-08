@@ -39,6 +39,7 @@ export interface IWriter {
 
 export interface IDecoder {
   extractMetadata(): IGenericMetadata
+  extractJPEG(): IBufferLike
 }
 
 export interface IIFD {
