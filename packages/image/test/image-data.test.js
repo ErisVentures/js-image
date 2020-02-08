@@ -598,21 +598,19 @@ describe('ImageData', () => {
   })
 
   describe('#toYCbCr', () => {
-    const yosemitePromise = fixtureDecode('source-yosemite.jpg').then(ImageData.normalize)
+    // describe.skip('with WASM', () => {
+    //   beforeAll(async () => {
+    //     await enableWASM()
+    //   })
 
-    describe.skip('with WASM', () => {
-      beforeAll(async () => {
-        await enableWASM()
-      })
+    //   it('should use wasm', async () => {
+    //     ImageData.toYCbCr(await fixtureDecode('source-yosemite.jpg').then(ImageData.normalize))
+    //   })
 
-      it('should use wasm', async () => {
-        ImageData.toYCbCr(await yosemitePromise)
-      })
-
-      afterAll(() => {
-        disableWASM()
-      })
-    })
+    //   afterAll(() => {
+    //     disableWASM()
+    //   })
+    // })
 
     it('should convert RGB images', () => {
       const imageData = {
