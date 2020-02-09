@@ -59,7 +59,8 @@ export class XMPDecoder {
   private _decodeAttributeMetadata(metadata: IGenericMetadata): void {
     const matches = this._text.match(EXIF_ATTR_GLOBAL_REGEX)
     for (const attribute of matches || []) {
-      const [_, key, value] = attribute.match(EXIF_ATTR_REGEX) || []
+      // tslint:disable-next-line
+      const [_, key, value] = attribute.match(EXIF_ATTR_REGEX) || ['', '', '']
       this._handleMatch(key, value, metadata)
     }
   }
@@ -67,7 +68,8 @@ export class XMPDecoder {
   private _decodeElementMetadata(metadata: IGenericMetadata): void {
     const matches = this._text.match(XML_TAG_GLOBAL_REGEX)
     for (const match of matches || []) {
-      const [_, tagName, namespace, key, value] = match.match(XML_TAG_REGEX) || []
+      // tslint:disable-next-line
+      const [_, tagName, namespace, key, value] = match.match(XML_TAG_REGEX) || ['', '', '', '', '']
       this._handleMatch(key, value, metadata)
     }
   }
