@@ -3,6 +3,17 @@ import {xmpTags} from '../utils/tags'
 import {createLogger} from '../utils/log'
 import {parseKeywords} from '../metadata/keywords-parser'
 
+enum XMPMatchType {
+  Element = 'element',
+  Attribute = 'attribute',
+}
+
+interface IXMPMatch {
+  start: number
+  length: number
+  type: XMPMatchType
+}
+
 const writableTags: Record<XMPTagName | 'DateTimeOriginal', boolean> = {
   ...xmpTags,
   DateTimeOriginal: true,
@@ -125,13 +136,13 @@ export class XMPEncoder {
     }
 
     log(`writing ${tagName} with value "${value}"`)
-    const replacement = XMPEncoder._buildReplacement(tagName, value)
 
     if (existing) {
       // If we have an existing value, replace the token range with our new payload
       log(`found existing ${tagName}`)
       const preamble = xmpData.slice(0, existing.start)
       const postamble = xmpData.slice(existing.start + existing.length)
+      const replacement = XMPEncoder._buildReplacement(tagName, value, existing.type)
       return `${preamble}${replacement}${postamble}`
     } else {
       // If we don't have an existing value, inject the payload with appropriate whitespace.
@@ -139,22 +150,30 @@ export class XMPEncoder {
       const insertionIndex = XMPEncoder._findInsertionPoint(xmpData, tagName).start
       const preamble = xmpData.slice(0, insertionIndex)
       const postamble = xmpData.slice(insertionIndex)
+      const replacement = XMPEncoder._buildReplacement(tagName, value, XMPMatchType.Attribute)
       const replacementWithNewline = `${BASE_NEWLINE}${replacement}`
       return `${preamble}${replacementWithNewline}${postamble}`
     }
   }
 
-  private static _findExisting(
+  private static _findWithRegex(
     xmp: string,
-    tagName: string,
-  ): {start: number; length: number} | undefined {
-    const regex =
-      tagName === 'DCSubjectBagOfWords'
-        ? /<dc:subject>(.|\s)*?<\/dc:subject>/
-        : new RegExp(`([a-z]+):(${tagName})="(.*?)"`, 'i')
+    regex: RegExp,
+    type: XMPMatchType,
+  ): IXMPMatch | undefined {
     const match = xmp.match(regex)
     if (!match) return
-    return {start: match.index!, length: match[0].length}
+    return {start: match.index!, length: match[0].length, type}
+  }
+
+  private static _findExisting(xmp: string, tagName: string): IXMPMatch | undefined {
+    if (tagName === 'DCSubjectBagOfWords')
+      return this._findWithRegex(xmp, /<dc:subject>(.|\s)*?<\/dc:subject>/, XMPMatchType.Element)
+    const attributeRegex = new RegExp(`([a-z]+):(${tagName})="(.*?)"`, 'i')
+    const attributeMatch = this._findWithRegex(xmp, attributeRegex, XMPMatchType.Attribute)
+    if (attributeMatch) return attributeMatch
+    const elementRegex = new RegExp(`<([a-z]+:${tagName})(\\s*/>|(.*?)</\\1>)`, 'i')
+    return this._findWithRegex(xmp, elementRegex, XMPMatchType.Element)
   }
 
   private static _findInsertionPoint(
@@ -173,17 +192,25 @@ export class XMPEncoder {
   private static _buildReplacement(
     tagName: keyof IGenericMetadata,
     value: string | number,
+    type: XMPMatchType,
   ): string {
-    if (tagName === 'DateTimeOriginal') return `exif:DateTimeOriginal="${value}"`
-    if (tagName !== 'DCSubjectBagOfWords') return `xmp:${tagName}="${value}"`
-    const keywords = parseKeywords({DCSubjectBagOfWords: value})
-    if (!keywords) throw new Error('Invalid keywords payload')
-    return [
-      `<dc:subject>`,
-      ` <rdf:Bag>`,
-      ...keywords.map(word => `  <rdf:li>${word.replace(/</g, '')}</rdf:li>`),
-      ` </rdf:Bag>`,
-      `</dc:subject>`,
-    ].join(BASE_NEWLINE)
+    if (tagName === 'DCSubjectBagOfWords') {
+      const keywords = parseKeywords({DCSubjectBagOfWords: value})
+      if (!keywords) throw new Error('Invalid keywords payload')
+      return [
+        `<dc:subject>`,
+        ` <rdf:Bag>`,
+        ...keywords.map(word => `  <rdf:li>${word.replace(/</g, '')}</rdf:li>`),
+        ` </rdf:Bag>`,
+        `</dc:subject>`,
+      ].join(BASE_NEWLINE)
+    }
+
+    const namespace = tagName === 'DateTimeOriginal' ? 'exif' : 'xmp'
+    if (type === XMPMatchType.Attribute) {
+      return `${namespace}:${tagName}="${value}"`
+    } else {
+      return `<${namespace}:${tagName}>${value}</${namespace}:${tagName}>`
+    }
   }
 }
