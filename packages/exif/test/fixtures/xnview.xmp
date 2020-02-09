@@ -1,0 +1,240 @@
+<x:xmpmeta xmlns:x="adobe:ns:meta/" x:xmptk="XMP Core 5.6.0">
+    <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+      <rdf:Description rdf:about=""
+            xmlns:dc="http://purl.org/dc/elements/1.1/"
+            xmlns:xmp="http://ns.adobe.com/xap/1.0/"
+            xmlns:aux="http://ns.adobe.com/exif/1.0/aux/"
+            xmlns:photoshop="http://ns.adobe.com/photoshop/1.0/"
+            xmlns:xmpMM="http://ns.adobe.com/xap/1.0/mm/"
+            xmlns:stEvt="http://ns.adobe.com/xap/1.0/sType/ResourceEvent#"
+            xmlns:stRef="http://ns.adobe.com/xap/1.0/sType/ResourceRef#"
+            xmlns:Iptc4xmpCore="http://iptc.org/std/Iptc4xmpCore/1.0/xmlns/"
+            xmlns:crs="http://ns.adobe.com/camera-raw-settings/1.0/"
+            xmlns:MicrosoftPhoto="http://ns.microsoft.com/photo/1.0/">
+          <dc:format>image/jpeg</dc:format>
+          <dc:creator>
+            <rdf:Seq>
+                <rdf:li>Cady Herring</rdf:li>
+            </rdf:Seq>
+          </dc:creator>
+          <dc:rights>
+            <rdf:Alt>
+                <rdf:li xml:lang="x-default">Cady Herring</rdf:li>
+            </rdf:Alt>
+          </dc:rights>
+          <xmp:CreatorTool>Adobe Photoshop Lightroom Classic 7.4 (Macintosh)</xmp:CreatorTool>
+          <xmp:ModifyDate>2019-04-10T20:43:14-05:00</xmp:ModifyDate>
+          <xmp:CreateDate>2014-12-27T11:37:21.70</xmp:CreateDate>
+          <xmp:MetadataDate>2019-04-10T20:43:14-05:00</xmp:MetadataDate>
+          <xmp:Rating>5</xmp:Rating>
+          <aux:SerialNumber>2404810</aux:SerialNumber>
+          <aux:LensInfo>240/10 700/10 28/10 28/10</aux:LensInfo>
+          <aux:Lens>24.0-70.0 mm f/2.8</aux:Lens>
+          <aux:LensID>147</aux:LensID>
+          <aux:ImageNumber>159090</aux:ImageNumber>
+          <aux:ApproximateFocusDistance>67/100</aux:ApproximateFocusDistance>
+          <aux:DistortionCorrectionAlreadyApplied>True</aux:DistortionCorrectionAlreadyApplied>
+          <aux:VignetteCorrectionAlreadyApplied>True</aux:VignetteCorrectionAlreadyApplied>
+          <photoshop:DateCreated>2014-12-27T10:38:53</photoshop:DateCreated>
+          <photoshop:City>Germantown</photoshop:City>
+          <photoshop:State>Tennessee</photoshop:State>
+          <photoshop:Country>United States</photoshop:Country>
+          <xmpMM:DocumentID>xmp.did:f27bbe1c-9225-4074-bbca-74707f8dd069</xmpMM:DocumentID>
+          <xmpMM:OriginalDocumentID>9EFAA58F71490480F861F1086B950A1F</xmpMM:OriginalDocumentID>
+          <xmpMM:InstanceID>xmp.iid:f27bbe1c-9225-4074-bbca-74707f8dd069</xmpMM:InstanceID>
+          <xmpMM:History>
+            <rdf:Seq>
+                <rdf:li rdf:parseType="Resource">
+                  <stEvt:action>saved</stEvt:action>
+                  <stEvt:instanceID>xmp.iid:4f1d9713-4f8f-9842-ada0-f34d9b03181a</stEvt:instanceID>
+                  <stEvt:when>2018-06-22T08:42:18-07:00</stEvt:when>
+                  <stEvt:softwareAgent>Adobe Photoshop Lightroom Classic 7.1 (Windows)</stEvt:softwareAgent>
+                  <stEvt:changed>/metadata</stEvt:changed>
+                </rdf:li>
+                <rdf:li rdf:parseType="Resource">
+                  <stEvt:action>derived</stEvt:action>
+                  <stEvt:parameters>converted from image/x-nikon-nef to image/jpeg, saved to new location</stEvt:parameters>
+                </rdf:li>
+                <rdf:li rdf:parseType="Resource">
+                  <stEvt:action>saved</stEvt:action>
+                  <stEvt:instanceID>xmp.iid:f27bbe1c-9225-4074-bbca-74707f8dd069</stEvt:instanceID>
+                  <stEvt:when>2019-04-10T20:43:14-05:00</stEvt:when>
+                  <stEvt:softwareAgent>Adobe Photoshop Lightroom Classic 7.4 (Macintosh)</stEvt:softwareAgent>
+                  <stEvt:changed>/</stEvt:changed>
+                </rdf:li>
+            </rdf:Seq>
+          </xmpMM:History>
+          <xmpMM:DerivedFrom rdf:parseType="Resource">
+            <stRef:instanceID>xmp.iid:4f1d9713-4f8f-9842-ada0-f34d9b03181a</stRef:instanceID>
+            <stRef:documentID>9EFAA58F71490480F861F1086B950A1F</stRef:documentID>
+            <stRef:originalDocumentID>9EFAA58F71490480F861F1086B950A1F</stRef:originalDocumentID>
+          </xmpMM:DerivedFrom>
+          <Iptc4xmpCore:CountryCode>US</Iptc4xmpCore:CountryCode>
+          <crs:RawFileName>Lindsey Photos-1.NEF</crs:RawFileName>
+          <crs:Version>10.4</crs:Version>
+          <crs:ProcessVersion>6.7</crs:ProcessVersion>
+          <crs:WhiteBalance>As Shot</crs:WhiteBalance>
+          <crs:Temperature>3600</crs:Temperature>
+          <crs:Tint>-13</crs:Tint>
+          <crs:Saturation>0</crs:Saturation>
+          <crs:Sharpness>25</crs:Sharpness>
+          <crs:LuminanceSmoothing>0</crs:LuminanceSmoothing>
+          <crs:ColorNoiseReduction>25</crs:ColorNoiseReduction>
+          <crs:VignetteAmount>0</crs:VignetteAmount>
+          <crs:ShadowTint>0</crs:ShadowTint>
+          <crs:RedHue>0</crs:RedHue>
+          <crs:RedSaturation>0</crs:RedSaturation>
+          <crs:GreenHue>0</crs:GreenHue>
+          <crs:GreenSaturation>0</crs:GreenSaturation>
+          <crs:BlueHue>0</crs:BlueHue>
+          <crs:BlueSaturation>0</crs:BlueSaturation>
+          <crs:Vibrance>0</crs:Vibrance>
+          <crs:HueAdjustmentRed>0</crs:HueAdjustmentRed>
+          <crs:HueAdjustmentOrange>0</crs:HueAdjustmentOrange>
+          <crs:HueAdjustmentYellow>0</crs:HueAdjustmentYellow>
+          <crs:HueAdjustmentGreen>0</crs:HueAdjustmentGreen>
+          <crs:HueAdjustmentAqua>0</crs:HueAdjustmentAqua>
+          <crs:HueAdjustmentBlue>0</crs:HueAdjustmentBlue>
+          <crs:HueAdjustmentPurple>0</crs:HueAdjustmentPurple>
+          <crs:HueAdjustmentMagenta>0</crs:HueAdjustmentMagenta>
+          <crs:SaturationAdjustmentRed>0</crs:SaturationAdjustmentRed>
+          <crs:SaturationAdjustmentOrange>0</crs:SaturationAdjustmentOrange>
+          <crs:SaturationAdjustmentYellow>0</crs:SaturationAdjustmentYellow>
+          <crs:SaturationAdjustmentGreen>0</crs:SaturationAdjustmentGreen>
+          <crs:SaturationAdjustmentAqua>0</crs:SaturationAdjustmentAqua>
+          <crs:SaturationAdjustmentBlue>0</crs:SaturationAdjustmentBlue>
+          <crs:SaturationAdjustmentPurple>0</crs:SaturationAdjustmentPurple>
+          <crs:SaturationAdjustmentMagenta>0</crs:SaturationAdjustmentMagenta>
+          <crs:LuminanceAdjustmentRed>0</crs:LuminanceAdjustmentRed>
+          <crs:LuminanceAdjustmentOrange>0</crs:LuminanceAdjustmentOrange>
+          <crs:LuminanceAdjustmentYellow>0</crs:LuminanceAdjustmentYellow>
+          <crs:LuminanceAdjustmentGreen>0</crs:LuminanceAdjustmentGreen>
+          <crs:LuminanceAdjustmentAqua>0</crs:LuminanceAdjustmentAqua>
+          <crs:LuminanceAdjustmentBlue>0</crs:LuminanceAdjustmentBlue>
+          <crs:LuminanceAdjustmentPurple>0</crs:LuminanceAdjustmentPurple>
+          <crs:LuminanceAdjustmentMagenta>0</crs:LuminanceAdjustmentMagenta>
+          <crs:SplitToningShadowHue>0</crs:SplitToningShadowHue>
+          <crs:SplitToningShadowSaturation>0</crs:SplitToningShadowSaturation>
+          <crs:SplitToningHighlightHue>0</crs:SplitToningHighlightHue>
+          <crs:SplitToningHighlightSaturation>0</crs:SplitToningHighlightSaturation>
+          <crs:SplitToningBalance>0</crs:SplitToningBalance>
+          <crs:ParametricShadows>0</crs:ParametricShadows>
+          <crs:ParametricDarks>0</crs:ParametricDarks>
+          <crs:ParametricLights>0</crs:ParametricLights>
+          <crs:ParametricHighlights>0</crs:ParametricHighlights>
+          <crs:ParametricShadowSplit>25</crs:ParametricShadowSplit>
+          <crs:ParametricMidtoneSplit>50</crs:ParametricMidtoneSplit>
+          <crs:ParametricHighlightSplit>75</crs:ParametricHighlightSplit>
+          <crs:SharpenRadius>+1.0</crs:SharpenRadius>
+          <crs:SharpenDetail>25</crs:SharpenDetail>
+          <crs:SharpenEdgeMasking>0</crs:SharpenEdgeMasking>
+          <crs:PostCropVignetteAmount>0</crs:PostCropVignetteAmount>
+          <crs:GrainAmount>0</crs:GrainAmount>
+          <crs:ColorNoiseReductionDetail>50</crs:ColorNoiseReductionDetail>
+          <crs:ColorNoiseReductionSmoothness>50</crs:ColorNoiseReductionSmoothness>
+          <crs:LensProfileEnable>1</crs:LensProfileEnable>
+          <crs:LensManualDistortionAmount>0</crs:LensManualDistortionAmount>
+          <crs:PerspectiveVertical>0</crs:PerspectiveVertical>
+          <crs:PerspectiveHorizontal>0</crs:PerspectiveHorizontal>
+          <crs:PerspectiveRotate>0.0</crs:PerspectiveRotate>
+          <crs:PerspectiveScale>100</crs:PerspectiveScale>
+          <crs:PerspectiveAspect>0</crs:PerspectiveAspect>
+          <crs:PerspectiveUpright>0</crs:PerspectiveUpright>
+          <crs:PerspectiveX>0.00</crs:PerspectiveX>
+          <crs:PerspectiveY>0.00</crs:PerspectiveY>
+          <crs:AutoLateralCA>0</crs:AutoLateralCA>
+          <crs:Exposure2012>-0.45</crs:Exposure2012>
+          <crs:Contrast2012>-1</crs:Contrast2012>
+          <crs:Highlights2012>0</crs:Highlights2012>
+          <crs:Shadows2012>0</crs:Shadows2012>
+          <crs:Whites2012>+64</crs:Whites2012>
+          <crs:Blacks2012>-3</crs:Blacks2012>
+          <crs:Clarity2012>0</crs:Clarity2012>
+          <crs:DefringePurpleAmount>0</crs:DefringePurpleAmount>
+          <crs:DefringePurpleHueLo>30</crs:DefringePurpleHueLo>
+          <crs:DefringePurpleHueHi>70</crs:DefringePurpleHueHi>
+          <crs:DefringeGreenAmount>0</crs:DefringeGreenAmount>
+          <crs:DefringeGreenHueLo>40</crs:DefringeGreenHueLo>
+          <crs:DefringeGreenHueHi>60</crs:DefringeGreenHueHi>
+          <crs:Dehaze>0</crs:Dehaze>
+          <crs:ToneMapStrength>0</crs:ToneMapStrength>
+          <crs:ConvertToGrayscale>False</crs:ConvertToGrayscale>
+          <crs:OverrideLookVignette>False</crs:OverrideLookVignette>
+          <crs:ToneCurveName>Linear</crs:ToneCurveName>
+          <crs:ToneCurveName2012>Linear</crs:ToneCurveName2012>
+          <crs:CameraProfile>Adobe Standard</crs:CameraProfile>
+          <crs:CameraProfileDigest>AC58BA900C3A001F052B43DA5615508D</crs:CameraProfileDigest>
+          <crs:LensProfileSetup>LensDefaults</crs:LensProfileSetup>
+          <crs:LensProfileName>Adobe (Nikon AF-S NIKKOR 24-70mm f/2.8G ED)</crs:LensProfileName>
+          <crs:LensProfileFilename>NIKON D3X (Nikon FX 24-70mm f2.8 G ED) - RAW.lcp</crs:LensProfileFilename>
+          <crs:LensProfileDigest>2C37822D89F890BFE462CB5DCB2E9631</crs:LensProfileDigest>
+          <crs:LensProfileDistortionScale>100</crs:LensProfileDistortionScale>
+          <crs:LensProfileChromaticAberrationScale>100</crs:LensProfileChromaticAberrationScale>
+          <crs:LensProfileVignettingScale>100</crs:LensProfileVignettingScale>
+          <crs:UprightVersion>151388160</crs:UprightVersion>
+          <crs:UprightCenterMode>0</crs:UprightCenterMode>
+          <crs:UprightCenterNormX>0.5</crs:UprightCenterNormX>
+          <crs:UprightCenterNormY>0.5</crs:UprightCenterNormY>
+          <crs:UprightFocalMode>0</crs:UprightFocalMode>
+          <crs:UprightFocalLength35mm>35</crs:UprightFocalLength35mm>
+          <crs:UprightPreview>False</crs:UprightPreview>
+          <crs:UprightTransformCount>6</crs:UprightTransformCount>
+          <crs:UprightFourSegmentsCount>0</crs:UprightFourSegmentsCount>
+          <crs:HasSettings>True</crs:HasSettings>
+          <crs:HasCrop>False</crs:HasCrop>
+          <crs:AlreadyApplied>True</crs:AlreadyApplied>
+          <crs:ToneCurve>
+            <rdf:Seq>
+                <rdf:li>0, 0</rdf:li>
+                <rdf:li>255, 255</rdf:li>
+            </rdf:Seq>
+          </crs:ToneCurve>
+          <crs:ToneCurveRed>
+            <rdf:Seq>
+                <rdf:li>0, 0</rdf:li>
+                <rdf:li>255, 255</rdf:li>
+            </rdf:Seq>
+          </crs:ToneCurveRed>
+          <crs:ToneCurveGreen>
+            <rdf:Seq>
+                <rdf:li>0, 0</rdf:li>
+                <rdf:li>255, 255</rdf:li>
+            </rdf:Seq>
+          </crs:ToneCurveGreen>
+          <crs:ToneCurveBlue>
+            <rdf:Seq>
+                <rdf:li>0, 0</rdf:li>
+                <rdf:li>255, 255</rdf:li>
+            </rdf:Seq>
+          </crs:ToneCurveBlue>
+          <crs:ToneCurvePV2012>
+            <rdf:Seq>
+                <rdf:li>0, 0</rdf:li>
+                <rdf:li>255, 255</rdf:li>
+            </rdf:Seq>
+          </crs:ToneCurvePV2012>
+          <crs:ToneCurvePV2012Red>
+            <rdf:Seq>
+                <rdf:li>0, 0</rdf:li>
+                <rdf:li>255, 255</rdf:li>
+            </rdf:Seq>
+          </crs:ToneCurvePV2012Red>
+          <crs:ToneCurvePV2012Green>
+            <rdf:Seq>
+                <rdf:li>0, 0</rdf:li>
+                <rdf:li>255, 255</rdf:li>
+            </rdf:Seq>
+          </crs:ToneCurvePV2012Green>
+          <crs:ToneCurvePV2012Blue>
+            <rdf:Seq>
+                <rdf:li>0, 0</rdf:li>
+                <rdf:li>255, 255</rdf:li>
+            </rdf:Seq>
+          </crs:ToneCurvePV2012Blue>
+          <crs:Look rdf:parseType="Resource">
+            <crs:Name/>
+          </crs:Look>
+          <MicrosoftPhoto:Rating>99</MicrosoftPhoto:Rating>
+      </rdf:Description>
+    </rdf:RDF>
+</x:xmpmeta>

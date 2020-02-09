@@ -3,6 +3,8 @@ import {tags, xmpTags} from '../utils/tags'
 
 const EXIF_ATTR_GLOBAL_REGEX = /(xmp|exif|tiff):([0-9a-z]+?)="(.*?)"/gim
 const EXIF_ATTR_REGEX = /:([0-9a-z]+?)="(.*?)"$/i
+const XML_TAG_GLOBAL_REGEX = /<((xmp|exif|tiff):([0-9a-z]+?))>((.|\\s)*?)<\/\1>/gim
+const XML_TAG_REGEX = new RegExp(XML_TAG_GLOBAL_REGEX.source, 'im')
 
 function isSimpleNumber(s: string): boolean {
   return /^(([1-9]\d*)|0)$/.test(s)
@@ -54,6 +56,22 @@ export class XMPDecoder {
     genericMetadata[knownKey] = realValue
   }
 
+  private _decodeAttributeMetadata(metadata: IGenericMetadata): void {
+    const matches = this._text.match(EXIF_ATTR_GLOBAL_REGEX)
+    for (const attribute of matches || []) {
+      const [_, key, value] = attribute.match(EXIF_ATTR_REGEX) || []
+      this._handleMatch(key, value, metadata)
+    }
+  }
+
+  private _decodeElementMetadata(metadata: IGenericMetadata): void {
+    const matches = this._text.match(XML_TAG_GLOBAL_REGEX)
+    for (const match of matches || []) {
+      const [_, tagName, namespace, key, value] = match.match(XML_TAG_REGEX) || []
+      this._handleMatch(key, value, metadata)
+    }
+  }
+
   private _decodeKeywords(genericMetadata: IGenericMetadata): void {
     const subjectEl = findXMLTag(this._text, 'dc:subject')
     if (!subjectEl) return
@@ -70,14 +88,8 @@ export class XMPDecoder {
 
   public extractMetadata(): IGenericMetadata {
     const metadata: IGenericMetadata = {}
-    const matches = this._text.match(EXIF_ATTR_GLOBAL_REGEX)
-
-    for (const match of matches || []) {
-      // @ts-ignore - guaranteed to match from above
-      const [_, key, value] = match.match(EXIF_ATTR_REGEX)
-      this._handleMatch(key, value, metadata)
-    }
-
+    this._decodeAttributeMetadata(metadata)
+    this._decodeElementMetadata(metadata)
     this._decodeKeywords(metadata)
     return metadata
   }

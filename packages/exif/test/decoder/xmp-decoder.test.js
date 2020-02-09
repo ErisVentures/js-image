@@ -5,7 +5,7 @@ const xmpFile = fixture('d4s.xmp')
 
 describe('lib/decoder/xmp-decoder.js', () => {
   describe('.extractMetadata', () => {
-    it('should work', () => {
+    it('should work on Lightroom formatted XMP', () => {
       const metadata = new XMPDecoder(xmpFile).extractMetadata()
       expect(metadata).toEqual({
         ApertureValue: 2.970854,
@@ -45,6 +45,16 @@ describe('lib/decoder/xmp-decoder.js', () => {
         SubjectDistanceRange: 0,
         WhiteBalance: 0,
         DCSubjectBagOfWords: '["portfolio","showcase","yosemite valley"]',
+      })
+    })
+
+    it('should work on XnView formatted XMP', () => {
+      const metadata = new XMPDecoder(fixture('xnview.xmp')).extractMetadata()
+      expect(metadata).toEqual({
+        CreateDate: '2014-12-27T11:37:21.70',
+        MetadataDate: '2019-04-10T20:43:14-05:00',
+        ModifyDate: '2019-04-10T20:43:14-05:00',
+        Rating: 5,
       })
     })
   })
