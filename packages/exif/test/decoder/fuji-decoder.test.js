@@ -8,6 +8,13 @@ describe('Decoder', () => {
       const decoder = new Decoder(fixture('fuji-xt10.raf'))
       const thumbnail = decoder.extractJPEG()
       compareToFixture(thumbnail, 'fuji-xt10.jpg')
+      const metadata = parse(thumbnail)
+      expect(metadata._raw).toMatchObject({
+        LensMake: 'FUJIFILM',
+        LensModel: 'XF18-55mmF2.8-4 R LM OIS',
+        Make: 'FUJIFILM',
+        Model: 'X-T10',
+      })
     })
   })
 

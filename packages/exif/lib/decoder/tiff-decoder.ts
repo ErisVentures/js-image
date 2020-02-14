@@ -184,13 +184,7 @@ export class TIFFDecoder {
     if (options.skipMetadata) return jpeg
 
     const metadata = this.extractMetadata()
-    delete metadata.ImageWidth
-    delete metadata.ImageLength
-    delete metadata.EXIFImageWidth
-    delete metadata.EXIFImageHeight
-    const metadataBuffer = TIFFEncoder.encode(metadata)
-
-    this._cachedJPEG = JPEGDecoder.injectEXIFMetadata(jpeg, metadataBuffer)
+    this._cachedJPEG = TIFFDecoder.injectMetadataIntoJPEG(jpeg, metadata)
     return this._cachedJPEG.slice()
   }
 
@@ -220,6 +214,16 @@ export class TIFFDecoder {
     this._readAndValidateHeader()
     this._readIFDs()
     return this._ifds.map(ifd => ifd.entries).reduce((a, b) => a.concat(b), [])
+  }
+
+  public static injectMetadataIntoJPEG(jpeg: IBufferLike, metadata: IGenericMetadata): IBufferLike {
+    const metadataToInject = {...metadata}
+    delete metadataToInject.ImageWidth
+    delete metadataToInject.ImageLength
+    delete metadataToInject.EXIFImageWidth
+    delete metadataToInject.EXIFImageHeight
+    const metadataBuffer = TIFFEncoder.encode(metadataToInject)
+    return JPEGDecoder.injectEXIFMetadata(jpeg, metadataBuffer)
   }
 
   public static isLikelyTIFF(buffer: IBufferLike): boolean {

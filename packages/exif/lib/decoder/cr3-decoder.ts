@@ -62,6 +62,7 @@ export class Cr3Decoder {
   }
 
   private _readAndValidateBoxes(): void {
+    if (this._data.length) return
     if (!Cr3Decoder._isLikelyCr3(this._reader)) throw new Error('Invalid cr3 file')
     this._reader.setEndianess(Endian.Big)
     this._readFileBox(0, [])
@@ -85,13 +86,17 @@ export class Cr3Decoder {
     this._reader.skip(2) // unknown
     const jpegLength = this._reader.read(4)
     log(`extracting jpeg preview ${width}x${height}, ${jpegLength} bytes`)
-    return this._reader.readAsBuffer(jpegLength)
+
+    const jpeg = this._reader.readAsBuffer(jpegLength)
+    const metadata = this.extractMetadata()
+    return TIFFDecoder.injectMetadataIntoJPEG(jpeg, metadata)
   }
 
   public extractMetadata(): IGenericMetadata {
     this._readAndValidateBoxes()
 
     const metadata: IGenericMetadata = {}
+
     for (const entry of this._data) {
       if (!TIFF_BOX_TYPES.has(entry.chunkName)) continue
       this._reader.seek(entry.dataOffset)

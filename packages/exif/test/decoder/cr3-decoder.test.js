@@ -8,6 +8,12 @@ describe('Decoder', () => {
       const decoder = new Decoder(fixture('m50.cr3'))
       const jpeg = decoder.extractJPEG()
       compareToFixture(jpeg, 'm50.jpg')
+      const metadata = parse(jpeg)
+      expect(metadata._raw).toMatchObject({
+        ISO: 100,
+        ImageLength: 1080,
+        ImageWidth: 1620,
+      })
     })
   })
 
