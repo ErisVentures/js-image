@@ -101,6 +101,15 @@ describe('index.js', () => {
       })
     })
 
+    it('should work on canon cr3 files', () => {
+      const results = parse(fixture('m50.cr3'))
+      expect(results).toHaveProperty('_raw')
+      expect(results).toMatchObject({
+        make: 'Canon',
+        model: 'Canon EOS M50',
+      })
+    })
+
     it('should work on sony raw files', () => {
       const results = parse(sonyArw)
       expect(results).toHaveProperty('_raw')

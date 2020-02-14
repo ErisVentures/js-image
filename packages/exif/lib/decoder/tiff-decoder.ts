@@ -222,6 +222,10 @@ export class TIFFDecoder {
     return this._ifds.map(ifd => ifd.entries).reduce((a, b) => a.concat(b), [])
   }
 
+  public static isLikelyTIFF(buffer: IBufferLike): boolean {
+    return (buffer[0] === 0x49 && buffer[1] === 0x49) || (buffer[0] === 0x4d && buffer[1] === 0x4d)
+  }
+
   public static replaceIFDEntry(decoder: TIFFDecoder, tag: IFDTagName, data: Buffer): Buffer {
     const ifd = decoder.extractIFDEntries().find(ifd => getFriendlyName(ifd.tag) === tag)
     if (!ifd) throw new Error(`Could not find "${tag}" in buffer`)

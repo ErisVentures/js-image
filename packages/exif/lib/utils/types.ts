@@ -20,6 +20,7 @@ export interface IReader {
   setEndianess(endian: Endian): void
   read(length: number): number
   readAsString(length: number): string
+  readAsHex(length: number): string
   readAsBuffer(length: number): IBufferLike
   readAsReader(length: number): IReader
   skip(diff: number): void

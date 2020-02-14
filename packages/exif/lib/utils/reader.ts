@@ -46,9 +46,20 @@ export class Reader implements IReader {
   }
 
   public readAsString(length: number): string {
-    const value = this._buffer.slice(this._position, this._position + length)
-    this._position += length
-    return value.toString()
+    return this.readAsBuffer(length).toString()
+  }
+
+  public readAsHex(length: number): string {
+    const maxChunkLength = 2
+    const chunks: string[] = []
+    for (let i = 0; i < length; i += maxChunkLength) {
+      const chunkLength = Math.min(maxChunkLength, length - i)
+      let chunk = this.read(chunkLength).toString(16)
+      while (chunk.length < chunkLength * 2) chunk = `0${chunk}`
+      chunks.push(chunk)
+    }
+
+    return this._endianness === Endian.Big ? chunks.join('') : chunks.reverse().join('')
   }
 
   public readAsBuffer(length: number): IBufferLike {

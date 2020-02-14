@@ -1,5 +1,6 @@
 import {JPEGDecoder} from './decoder/jpeg-decoder'
 import {FUJI_MAGIC_STRING, FujiDecoder} from './decoder/fuji-decoder'
+import {Cr3Decoder} from './decoder/cr3-decoder'
 import {TIFFDecoder} from './decoder/tiff-decoder'
 import {XMPDecoder} from './decoder/xmp-decoder'
 import {TIFFEncoder} from './encoder/tiff-encoder'
@@ -9,10 +10,6 @@ import {IDecoder, IBufferLike, INormalizedMetadata} from './utils/types'
 
 function isDecoder(obj: any): obj is IDecoder {
   return typeof (obj as any).extractMetadata === 'function'
-}
-
-function isLikelyTIFF(buffer: IBufferLike): boolean {
-  return (buffer[0] === 0x49 && buffer[1] === 0x49) || (buffer[0] === 0x4d && buffer[1] === 0x4d)
 }
 
 function isLikelyFuji(buffer: IBufferLike): boolean {
@@ -28,7 +25,9 @@ function createDecoder_(bufferOrDecoder: IBufferLike | IDecoder): IDecoder | und
     return bufferOrDecoder
   } else if (isLikelyFuji(bufferOrDecoder)) {
     return new FujiDecoder(bufferOrDecoder)
-  } else if (isLikelyTIFF(bufferOrDecoder)) {
+  } else if (Cr3Decoder.isLikelyCr3(bufferOrDecoder)) {
+    return new Cr3Decoder(bufferOrDecoder)
+  } else if (TIFFDecoder.isLikelyTIFF(bufferOrDecoder)) {
     return new TIFFDecoder(bufferOrDecoder)
   } else if (JPEGDecoder.isJPEG(bufferOrDecoder)) {
     return new JPEGDecoder(bufferOrDecoder)
