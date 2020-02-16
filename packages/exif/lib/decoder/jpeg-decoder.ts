@@ -143,6 +143,7 @@ export class JPEGDecoder {
 
     let marker = reader.read(2)
     while (marker !== END_OF_IMAGE && reader.hasNext()) {
+      log(`read marker ${marker.toString(16)}`)
       if (marker === START_OF_SCAN) {
         // If we reached the scan data, we won't find anymore metadata, skip to the end
         break

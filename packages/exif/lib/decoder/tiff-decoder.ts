@@ -157,7 +157,7 @@ export class TIFFDecoder {
         return this._reader.readAsBuffer(length)
       })
 
-      if (!JPEGDecoder.isLikelyJPEG(jpegBuffer)) return
+      if (!JPEGDecoder.isJPEG(jpegBuffer)) return
 
       const jpeg = new JPEGDecoder(jpegBuffer)
       const metadata = jpeg.extractMetadata()
@@ -197,6 +197,9 @@ export class TIFFDecoder {
       endCandidates.push(i)
     }
 
+    // If there are too many candidates to evaluate, don't guess randomly
+    if (startCandidates.length * endCandidates.length > 25) return undefined
+
     let jpeg: IBufferLike | undefined
     let maxWidth = -Infinity
     for (const startIndex of startCandidates) {
@@ -205,6 +208,7 @@ export class TIFFDecoder {
         if (!Number.isFinite(endIndex)) continue
         if (endIndex - startIndex < 4000) continue
 
+        log(`evaluating possible embedded JPEG from ${startIndex} to ${endIndex}`)
         const jpegBuffer = buffer.slice(startIndex, endIndex + 1)
         if (!JPEGDecoder.isJPEG(jpegBuffer)) continue
 
