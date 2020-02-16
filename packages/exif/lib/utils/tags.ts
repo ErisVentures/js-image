@@ -14,6 +14,13 @@ export const xmpTags: Record<XMPTagName, boolean> = {
   DCSubjectBagOfWords: true,
 }
 
+export const panasonicConversionTags: Partial<Record<IFDTagName, IFDTagName>> = {
+  GPSDestBearingRef: 'ISO',
+  // Just figure these out with XNViewMP :/
+  // GPSLatitude: 'SensorWidth'
+  // GPSLongitudeRef: 'SensorHeight
+}
+
 // TODO: fill in all IFDDataTypes with -1
 const _tags: Array<[IFDTagName, number, IFDDataType, IFDGroup]> = [
   // Disabled for overlap with GPS

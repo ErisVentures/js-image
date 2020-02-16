@@ -7,6 +7,10 @@ export class Reader implements IReader {
     private _endianness: Endian = Endian.Big,
   ) {}
 
+  public getBuffer(): IBufferLike {
+    return this._buffer
+  }
+
   public hasNext(): boolean {
     return this._position < this._buffer.length
   }

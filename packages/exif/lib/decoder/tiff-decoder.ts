@@ -1,5 +1,5 @@
 import {IFD} from '../decoder/ifd'
-import {getFriendlyName} from '../utils/tags'
+import {getFriendlyName, panasonicConversionTags} from '../utils/tags'
 import {Reader} from '../utils/reader'
 import {TIFFEncoder} from '../encoder/tiff-encoder'
 import {JPEGDecoder} from './jpeg-decoder'
@@ -20,12 +20,24 @@ import {
 import {createLogger} from '../utils/log'
 import {IFDEntry} from './ifd-entry'
 
-const TIFF_MAGIC_VERSION = 42
+enum Variant {
+  Standard = 'standard',
+  Olympus = 'olympus',
+  Panasonic = 'panasonic',
+  Unknown = 'unknown',
+}
+
+const TIFF_MAGIC_VERSION = 0x2a
 /**
  * Olympus raw files are basically TIFFs but with a replaced magic text
  * @see https://libopenraw.freedesktop.org/formats/orf/
  */
 const OLYMPUS_MAGIC_VERSION = 0x4f52
+/**
+ * Panasonic raw files are basically TIFFs but with a replaced magic text
+ * @see https://libopenraw.freedesktop.org/formats/rw2/
+ */
+const PANASONIC_MAGIC_VERSION = 0x55
 
 const log = createLogger('decoder')
 
@@ -38,6 +50,7 @@ interface IThumbnailLocation {
 export class TIFFDecoder {
   private readonly _buffer: IBufferLike
   private readonly _reader: IReader
+  private _variant: Variant
   private _ifds: IIFD[]
   private _cachedMetadata: IGenericMetadata
   private _cachedJPEG: IBufferLike
@@ -61,7 +74,10 @@ export class TIFFDecoder {
     }
 
     const version = this._reader.read(2)
-    if (version !== TIFF_MAGIC_VERSION && version !== OLYMPUS_MAGIC_VERSION) {
+    if (version === TIFF_MAGIC_VERSION) this._variant = Variant.Standard
+    if (version === OLYMPUS_MAGIC_VERSION) this._variant = Variant.Olympus
+    if (version === PANASONIC_MAGIC_VERSION) this._variant = Variant.Panasonic
+    if (this._variant === Variant.Unknown) {
       throw new Error(`Unrecognized TIFF version: ${version.toString(16)}`)
     }
   }
@@ -157,6 +173,49 @@ export class TIFFDecoder {
     return maxResolutionJPEG.buffer
   }
 
+  /**
+   * Panasonic mislabels all of their tags so the names make no sense.
+   * The only thing they really label is the offset of the RAW data and the JPEG is before that.
+   * So we'll just search for JPEG markers in between the IFDs and the offset of the raw data.
+   */
+  private _readPanasonicJPEG(): IBufferLike | undefined {
+    if (this._variant !== Variant.Panasonic) return
+    const ifdEntries = this.extractIFDEntries()
+    const searchStart = Math.max(...ifdEntries.map(value => value.startOffset))
+    const endEntry = this._ifds[0].entries.find(entry => entry.tag === IFDTag.PanasonicJPEGEnd)
+    if (!searchStart || !endEntry) return
+
+    const endEntryValue = endEntry.getValue()
+    if (typeof endEntryValue !== 'number') return
+
+    let startIndex = Infinity
+    let endIndex = Infinity
+    const buffer = this._reader.getBuffer()
+
+    for (let i = searchStart; i < endEntryValue; i++) {
+      if (buffer[i] !== 0xff) continue
+      if (buffer[i + 1] !== 0xd8) continue
+      if (buffer[i + 2] !== 0xff) continue
+      startIndex = i
+      break
+    }
+
+    for (let i = endEntryValue; i > searchStart; i--) {
+      if (buffer[i - 1] !== 0xff) continue
+      if (buffer[i] !== 0xd9) continue
+      endIndex = i
+      break
+    }
+
+    if (!Number.isFinite(startIndex)) return
+    if (!Number.isFinite(endIndex)) return
+    if (endIndex - startIndex < 4000) return
+
+    const jpegBuffer = buffer.slice(startIndex, endIndex + 1)
+    if (!JPEGDecoder.isJPEG(jpegBuffer)) return
+    return jpegBuffer
+  }
+
   private _readLargestJPEG(): IBufferLike {
     // Try to read the JPEG thumbnail first
     const maxThumbnailJPEG = this._readLargestJPEGThumbnail()
@@ -170,8 +229,13 @@ export class TIFFDecoder {
     if (maxStripOffsetJPEG && maxStripOffsetJPEG.length > thumbnailSize) return maxStripOffsetJPEG
     // Fallback to the small thumbnail if that's all we found
     if (maxThumbnailJPEG) return maxThumbnailJPEG
+
+    // Try the manufacturer specific previews if none the standard ones worked
+    const panasonicJPEG = this._readPanasonicJPEG()
+    if (panasonicJPEG) return panasonicJPEG
+
     // Fail loudly if all else fails
-    throw new Error('Could not find thumbnail or read StripOffsets IFDs')
+    throw new Error('Could not find an embedded JPEG')
   }
 
   public extractJPEG(options: IJPEGOptions = {}): IBufferLike {
@@ -203,6 +267,11 @@ export class TIFFDecoder {
         const value = entry.getValue(this._reader)
         log.verbose(`evaluated ${name} (${entry.tag} - ${entry.dataType}) as ${value}`)
         target[name] = value
+
+        const panasonicName = panasonicConversionTags[name]
+        if (this._variant === Variant.Panasonic && panasonicName) {
+          target[panasonicName] = value
+        }
       })
     })
 

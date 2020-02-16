@@ -14,6 +14,7 @@ export const BIG_ENDIAN_MARKER = 0x4d4d
 export const LITTLE_ENDIAN_MARKER = 0x4949
 
 export interface IReader {
+  getBuffer(): IBufferLike
   hasNext(): boolean
   getPosition(): number
   getEndianess(): Endian
@@ -85,6 +86,7 @@ export enum IFDTag {
   ThumbnailOffset = 513,
   ThumbnailLength = 514,
   EXIFOffset = 34665,
+  PanasonicJPEGEnd = 280, // MinSampleValue normally, marks the start of the RAW data
 }
 
 export enum IFDGroup {

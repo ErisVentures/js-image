@@ -196,7 +196,7 @@ export class JPEGDecoder {
   }
 
   public static isJPEG(buffer: IBufferLike): boolean {
-    return buffer[0] === 0xff && buffer[1] === 0xd8
+    return buffer[0] === 0xff && buffer[1] === 0xd8 && buffer[2] === 0xff
   }
 
   public static injectEXIFMetadata(jpegBuffer: IBufferLike, exifBuffer: IBufferLike): IBufferLike {

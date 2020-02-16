@@ -41,8 +41,15 @@ describe('Decoder', () => {
       compareToFixture(thumbnail, 'iphone.jpg')
     })
 
+    it('should extract a panasonic jpeg', () => {
+      const decoder = new Decoder(fixture('gh4.rw2'))
+      const thumbnail = decoder.extractJPEG()
+      parse(thumbnail) // make sure we can parse it
+      compareToFixture(thumbnail, 'gh4.jpg')
+    })
+
     it('should create a valid JPEG', () => {
-      const decoder = new Decoder(fixture('d610.nef'))
+      const decoder = new Decoder(fixture('gh4.rw2'))
       const thumbnail = decoder.extractJPEG()
       JPEG.decode(thumbnail)
     }, 20000)

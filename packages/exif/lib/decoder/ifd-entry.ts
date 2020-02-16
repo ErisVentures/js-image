@@ -54,6 +54,7 @@ export class IFDEntry implements IIFDEntry {
       case IFDDataType.Double:
         return new DataView(entryReader.readAsBuffer(8).buffer).getFloat64(0)
       case IFDDataType.Undefined:
+      case IFDDataType.Unknown:
         return ''
       default:
         throw new TypeError(`Unsupported data type (${this.dataType}) for tag (${this.tag})`)
@@ -85,7 +86,7 @@ export class IFDEntry implements IIFDEntry {
     const length = reader.read(4)
     const dataReader = reader.readAsReader(4)
 
-    log.verbose(`read tag ${getFriendlyName(tag)} (${tag})`)
+    log.verbose(`read tag ${getFriendlyName(tag)} (tag: ${tag}, length: ${length})`)
     return new IFDEntry(startOffset, tag, dataType, length, dataReader)
   }
 
