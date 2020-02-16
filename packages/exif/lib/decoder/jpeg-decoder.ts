@@ -3,6 +3,9 @@ import {IBufferLike, IReader, Endian, IGenericMetadata} from '../utils/types'
 import {Reader} from '../utils/reader'
 import {Writer} from '../utils/writer'
 import {XMPDecoder} from './xmp-decoder'
+import {createLogger} from '../utils/log'
+
+const log = createLogger('jpeg-decoder')
 
 const EXIF_HEADER = 0x45786966 // "Exif"
 const XMP_HEADER = 0x68747470 // The "http" in "http://ns.adobe.com/xap/1.0/"
@@ -196,6 +199,16 @@ export class JPEGDecoder {
   }
 
   public static isJPEG(buffer: IBufferLike): boolean {
+    try {
+      new JPEGDecoder(buffer)._readFileMarkers()
+      return true
+    } catch (err) {
+      log(`not a JPEG, decoding failed with ${err.message}`)
+      return false
+    }
+  }
+
+  public static isLikelyJPEG(buffer: IBufferLike): boolean {
     return buffer[0] === 0xff && buffer[1] === 0xd8 && buffer[2] === 0xff
   }
 

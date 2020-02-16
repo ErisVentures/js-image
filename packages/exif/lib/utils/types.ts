@@ -59,7 +59,7 @@ export interface IIFDEntry {
   tag: number
   dataType: number
   length: number
-  getValue(reader?: IReader): string | number
+  getValue(reader?: IReader): string | number | IBufferLike
 }
 
 export interface IIFDOffset {
@@ -162,6 +162,7 @@ export interface INormalizedMetadata {
 export function getDataTypeSize(dataType: number, name?: string | number): number {
   switch (dataType) {
     case IFDDataType.Unknown: // ???
+    case IFDDataType.Undefined: // ???, was previously 4 but definitely not true of Olympus
     case IFDDataType.Byte: // byte
     case IFDDataType.String: // ASCII-string
     case IFDDataType.SignedByte:
@@ -172,7 +173,6 @@ export function getDataTypeSize(dataType: number, name?: string | number): numbe
     case IFDDataType.Long: // double word
     case IFDDataType.SignedLong:
     case IFDDataType.Float:
-    case IFDDataType.Undefined:
       return 4
     case IFDDataType.Rational: // rational number
     case IFDDataType.SignedRational:

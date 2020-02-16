@@ -29,7 +29,7 @@ function createDecoder_(bufferOrDecoder: IBufferLike | IDecoder): IDecoder | und
     return new Cr3Decoder(bufferOrDecoder)
   } else if (TIFFDecoder.isLikelyTIFF(bufferOrDecoder)) {
     return new TIFFDecoder(bufferOrDecoder)
-  } else if (JPEGDecoder.isJPEG(bufferOrDecoder)) {
+  } else if (JPEGDecoder.isLikelyJPEG(bufferOrDecoder)) {
     return new JPEGDecoder(bufferOrDecoder)
   } else if (XMPDecoder.isXMP(bufferOrDecoder)) {
     return new XMPDecoder(bufferOrDecoder)

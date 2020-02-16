@@ -44,8 +44,21 @@ describe('Decoder', () => {
     it('should extract a panasonic jpeg', () => {
       const decoder = new Decoder(fixture('gh4.rw2'))
       const thumbnail = decoder.extractJPEG()
-      parse(thumbnail) // make sure we can parse it
+      const metadata = parse(thumbnail) // make sure we can parse it
       compareToFixture(thumbnail, 'gh4.jpg')
+      expect(metadata).toMatchObject({
+        iso: 200,
+      })
+    })
+
+    it('should extract an olympus jpeg', () => {
+      const decoder = new Decoder(fixture('olympus-m10.orf'))
+      const thumbnail = decoder.extractJPEG()
+      const metadata = parse(thumbnail) // make sure we can parse it
+      compareToFixture(thumbnail, 'olympus-m10.jpg')
+      expect(metadata).toMatchObject({
+        iso: 200,
+      })
     })
 
     it('should create a valid JPEG', () => {

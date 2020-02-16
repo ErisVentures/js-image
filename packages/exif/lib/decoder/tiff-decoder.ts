@@ -58,6 +58,7 @@ export class TIFFDecoder {
   public constructor(buffer: IBufferLike) {
     this._buffer = buffer
     this._reader = new Reader(buffer)
+    this._variant = Variant.Unknown
   }
 
   private _readAndValidateHeader(): void {
@@ -80,6 +81,8 @@ export class TIFFDecoder {
     if (this._variant === Variant.Unknown) {
       throw new Error(`Unrecognized TIFF version: ${version.toString(16)}`)
     }
+
+    log(`detected tiff variant as ${this._variant}`)
   }
 
   private _readIFDs(): void {
@@ -154,7 +157,7 @@ export class TIFFDecoder {
         return this._reader.readAsBuffer(length)
       })
 
-      if (!JPEGDecoder.isJPEG(jpegBuffer)) return
+      if (!JPEGDecoder.isLikelyJPEG(jpegBuffer)) return
 
       const jpeg = new JPEGDecoder(jpegBuffer)
       const metadata = jpeg.extractMetadata()
@@ -173,6 +176,50 @@ export class TIFFDecoder {
     return maxResolutionJPEG.buffer
   }
 
+  private _findJPEGInRange(
+    buffer: IBufferLike,
+    searchStartIndex: number,
+    searchEndIndex: number,
+  ): IBufferLike | undefined {
+    const startCandidates: number[] = []
+    const endCandidates: number[] = []
+
+    for (let i = searchStartIndex; i < searchEndIndex; i++) {
+      if (buffer[i] !== 0xff) continue
+      if (buffer[i + 1] !== 0xd8) continue
+      if (buffer[i + 2] !== 0xff) continue
+      startCandidates.push(i)
+    }
+
+    for (let i = searchEndIndex; i > searchStartIndex; i--) {
+      if (buffer[i - 1] !== 0xff) continue
+      if (buffer[i] !== 0xd9) continue
+      endCandidates.push(i)
+    }
+
+    let jpeg: IBufferLike | undefined
+    let maxWidth = -Infinity
+    for (const startIndex of startCandidates) {
+      for (const endIndex of endCandidates) {
+        if (!Number.isFinite(startIndex)) continue
+        if (!Number.isFinite(endIndex)) continue
+        if (endIndex - startIndex < 4000) continue
+
+        const jpegBuffer = buffer.slice(startIndex, endIndex + 1)
+        if (!JPEGDecoder.isJPEG(jpegBuffer)) continue
+
+        const metadata = new JPEGDecoder(jpegBuffer).extractMetadata()
+        if (typeof metadata.ImageWidth !== 'number') continue
+        if (metadata.ImageWidth < maxWidth) continue
+
+        maxWidth = metadata.ImageWidth
+        jpeg = jpegBuffer
+      }
+    }
+
+    return jpeg
+  }
+
   /**
    * Panasonic mislabels all of their tags so the names make no sense.
    * The only thing they really label is the offset of the RAW data and the JPEG is before that.
@@ -188,32 +235,22 @@ export class TIFFDecoder {
     const endEntryValue = endEntry.getValue()
     if (typeof endEntryValue !== 'number') return
 
-    let startIndex = Infinity
-    let endIndex = Infinity
-    const buffer = this._reader.getBuffer()
+    return this._findJPEGInRange(this._reader.getBuffer(), searchStart, endEntryValue)
+  }
 
-    for (let i = searchStart; i < endEntryValue; i++) {
-      if (buffer[i] !== 0xff) continue
-      if (buffer[i + 1] !== 0xd8) continue
-      if (buffer[i + 2] !== 0xff) continue
-      startIndex = i
-      break
-    }
+  /**
+   * Olympus JPEG preview is usually contained within the makernote
+   */
+  private _readOlympusJPEG(): IBufferLike | undefined {
+    if (this._variant !== Variant.Olympus) return
 
-    for (let i = endEntryValue; i > searchStart; i--) {
-      if (buffer[i - 1] !== 0xff) continue
-      if (buffer[i] !== 0xd9) continue
-      endIndex = i
-      break
-    }
+    const ifdEntries = this.extractIFDEntries()
+    const makerNoteEntry = ifdEntries.find(entry => entry.tag === 37500)
+    if (!makerNoteEntry) return
 
-    if (!Number.isFinite(startIndex)) return
-    if (!Number.isFinite(endIndex)) return
-    if (endIndex - startIndex < 4000) return
-
-    const jpegBuffer = buffer.slice(startIndex, endIndex + 1)
-    if (!JPEGDecoder.isJPEG(jpegBuffer)) return
-    return jpegBuffer
+    const makernoteBuffer = makerNoteEntry.getValue(this._reader)
+    if (typeof makernoteBuffer === 'string' || typeof makernoteBuffer === 'number') return
+    return this._findJPEGInRange(makernoteBuffer, 0, makernoteBuffer.length)
   }
 
   private _readLargestJPEG(): IBufferLike {
@@ -233,6 +270,8 @@ export class TIFFDecoder {
     // Try the manufacturer specific previews if none the standard ones worked
     const panasonicJPEG = this._readPanasonicJPEG()
     if (panasonicJPEG) return panasonicJPEG
+    const olympusJPEG = this._readOlympusJPEG()
+    if (olympusJPEG) return olympusJPEG
 
     // Fail loudly if all else fails
     throw new Error('Could not find an embedded JPEG')
@@ -265,7 +304,12 @@ export class TIFFDecoder {
       ifd.entries.forEach(entry => {
         const name = getFriendlyName(entry.tag)
         const value = entry.getValue(this._reader)
-        log.verbose(`evaluated ${name} (${entry.tag} - ${entry.dataType}) as ${value}`)
+        const displayValue =
+          typeof value === 'string' || typeof value === 'number'
+            ? value.toString()
+            : value.slice(0, 32)
+        log.verbose(`evaluated ${name} (${entry.tag} - ${entry.dataType}) as ${displayValue}`)
+        if (typeof value !== 'string' && typeof value !== 'number') return
         target[name] = value
 
         const panasonicName = panasonicConversionTags[name]

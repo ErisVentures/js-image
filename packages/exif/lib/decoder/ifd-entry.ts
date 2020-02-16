@@ -1,5 +1,13 @@
 import {getFriendlyName} from '../utils/tags'
-import {IFDDataType, IIFDEntry, IReader, IFDTagName, getDataTypeSize, Endian} from '../utils/types'
+import {
+  IFDDataType,
+  IIFDEntry,
+  IReader,
+  IFDTagName,
+  getDataTypeSize,
+  Endian,
+  IBufferLike,
+} from '../utils/types'
 import {createLogger} from '../utils/log'
 import {Writer} from '../utils/writer'
 import {Reader} from '../utils/reader'
@@ -23,7 +31,7 @@ export class IFDEntry implements IIFDEntry {
     return getFriendlyName(this.tag)
   }
 
-  public getValue(reader?: IReader): string | number {
+  public getValue(reader?: IReader): string | number | IBufferLike {
     const entryReader = this.getReader(reader)
     switch (this.dataType) {
       // TODO: verify signed versions
@@ -55,7 +63,7 @@ export class IFDEntry implements IIFDEntry {
         return new DataView(entryReader.readAsBuffer(8).buffer).getFloat64(0)
       case IFDDataType.Undefined:
       case IFDDataType.Unknown:
-        return ''
+        return entryReader.getBuffer()
       default:
         throw new TypeError(`Unsupported data type (${this.dataType}) for tag (${this.tag})`)
     }
