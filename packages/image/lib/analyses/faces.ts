@@ -148,7 +148,7 @@ function convertFaceDescriptor(descriptor: Float32Array): number[] {
   return output
 }
 
-export async function detectFaces(imageData: IAnnotatedImageData): Promise<IFaceAnalysisEntry[]> {
+async function detectFaces_(imageData: IAnnotatedImageData): Promise<IFaceAnalysisEntry[]> {
   await initializeIfNecessary()
 
   const pixels = new Uint8Array(ImageData.toRGB(imageData).data)
@@ -194,3 +194,5 @@ export async function detectFaces(imageData: IAnnotatedImageData): Promise<IFace
 
   return faces.sort((a, b) => b.boundingBox.height - a.boundingBox.height)
 }
+
+export const detectFaces = instrumentation.wrapMethod('detectFaces', detectFaces_)

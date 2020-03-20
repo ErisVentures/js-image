@@ -16,7 +16,7 @@ export const instrumentation = {
     // tslint:disable-next-line
     for (const name of Object.getOwnPropertyNames(o)) {
       if (typeof o[name] !== 'function') continue
-      o[name] = wrapMethod(name, o[name])
+      o[name] = wrapMethod<any[], any>(name, o[name])
     }
   },
 }
@@ -27,7 +27,10 @@ function runMethods(id: number, name: string, args: any[], hooks: MethodHookFn[]
   }
 }
 
-function wrapMethod(name: string, fn: any): any {
+function wrapMethod<TArgs extends any[], TOutput>(
+  name: string,
+  fn: (...args: TArgs) => TOutput,
+): (...args: TArgs) => TOutput {
   return function(this: any, ...args: any[]): any {
     invocationId++
     runMethods(invocationId, name, args, instrumentation.onMethodStart)

@@ -1,6 +1,7 @@
 import {ISharpnessAnalysis, ISharpnessOptions} from '../types'
 import {ImageData} from '../image-data'
 import {SobelImageData} from '../transforms/sobel'
+import {instrumentation} from '../instrumentation'
 
 export function computeAverage(items: number[], from?: number, to?: number): number {
   from = from || 0
@@ -16,10 +17,7 @@ export function computeAverage(items: number[], from?: number, to?: number): num
   return sum / numItems
 }
 
-export function sharpness(
-  imageData: SobelImageData,
-  options?: ISharpnessOptions,
-): ISharpnessAnalysis {
+function sharpness_(imageData: SobelImageData, options?: ISharpnessOptions): ISharpnessAnalysis {
   const defaultSubselect = {x: 0, y: 0, width: imageData.width, height: imageData.height}
   const {threshold = 20, subselect = defaultSubselect} = options || {}
   const maxX = subselect.x + subselect.width
@@ -62,3 +60,5 @@ export function sharpness(
     upperVentileAverage,
   }
 }
+
+export const sharpness = instrumentation.wrapMethod('computeSharpness', sharpness_)

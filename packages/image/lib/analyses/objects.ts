@@ -224,6 +224,23 @@ function mergeModelResults(
   return output
 }
 
+function runCocoModel_(
+  imageTensor: tf.Tensor3D,
+  maxDetectionObjects: number,
+): Promise<DetectedObject[]> {
+  return cocoSsdModel!.detect(imageTensor, maxDetectionObjects)
+}
+
+function runOpenmlModel_(
+  imageTensor: tf.Tensor3D,
+  maxDetectionObjects: number,
+): Promise<automl.PredictedObject[]> {
+  return openmlSsdModel!.detect(imageTensor, {score: 0.2, iou: 0.1, topk: maxDetectionObjects})
+}
+
+const runCocoModel = instrumentation.wrapMethod('runCocoModel', runCocoModel_)
+const runOpenmlModel = instrumentation.wrapMethod('runOpenmlModel', runOpenmlModel_)
+
 async function runSsdModels(
   imageData: IAnnotatedImageData,
   options: IObjectAnalysisOptions = {},
@@ -243,8 +260,8 @@ async function runSsdModels(
   const imageTensor = tf.tensor3d(tensorInputArray, [size, size, 3])
 
   return mergeModelResults(
-    await cocoSsdModel!.detect(imageTensor, maxDetectionObjects),
-    await openmlSsdModel!.detect(imageTensor, {score: 0.2, iou: 0.1, topk: maxDetectionObjects}),
+    await runCocoModel(imageTensor, maxDetectionObjects),
+    await runOpenmlModel(imageTensor, maxDetectionObjects),
     size,
     deduplicationThreshold,
   ).sort((a, b) => b.confidence - a.confidence)
@@ -255,13 +272,15 @@ const initializeIfNecessary = instrumentation.wrapMethod(
   initializeIfNecessary_,
 )
 
-export async function detectObjects(
+async function detectObjects_(
   imageData: IAnnotatedImageData,
   options?: IObjectAnalysisOptions,
 ): Promise<IObjectAnalysisEntry[]> {
   await initializeIfNecessary()
   return runSsdModels(imageData, options)
 }
+
+export const detectObjects = instrumentation.wrapMethod('detectObjects', detectObjects_)
 
 /*
 ==========================================================================
