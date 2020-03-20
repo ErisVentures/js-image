@@ -10,7 +10,6 @@ jobs:
       os: osx
       language: node_js
       node_js: 'v10.15.3'
-      before_script: tree ./node_modules/@tensorflow/tfjs-node
       script: npm run build
       after_success: ./scripts/add-asset-to-github.sh ./packages/image-cli/out/node10-mac.tar.gz
       env: PKG_TARGET=node10-mac
@@ -26,7 +25,6 @@ jobs:
       dist: trusty
       language: node_js
       node_js: 'v10.15.3'
-      before_script: tree ./node_modules/@tensorflow/tfjs-node
       script: npm run build
       after_success: ./scripts/add-asset-to-github.sh ./packages/image-cli/out/node10-linux.tar.gz
       env: PKG_TARGET=node10-linux
@@ -67,13 +65,6 @@ jobs:
         skip_cleanup: true
         github_token: $GH_TOKEN
         local_dir: packages/image/demo
-addons:
-  apt:
-    packages:
-      - tree
-  homebrew:
-    packages:
-      - tree
 cache:
   cargo: true
   yarn: true
