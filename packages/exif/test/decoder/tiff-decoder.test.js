@@ -23,6 +23,12 @@ describe('Decoder', () => {
       expect(parse(thumbnail)).toMatchObject({width: 1616, height: 1080})
     })
 
+    it('should have correct width/height for the JPEG from a DNG-converted one', () => {
+      const decoder = new Decoder(fixture('sony.dng'))
+      const thumbnail = decoder.extractJPEG()
+      expect(parse(thumbnail)).toMatchObject({width: 1024, height: 683})
+    })
+
     it('should extract the d4s thumbnail', () => {
       const decoder = new Decoder(fixture('d4s.nef'))
       const thumbnail = decoder.extractJPEG({skipMetadata: true})
