@@ -138,6 +138,32 @@ describe('index.js', () => {
       })
     })
 
+    it('should work on sony raw files converted to dng', () => {
+      const results = parse(fixture('sony.dng'))
+      expect(results).toHaveProperty('_raw')
+      delete results._raw
+      expect(results).toMatchObject({
+        make: 'SONY',
+        model: 'DSLR-A900',
+        width: 6048,
+        height: 4032,
+        createdAt: new Date('2008-12-22T16:37:58.000Z'),
+        modifiedAt: new Date('2020-05-01T15:10:26.000Z'),
+        iso: 100,
+        exposureTime: 1 / 125,
+        fNumber: 8,
+        focalLength: 40,
+        normalizedFocalLength: 40,
+        exposureCompensation: 0,
+        lens: {
+          aperture: 'F2.8',
+          focalLength: '24-70mm',
+          make: '24',
+          model: '24-70mm F2.8 ZA SSM',
+        },
+      })
+    })
+
     it('should work on iphone dng files', () => {
       const results = parse(iphoneDng)
       expect(results).toHaveProperty('_raw')

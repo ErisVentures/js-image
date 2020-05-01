@@ -281,6 +281,31 @@ export class TIFFDecoder {
     throw new Error('Could not find an embedded JPEG')
   }
 
+  private _mergeIFDMetadata(
+    entries: Array<{ifd: IIFD; metadata: IGenericMetadata}>,
+  ): IGenericMetadata {
+    const tags: IGenericMetadata = {}
+
+    // Merge the tags from all the IFD entries:
+    //    - trust data from embedded JPEGs least
+    //    - trust data from EXIF tables next
+    //    - pull size data from full resolution subifds
+    const nonExifEntries = entries.filter(entry => !entry.ifd.isEXIF)
+    const exifEntries = entries.filter(entry => entry.ifd.isEXIF)
+    const fullResolutionEntries = entries.filter(entry => entry.metadata.NewSubfileType === 0)
+    for (const {metadata} of nonExifEntries.concat(exifEntries)) {
+      Object.assign(tags, metadata)
+    }
+
+    for (const {metadata} of fullResolutionEntries) {
+      const {ImageWidth, ImageLength} = metadata
+      if (!ImageWidth || !ImageLength) continue
+      Object.assign(tags, {ImageWidth, ImageLength})
+    }
+
+    return tags
+  }
+
   public extractJPEG(options: IJPEGOptions = {}): IBufferLike {
     if (this._cachedJPEG) return this._cachedJPEG.slice()
 
@@ -301,10 +326,10 @@ export class TIFFDecoder {
     this._readAndValidateHeader()
     this._readIFDs()
 
-    const exifTags: IGenericMetadata = {}
-    const tags: IGenericMetadata = {}
+    const entries: Array<{ifd: IIFD; metadata: IGenericMetadata}> = []
     this._ifds.forEach(ifd => {
-      const target = ifd.isEXIF ? exifTags : tags
+      const tagsForIfd: IGenericMetadata = {}
+
       ifd.entries.forEach(entry => {
         const name = getFriendlyName(entry.tag)
         const value = entry.getValue(this._reader)
@@ -314,16 +339,18 @@ export class TIFFDecoder {
             : value.slice(0, 32)
         log.verbose(`evaluated ${name} (${entry.tag} - ${entry.dataType}) as ${displayValue}`)
         if (typeof value !== 'string' && typeof value !== 'number') return
-        target[name] = value
+        tagsForIfd[name] = value
 
         const panasonicName = panasonicConversionTags[name]
         if (this._variant === Variant.Panasonic && panasonicName) {
-          target[panasonicName] = value
+          tagsForIfd[panasonicName] = value
         }
+
+        entries.push({ifd, metadata: tagsForIfd})
       })
     })
 
-    this._cachedMetadata = {...tags, ...exifTags}
+    this._cachedMetadata = this._mergeIFDMetadata(entries)
     return {...this._cachedMetadata}
   }
 
