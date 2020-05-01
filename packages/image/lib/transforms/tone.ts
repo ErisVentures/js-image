@@ -175,7 +175,12 @@ function generateIdentityCurvesPoints(numPoints: number): number[][] {
 }
 
 function convertContrastToCurves({contrast = 0}: IToneOptions): number[][] {
-  return [[0, 0], [64, 64 - contrast * 64], [192, 192 + contrast * 62], [255, 255]]
+  return [
+    [0, 0],
+    [64, 64 - contrast * 64],
+    [192, 192 + contrast * 62],
+    [255, 255],
+  ]
 }
 
 function convertToneToCurves(options: IToneOptions): number[][] {

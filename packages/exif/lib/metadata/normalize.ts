@@ -23,7 +23,10 @@ const properties: Record<NormalizedKey, PropertyDefn[]> = {
   xResolution: ['XResolution'],
   yResolution: ['YResolution'],
 
-  createdAt: [['DateTimeOriginal', parseDate], ['CreateDate', parseDate]],
+  createdAt: [
+    ['DateTimeOriginal', parseDate],
+    ['CreateDate', parseDate],
+  ],
   modifiedAt: [['ModifyDate', parseDate]],
 
   iso: ['ISO'],

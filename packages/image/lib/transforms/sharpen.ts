@@ -8,7 +8,11 @@ function createSharpenMatrix(options: ISharpenOptions): Matrix {
   const edgeValue = -1 * strength
   const centerValue = -4 * edgeValue + 1
 
-  return [[0, edgeValue, 0], [edgeValue, centerValue, edgeValue], [0, edgeValue, 0]]
+  return [
+    [0, edgeValue, 0],
+    [edgeValue, centerValue, edgeValue],
+    [0, edgeValue, 0],
+  ]
 }
 
 export function sharpen(

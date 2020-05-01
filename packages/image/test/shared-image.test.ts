@@ -245,7 +245,12 @@ export function runImageTests(ImageImpl: typeof NodeImage | typeof BrowserImage)
       it('should apply curves', async () => {
         const modify = img =>
           img.tone({
-            curve: [[0, 50], [75, 65], [175, 185], [255, 200]],
+            curve: [
+              [0, 50],
+              [75, 65],
+              [175, 185],
+              [255, 200],
+            ],
           })
 
         await testSkater('skater-curves.jpg', modify, {strict: false})
@@ -254,9 +259,25 @@ export function runImageTests(ImageImpl: typeof NodeImage | typeof BrowserImage)
       it('should apply R,G,B curves', async () => {
         const modify = img =>
           img.tone({
-            redCurve: [[0, 0], [60, 80], [128, 128], [255, 255]],
-            greenCurve: [[0, 0], [128, 128], [192, 250], [255, 255]],
-            blueCurve: [[0, 0], [60, 60], [128, 60], [192, 192], [255, 255]],
+            redCurve: [
+              [0, 0],
+              [60, 80],
+              [128, 128],
+              [255, 255],
+            ],
+            greenCurve: [
+              [0, 0],
+              [128, 128],
+              [192, 250],
+              [255, 255],
+            ],
+            blueCurve: [
+              [0, 0],
+              [60, 60],
+              [128, 60],
+              [192, 192],
+              [255, 255],
+            ],
           })
 
         await testSkater('skater-curves-rgb.jpg', modify, {strict: false, tolerance: 20})

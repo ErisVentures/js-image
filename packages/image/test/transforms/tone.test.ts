@@ -13,7 +13,10 @@ describe('#transforms/tone', () => {
     })
 
     it('should apply basic linear interpolation', () => {
-      const curve = curves([[0, 50], [255, 200]])
+      const curve = curves([
+        [0, 50],
+        [255, 200],
+      ])
 
       expect(curve({...imageData, data: [0, 1, 2]})).toEqual([50, 1, 2])
       expect(curve({...imageData, data: [255, 1, 2]})).toEqual([200, 1, 2])
@@ -23,7 +26,12 @@ describe('#transforms/tone', () => {
     })
 
     it('should apply basic cubic interpolation', () => {
-      const curve = curves([[0, 0], [50, 40], [205, 215], [255, 255]])
+      const curve = curves([
+        [0, 0],
+        [50, 40],
+        [205, 215],
+        [255, 255],
+      ])
       const compute = y => Math.round(curve({...imageData, data: [y]})[0])
 
       expect(compute(0)).toBe(0)
