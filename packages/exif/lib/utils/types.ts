@@ -75,6 +75,7 @@ export interface IIFDTagDefinition {
 }
 
 export enum IFDTag {
+  JpgFromRaw = 46, // 0x2e - Panasonic-specific
   Compression = 259,
   StripOffsets = 273,
   SamplesPerPixel = 277,

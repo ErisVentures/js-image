@@ -225,13 +225,23 @@ export class TIFFDecoder {
   }
 
   /**
-   * Panasonic mislabels all of their tags so the names make no sense.
+   * Modern RW2 use a proprietary tag for the JPEG (0x2e - JpgFromRaw)
+   * @see https://github.com/exiftool/exiftool/blob/2f235f9a5618336f199c6481b452836c55de6b0c/lib/Image/ExifTool/PanasonicRaw.pm#L198-L215
+   *
+   * Older Panasonic raw mislabels all of their tags so the names make no sense.
    * The only thing they really label is the offset of the RAW data and the JPEG is before that.
    * So we'll just search for JPEG markers in between the IFDs and the offset of the raw data.
    */
   private _readPanasonicJPEG(): IBufferLike | undefined {
     if (this._variant !== Variant.Panasonic) return
     const ifdEntries = this.extractIFDEntries()
+
+    const jpgFromRawEntry = ifdEntries.find(entry => entry.tag === IFDTag.JpgFromRaw)
+    if (jpgFromRawEntry) {
+      const value = jpgFromRawEntry.getValue(this._reader)
+      if (Buffer.isBuffer(value)) return value
+    }
+
     const searchStart = Math.max(...ifdEntries.map(value => value.startOffset))
     const endEntry = this._ifds[0].entries.find(entry => entry.tag === IFDTag.PanasonicJPEGEnd)
     if (!searchStart || !endEntry) return
