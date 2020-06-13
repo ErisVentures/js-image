@@ -1,8 +1,8 @@
-const {fixture} = require('../utils')
-const IFDEntry = require('../../dist/decoder/ifd-entry').IFDEntry
-const JPEGDecoder = require('../../dist/decoder/jpeg-decoder').JPEGDecoder
-const TIFFDecoder = require('../../dist/decoder/tiff-decoder').TIFFDecoder
-const XMPEncoder = require('../../dist/encoder/xmp-encoder').XMPEncoder
+import {fixture} from '../utils'
+import {JPEGDecoder} from '../../lib/decoder/jpeg-decoder'
+import {TIFFDecoder} from '../../lib/decoder/tiff-decoder'
+import {IFDEntry} from '../../lib/decoder/ifd-entry'
+import {XMPEncoder} from '../../lib/encoder/xmp-encoder'
 
 const xmpJpeg = fixture('xmp.jpg')
 const nikonJpeg = fixture('nikon.jpg')

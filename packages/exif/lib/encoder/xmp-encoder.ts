@@ -21,21 +21,24 @@ const writableTags: Record<XMPTagName | 'DateTimeOriginal', boolean> = {
 
 const log = createLogger('xmp-encoder')
 
-const XMP_BASE_FILE = `
-<x:xmpmeta xmlns:x="adobe:ns:meta/" x:xmptk="Adobe XMP Core 5.6-c140 79.160451, 2017/05/06-01:08:21">
- <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+const XMP_BASE_RDF_DESCRIPTION = `
   <rdf:Description rdf:about=""
     xmlns:xmp="http://ns.adobe.com/xap/1.0/"
     xmlns:tiff="http://ns.adobe.com/tiff/1.0/"
     xmlns:exif="http://ns.adobe.com/exif/1.0/"
-    xmlns:aux="http://ns.adobe.com/exif/1.0/aux/"
-    xmlns:photoshop="http://ns.adobe.com/photoshop/1.0/"
-    xmlns:xmpMM="http://ns.adobe.com/xap/1.0/mm/"
-    xmlns:stEvt="http://ns.adobe.com/xap/1.0/sType/ResourceEvent#"
-    xmlns:dc="http://purl.org/dc/elements/1.1/"
-    xmlns:crs="http://ns.adobe.com/camera-raw-settings/1.0/">
+    xmlns:dc="http://purl.org/dc/elements/1.1/">
   </rdf:Description>
-  </rdf:RDF>
+`.trim()
+
+const XMP_BASE_RDF = `
+ <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  ${XMP_BASE_RDF_DESCRIPTION}
+ </rdf:RDF>
+`.trim()
+
+const XMP_BASE_FILE = `
+<x:xmpmeta xmlns:x="adobe:ns:meta/" x:xmptk="Adobe XMP Core 5.6-c140 79.160451, 2017/05/06-01:08:21">
+ ${XMP_BASE_RDF}
 </x:xmpmeta>
 `.trim()
 
@@ -72,8 +75,7 @@ export class XMPEncoder {
   }
 
   public static encode(metadata: IGenericMetadata, original?: IBufferLike): IBufferLike {
-    let xmpData = (original || XMP_BASE_FILE).toString()
-    let extraLength = 0
+    let {xmpData, extraLength} = XMPEncoder._ensureRdfDescription(original)
 
     for (const key of Object.keys(metadata)) {
       const tagName = key as keyof IGenericMetadata
@@ -107,6 +109,36 @@ export class XMPEncoder {
     }
 
     return Buffer.from(xmpData)
+  }
+
+  private static _ensureRdfDescription(
+    original: IBufferLike | undefined,
+  ): {xmpData: string; extraLength: number} {
+    let xmpData = (original || XMP_BASE_FILE).toString()
+    let extraLength = 0
+
+    // It already has an rdf:Description, no need to do anything else.
+    if (xmpData.includes('<rdf:Description')) {
+      return {xmpData, extraLength}
+    }
+
+    // It's missing a description but has an rdf:RDF, just inject the description.
+    if (xmpData.includes('</rdf:RDF>')) {
+      const newData = xmpData.replace(/(\s*)<\/rdf:RDF>/, `${XMP_BASE_RDF_DESCRIPTION}$1</rdf:RDF>`)
+      extraLength += newData.length - xmpData.length
+      xmpData = newData
+      return {xmpData, extraLength}
+    }
+
+    // It's missing rdf:RDf completely, inject everything
+    if (xmpData.includes('</x:xmpmeta>')) {
+      const newData = xmpData.replace(/(\s*)<\/x:xmpmeta>/, `${XMP_BASE_RDF}$1</x:xmpmeta>`)
+      extraLength += newData.length - xmpData.length
+      xmpData = newData
+      return {xmpData, extraLength}
+    }
+
+    throw new Error(`XMP data did not contain any discernible rdf markers:\n${xmpData}`)
   }
 
   private static _processEntry(

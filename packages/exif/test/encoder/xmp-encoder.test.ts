@@ -1,8 +1,8 @@
-const xmlParser = require('fast-xml-parser')
-const XMPEncoder = require('../../dist/encoder/xmp-encoder').XMPEncoder
-const XMPDecoder = require('../../dist/decoder/xmp-decoder').XMPDecoder
+import * as xmlParser from 'fast-xml-parser'
+import {XMPEncoder} from '../../lib/encoder/xmp-encoder'
+import {XMPDecoder} from '../../lib/decoder/xmp-decoder'
 
-const xmpElementBased = `
+const xmpElementBase = Buffer.from(`
 <x:xmpmeta xmlns:x="adobe:ns:meta/" x:xmptk="XMP Core 5.6.0">
    <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
       <rdf:Description rdf:about=""
@@ -15,7 +15,16 @@ const xmpElementBased = `
       </rdf:Description>
    </rdf:RDF>
 </x:xmpmeta>
-`
+`)
+
+const xmpLimitedBase = Buffer.from(
+  `
+<x:xmpmeta xmlns:x="adobe:ns:meta/">
+  <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  </rdf:RDF>
+</x:xmpmeta>
+`.trim(),
+)
 
 describe('lib/encoders/xmp-encoder.js', () => {
   const DateTimeOriginal = '2019-12-04T12:01:48.291'
@@ -38,6 +47,58 @@ describe('lib/encoders/xmp-encoder.js', () => {
 
       const decoder = new XMPDecoder(xmp)
       expect(decoder.extractMetadata()).toEqual(metadata)
+      expect(xmp.toString()).toMatchInlineSnapshot(`
+        "<x:xmpmeta xmlns:x=\\"adobe:ns:meta/\\" x:xmptk=\\"Adobe XMP Core 5.6-c140 79.160451, 2017/05/06-01:08:21\\">
+         <rdf:RDF xmlns:rdf=\\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\\">
+          <rdf:Description rdf:about=\\"\\"
+            xmlns:xmp=\\"http://ns.adobe.com/xap/1.0/\\"
+            xmlns:tiff=\\"http://ns.adobe.com/tiff/1.0/\\"
+            xmlns:exif=\\"http://ns.adobe.com/exif/1.0/\\"
+            xmlns:dc=\\"http://purl.org/dc/elements/1.1/\\"
+           xmp:Rating=\\"4\\"
+           xmp:Label=\\"Blue\\"
+           exif:DateTimeOriginal=\\"2019-12-04T12:01:48.291\\">
+          </rdf:Description>
+         </rdf:RDF>
+        </x:xmpmeta>"
+      `)
+    })
+
+    it('should augment an existing, but limited XMP file ', () => {
+      const xmpAugmented = XMPEncoder.encode({Label: 'Red', DCSubjectBagOfWords}, xmpLimitedBase)
+
+      expect(xmlParser.validate(xmpAugmented.toString())).toBe(true)
+      expect(xmpAugmented.toString()).toContain('xmp:Label=')
+      expect(xmpAugmented.toString()).toContain('<dc:subject>')
+
+      const decoder = new XMPDecoder(xmpAugmented)
+      expect(decoder.extractMetadata()).toEqual({
+        Label: 'Red',
+        DCSubjectBagOfWords,
+      })
+      expect(xmpAugmented.toString()).toMatchInlineSnapshot(`
+        "<x:xmpmeta xmlns:x=\\"adobe:ns:meta/\\">
+          <rdf:RDF xmlns:rdf=\\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\\"><rdf:Description rdf:about=\\"\\"
+            xmlns:xmp=\\"http://ns.adobe.com/xap/1.0/\\"
+            xmlns:tiff=\\"http://ns.adobe.com/tiff/1.0/\\"
+            xmlns:exif=\\"http://ns.adobe.com/exif/1.0/\\"
+            xmlns:dc=\\"http://purl.org/dc/elements/1.1/\\"
+           xmp:Label=\\"Red\\">
+           <dc:subject>
+            <rdf:Bag>
+             <rdf:li>foo</rdf:li>
+             <rdf:li>spaced-key word</rdf:li>
+            </rdf:Bag>
+           </dc:subject>
+          </rdf:Description>
+          </rdf:RDF>
+        </x:xmpmeta>"
+      `)
+    })
+
+    it('should reject xmp packets beyond savings', () => {
+      const fakeXmp = Buffer.from('this is not an xmp buffer')
+      expect(() => XMPEncoder.encode({Rating: 1}, fakeXmp)).toThrow(/did not contain/)
     })
 
     it('should augment an existing attribute-based XMP file', () => {
@@ -62,7 +123,7 @@ describe('lib/encoders/xmp-encoder.js', () => {
     it('should augment an existing element-based XMP file', () => {
       const xmpAugmented = XMPEncoder.encode(
         {Label: 'Red', DateTimeOriginal, DCSubjectBagOfWords},
-        xmpElementBased,
+        xmpElementBase,
       )
 
       expect(xmlParser.validate(xmpAugmented.toString())).toBe(true)
@@ -97,7 +158,7 @@ describe('lib/encoders/xmp-encoder.js', () => {
     it('should overwrite an existing element-based XMP file', () => {
       const xmpAugmented = XMPEncoder.encode(
         {Rating: 2, Label: 'Red', DateTimeOriginal},
-        xmpElementBased,
+        xmpElementBase,
       )
 
       expect(xmlParser.validate(xmpAugmented.toString())).toBe(true)
@@ -142,7 +203,7 @@ describe('lib/encoders/xmp-encoder.js', () => {
     it('should delete XMP elements', () => {
       const xmpAugmented = XMPEncoder.encode(
         {Rating: undefined, DateTimeOriginal: undefined},
-        xmpElementBased,
+        xmpElementBase,
       )
 
       expect(xmlParser.validate(xmpAugmented.toString())).toBe(true)
