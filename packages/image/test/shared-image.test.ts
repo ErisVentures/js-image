@@ -447,7 +447,7 @@ export function runImageTests(ImageImpl: typeof NodeImage | typeof BrowserImage)
 
         const faces = analysis.faces
         expect(faces.length).toBe(2)
-        expect(faces[0].sharpness).toMatchObject({median: 39})
+        expect(faces[0].sharpness).toMatchObject({median: 37})
       })
 
       it('should compute objects', async () => {
