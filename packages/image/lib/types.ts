@@ -195,6 +195,9 @@ export interface IFaceAnalysisEntry {
   boundingBox: IBoundingBox
   descriptor: number[]
   eyes: IFaceAnalysisEyeEntry[]
+  nose: {points: Array<{x: number; y: number}>}
+  mouth: IBoundingBox
+  jaw: {points: Array<{x: number; y: number}>}
   sharpness?: ISharpnessAnalysis
 }
 

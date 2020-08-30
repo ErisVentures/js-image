@@ -41,6 +41,124 @@ describe('analyses/faces', () => {
               },
             ],
             "happinessConfidence": 1,
+            "jaw": Object {
+              "points": Array [
+                Object {
+                  "x": 0.43,
+                  "y": 0.29,
+                },
+                Object {
+                  "x": 0.43,
+                  "y": 0.3,
+                },
+                Object {
+                  "x": 0.43,
+                  "y": 0.31,
+                },
+                Object {
+                  "x": 0.43,
+                  "y": 0.32,
+                },
+                Object {
+                  "x": 0.43,
+                  "y": 0.34,
+                },
+                Object {
+                  "x": 0.44,
+                  "y": 0.35,
+                },
+                Object {
+                  "x": 0.45,
+                  "y": 0.35,
+                },
+                Object {
+                  "x": 0.47,
+                  "y": 0.36,
+                },
+                Object {
+                  "x": 0.49,
+                  "y": 0.36,
+                },
+                Object {
+                  "x": 0.51,
+                  "y": 0.36,
+                },
+                Object {
+                  "x": 0.52,
+                  "y": 0.36,
+                },
+                Object {
+                  "x": 0.53,
+                  "y": 0.36,
+                },
+                Object {
+                  "x": 0.54,
+                  "y": 0.35,
+                },
+                Object {
+                  "x": 0.55,
+                  "y": 0.34,
+                },
+                Object {
+                  "x": 0.55,
+                  "y": 0.33,
+                },
+                Object {
+                  "x": 0.56,
+                  "y": 0.32,
+                },
+                Object {
+                  "x": 0.56,
+                  "y": 0.31,
+                },
+              ],
+            },
+            "mouth": Object {
+              "height": 0.02,
+              "width": 0.06,
+              "x": 0.47,
+              "y": 0.33,
+            },
+            "nose": Object {
+              "points": Array [
+                Object {
+                  "x": 0.51,
+                  "y": 0.3,
+                },
+                Object {
+                  "x": 0.51,
+                  "y": 0.31,
+                },
+                Object {
+                  "x": 0.51,
+                  "y": 0.32,
+                },
+                Object {
+                  "x": 0.51,
+                  "y": 0.33,
+                },
+                Object {
+                  "x": 0.5,
+                  "y": 0.33,
+                },
+                Object {
+                  "x": 0.5,
+                  "y": 0.33,
+                },
+                Object {
+                  "x": 0.51,
+                  "y": 0.33,
+                },
+                Object {
+                  "x": 0.51,
+                  "y": 0.33,
+                },
+                Object {
+                  "x": 0.52,
+                  "y": 0.33,
+                },
+              ],
+            },
           },
           Object {
             "boundingBox": Object {
@@ -73,6 +191,124 @@ describe('analyses/faces', () => {
               },
             ],
             "happinessConfidence": 1,
+            "jaw": Object {
+              "points": Array [
+                Object {
+                  "x": 0.55,
+                  "y": 0.33,
+                },
+                Object {
+                  "x": 0.55,
+                  "y": 0.34,
+                },
+                Object {
+                  "x": 0.55,
+                  "y": 0.35,
+                },
+                Object {
+                  "x": 0.56,
+                  "y": 0.35,
+                },
+                Object {
+                  "x": 0.56,
+                  "y": 0.36,
+                },
+                Object {
+                  "x": 0.57,
+                  "y": 0.37,
+                },
+                Object {
+                  "x": 0.58,
+                  "y": 0.38,
+                },
+                Object {
+                  "x": 0.59,
+                  "y": 0.38,
+                },
+                Object {
+                  "x": 0.6,
+                  "y": 0.39,
+                },
+                Object {
+                  "x": 0.62,
+                  "y": 0.38,
+                },
+                Object {
+                  "x": 0.64,
+                  "y": 0.38,
+                },
+                Object {
+                  "x": 0.65,
+                  "y": 0.37,
+                },
+                Object {
+                  "x": 0.66,
+                  "y": 0.37,
+                },
+                Object {
+                  "x": 0.66,
+                  "y": 0.36,
+                },
+                Object {
+                  "x": 0.67,
+                  "y": 0.35,
+                },
+                Object {
+                  "x": 0.67,
+                  "y": 0.34,
+                },
+                Object {
+                  "x": 0.67,
+                  "y": 0.33,
+                },
+              ],
+            },
+            "mouth": Object {
+              "height": 0.02,
+              "width": 0.05,
+              "x": 0.58,
+              "y": 0.36,
+            },
+            "nose": Object {
+              "points": Array [
+                Object {
+                  "x": 0.6,
+                  "y": 0.33,
+                },
+                Object {
+                  "x": 0.6,
+                  "y": 0.34,
+                },
+                Object {
+                  "x": 0.6,
+                  "y": 0.34,
+                },
+                Object {
+                  "x": 0.6,
+                  "y": 0.35,
+                },
+                Object {
+                  "x": 0.59,
+                  "y": 0.35,
+                },
+                Object {
+                  "x": 0.6,
+                  "y": 0.35,
+                },
+                Object {
+                  "x": 0.6,
+                  "y": 0.35,
+                },
+                Object {
+                  "x": 0.61,
+                  "y": 0.35,
+                },
+                Object {
+                  "x": 0.61,
+                  "y": 0.35,
+                },
+              ],
+            },
           },
         ]
       `)
@@ -116,6 +352,124 @@ describe('analyses/faces', () => {
               },
             ],
             "happinessConfidence": 0,
+            "jaw": Object {
+              "points": Array [
+                Object {
+                  "x": 0.38,
+                  "y": 0.3,
+                },
+                Object {
+                  "x": 0.38,
+                  "y": 0.31,
+                },
+                Object {
+                  "x": 0.39,
+                  "y": 0.32,
+                },
+                Object {
+                  "x": 0.4,
+                  "y": 0.34,
+                },
+                Object {
+                  "x": 0.41,
+                  "y": 0.35,
+                },
+                Object {
+                  "x": 0.43,
+                  "y": 0.37,
+                },
+                Object {
+                  "x": 0.46,
+                  "y": 0.38,
+                },
+                Object {
+                  "x": 0.48,
+                  "y": 0.39,
+                },
+                Object {
+                  "x": 0.51,
+                  "y": 0.39,
+                },
+                Object {
+                  "x": 0.53,
+                  "y": 0.37,
+                },
+                Object {
+                  "x": 0.55,
+                  "y": 0.37,
+                },
+                Object {
+                  "x": 0.55,
+                  "y": 0.35,
+                },
+                Object {
+                  "x": 0.55,
+                  "y": 0.34,
+                },
+                Object {
+                  "x": 0.56,
+                  "y": 0.33,
+                },
+                Object {
+                  "x": 0.58,
+                  "y": 0.33,
+                },
+                Object {
+                  "x": 0.59,
+                  "y": 0.31,
+                },
+                Object {
+                  "x": 0.59,
+                  "y": 0.3,
+                },
+              ],
+            },
+            "mouth": Object {
+              "height": 0.02,
+              "width": 0.06,
+              "x": 0.48,
+              "y": 0.35,
+            },
+            "nose": Object {
+              "points": Array [
+                Object {
+                  "x": 0.52,
+                  "y": 0.32,
+                },
+                Object {
+                  "x": 0.52,
+                  "y": 0.33,
+                },
+                Object {
+                  "x": 0.52,
+                  "y": 0.34,
+                },
+                Object {
+                  "x": 0.52,
+                  "y": 0.34,
+                },
+                Object {
+                  "x": 0.5,
+                  "y": 0.34,
+                },
+                Object {
+                  "x": 0.51,
+                  "y": 0.35,
+                },
+                Object {
+                  "x": 0.52,
+                  "y": 0.35,
+                },
+                Object {
+                  "x": 0.53,
+                  "y": 0.35,
+                },
+                Object {
+                  "x": 0.53,
+                  "y": 0.34,
+                },
+              ],
+            },
           },
         ]
       `)
@@ -127,137 +481,157 @@ describe('analyses/faces', () => {
       faces.forEach(face => (face.descriptor = face.descriptor.slice(0, 2)))
       roundNumbersToHundredths(faces)
       // Only the first face is real, the others are false positives :(
-      expect(faces).toMatchInlineSnapshot(`
-        Array [
-          Object {
-            "boundingBox": Object {
-              "height": 0.33,
-              "width": 0.18,
-              "x": 0.44,
-              "y": 0.3,
+      expect(faces[0]).toMatchInlineSnapshot(`
+        Object {
+          "boundingBox": Object {
+            "height": 0.33,
+            "width": 0.18,
+            "x": 0.44,
+            "y": 0.3,
+          },
+          "confidence": 0.98,
+          "descriptor": Array [
+            116,
+            154,
+          ],
+          "expression": "sad",
+          "expressionConfidence": 1,
+          "eyes": Array [
+            Object {
+              "height": 0.05,
+              "openConfidence": 0.01,
+              "width": 0.05,
+              "x": 0.48,
+              "y": 0.43,
             },
-            "confidence": 0.98,
-            "descriptor": Array [
-              116,
-              154,
-            ],
-            "expression": "sad",
-            "expressionConfidence": 1,
-            "eyes": Array [
+            Object {
+              "height": 0.05,
+              "openConfidence": 0.01,
+              "width": 0.05,
+              "x": 0.56,
+              "y": 0.42,
+            },
+          ],
+          "happinessConfidence": 0,
+          "jaw": Object {
+            "points": Array [
               Object {
-                "height": 0.05,
-                "openConfidence": 0.01,
-                "width": 0.05,
-                "x": 0.48,
+                "x": 0.44,
                 "y": 0.43,
               },
               Object {
-                "height": 0.05,
-                "openConfidence": 0.01,
-                "width": 0.05,
-                "x": 0.56,
+                "x": 0.45,
+                "y": 0.47,
+              },
+              Object {
+                "x": 0.46,
+                "y": 0.5,
+              },
+              Object {
+                "x": 0.46,
+                "y": 0.53,
+              },
+              Object {
+                "x": 0.47,
+                "y": 0.56,
+              },
+              Object {
+                "x": 0.49,
+                "y": 0.59,
+              },
+              Object {
+                "x": 0.51,
+                "y": 0.6,
+              },
+              Object {
+                "x": 0.53,
+                "y": 0.62,
+              },
+              Object {
+                "x": 0.55,
+                "y": 0.63,
+              },
+              Object {
+                "x": 0.58,
+                "y": 0.62,
+              },
+              Object {
+                "x": 0.59,
+                "y": 0.59,
+              },
+              Object {
+                "x": 0.6,
+                "y": 0.57,
+              },
+              Object {
+                "x": 0.61,
+                "y": 0.54,
+              },
+              Object {
+                "x": 0.62,
+                "y": 0.52,
+              },
+              Object {
+                "x": 0.62,
+                "y": 0.49,
+              },
+              Object {
+                "x": 0.62,
+                "y": 0.45,
+              },
+              Object {
+                "x": 0.62,
                 "y": 0.42,
               },
             ],
-            "happinessConfidence": 0,
           },
-          Object {
-            "boundingBox": Object {
-              "height": 0.16,
-              "width": 0.07,
-              "x": 0.33,
-              "y": 0.04,
-            },
-            "confidence": 0.65,
-            "descriptor": Array [
-              123,
-              135,
-            ],
-            "expression": "sad",
-            "expressionConfidence": 0.92,
-            "eyes": Array [
-              Object {
-                "height": 0.02,
-                "openConfidence": 0.07,
-                "width": 0.02,
-                "x": 0.34,
-                "y": 0.12,
-              },
-              Object {
-                "height": 0.02,
-                "openConfidence": 0.32,
-                "width": 0.02,
-                "x": 0.35,
-                "y": 0.08,
-              },
-            ],
-            "happinessConfidence": 0.01,
+          "mouth": Object {
+            "height": 0.04,
+            "width": 0.06,
+            "x": 0.52,
+            "y": 0.56,
           },
-          Object {
-            "boundingBox": Object {
-              "height": 0.13,
-              "width": 0.08,
-              "x": 0.86,
-              "y": 0.02,
-            },
-            "confidence": 0.56,
-            "descriptor": Array [
-              121,
-              146,
-            ],
-            "expression": "sad",
-            "expressionConfidence": 0.8,
-            "eyes": Array [
+          "nose": Object {
+            "points": Array [
               Object {
-                "height": 0.02,
-                "openConfidence": 0.08,
-                "width": 0.02,
-                "x": 0.89,
-                "y": 0.05,
+                "x": 0.54,
+                "y": 0.46,
               },
               Object {
-                "height": 0.02,
-                "openConfidence": 0.41,
-                "width": 0.02,
-                "x": 0.92,
-                "y": 0.04,
+                "x": 0.54,
+                "y": 0.48,
+              },
+              Object {
+                "x": 0.54,
+                "y": 0.5,
+              },
+              Object {
+                "x": 0.54,
+                "y": 0.53,
+              },
+              Object {
+                "x": 0.53,
+                "y": 0.54,
+              },
+              Object {
+                "x": 0.54,
+                "y": 0.54,
+              },
+              Object {
+                "x": 0.55,
+                "y": 0.54,
+              },
+              Object {
+                "x": 0.55,
+                "y": 0.54,
+              },
+              Object {
+                "x": 0.56,
+                "y": 0.53,
               },
             ],
-            "happinessConfidence": 0,
           },
-          Object {
-            "boundingBox": Object {
-              "height": 0.05,
-              "width": 0.02,
-              "x": 0.74,
-              "y": 0.01,
-            },
-            "confidence": 0.66,
-            "descriptor": Array [
-              117,
-              169,
-            ],
-            "expression": "neutral",
-            "expressionConfidence": 0.73,
-            "eyes": Array [
-              Object {
-                "height": 0.01,
-                "openConfidence": 0,
-                "width": 0.01,
-                "x": 0.75,
-                "y": 0.04,
-              },
-              Object {
-                "height": 0.01,
-                "openConfidence": 0.01,
-                "width": 0.01,
-                "x": 0.75,
-                "y": 0.04,
-              },
-            ],
-            "happinessConfidence": 0,
-          },
-        ]
+        }
       `)
     })
 

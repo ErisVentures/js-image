@@ -5,7 +5,12 @@ import * as _ from 'lodash'
 
 import * as faceapi from 'face-api.js'
 import {IAnnotatedImageData, ImageData} from '../image-data'
-import {IFaceAnalysisEntry, IBoundingBox, IFaceAnalysisEyeEntry} from '../types'
+import {
+  IFaceAnalysisEntry,
+  IBoundingBox,
+  IFaceAnalysisEyeEntry,
+  IFaceAnalysisOptions,
+} from '../types'
 import {subselect} from '../transforms/subselect'
 import {SharpImage} from '../sharp-image'
 import {instrumentation} from '../instrumentation'
@@ -49,8 +54,22 @@ function convertToPercentageCoordinates(
     height: box.height / height,
   }
 }
+function convertPointToPercentageCoordinates(
+  point: Pick<IBoundingBox, 'x' | 'y'>,
+  width: number,
+  height: number,
+): Pick<IBoundingBox, 'x' | 'y'> {
+  return {
+    x: point.x / width,
+    y: point.y / height,
+  }
+}
 
-function getEyeBoxFromPointArray(points: faceapi.Point[], faceBox: IBoundingBox): IBoundingBox {
+function getBoxFromPointArray(
+  points: faceapi.Point[],
+  minWidth: number,
+  minHeight: number,
+): IBoundingBox {
   if (!points.length) return {x: NaN, y: NaN, width: NaN, height: NaN}
 
   let xMin = Infinity
@@ -69,12 +88,13 @@ function getEyeBoxFromPointArray(points: faceapi.Point[], faceBox: IBoundingBox)
     yAvg += point.y / points.length
   }
 
-  // Make sure the eye bounding box is big enough in proportion to the face
-  const radius = faceBox.width / 8
-  xMin = Math.min(xAvg - radius)
-  xMax = Math.max(xAvg + radius)
-  yMin = Math.min(yAvg - radius * 0.75)
-  yMax = Math.max(yAvg + radius * 0.75)
+  // Make sure the bounding box is big enough in proportion to the face
+  const widthRadius = minWidth / 2
+  const heightRadius = minHeight / 2
+  xMin = Math.min(xAvg - widthRadius, xMin)
+  xMax = Math.max(xAvg + widthRadius, xMax)
+  yMin = Math.min(yAvg - heightRadius, yMin)
+  yMax = Math.max(yAvg + heightRadius, yMax)
 
   return roundBoundingBox({
     x: xMin,
@@ -148,14 +168,18 @@ function convertFaceDescriptor(descriptor: Float32Array): number[] {
   return output
 }
 
-async function detectFaces_(imageData: IAnnotatedImageData): Promise<IFaceAnalysisEntry[]> {
+async function detectFaces_(
+  imageData: IAnnotatedImageData,
+  options?: IFaceAnalysisOptions,
+): Promise<IFaceAnalysisEntry[]> {
+  const {threshold = FACE_CONFIDENCE_THRESHOLD} = options || {}
   await initializeIfNecessary()
 
   const pixels = new Uint8Array(ImageData.toRGB(imageData).data)
   const imageTensor = tf.tensor3d(pixels, [imageData.height, imageData.width, 3])
 
   const detectionOptions = new faceapi.SsdMobilenetv1Options({
-    minConfidence: FACE_CONFIDENCE_THRESHOLD,
+    minConfidence: threshold,
   })
 
   const results = await faceapi
@@ -164,10 +188,17 @@ async function detectFaces_(imageData: IAnnotatedImageData): Promise<IFaceAnalys
     .withFaceExpressions()
     .withFaceDescriptors()
 
+  const mapPoint = (p: faceapi.Point) =>
+    convertPointToPercentageCoordinates(p, imageData.width, imageData.height)
   const faces = results.map(({detection, landmarks, expressions, descriptor}) => {
     const faceBox = roundBoundingBox(detection.box)
     const happyExpression = expressions.happy
     const maxExpression = _.maxBy(expressions.asSortedArray(), x => x.probability)
+
+    const minEyeWidth = faceBox.width / 4
+    const minEyeHeight = (minEyeWidth * 3) / 4
+    const minMouthWidth = faceBox.width / 4
+    const minMouthHeight = minMouthWidth / 2
 
     return {
       confidence: detection.score,
@@ -179,9 +210,16 @@ async function detectFaces_(imageData: IAnnotatedImageData): Promise<IFaceAnalys
       boundingBox: convertToPercentageCoordinates(faceBox, imageData.width, imageData.height),
       descriptor: convertFaceDescriptor(descriptor),
       eyes: [
-        getEyeBoxFromPointArray(landmarks.getLeftEye(), faceBox),
-        getEyeBoxFromPointArray(landmarks.getRightEye(), faceBox),
+        getBoxFromPointArray(landmarks.getLeftEye(), minEyeWidth, minEyeHeight),
+        getBoxFromPointArray(landmarks.getRightEye(), minEyeWidth, minEyeHeight),
       ].filter(box => Number.isFinite(box.x)),
+      mouth: convertToPercentageCoordinates(
+        getBoxFromPointArray(landmarks.getMouth(), minMouthWidth, minMouthHeight),
+        imageData.width,
+        imageData.height,
+      ),
+      nose: {points: landmarks.getNose().map(mapPoint)},
+      jaw: {points: landmarks.getJawOutline().map(mapPoint)},
     }
   })
 

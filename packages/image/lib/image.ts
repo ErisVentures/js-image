@@ -192,7 +192,7 @@ export abstract class Image {
     }
 
     if (faces) {
-      analysis.faces = await computeFaces(imageData)
+      analysis.faces = await computeFaces(imageData, faces)
 
       if (sharpness) {
         for (const face of analysis.faces.slice(0, 3)) {
