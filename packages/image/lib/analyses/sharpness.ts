@@ -25,7 +25,7 @@ function sharpness_(imageData: SobelImageData, options?: ISharpnessOptions): ISh
 
   let edgePixelIntensities: number[] = []
   for (let y = subselect.y; y < maxY; y++) {
-    for (let x = 0; x < maxX; x++) {
+    for (let x = subselect.x; x < maxX; x++) {
       const pixel = ImageData.valueFor(imageData, x, y)
       if (pixel > threshold) {
         edgePixelIntensities.push(pixel)
