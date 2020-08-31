@@ -1,16 +1,21 @@
 import {IAnnotatedImageData, ImageData} from '../image-data'
 import {Colorspace} from '../types'
 
+// tslint:disable-next-line
+const BufferConstructor = typeof Buffer === 'undefined' ? Uint8Array : Buffer
+
 export function opacity(
   background: IAnnotatedImageData,
   foreground: IAnnotatedImageData,
   opacity: number,
 ): IAnnotatedImageData {
   const isUint8 =
-    background.data instanceof Uint8Array || background.data instanceof Uint8ClampedArray
+    background.data instanceof Uint8Array ||
+    background.data instanceof Uint8ClampedArray ||
+    background.data instanceof BufferConstructor
   if (background.colorspace !== foreground.colorspace) throw new Error('Colorspaces must match')
   if (background.data.length !== foreground.data.length) throw new Error('Sizes must match')
-  if (!isUint8) throw new Error('Must be Uint8Array')
+  if (!isUint8) throw new Error(`Must be Uint8Array but got ${background.data}`)
 
   const newData = new Uint8Array(background.data.length)
   if (background.colorspace === Colorspace.RGBA) {
