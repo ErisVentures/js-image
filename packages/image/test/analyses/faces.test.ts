@@ -586,7 +586,7 @@ describe('analyses/faces', () => {
             ],
           },
           "mouth": Object {
-            "height": 0.04,
+            "height": 0.03,
             "width": 0.06,
             "x": 0.52,
             "y": 0.56,

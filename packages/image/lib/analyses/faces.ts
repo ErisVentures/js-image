@@ -197,8 +197,6 @@ async function detectFaces_(
 
     const minEyeWidth = faceBox.width / 4
     const minEyeHeight = (minEyeWidth * 3) / 4
-    const minMouthWidth = faceBox.width / 4
-    const minMouthHeight = minMouthWidth / 2
 
     return {
       confidence: detection.score,
@@ -214,7 +212,7 @@ async function detectFaces_(
         getBoxFromPointArray(landmarks.getRightEye(), minEyeWidth, minEyeHeight),
       ].filter(box => Number.isFinite(box.x)),
       mouth: convertToPercentageCoordinates(
-        getBoxFromPointArray(landmarks.getMouth(), minMouthWidth, minMouthHeight),
+        getBoxFromPointArray(landmarks.getMouth(), 0, 0),
         imageData.width,
         imageData.height,
       ),
