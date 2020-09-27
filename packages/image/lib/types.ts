@@ -261,6 +261,11 @@ export interface IBlockifyOptions {
   blurRadius?: number | 'auto'
 }
 
+export interface ISaliencyOptions {
+  blurRadius?: number | 'auto'
+  quantizeBuckets?: number
+}
+
 export interface IBlock {
   x: number
   y: number
