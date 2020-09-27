@@ -85,6 +85,18 @@ function getClosestQuantizedColor(
   return {color: colors[minIndex].pixel, colorIndex: minIndex}
 }
 
+function normalizeColorContrast(colors: IColorData[]): void {
+  const colorDistances = colors.map(c => c.globalColorContrast)
+  const maxDistance = Math.max(...colorDistances)
+  const minDistance = Math.min(...colorDistances)
+
+  for (const color of colors) {
+    const contrastOutOf1 =
+      (color.globalColorContrast - minDistance) / (maxDistance - minDistance + 0.0001)
+    color.globalColorContrast = contrastOutOf1
+  }
+}
+
 function quantizeImage(
   unquantizedImageData: IAnnotatedImageData,
   quantiles: number,
@@ -123,6 +135,8 @@ function quantizeImage(
     }
   }
 
+  normalizeColorContrast(colors)
+
   return {
     colors,
     colorIndexes,
@@ -142,16 +156,9 @@ function createSaliencyMap(
     data: new Uint8Array(colorIndexes.length),
   }
 
-  const distances = colors.map(c => c.globalColorContrast)
-  const maxDistance = Math.max(...distances)
-  const minDistance = Math.min(...distances)
-
   for (let i = 0; i < colorIndexes.length; i++) {
     const color = colors[colorIndexes[i]]
-    const contrastOutOf1 =
-      (color.globalColorContrast - minDistance) / (maxDistance - minDistance + 0.0001)
-    const scaledContrast = contrastOutOf1 * 255
-    saliencyMap.data[i] = Math.round(scaledContrast)
+    saliencyMap.data[i] = Math.round(color.globalColorContrast * 255)
   }
 
   return saliencyMap
