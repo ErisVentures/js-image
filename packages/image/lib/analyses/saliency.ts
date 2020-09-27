@@ -5,6 +5,7 @@ import {Colorspace, IBlockifyOptions, IBlock, ISaliencyOptions} from '../types'
 interface IColorData {
   pixel: [number, number, number]
   count: number
+  globalColorContrast: number
 }
 
 function runMedianCut(
@@ -61,16 +62,20 @@ function getQuantizedColors(
   return buckets.map(computeBucketAverage)
 }
 
+function pixelDistance(pixelA: [number, number, number], pixelB: [number, number, number]): number {
+  return Math.sqrt(
+    (pixelA[0] - pixelB[0]) ** 2 + (pixelA[1] - pixelB[1]) ** 2 + (pixelA[2] - pixelB[2]) ** 2,
+  )
+}
+
 function getClosestQuantizedColor(
   colors: IColorData[],
   pixel: [number, number, number],
 ): {color: [number, number, number]; colorIndex: number} {
   let minIndex = 0
   let minValue = Infinity
-  const [r1, g1, b1] = pixel
   for (let i = 0; i < colors.length; i++) {
-    const [r2, g2, b2] = colors[i].pixel
-    const distance = (r1 - r2) ** 2 + (g1 - g2) ** 2 + (b1 - b2) ** 2
+    const distance = pixelDistance(pixel, colors[i].pixel)
     if (distance < minValue) {
       minIndex = i
       minValue = distance
@@ -91,6 +96,7 @@ function quantizeImage(
   const colors: IColorData[] = getQuantizedColors(unquantizedImageData, quantiles).map(pixel => ({
     pixel,
     count: 0,
+    globalColorContrast: 0,
   }))
   const imageData = {...unquantizedImageData, data: new Uint8Array(unquantizedImageData.data)}
   const colorIndexes = new Uint8Array(imageData.width * imageData.height)
@@ -109,11 +115,46 @@ function quantizeImage(
     }
   }
 
+  for (let i = 0; i < colors.length; i++) {
+    const color = colors[i]
+    for (let j = 0; j < colors.length; j++) {
+      const otherColor = colors[j]
+      color.globalColorContrast += otherColor.count * pixelDistance(color.pixel, otherColor.pixel)
+    }
+  }
+
   return {
     colors,
     colorIndexes,
     imageData,
   }
+}
+
+function createSaliencyMap(
+  imageData: IAnnotatedImageData,
+  colors: IColorData[],
+  colorIndexes: Uint8Array,
+): IAnnotatedImageData {
+  const saliencyMap = {
+    ...imageData,
+    channels: 1,
+    colorspace: Colorspace.Greyscale,
+    data: new Uint8Array(colorIndexes.length),
+  }
+
+  const distances = colors.map(c => c.globalColorContrast)
+  const maxDistance = Math.max(...distances)
+  const minDistance = Math.min(...distances)
+
+  for (let i = 0; i < colorIndexes.length; i++) {
+    const color = colors[colorIndexes[i]]
+    const contrastOutOf1 =
+      (color.globalColorContrast - minDistance) / (maxDistance - minDistance + 0.0001)
+    const scaledContrast = contrastOutOf1 * 255
+    saliencyMap.data[i] = Math.round(scaledContrast)
+  }
+
+  return saliencyMap
 }
 
 /**
@@ -140,26 +181,21 @@ export async function saliency(
   imageData: IAnnotatedImageData,
   options: ISaliencyOptions = {},
 ): Promise<{imageData: IAnnotatedImageData; quantized: IAnnotatedImageData; blocks: IBlock[]}> {
-  const {blurRadius: blurRadiusRaw = 'auto', quantizeBuckets = 32} = options
-  const blurRadius =
-    blurRadiusRaw === 'auto' ? Math.min(imageData.width, imageData.height) / 80 : blurRadiusRaw
-  const blurred =
-    blurRadius === 0
-      ? ImageData.toRGB(imageData)
-      : await SharpImage.toImageData(
-          SharpImage.from(imageData)
-            .normalize()
-            .blur(blurRadius / 2 + 1)
-            .resize(400, 400, {fit: 'inside'}),
-        )
+  const {quantizeBuckets = 32} = options
+  const normalized = await SharpImage.toImageData(
+    SharpImage.from(imageData)
+      .normalize()
+      .resize(400, 400, {fit: 'inside'}),
+  )
 
-  const {imageData: quantized, colors} = quantizeImage(
-    {...blurred, data: new Uint8Array(blurred.data)},
+  const {imageData: quantized, colors, colorIndexes} = quantizeImage(
+    {...normalized, data: new Uint8Array(normalized.data)},
     quantizeBuckets,
   )
   ImageData.assert(quantized, [Colorspace.RGB])
 
-  const totalPixels = blurred.width * blurred.height
+  const saliencyMap = createSaliencyMap(quantized, colors, colorIndexes)
+  const totalPixels = normalized.width * normalized.height
   const blocks: IBlock[] = colors.map(color => ({
     count: color.count / totalPixels,
     x: 0,
@@ -172,7 +208,7 @@ export async function saliency(
   }))
 
   return {
-    imageData: quantized,
+    imageData: saliencyMap,
     quantized,
     blocks,
   }

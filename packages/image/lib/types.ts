@@ -262,7 +262,6 @@ export interface IBlockifyOptions {
 }
 
 export interface ISaliencyOptions {
-  blurRadius?: number | 'auto'
   quantizeBuckets?: number
 }
 
