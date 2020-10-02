@@ -1,11 +1,37 @@
 import {IAnnotatedImageData, ImageData} from '../image-data'
 import {SharpImage} from '../sharp-image'
 import {Colorspace, IBlockifyOptions, IBlock, ISaliencyOptions} from '../types'
+import * as tf from '@tensorflow/tfjs-node'
+import {maxPool} from '@tensorflow/tfjs-node'
+
+const SIGMAC = 16
 
 interface IColorData {
   pixel: [number, number, number]
   count: number
   globalColorContrast: number
+  saliency: number
+  _xSum: number
+  _ySum: number
+  _xSumOfSquares: number
+  _ySumOfSquares: number
+  _countWeightedColorDistance: number
+  _exponentialXWeightedColorDistance: number
+  _exponentialYWeightedColorDistance: number
+  _exponentialXVarianceWeightedColorDistance: number
+  _exponentialYVarianceWeightedColorDistance: number
+  _exponentialCountWeightedColorDistance: number
+  mx: number
+  Vx: number
+  my: number
+  Vy: number
+  _xs: number[]
+  _ys: number[]
+  centerX: number
+  centerY: number
+  width: number
+  height: number
+  sizeAndLocationProbability: number
 }
 
 function runMedianCut(
@@ -27,6 +53,20 @@ function runMedianCut(
   const sortedOnIndex = pixels.slice().sort((a, b) => a[maxRangeIndex] - b[maxRangeIndex])
   const medianIndex = Math.floor(sortedOnIndex.length / 2)
   return [sortedOnIndex.slice(0, medianIndex), sortedOnIndex.slice(medianIndex)]
+}
+
+function computeSum(nums: number[]): number {
+  let sum = 0
+  for (const x of nums) sum += x
+  return sum
+}
+function computeAverage(nums: number[]): number {
+  return computeSum(nums) / nums.length
+}
+function computeSumOfSquares(nums: number[], mean: number): number {
+  let sum = 0
+  for (const x of nums) sum += (x - mean) ** 2
+  return sum
 }
 
 function computeBucketAverage(bucket: Array<[number, number, number]>): [number, number, number] {
@@ -62,10 +102,11 @@ function getQuantizedColors(
   return buckets.map(computeBucketAverage)
 }
 
-function pixelDistance(pixelA: [number, number, number], pixelB: [number, number, number]): number {
-  return Math.sqrt(
-    (pixelA[0] - pixelB[0]) ** 2 + (pixelA[1] - pixelB[1]) ** 2 + (pixelA[2] - pixelB[2]) ** 2,
-  )
+function pixelDifference(
+  pixelA: [number, number, number],
+  pixelB: [number, number, number],
+): number {
+  return (pixelA[0] - pixelB[0]) ** 2 + (pixelA[1] - pixelB[1]) ** 2 + (pixelA[2] - pixelB[2]) ** 2
 }
 
 function getClosestQuantizedColor(
@@ -75,7 +116,7 @@ function getClosestQuantizedColor(
   let minIndex = 0
   let minValue = Infinity
   for (let i = 0; i < colors.length; i++) {
-    const distance = pixelDistance(pixel, colors[i].pixel)
+    const distance = pixelDifference(pixel, colors[i].pixel)
     if (distance < minValue) {
       minIndex = i
       minValue = distance
@@ -85,18 +126,127 @@ function getClosestQuantizedColor(
   return {color: colors[minIndex].pixel, colorIndex: minIndex}
 }
 
-function normalizeColorContrast(colors: IColorData[]): void {
-  const colorDistances = colors.map(c => c.globalColorContrast)
-  const maxDistance = Math.max(...colorDistances)
-  const minDistance = Math.min(...colorDistances)
+function computeColorData(colors: IColorData[]): void {
+  for (const color of colors) {
+    color._xSum = computeSum(color._xs)
+    color._ySum = computeSum(color._ys)
+  }
 
   for (const color of colors) {
-    const contrastOutOf1 =
-      (color.globalColorContrast - minDistance) / (maxDistance - minDistance + 0.0001)
-    color.globalColorContrast = contrastOutOf1
+    for (const otherColor of colors) {
+      const colorDifference = pixelDifference(color.pixel, otherColor.pixel)
+      const colorDistance = Math.sqrt(colorDifference)
+
+      // Weighted color distance, used for global color contrast
+      color._countWeightedColorDistance += otherColor.count * colorDistance
+
+      // Exponential color difference, used in size and position calculations
+      const exponentialColorDifference = Math.exp(-colorDifference / (2 * SIGMAC))
+
+      color._exponentialXWeightedColorDistance += exponentialColorDifference * otherColor._xSum
+      color._exponentialYWeightedColorDistance += exponentialColorDifference * otherColor._ySum
+      color._exponentialCountWeightedColorDistance += otherColor.count * exponentialColorDifference
+    }
+
+    color.mx =
+      color._exponentialXWeightedColorDistance / color._exponentialCountWeightedColorDistance
+    color.my =
+      color._exponentialYWeightedColorDistance / color._exponentialCountWeightedColorDistance
+  }
+
+  for (const color of colors) {
+    color._xSumOfSquares = computeSumOfSquares(color._xs, color.mx)
+    color._ySumOfSquares = computeSumOfSquares(color._ys, color.my)
+  }
+
+  for (const color of colors) {
+    for (const otherColor of colors) {
+      const colorDifference = pixelDifference(color.pixel, otherColor.pixel)
+      const exponentialColorDifference = Math.exp(-colorDifference / (2 * SIGMAC))
+
+      color._exponentialXVarianceWeightedColorDistance +=
+        exponentialColorDifference * otherColor._xSumOfSquares
+      color._exponentialYVarianceWeightedColorDistance +=
+        exponentialColorDifference * otherColor._ySumOfSquares
+    }
+
+    color.Vx =
+      color._exponentialXVarianceWeightedColorDistance /
+      color._exponentialCountWeightedColorDistance
+    color.Vy =
+      color._exponentialYVarianceWeightedColorDistance /
+      color._exponentialCountWeightedColorDistance
   }
 }
 
+function normalizeColorData(imageData: IAnnotatedImageData, colors: IColorData[]): void {
+  const colorDistances = colors.map(c => c._countWeightedColorDistance)
+  const maxDistance = Math.max(...colorDistances)
+  const minDistance = Math.min(...colorDistances)
+
+  // Size and probability constants.
+  const meanVector = tf.tensor([0.5555, 0.6449, 0.0002, 0.0063])
+  const covarianceMatrix = tf.tensor([
+    [43.3777, 1.7633, -0.4059, 1.0997],
+    [1.7633, 40.7221, -0.0165, 0.0447],
+    [-0.4059, -0.0165, 87.0455, -3.2744],
+    [1.0997, 0.0447, -3.2744, 125.1503],
+  ])
+
+  for (const color of colors) {
+    const contrastOutOf1 =
+      (color._countWeightedColorDistance - minDistance) / (maxDistance - minDistance + 0.0001)
+    color.globalColorContrast = contrastOutOf1
+    color.centerX = color.mx / imageData.width - 0.5
+    color.centerY = color.my / imageData.height - 0.5
+    color.width = Math.sqrt(color.Vx * 12) / imageData.width
+    color.height = Math.sqrt(color.Vy * 12) / imageData.height
+
+    const shapeVector = tf.tensor([color.width, color.height, color.centerX, color.centerY])
+    const X = shapeVector.transpose().sub(meanVector)
+    const Y = X
+    const A = covarianceMatrix
+    const result = X.dot(A)
+      .mul(Y)
+      .sum(0)
+      .dataSync()
+    color.sizeAndLocationProbability = Math.exp(-result[0] / 2)
+  }
+
+  const sizeProbability = colors.map(c => c.sizeAndLocationProbability)
+  const minProbability = Math.min(...sizeProbability)
+  const maxProbability = Math.max(...sizeProbability, 0.5)
+  for (const color of colors) {
+    const sizeProbability =
+      (color.sizeAndLocationProbability - minProbability) /
+      (maxProbability - minProbability + 0.00001)
+    color.sizeAndLocationProbability = sizeProbability
+    color.saliency = color.globalColorContrast * color.sizeAndLocationProbability
+  }
+
+  const sizeSaliency = colors.map(c => c.saliency)
+  const minSaliency = Math.min(...sizeSaliency)
+  const maxSaliency = Math.max(...sizeSaliency)
+  for (const color of colors) {
+    color.saliency = (color.saliency - minSaliency) / (maxSaliency - minSaliency + 0.00001)
+  }
+}
+
+/**
+ * This method quantizes the image and precomputes some useful data per color.
+ *
+ *    1. Create histograms and find the quantized colors using median cuts.
+ *    2. For all pixels...
+ *          - Replace it with the quantized version.
+ *          - Keep track of the correct quantized color index.
+ *          - Compute the average x for each color.
+ *    3. Do one more pass over the pixels to compute x/y variance.
+ *    4. For all quantized colors...
+ *          - Compute color distance.
+ *          - Compute exponential color distance.
+ *          - Compute weighted exponential color distance.
+ *          - Compute weighted color distance (global color contrast).
+ */
 function quantizeImage(
   unquantizedImageData: IAnnotatedImageData,
   quantiles: number,
@@ -109,6 +259,28 @@ function quantizeImage(
     pixel,
     count: 0,
     globalColorContrast: 0,
+    _xSum: 0,
+    _ySum: 0,
+    _xSumOfSquares: 0,
+    _ySumOfSquares: 0,
+    _countWeightedColorDistance: 0,
+    _exponentialXWeightedColorDistance: 0,
+    _exponentialYWeightedColorDistance: 0,
+    _exponentialXVarianceWeightedColorDistance: 0,
+    _exponentialYVarianceWeightedColorDistance: 0,
+    _exponentialCountWeightedColorDistance: 0,
+    _xs: [],
+    _ys: [],
+    mx: 0,
+    Vx: 0,
+    my: 0,
+    Vy: 0,
+    saliency: 0,
+    sizeAndLocationProbability: 0,
+    centerX: 0,
+    centerY: 0,
+    width: 0,
+    height: 0,
   }))
   const imageData = {...unquantizedImageData, data: new Uint8Array(unquantizedImageData.data)}
   const colorIndexes = new Uint8Array(imageData.width * imageData.height)
@@ -119,6 +291,8 @@ function quantizeImage(
       const pixel = ImageData.pixelFor(unquantizedImageData, x, y)
       const {color: quantized, colorIndex} = getClosestQuantizedColor(colors, pixel.values as any)
       colors[colorIndex].count++
+      colors[colorIndex]._xs.push(x)
+      colors[colorIndex]._ys.push(y)
       colorIndexes[i] = colorIndex
       imageData.data[pixel.index + 0] = quantized[0]
       imageData.data[pixel.index + 1] = quantized[1]
@@ -127,15 +301,8 @@ function quantizeImage(
     }
   }
 
-  for (let i = 0; i < colors.length; i++) {
-    const color = colors[i]
-    for (let j = 0; j < colors.length; j++) {
-      const otherColor = colors[j]
-      color.globalColorContrast += otherColor.count * pixelDistance(color.pixel, otherColor.pixel)
-    }
-  }
-
-  normalizeColorContrast(colors)
+  computeColorData(colors)
+  normalizeColorData(imageData, colors)
 
   return {
     colors,
@@ -144,12 +311,28 @@ function quantizeImage(
   }
 }
 
-function createSaliencyMap(
+function createSaliencyMaps(
   imageData: IAnnotatedImageData,
   colors: IColorData[],
   colorIndexes: Uint8Array,
-): IAnnotatedImageData {
+): {
+  imageData: IAnnotatedImageData
+  contrastImageData: IAnnotatedImageData
+  positionImageData: IAnnotatedImageData
+} {
   const saliencyMap = {
+    ...imageData,
+    channels: 1,
+    colorspace: Colorspace.Greyscale,
+    data: new Uint8Array(colorIndexes.length),
+  }
+  const contrastImageData = {
+    ...imageData,
+    channels: 1,
+    colorspace: Colorspace.Greyscale,
+    data: new Uint8Array(colorIndexes.length),
+  }
+  const positionImageData = {
     ...imageData,
     channels: 1,
     colorspace: Colorspace.Greyscale,
@@ -158,10 +341,12 @@ function createSaliencyMap(
 
   for (let i = 0; i < colorIndexes.length; i++) {
     const color = colors[colorIndexes[i]]
-    saliencyMap.data[i] = Math.round(color.globalColorContrast * 255)
+    saliencyMap.data[i] = Math.round(color.saliency * 255)
+    contrastImageData.data[i] = Math.round(color.globalColorContrast * 255)
+    positionImageData.data[i] = Math.round(color.sizeAndLocationProbability * 255)
   }
 
-  return saliencyMap
+  return {imageData: saliencyMap, contrastImageData, positionImageData}
 }
 
 /**
@@ -187,7 +372,13 @@ function createSaliencyMap(
 export async function saliency(
   imageData: IAnnotatedImageData,
   options: ISaliencyOptions = {},
-): Promise<{imageData: IAnnotatedImageData; quantized: IAnnotatedImageData; blocks: IBlock[]}> {
+): Promise<{
+  imageData: IAnnotatedImageData
+  quantized: IAnnotatedImageData
+  contrastImageData: IAnnotatedImageData
+  positionImageData: IAnnotatedImageData
+  blocks: IBlock[]
+}> {
   const {quantizeBuckets = 32} = options
   const normalized = await SharpImage.toImageData(
     SharpImage.from(imageData)
@@ -201,7 +392,6 @@ export async function saliency(
   )
   ImageData.assert(quantized, [Colorspace.RGB])
 
-  const saliencyMap = createSaliencyMap(quantized, colors, colorIndexes)
   const totalPixels = normalized.width * normalized.height
   const blocks: IBlock[] = colors.map(color => ({
     count: color.count / totalPixels,
@@ -215,7 +405,7 @@ export async function saliency(
   }))
 
   return {
-    imageData: saliencyMap,
+    ...createSaliencyMaps(quantized, colors, colorIndexes),
     quantized,
     blocks,
   }
