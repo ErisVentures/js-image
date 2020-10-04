@@ -2,9 +2,10 @@ import {IAnnotatedImageData, ImageData} from '../image-data'
 import {SharpImage} from '../sharp-image'
 import {Colorspace, IBlockifyOptions, IBlock, ISaliencyOptions} from '../types'
 import * as tf from '@tensorflow/tfjs-node'
-import {maxPool} from '@tensorflow/tfjs-node'
 
 const SIGMAC = 16
+
+type IBlockWithSaliency = IBlock & {saliency: number; contrast: number}
 
 interface IColorData {
   pixel: [number, number, number]
@@ -221,7 +222,10 @@ function normalizeColorData(imageData: IAnnotatedImageData, colors: IColorData[]
       (color.sizeAndLocationProbability - minProbability) /
       (maxProbability - minProbability + 0.00001)
     color.sizeAndLocationProbability = sizeProbability
-    color.saliency = color.globalColorContrast * color.sizeAndLocationProbability
+    color.saliency = Math.pow(
+      color.globalColorContrast ** 3 * color.sizeAndLocationProbability,
+      1 / 4,
+    )
   }
 
   const sizeSaliency = colors.map(c => c.saliency)
@@ -311,6 +315,12 @@ function quantizeImage(
   }
 }
 
+function clip01(x: number): number {
+  if (x > 1) return 1
+  if (x < 0) return 0
+  return x
+}
+
 function createSaliencyMaps(
   imageData: IAnnotatedImageData,
   colors: IColorData[],
@@ -377,9 +387,9 @@ export async function saliency(
   quantized: IAnnotatedImageData
   contrastImageData: IAnnotatedImageData
   positionImageData: IAnnotatedImageData
-  blocks: IBlock[]
+  blocks: IBlockWithSaliency[]
 }> {
-  const {quantizeBuckets = 32} = options
+  const {quantizeBuckets = 64} = options
   const normalized = await SharpImage.toImageData(
     SharpImage.from(imageData)
       .normalize()
@@ -393,20 +403,35 @@ export async function saliency(
   ImageData.assert(quantized, [Colorspace.RGB])
 
   const totalPixels = normalized.width * normalized.height
-  const blocks: IBlock[] = colors.map(color => ({
+  const blocks: IBlockWithSaliency[] = colors.map(color => ({
     count: color.count / totalPixels,
-    x: 0,
-    y: 0,
-    width: 1,
-    height: 1,
+    x: clip01(color.centerX - color.width / 2),
+    y: clip01(color.centerY - color.height / 2),
+    width: color.width,
+    height: color.height,
     r: color.pixel[0],
     g: color.pixel[1],
     b: color.pixel[2],
+    saliency: color.saliency,
+    contrast: color.globalColorContrast,
   }))
 
-  return {
+  const returnValue = {
     ...createSaliencyMaps(quantized, colors, colorIndexes),
     quantized,
     blocks,
+  }
+
+  const blurredSaliency = await SharpImage.toImageData(
+    SharpImage.from(returnValue.imageData).blur(1),
+  )
+
+  const thresholdSaliency = ImageData.mapPixels(blurredSaliency, pixel =>
+    pixel.values[0] < 96 ? [0, 0, 0] : pixel.values,
+  )
+
+  return {
+    ...returnValue,
+    imageData: thresholdSaliency,
   }
 }
