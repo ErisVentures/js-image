@@ -10,34 +10,34 @@ type IBlockWithSaliency = IBlock & {saliency: number; contrast: number}
 interface IColorData {
   pixel: [number, number, number]
   count: number
-  globalColorContrast: number
-  saliency: number
-  _xSum: number
-  _ySum: number
-  _xSumOfSquares: number
-  _ySumOfSquares: number
-  _countWeightedColorDistance: number
-  _exponentialXWeightedColorDistance: number
-  _exponentialYWeightedColorDistance: number
-  _exponentialXVarianceWeightedColorDistance: number
-  _exponentialYVarianceWeightedColorDistance: number
-  _exponentialCountWeightedColorDistance: number
-  mx: number
-  Vx: number
-  my: number
-  Vy: number
-  _xs: number[]
-  _ys: number[]
-  centerX: number
-  centerY: number
+  saliency: {overall: number; contrast: number; positional: number}
+  x: number
+  y: number
   width: number
   height: number
-  sizeAndLocationProbability: number
+  _mx: number
+  _Vx: number
+  _my: number
+  _Vy: number
+  __xs: number[]
+  __ys: number[]
+  __xSum: number
+  __ySum: number
+  __xSumOfSquares: number
+  __ySumOfSquares: number
+  __countWeightedColorDistance: number
+  __exponentialXWeightedColorDistance: number
+  __exponentialYWeightedColorDistance: number
+  __exponentialXVarianceWeightedColorDistance: number
+  __exponentialYVarianceWeightedColorDistance: number
+  __exponentialCountWeightedColorDistance: number
 }
 
 function runMedianCut(
   pixels: Array<[number, number, number]>,
 ): [Array<[number, number, number]>, Array<[number, number, number]>] {
+  if (!pixels.length) return [[], []]
+
   const minPixel = [255, 255, 255]
   const maxPixel = [0, 0, 0]
   for (let i = 0; i < pixels.length; i++) {
@@ -90,17 +90,24 @@ function getQuantizedColors(
   targetCount: number,
 ): Array<[number, number, number]> {
   const primaryBucket: Array<[number, number, number]> = []
-  ImageData.mapPixels(imageData, pixel => {
-    primaryBucket.push(pixel.values as any)
-    return pixel.values
-  })
+  for (let y = 0; y < imageData.height; y++) {
+    for (let x = 0; x < imageData.width; x++) {
+      const index = ImageData.indexFor(imageData, x, y)
+      primaryBucket.push([
+        imageData.data[index],
+        imageData.data[index + 1],
+        imageData.data[index + 2],
+      ])
+    }
+  }
 
   let buckets = [primaryBucket]
   while (buckets.length < targetCount) {
     buckets = buckets.map(bucket => runMedianCut(bucket)).reduce((a, b) => a.concat(b), [] as any[])
   }
 
-  return buckets.map(computeBucketAverage)
+  const averagedBuckets = buckets.map(computeBucketAverage)
+  return averagedBuckets
 }
 
 function pixelDifference(
@@ -129,8 +136,8 @@ function getClosestQuantizedColor(
 
 function computeColorData(colors: IColorData[]): void {
   for (const color of colors) {
-    color._xSum = computeSum(color._xs)
-    color._ySum = computeSum(color._ys)
+    color.__xSum = computeSum(color.__xs)
+    color.__ySum = computeSum(color.__ys)
   }
 
   for (const color of colors) {
@@ -139,25 +146,25 @@ function computeColorData(colors: IColorData[]): void {
       const colorDistance = Math.sqrt(colorDifference)
 
       // Weighted color distance, used for global color contrast
-      color._countWeightedColorDistance += otherColor.count * colorDistance
+      color.__countWeightedColorDistance += otherColor.count * colorDistance
 
       // Exponential color difference, used in size and position calculations
       const exponentialColorDifference = Math.exp(-colorDifference / (2 * SIGMAC))
 
-      color._exponentialXWeightedColorDistance += exponentialColorDifference * otherColor._xSum
-      color._exponentialYWeightedColorDistance += exponentialColorDifference * otherColor._ySum
-      color._exponentialCountWeightedColorDistance += otherColor.count * exponentialColorDifference
+      color.__exponentialXWeightedColorDistance += exponentialColorDifference * otherColor.__xSum
+      color.__exponentialYWeightedColorDistance += exponentialColorDifference * otherColor.__ySum
+      color.__exponentialCountWeightedColorDistance += otherColor.count * exponentialColorDifference
     }
 
-    color.mx =
-      color._exponentialXWeightedColorDistance / color._exponentialCountWeightedColorDistance
-    color.my =
-      color._exponentialYWeightedColorDistance / color._exponentialCountWeightedColorDistance
+    color._mx =
+      color.__exponentialXWeightedColorDistance / color.__exponentialCountWeightedColorDistance
+    color._my =
+      color.__exponentialYWeightedColorDistance / color.__exponentialCountWeightedColorDistance
   }
 
   for (const color of colors) {
-    color._xSumOfSquares = computeSumOfSquares(color._xs, color.mx)
-    color._ySumOfSquares = computeSumOfSquares(color._ys, color.my)
+    color.__xSumOfSquares = computeSumOfSquares(color.__xs, color._mx)
+    color.__ySumOfSquares = computeSumOfSquares(color.__ys, color._my)
   }
 
   for (const color of colors) {
@@ -165,23 +172,23 @@ function computeColorData(colors: IColorData[]): void {
       const colorDifference = pixelDifference(color.pixel, otherColor.pixel)
       const exponentialColorDifference = Math.exp(-colorDifference / (2 * SIGMAC))
 
-      color._exponentialXVarianceWeightedColorDistance +=
-        exponentialColorDifference * otherColor._xSumOfSquares
-      color._exponentialYVarianceWeightedColorDistance +=
-        exponentialColorDifference * otherColor._ySumOfSquares
+      color.__exponentialXVarianceWeightedColorDistance +=
+        exponentialColorDifference * otherColor.__xSumOfSquares
+      color.__exponentialYVarianceWeightedColorDistance +=
+        exponentialColorDifference * otherColor.__ySumOfSquares
     }
 
-    color.Vx =
-      color._exponentialXVarianceWeightedColorDistance /
-      color._exponentialCountWeightedColorDistance
-    color.Vy =
-      color._exponentialYVarianceWeightedColorDistance /
-      color._exponentialCountWeightedColorDistance
+    color._Vx =
+      color.__exponentialXVarianceWeightedColorDistance /
+      color.__exponentialCountWeightedColorDistance
+    color._Vy =
+      color.__exponentialYVarianceWeightedColorDistance /
+      color.__exponentialCountWeightedColorDistance
   }
 }
 
 function normalizeColorData(imageData: IAnnotatedImageData, colors: IColorData[]): void {
-  const colorDistances = colors.map(c => c._countWeightedColorDistance)
+  const colorDistances = colors.map(c => c.__countWeightedColorDistance)
   const maxDistance = Math.max(...colorDistances)
   const minDistance = Math.min(...colorDistances)
 
@@ -196,14 +203,15 @@ function normalizeColorData(imageData: IAnnotatedImageData, colors: IColorData[]
 
   for (const color of colors) {
     const contrastOutOf1 =
-      (color._countWeightedColorDistance - minDistance) / (maxDistance - minDistance + 0.0001)
-    color.globalColorContrast = contrastOutOf1
-    color.centerX = color.mx / imageData.width - 0.5
-    color.centerY = color.my / imageData.height - 0.5
-    color.width = Math.sqrt(color.Vx * 12) / imageData.width
-    color.height = Math.sqrt(color.Vy * 12) / imageData.height
+      (color.__countWeightedColorDistance - minDistance) / (maxDistance - minDistance + 0.0001)
+    color.saliency.contrast = contrastOutOf1
 
-    const shapeVector = tf.tensor([color.width, color.height, color.centerX, color.centerY])
+    const centerX = color._mx / imageData.width - 0.5
+    const centerY = color._my / imageData.height - 0.5
+    const width = Math.sqrt(color._Vx * 12) / imageData.width
+    const height = Math.sqrt(color._Vy * 12) / imageData.height
+
+    const shapeVector = tf.tensor([width, height, centerX, centerY])
     const X = shapeVector.transpose().sub(meanVector)
     const Y = X
     const A = covarianceMatrix
@@ -211,28 +219,61 @@ function normalizeColorData(imageData: IAnnotatedImageData, colors: IColorData[]
       .mul(Y)
       .sum(0)
       .dataSync()
-    color.sizeAndLocationProbability = Math.exp(-result[0] / 2)
+
+    color.x = clip01(centerX - width / 2)
+    color.y = clip01(centerY - height / 2)
+    color.width = clip01(centerX + width / 2 - color.x)
+    color.height = clip01(centerY + height / 2 - color.y)
+    color.saliency.positional = Math.exp(-result[0] / 2)
   }
 
-  const sizeProbability = colors.map(c => c.sizeAndLocationProbability)
+  const sizeProbability = colors.map(c => c.saliency.positional)
   const minProbability = Math.min(...sizeProbability)
   const maxProbability = Math.max(...sizeProbability, 0.5)
   for (const color of colors) {
     const sizeProbability =
-      (color.sizeAndLocationProbability - minProbability) /
-      (maxProbability - minProbability + 0.00001)
-    color.sizeAndLocationProbability = sizeProbability
-    color.saliency = Math.pow(
-      color.globalColorContrast ** 3 * color.sizeAndLocationProbability,
+      (color.saliency.positional - minProbability) / (maxProbability - minProbability + 0.00001)
+    color.saliency.positional = sizeProbability
+    color.saliency.overall = Math.pow(
+      color.saliency.contrast ** 3 * color.saliency.positional,
       1 / 4,
     )
   }
 
-  const sizeSaliency = colors.map(c => c.saliency)
+  const sizeSaliency = colors.map(c => c.saliency.overall)
   const minSaliency = Math.min(...sizeSaliency)
   const maxSaliency = Math.max(...sizeSaliency)
   for (const color of colors) {
-    color.saliency = (color.saliency - minSaliency) / (maxSaliency - minSaliency + 0.00001)
+    color.saliency.overall =
+      (color.saliency.overall - minSaliency) / (maxSaliency - minSaliency + 0.00001)
+  }
+}
+
+function initializeColorData(pixel: [number, number, number]): IColorData {
+  return {
+    pixel,
+    count: 0,
+    saliency: {overall: 0, contrast: 0, positional: 0},
+    x: 0,
+    y: 0,
+    width: 0,
+    height: 0,
+    __xSum: 0,
+    __ySum: 0,
+    __xSumOfSquares: 0,
+    __ySumOfSquares: 0,
+    __countWeightedColorDistance: 0,
+    __exponentialXWeightedColorDistance: 0,
+    __exponentialYWeightedColorDistance: 0,
+    __exponentialXVarianceWeightedColorDistance: 0,
+    __exponentialYVarianceWeightedColorDistance: 0,
+    __exponentialCountWeightedColorDistance: 0,
+    __xs: [],
+    __ys: [],
+    _mx: 0,
+    _Vx: 0,
+    _my: 0,
+    _Vy: 0,
   }
 }
 
@@ -243,7 +284,7 @@ function normalizeColorData(imageData: IAnnotatedImageData, colors: IColorData[]
  *    2. For all pixels...
  *          - Replace it with the quantized version.
  *          - Keep track of the correct quantized color index.
- *          - Compute the average x for each color.
+ *          - Compute the average x/y for each color (weighted by similarity to other colors by distance).
  *    3. Do one more pass over the pixels to compute x/y variance.
  *    4. For all quantized colors...
  *          - Compute color distance.
@@ -251,7 +292,7 @@ function normalizeColorData(imageData: IAnnotatedImageData, colors: IColorData[]
  *          - Compute weighted exponential color distance.
  *          - Compute weighted color distance (global color contrast).
  */
-function quantizeImage(
+function precomputeColorData(
   unquantizedImageData: IAnnotatedImageData,
   quantiles: number,
 ): {
@@ -259,33 +300,7 @@ function quantizeImage(
   colors: IColorData[]
   colorIndexes: Uint8Array
 } {
-  const colors: IColorData[] = getQuantizedColors(unquantizedImageData, quantiles).map(pixel => ({
-    pixel,
-    count: 0,
-    globalColorContrast: 0,
-    _xSum: 0,
-    _ySum: 0,
-    _xSumOfSquares: 0,
-    _ySumOfSquares: 0,
-    _countWeightedColorDistance: 0,
-    _exponentialXWeightedColorDistance: 0,
-    _exponentialYWeightedColorDistance: 0,
-    _exponentialXVarianceWeightedColorDistance: 0,
-    _exponentialYVarianceWeightedColorDistance: 0,
-    _exponentialCountWeightedColorDistance: 0,
-    _xs: [],
-    _ys: [],
-    mx: 0,
-    Vx: 0,
-    my: 0,
-    Vy: 0,
-    saliency: 0,
-    sizeAndLocationProbability: 0,
-    centerX: 0,
-    centerY: 0,
-    width: 0,
-    height: 0,
-  }))
+  const colors = getQuantizedColors(unquantizedImageData, quantiles).map(initializeColorData)
   const imageData = {...unquantizedImageData, data: new Uint8Array(unquantizedImageData.data)}
   const colorIndexes = new Uint8Array(imageData.width * imageData.height)
 
@@ -295,8 +310,8 @@ function quantizeImage(
       const pixel = ImageData.pixelFor(unquantizedImageData, x, y)
       const {color: quantized, colorIndex} = getClosestQuantizedColor(colors, pixel.values as any)
       colors[colorIndex].count++
-      colors[colorIndex]._xs.push(x)
-      colors[colorIndex]._ys.push(y)
+      colors[colorIndex].__xs.push(x)
+      colors[colorIndex].__ys.push(y)
       colorIndexes[i] = colorIndex
       imageData.data[pixel.index + 0] = quantized[0]
       imageData.data[pixel.index + 1] = quantized[1]
@@ -351,9 +366,9 @@ function createSaliencyMaps(
 
   for (let i = 0; i < colorIndexes.length; i++) {
     const color = colors[colorIndexes[i]]
-    saliencyMap.data[i] = Math.round(color.saliency * 255)
-    contrastImageData.data[i] = Math.round(color.globalColorContrast * 255)
-    positionImageData.data[i] = Math.round(color.sizeAndLocationProbability * 255)
+    saliencyMap.data[i] = Math.round(color.saliency.overall * 255)
+    contrastImageData.data[i] = Math.round(color.saliency.contrast * 255)
+    positionImageData.data[i] = Math.round(color.saliency.positional * 255)
   }
 
   return {imageData: saliencyMap, contrastImageData, positionImageData}
@@ -396,7 +411,7 @@ export async function saliency(
       .resize(400, 400, {fit: 'inside'}),
   )
 
-  const {imageData: quantized, colors, colorIndexes} = quantizeImage(
+  const {imageData: quantized, colors, colorIndexes} = precomputeColorData(
     {...normalized, data: new Uint8Array(normalized.data)},
     quantizeBuckets,
   )
@@ -405,15 +420,15 @@ export async function saliency(
   const totalPixels = normalized.width * normalized.height
   const blocks: IBlockWithSaliency[] = colors.map(color => ({
     count: color.count / totalPixels,
-    x: clip01(color.centerX - color.width / 2),
-    y: clip01(color.centerY - color.height / 2),
+    x: color.x,
+    y: color.y,
     width: color.width,
     height: color.height,
     r: color.pixel[0],
     g: color.pixel[1],
     b: color.pixel[2],
-    saliency: color.saliency,
-    contrast: color.globalColorContrast,
+    saliency: color.saliency.overall,
+    contrast: color.saliency.contrast,
   }))
 
   const returnValue = {
