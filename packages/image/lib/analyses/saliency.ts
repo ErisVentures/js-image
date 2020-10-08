@@ -19,8 +19,7 @@ interface IColorData {
   _Vx: number
   _my: number
   _Vy: number
-  __xs: number[]
-  __ys: number[]
+  __coordinates: number[]
   __xSum: number
   __ySum: number
   __xSumOfSquares: number
@@ -56,17 +55,14 @@ function runMedianCut(
   return [sortedOnIndex.slice(0, medianIndex), sortedOnIndex.slice(medianIndex)]
 }
 
-function computeSum(nums: number[]): number {
+function computeCoordinateSum(nums: number[], start: number): number {
   let sum = 0
-  for (const x of nums) sum += x
+  for (let i = start; i < nums.length; i += 2) sum += nums[i]
   return sum
 }
-function computeAverage(nums: number[]): number {
-  return computeSum(nums) / nums.length
-}
-function computeSumOfSquares(nums: number[], mean: number): number {
+function computeCoordinateSumOfSquares(nums: number[], mean: number, start: number): number {
   let sum = 0
-  for (const x of nums) sum += (x - mean) ** 2
+  for (let i = start; i < nums.length; i += 2) sum += (nums[i] - mean) ** 2
   return sum
 }
 
@@ -136,8 +132,8 @@ function getClosestQuantizedColor(
 
 function computeColorData(colors: IColorData[]): void {
   for (const color of colors) {
-    color.__xSum = computeSum(color.__xs)
-    color.__ySum = computeSum(color.__ys)
+    color.__xSum = computeCoordinateSum(color.__coordinates, 0)
+    color.__ySum = computeCoordinateSum(color.__coordinates, 1)
   }
 
   for (const color of colors) {
@@ -163,8 +159,8 @@ function computeColorData(colors: IColorData[]): void {
   }
 
   for (const color of colors) {
-    color.__xSumOfSquares = computeSumOfSquares(color.__xs, color._mx)
-    color.__ySumOfSquares = computeSumOfSquares(color.__ys, color._my)
+    color.__xSumOfSquares = computeCoordinateSumOfSquares(color.__coordinates, color._mx, 0)
+    color.__ySumOfSquares = computeCoordinateSumOfSquares(color.__coordinates, color._my, 1)
   }
 
   for (const color of colors) {
@@ -268,8 +264,7 @@ function initializeColorData(pixel: [number, number, number]): IColorData {
     __exponentialXVarianceWeightedColorDistance: 0,
     __exponentialYVarianceWeightedColorDistance: 0,
     __exponentialCountWeightedColorDistance: 0,
-    __xs: [],
-    __ys: [],
+    __coordinates: [],
     _mx: 0,
     _Vx: 0,
     _my: 0,
@@ -307,15 +302,18 @@ function precomputeColorData(
   let i = 0
   for (let y = 0; y < imageData.height; y++) {
     for (let x = 0; x < imageData.width; x++) {
-      const pixel = ImageData.pixelFor(unquantizedImageData, x, y)
-      const {color: quantized, colorIndex} = getClosestQuantizedColor(colors, pixel.values as any)
+      const index = ImageData.indexFor(unquantizedImageData, x, y)
+      const {color: quantized, colorIndex} = getClosestQuantizedColor(colors, [
+        imageData.data[index + 0],
+        imageData.data[index + 1],
+        imageData.data[index + 2],
+      ])
       colors[colorIndex].count++
-      colors[colorIndex].__xs.push(x)
-      colors[colorIndex].__ys.push(y)
+      colors[colorIndex].__coordinates.push(x, y)
       colorIndexes[i] = colorIndex
-      imageData.data[pixel.index + 0] = quantized[0]
-      imageData.data[pixel.index + 1] = quantized[1]
-      imageData.data[pixel.index + 2] = quantized[2]
+      imageData.data[index + 0] = quantized[0]
+      imageData.data[index + 1] = quantized[1]
+      imageData.data[index + 2] = quantized[2]
       i++
     }
   }
