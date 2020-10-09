@@ -52,7 +52,9 @@ function runMedianCut(
   const maxRangeIndex = ranges.indexOf(Math.max(...ranges))
   const sortedOnIndex = pixels.slice().sort((a, b) => a[maxRangeIndex] - b[maxRangeIndex])
   const medianIndex = Math.floor(sortedOnIndex.length / 2)
-  return [sortedOnIndex.slice(0, medianIndex), sortedOnIndex.slice(medianIndex)]
+  const lowerBucket = sortedOnIndex.slice(0, medianIndex)
+  const upperBucket = sortedOnIndex.slice(medianIndex)
+  return [lowerBucket, upperBucket]
 }
 
 function computeCoordinateSum(nums: number[], start: number): number {
@@ -202,12 +204,12 @@ function normalizeColorData(imageData: IAnnotatedImageData, colors: IColorData[]
       (color.__countWeightedColorDistance - minDistance) / (maxDistance - minDistance + 0.0001)
     color.saliency.contrast = contrastOutOf1
 
-    const centerX = color._mx / imageData.width - 0.5
-    const centerY = color._my / imageData.height - 0.5
+    const centerX = color._mx / imageData.width
+    const centerY = color._my / imageData.height
     const width = Math.sqrt(color._Vx * 12) / imageData.width
     const height = Math.sqrt(color._Vy * 12) / imageData.height
 
-    const shapeVector = tf.tensor([width, height, centerX, centerY])
+    const shapeVector = tf.tensor([width, height, centerX - 0.5, centerY - 0.5])
     const X = shapeVector.transpose().sub(meanVector)
     const Y = X
     const A = covarianceMatrix
@@ -405,8 +407,8 @@ export async function saliency(
   const {quantizeBuckets = 64} = options
   const normalized = await SharpImage.toImageData(
     SharpImage.from(imageData)
-      .normalize()
-      .resize(400, 400, {fit: 'inside'}),
+      .resize(400, 400, {fit: 'inside'})
+      .normalize(),
   )
 
   const {imageData: quantized, colors, colorIndexes} = precomputeColorData(
