@@ -1,6 +1,6 @@
 import {IAnnotatedImageData, ImageData} from '../image-data'
 import {SharpImage} from '../sharp-image'
-import {Colorspace, IBlockifyOptions, IBlock, ISaliencyOptions} from '../types'
+import {Colorspace, IBlock, ISaliencyOptions} from '../types'
 import * as tf from '@tensorflow/tfjs-node'
 
 const SIGMAC = 16
