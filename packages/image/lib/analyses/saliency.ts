@@ -404,7 +404,7 @@ export async function saliency(
   positionImageData: IAnnotatedImageData
   blocks: IBlockWithSaliency[]
 }> {
-  const {quantizeBuckets = 64} = options
+  const {quantizeBuckets = 64, saliencyMode = 'map'} = options
   const normalized = await SharpImage.toImageData(
     SharpImage.from(imageData)
       .resize(400, 400, {fit: 'inside'})
@@ -432,10 +432,16 @@ export async function saliency(
   }))
 
   const returnValue = {
-    ...createSaliencyMaps(quantized, colors, colorIndexes),
+    imageData,
     quantized,
+    contrastImageData: imageData,
+    positionImageData: imageData,
     blocks,
   }
+
+  if (saliencyMode === 'analysis') return returnValue
+
+  Object.assign(returnValue, createSaliencyMaps(quantized, colors, colorIndexes))
 
   const blurredSaliency = await SharpImage.toImageData(
     SharpImage.from(returnValue.imageData).blur(1),

@@ -262,7 +262,10 @@ export interface IBlockifyOptions {
 }
 
 export interface ISaliencyOptions {
+  /** The number of color buckets to use for quantization step, must be power of 2, defaults to 64 */
   quantizeBuckets?: number
+  /** Whether to produce a complete pixel map or just basic analysis. */
+  saliencyMode?: 'analysis' | 'map'
 }
 
 export interface IBlock {
