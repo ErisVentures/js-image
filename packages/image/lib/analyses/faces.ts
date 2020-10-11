@@ -206,7 +206,7 @@ async function detectFaces_(
       expressionConfidence: (maxExpression && maxExpression.probability) || 0,
       happinessConfidence: happyExpression || 0,
       boundingBox: convertToPercentageCoordinates(faceBox, imageData.width, imageData.height),
-      descriptor: convertFaceDescriptor(descriptor),
+      descriptor: descriptor ? convertFaceDescriptor(descriptor) : undefined,
       eyes: [
         getBoxFromPointArray(landmarks.getLeftEye(), minEyeWidth, minEyeHeight),
         getBoxFromPointArray(landmarks.getRightEye(), minEyeWidth, minEyeHeight),
@@ -222,8 +222,8 @@ async function detectFaces_(
   })
 
   for (const face of faces) {
-    for (const eye of face.eyes) {
-      await runEyeOpenModel(eye, imageData)
+    for (const eye of face.eyes || []) {
+      if (eye.width >= 5 && eye.height >= 5) await runEyeOpenModel(eye, imageData)
       Object.assign(eye, convertToPercentageCoordinates(eye, imageData.width, imageData.height))
     }
   }

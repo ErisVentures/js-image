@@ -3,6 +3,7 @@
 set -e
 
 npm run clean
+./node_modules/.bin/patch-package
 
 if [[ -n "$ENABLE_WASM" ]]; then
   lerna run build

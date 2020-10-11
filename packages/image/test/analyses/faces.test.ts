@@ -1,3 +1,4 @@
+import {Image} from '../../lib/node-index'
 import * as facesModule from '../../lib/analyses/faces'
 import {expect, fixtureDecode, roundNumbersToHundredths} from '../utils'
 
@@ -639,15 +640,30 @@ describe('analyses/faces', () => {
       const imageData = await fixtureDecode('source-faces-large-group.jpg')
       const faces = await facesModule.detectFaces(imageData)
       expect(faces).toHaveLength(58)
+      const smallEyes = faces.filter(face => face.eyes.some(e => e.openConfidence === undefined))
+      expect(smallEyes).toHaveLength(45)
       const openEyes = faces.map(face => face.eyes.filter(e => e.openConfidence > 0.5))
       const openEyesFlat = [].concat(...openEyes)
-      expect(openEyesFlat).toHaveLength(18)
+      expect(openEyesFlat).toHaveLength(11)
     })
 
     it('should not find faces in landscapes', async () => {
       const imageData = await fixtureDecode('source-sydney.jpg')
       const faces = await facesModule.detectFaces(imageData)
       expect(faces).toHaveLength(0)
+    })
+
+    it('should find faces when size 0 exists', async () => {
+      const imageData = await fixtureDecode('source-face-size-0.png')
+      const analysis = await Image.from(imageData)
+        .analyze({faces: {threshold: 0.15}})
+        .toAnalysis()
+      expect(analysis.faces).toHaveLength(24)
+
+      const facesTooSmall = analysis.faces!.filter(
+        face => face.descriptor && face.descriptor.every(x => x === face.descriptor[0]),
+      )
+      expect(facesTooSmall).toHaveLength(17)
     })
   })
 })

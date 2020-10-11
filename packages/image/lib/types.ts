@@ -193,11 +193,11 @@ export interface IFaceAnalysisEntry {
   expressionConfidence: number
   happinessConfidence: number
   boundingBox: IBoundingBox
-  descriptor: number[]
-  eyes: IFaceAnalysisEyeEntry[]
-  nose: {points: Array<{x: number; y: number}>}
-  mouth: IBoundingBox
-  jaw: {points: Array<{x: number; y: number}>}
+  descriptor?: number[]
+  eyes?: IFaceAnalysisEyeEntry[]
+  nose?: {points: Array<{x: number; y: number}>}
+  mouth?: IBoundingBox
+  jaw?: {points: Array<{x: number; y: number}>}
   sharpness?: ISharpnessAnalysis
 }
 

@@ -1,0 +1,12 @@
+diff --git a/node_modules/face-api.js/build/commonjs/globalApi/ComputeFaceDescriptorsTasks.js b/node_modules/face-api.js/build/commonjs/globalApi/ComputeFaceDescriptorsTasks.js
+index 2607e9d..d7c5531 100644
+--- a/node_modules/face-api.js/build/commonjs/globalApi/ComputeFaceDescriptorsTasks.js
++++ b/node_modules/face-api.js/build/commonjs/globalApi/ComputeFaceDescriptorsTasks.js
+@@ -32,6 +32,7 @@ var ComputeAllFaceDescriptorsTask = /** @class */ (function (_super) {
+                     case 1:
+                         parentResults = _a.sent();
+                         return [4 /*yield*/, extractFacesAndComputeResults_1.extractAllFacesAndComputeResults(parentResults, this.input, function (faces) { return Promise.all(faces.map(function (face) {
++                                if (face.shape[0] < 15) return new Float32Array(128);
+                                 return nets_1.nets.faceRecognitionNet.computeFaceDescriptor(face);
+                             })); }, null, function (parentResult) { return parentResult.landmarks.align(null, { useDlibAlignment: true }); })];
+                     case 2:
