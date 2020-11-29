@@ -62,6 +62,9 @@ jobs:
       - run: yarn build
         env:
           PKG_TARGET: ${{ matrix.pkg-target }}
+      - run: yarn test:lint
+        if: matrix.os == 'macos-latest'
+      - run: yarn test:unit:ci
 #           stages:
 #   - build
 #   - test
