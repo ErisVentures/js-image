@@ -1,7 +1,12 @@
 const path = require('path')
+const os = require('os')
 const Client = require('../dist/lib/client').CLIClient
 
 const fixturePath = name => path.join(__dirname, 'fixtures/', name)
+const executablePath =
+  os.platform() === 'win32'
+    ? path.join(__dirname, '../out/image-cli.exe')
+    : path.join(__dirname, '../out/image-cli')
 
 describe('lib/client.js', () => {
   describe('.run', () => {
@@ -12,6 +17,9 @@ describe('lib/client.js', () => {
     })
 
     it('should handle failing executable', () => {
+      // Windows doesn't allow executable JS files
+      if (os.platform() === 'win32') return
+
       const client = new Client({executablePath: fixturePath('fail.js')})
       return client
         .run()
@@ -25,7 +33,7 @@ describe('lib/client.js', () => {
     })
 
     it('should work with object-based config', () => {
-      const client = new Client()
+      const client = new Client({executablePath})
       const config = {
         input: fixturePath('skater.jpg'),
         output: ':::memory',
@@ -41,7 +49,7 @@ describe('lib/client.js', () => {
     })
 
     it('should work with filed-based config', () => {
-      const client = new Client()
+      const client = new Client({executablePath})
       const config = fixturePath('config.json')
 
       const promise = client.run(config).waitForExit()
@@ -54,7 +62,7 @@ describe('lib/client.js', () => {
     })
 
     it('should respect failLoudly', () => {
-      const client = new Client()
+      const client = new Client({executablePath})
       const config = fixturePath('config.json')
       const promise = client.run(config).waitForExit({failLoudly: true})
       return expect(promise).rejects.toThrow('no such file')
