@@ -4,6 +4,15 @@ DIRNAME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 IMAGE_CLI_ROOT="$DIRNAME/.."
 TARGET=${PKG_TARGET:-node10-mac}
 
+if [[ -n "$CI" ]]; then
+  echo "Rebuilding tensorflow from source..."
+  cd ../../
+  npm rebuild @tensorflow/tfjs-node --build-from-source
+  ls -ali node_modules/@tensorflow/tfjs-node/lib/napi-v3/
+  node -e "require('@tensorflow/tfjs-node')" || { echo "tfjs failed to build!"; exit 1; }
+  cd packages/image-cli
+fi
+
 # Make sure the node version you're using locally is the same NAPI as the TARGET node version
 #   - https://nodejs.org/api/n-api.html#n_api_n_api_version_matrix
 #   - https://github.com/zeit/pkg-fetch/releases

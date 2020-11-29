@@ -41,6 +41,8 @@ jobs:
         with:
           path: .git/lfs
           key: ${{ runner.os }}-lfs-${{ hashFiles('.lfs-assets-id') }}-v1
+          restore-keys: |
+            ${{ runner.os }}-lfs-
       - run: git lfs pull
       - run: bash scripts/echo.sh
         env:
@@ -50,6 +52,12 @@ jobs:
       - uses: actions/setup-node@v2-beta
         with:
           node-version: '10.15.3'
+      - name: Patch node-gyp on windows
+        if: matrix.os == 'windows-latest'
+        shell: powershell
+        run: |
+          npm install --global node-gyp@latest
+          npm prefix -g | % {npm config set node_gyp "$_\node_modules\node-gyp\bin\node-gyp.js"}
       - run: yarn install
       - run: yarn build
         env:
