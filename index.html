@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <meta name="author" content="Patrick Hulce">
+  <title>@eris/image Demo</title>
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+    crossorigin="anonymous">
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <div class="container">
+    <h1>@eris/image</h1>
+    <p class="lead">
+      Give the features a try by dragging an image to the area below.
+    </p>
+    <div class="user-message alert"></div>
+    <div class="editor">
+      <div class="editor__image">
+        <h2>Image Preview</h2>
+        <div class="preview">
+          <div class="preview__canvas">
+            <canvas id="preview-canvas"></canvas>
+          </div>
+          <div class="dropzone">
+            <span>Drag an Image Here</span>
+          </div>
+        </div>
+      </div>
+      <div class="editor__controls">
+        <h2>Image Info</h2>
+        <div class="image-info">
+          <span>Load an image first...</span>
+        </div>
+        <h2>Settings</h2>
+        <form id="settings-form" class="form-horizontal">
+          <div class="form-group">
+            <h3>Resize</h3>
+            <label for="resize[method]" class="col-sm-4 control-label">Method</label>
+            <div class="col-sm-8">
+              <select class="form-control" name="resize[method]">
+                <option value="" selected>None</option>
+                <option value="nearestNeighbor">Nearest Neighbor</option>
+                <option value="bilinear">Bilinear</option>
+              </select>
+            </div>
+            <label for="resize[width]" class="col-sm-4 control-label">Width</label>
+            <div class="col-sm-8">
+              <input type="number" class="form-control" name="resize[width]">
+            </div>
+            <label for="resize[height]" class="col-sm-4 control-label">Height</label>
+            <div class="col-sm-8">
+              <input type="number" class="form-control" name="resize[height]">
+            </div>
+          </div>
+          <div class="form-group">
+            <h3>Tone</h3>
+            <!-- TODO: convert to slider -->
+            <label for="tone[contrast]" class="col-sm-4 control-label">Contrast</label>
+            <div class="col-sm-8">
+              <input type="number" class="form-control" name="tone[contrast]" placeholder="0.5">
+            </div>
+            <label for="tone[saturation]" class="col-sm-4 control-label">Saturation</label>
+            <div class="col-sm-8">
+              <input type="number" class="form-control" name="tone[saturation]" placeholder="-0.5">
+            </div>
+            <label for="tone[whites]" class="col-sm-4 control-label">Whites</label>
+            <div class="col-sm-8">
+              <input type="number" class="form-control" name="tone[whites]" placeholder="10">
+            </div>
+            <label for="tone[highlights]" class="col-sm-4 control-label">Highlights</label>
+            <div class="col-sm-8">
+              <input type="number" class="form-control" name="tone[highlights]" placeholder="10">
+            </div>
+            <label for="tone[midtones]" class="col-sm-4 control-label">Midtones</label>
+            <div class="col-sm-8">
+              <input type="number" class="form-control" name="tone[midtones]" placeholder="10">
+            </div>
+            <label for="tone[shadows]" class="col-sm-4 control-label">Shadows</label>
+            <div class="col-sm-8">
+              <input type="number" class="form-control" name="tone[shadows]" placeholder="10">
+            </div>
+            <label for="tone[blacks]" class="col-sm-4 control-label">Blacks</label>
+            <div class="col-sm-8">
+              <input type="number" class="form-control" name="tone[blacks]" placeholder="10">
+            </div>
+            <label for="tone[curve]" class="col-sm-4 control-label">Curves</label>
+            <div class="col-sm-8">
+              <textarea id="curves" class="form-control" name="tone[curve]" title="Each line is an X,Y pair mapping input luminance to output luminance."></textarea>
+            </div>
+            <label for="tone[redCurve]" class="col-sm-4 control-label">Red Curve</label>
+            <div class="col-sm-8">
+              <textarea id="rcurves" class="form-control" name="tone[redCurve]" title="Each line is an X,Y pair mapping input luminance to output luminance."></textarea>
+            </div>
+            <label for="tone[greenCurve]" class="col-sm-4 control-label">Green Curve</label>
+            <div class="col-sm-8">
+              <textarea id="gcurves" class="form-control" name="tone[greenCurve]" title="Each line is an X,Y pair mapping input luminance to output luminance."></textarea>
+            </div>
+            <label for="tone[blueCurve]" class="col-sm-4 control-label">Blue Curve</label>
+            <div class="col-sm-8">
+              <textarea id="bcurves" class="form-control" name="tone[blueCurve]" title="Each line is an X,Y pair mapping input luminance to output luminance."></textarea>
+            </div>
+            <label for="tone[hsl]" class="col-sm-4 control-label">HSL</label>
+            <div class="col-sm-8">
+              <textarea id="hsl-ad" class="form-control" name="tone[hsl]" title="Each line is an object"></textarea>
+            </div>
+          </div>
+          <div class="form-group">
+            <h3>Calibrate</h3>
+            <!-- TODO: convert to slider -->
+            <label for="calibrate[redHueShift]" class="col-sm-4 control-label">Red Hue</label>
+            <div class="col-sm-8">
+              <input type="number" class="form-control" name="calibrate[redHueShift]" placeholder="0.5">
+            </div>
+            <label for="calibrate[redSaturationShift]" class="col-sm-4 control-label">Red Saturation</label>
+            <div class="col-sm-8">
+              <input type="number" class="form-control" name="calibrate[redSaturationShift]" placeholder="0.5">
+            </div>
+            <label for="calibrate[greenHueShift]" class="col-sm-4 control-label">Green Hue</label>
+            <div class="col-sm-8">
+              <input type="number" class="form-control" name="calibrate[greenHueShift]" placeholder="0.5">
+            </div>
+            <label for="calibrate[greenSaturationShift]" class="col-sm-4 control-label">Green Saturation</label>
+            <div class="col-sm-8">
+              <input type="number" class="form-control" name="calibrate[greenSaturationShift]" placeholder="0.5">
+            </div>
+            <label for="calibrate[blueHueShift]" class="col-sm-4 control-label">Blue Hue</label>
+            <div class="col-sm-8">
+              <input type="number" class="form-control" name="calibrate[blueHueShift]" placeholder="0.5">
+            </div>
+            <label for="calibrate[blueSaturationShift]" class="col-sm-4 control-label">Blue Saturation</label>
+            <div class="col-sm-8">
+              <input type="number" class="form-control" name="calibrate[blueSaturationShift]" placeholder="0.5">
+            </div>
+          </div>
+          <div class="form-group">
+            <h3>Noise</h3>
+            <label for="noise[opacity]" class="col-sm-4 control-label">Opacity</label>
+            <div class="col-sm-8">
+              <input type="number" class="form-control" name="noise[opacity]" placeholder="0.05">
+            </div>
+          </div>
+          <div class="form-group">
+            <h3>Sharpening</h3>
+            <label for="sharpen[strength]" class="col-sm-4 control-label">Strength</label>
+            <div class="col-sm-8">
+              <input type="number" class="form-control" name="sharpen[strength]" placeholder="0.25">
+            </div>
+          </div>
+          <div class="form-group">
+            <h3>Edge Detection</h3>
+            <label for="edges[method]" class="col-sm-4 control-label">Method</label>
+            <div class="col-sm-8">
+              <select class="form-control" name="edges[method]">
+                <option value="" selected>None</option>
+                <option value="sobel">Sobel</option>
+                <option value="canny">Canny</option>
+              </select>
+            </div>
+            <label for="edges[radius]" class="col-sm-4 control-label">Radius</label>
+            <div class="col-sm-8">
+              <input type="number" class="form-control" name="edges[radius]" value="1">
+            </div>
+            <label for="edges[blurSigma]" class="col-sm-4 control-label">Blur</label>
+            <div class="col-sm-8">
+              <input type="number" class="form-control" name="edges[blurSigma]" value="0">
+            </div>
+          </div>
+          <div class="form-group">
+            <h3>Analysis</h3>
+            <label for="analysis[hash]" class="col-sm-4 control-label">Hash</label>
+            <div class="col-sm-8 checkbox">
+              <input type="checkbox" name="analysis[hash]">
+            </div>
+            <label for="analysis[sharpness]" class="col-sm-4 control-label">Sharpness</label>
+            <div class="col-sm-8 checkbox">
+              <input type="checkbox" name="analysis[sharpness]">
+            </div>
+            <label for="analysis[histograms]" class="col-sm-4 control-label">Histograms</label>
+            <div class="col-sm-8 checkbox">
+              <input type="checkbox" name="analysis[histograms]">
+            </div>
+            <label for="analysis[composition]" class="col-sm-4 control-label">Composition</label>
+            <div class="col-sm-8 checkbox">
+              <input type="checkbox" name="analysis[composition]">
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.11/lodash.min.js"></script>
+  <script src="bundle.js"></script>
+  <script src="demo.js"></script>
+  <script>document.getElementById('curves').placeholder = '0,50\n255,205'</script>
+</body>
+
+</html>

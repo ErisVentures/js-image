@@ -1,0 +1,113 @@
+@media (min-width: 768px) {
+  .container {
+    width: auto;
+  }
+}
+
+html, body, .container {
+  height: 100%;
+}
+
+.container, .container div {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 10px;
+}
+
+div.user-message {
+  display: none;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding-top: 10px;
+}
+
+div.editor__controls * {
+  display: block;
+}
+
+div.editor {
+  flex: 10;
+  display: flex;
+  flex-direction: row;
+  max-height: 80vh;
+}
+
+.editor--has-error .preview__canvas {
+  border: 2px solid #ffaeae;
+}
+
+.editor__image {
+  width: 60%;
+}
+
+.editor__controls {
+  width: 40%;
+  padding-left: 15px;
+  overflow-y: auto;
+}
+
+.preview {
+  flex: 10;
+  position: relative;
+}
+
+div.preview__canvas {
+  display: none;
+  flex: 10;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  overflow: hidden;
+}
+
+.preview__canvas canvas {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.preview--filled .preview__canvas {
+  display: flex;
+}
+
+.preview--filled .dropzone {
+  display: none;
+}
+
+.preview--filled .dropzone--drag {
+  display: flex;
+}
+
+.dropzone {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  border-radius: 10px;
+  border: 2px dashed grey;
+
+  align-items: center;
+  justify-content: center;
+  font-size: 200%;
+}
+
+.dropzone--drag {
+  background: #efefef;
+}
+
+.editor--loading .preview {
+  transition: opacity .1s;
+  opacity: .5;
+}
+
+.metadata__key {
+  font-weight: bold;
+  font-style: italic;
+}
+
+#settings-form {
+  padding: 0 15px;
+}
+
+.checkbox input[type=checkbox] {
+  right: 15px;
+}
