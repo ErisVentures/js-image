@@ -16,8 +16,10 @@ jobs:
         include:
           - name: Windows
             os: windows-latest
+            pkg-target: node10-win
           - name: macOS
             os: macos-latest
+            pkg-target: node10-mac
     steps:
       - name: Run git context
         id: git
@@ -40,13 +42,18 @@ jobs:
           path: .git/lfs
           key: ${{ runner.os }}-lfs-${{ hashFiles('.lfs-assets-id') }}-v1
       - run: git lfs pull
-      - run: ls -ali packages/image/test/fixtures
-        shell: bash
       - run: bash scripts/echo.sh
         env:
           GITHUB_EXTRA__REFNAME: ${{ steps.git.outputs.GIT_REFNAME }}
           GITHUB_EXTRA__BRANCH: ${{ steps.git.outputs.GIT_BRANCH }}
           GITHUB_EXTRA__TAG: ${{ steps.git.outputs.GIT_TAG }}
+      - uses: actions/setup-node@v2-beta
+        with:
+          node-version: '10.15.3'
+      - run: yarn install
+      - run: yarn build
+        env:
+          PKG_TARGET: ${{ matrix.pkg-target }}
 #           stages:
 #   - build
 #   - test
