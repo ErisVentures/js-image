@@ -47,6 +47,19 @@ interface IThumbnailLocation {
   length: number
 }
 
+function sequenceMatch(
+  largeArray: number[] | Uint8Array,
+  smallArray: number[] | Uint8Array,
+  startIndex: number,
+): boolean {
+  for (let i = 0; i < smallArray.length; i++) {
+    const iLarge = i + startIndex
+    if (largeArray[iLarge] !== smallArray[i]) return false
+  }
+
+  return true
+}
+
 export class TIFFDecoder {
   private readonly _buffer: IBufferLike
   private readonly _reader: IReader
@@ -258,13 +271,44 @@ export class TIFFDecoder {
   private _readOlympusJPEG(): IBufferLike | undefined {
     if (this._variant !== Variant.Olympus) return
 
+    // See https://github.com/exiftool/exiftool/blob/a7f6bc1e03ff3553da66aed2b552d2e2f64b71b3/lib/Image/ExifTool/Olympus.pm#L1763-L1779
+    const PREVIEW_IMAGE_OFFSET_SEQUENCE = [0x01, 0x01, 0x04, 0x00, 0x01, 0x00]
+    const PREVIEW_IMAGE_LENGTH_SEQUENCE = [0x02, 0x01, 0x04, 0x00, 0x01, 0x00]
+    const JPEG_SEQUENCE = [0xff, 0xd8, 0xff]
+
     const ifdEntries = this.extractIFDEntries()
     const makerNoteEntry = ifdEntries.find(entry => entry.tag === 37500)
     if (!makerNoteEntry) return
 
-    const makernoteBuffer = makerNoteEntry.getValue(this._reader)
-    if (typeof makernoteBuffer === 'string' || typeof makernoteBuffer === 'number') return
-    return this._findJPEGInRange(makernoteBuffer, 0, makernoteBuffer.length)
+    const makernote = makerNoteEntry.getValue(this._reader)
+    if (typeof makernote === 'string' || typeof makernote === 'number') return
+
+    const makernoteReader = new Reader(makernote)
+    makernoteReader.setEndianess(Endian.Little)
+
+    for (let i = 0; i < makernote.length; i++) {
+      // Olympus makernote has really fucked up IFD offsets.
+      // So we just do a linear scan for the two tags we are looking for
+      if (!sequenceMatch(makernote, PREVIEW_IMAGE_OFFSET_SEQUENCE, i)) continue
+      if (!sequenceMatch(makernote, PREVIEW_IMAGE_LENGTH_SEQUENCE, i + 12)) continue
+
+      makernoteReader.seek(i)
+      const offsetEntry = IFDEntry.read(makernoteReader)
+      const offset = offsetEntry.getValue(makernoteReader)
+      if (typeof offset !== 'number') continue
+      if (!sequenceMatch(makernote, JPEG_SEQUENCE, offset)) continue
+
+      makernoteReader.seek(i + 12)
+      const lengthEntry = IFDEntry.read(makernoteReader)
+      const length = lengthEntry.getValue(makernoteReader)
+      if (typeof length !== 'number') continue
+
+      const jpegBuffer = makernote.slice(offset, offset + length)
+      if (!JPEGDecoder.isJPEG(jpegBuffer)) continue
+      return jpegBuffer
+    }
+
+    return this._findJPEGInRange(makernote, 0, makernote.length)
   }
 
   private _readLargestJPEG(): IBufferLike {

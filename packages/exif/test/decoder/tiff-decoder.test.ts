@@ -77,6 +77,18 @@ describe('Decoder', () => {
       })
     })
 
+    it('should extract a non-corrupt olympus jpeg', () => {
+      const decoder = new Decoder(fixture('olympus-2.orf'))
+      const thumbnail = decoder.extractJPEG()
+      const metadata = parse(thumbnail) // make sure we can parse it
+
+      compareToFixture(thumbnail, 'olympus-2.jpg')
+      expect(metadata).toMatchObject({
+        iso: 250,
+      })
+      JPEG.decode(thumbnail) // make sure it's a valid JPEG
+    }, 30000)
+
     it('should create a valid JPEG', () => {
       const decoder = new Decoder(fixture('gh4.rw2'))
       const thumbnail = decoder.extractJPEG()

@@ -88,6 +88,8 @@ export enum IFDTag {
   ThumbnailLength = 514,
   EXIFOffset = 34665,
   PanasonicJPEGEnd = 280, // MinSampleValue normally, marks the start of the RAW data
+  ISO = 34855,
+  MakerNote = 37500,
 }
 
 export enum IFDGroup {
