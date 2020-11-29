@@ -603,10 +603,10 @@ export function runImageTests(ImageImpl: typeof NodeImage | typeof BrowserImage)
       it('should output the original buffer without transcoding', async () => {
         const image = ImageImpl.from(sourceNef).format(ImageFormat.NoTranscode)
         const original = new TIFFDecoder(sourceNef).extractJPEG()
-        expect(original.length).toBe(1078539)
+        expect(original.length).toBe(1078527)
         const buffer = await image.toBuffer()
         expect(buffer).toBeInstanceOf(Buffer)
-        expect(buffer.length).toBe(1078539)
+        expect(buffer.length).toBe(1078527)
       })
 
       it('should use clones for output', async () => {
