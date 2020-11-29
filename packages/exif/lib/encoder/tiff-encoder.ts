@@ -15,7 +15,7 @@ import {createLogger} from '../utils/log'
 
 const log = createLogger('encoder')
 
-const BLACKLISTED_TAGS = new Set([
+const DISALLOWED_TAGS = new Set([
   IFDTag.SubIFD,
   IFDTag.EXIFOffset,
   IFDTag.StripOffsets,
@@ -25,11 +25,39 @@ const BLACKLISTED_TAGS = new Set([
   IFDTag.RowsPerStrip,
 ])
 
+const ALLOWLIST_TAGS = new Set([
+  // These are what we really need
+  tags.ImageWidth.code,
+  tags.ImageLength.code,
+  tags.Orientation.code,
+  tags.ISO.code,
+
+  // These were added for backcompat, but might not actually work.
+  tags.Compression.code,
+  tags.ResolutionUnit.code,
+  tags.PhotometricInterpretation.code,
+  tags.SamplesPerPixel.code,
+  tags.PlanarConfiguration.code,
+  tags.MeteringMode.code,
+  tags.YCbCrPositioning.code,
+  tags.BitsPerSample.code,
+  tags.NewSubfileType.code,
+  tags.AsShotNeutral.code,
+  tags.CalibrationIlluminant1.code,
+  tags.CalibrationIlluminant2.code,
+  tags.WhiteLevel.code,
+  tags.TileWidth.code,
+  tags.TileLength.code,
+  tags.GPSTag.code,
+])
+
 export class TIFFEncoder {
   public static isSupportedEntry(tag: IIFDTagDefinition | undefined, value: any): boolean {
     if (!tag) return false
     if (tag.group !== IFDGroup.EXIF) return false
-    if (BLACKLISTED_TAGS.has(tag.code)) return false
+    if (DISALLOWED_TAGS.has(tag.code)) return false
+    if (!ALLOWLIST_TAGS.has(tag.code)) return false
+    if (typeof value !== 'number') return false
     if (tag.dataType === IFDDataType.Short) return value < Math.pow(2, 16)
     if (tag.dataType === IFDDataType.Long) return value < Math.pow(2, 32)
     return false
