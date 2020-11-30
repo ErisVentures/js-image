@@ -4,13 +4,13 @@ set -e
 
 ASSET_PATH=$1
 
-if [[ ! -f "$ASSET_PATH" ]]; then
-  echo "No such file $ASSET_PATH"
+if [[ -z "$ASSET_PATH" ]]; then
+  echo "Must specify an asset name"
   exit 1
 fi
 
-if [[ -z "$ASSET_PATH" ]]; then
-  echo "Must specify an asset name"
+if [[ ! -f "$ASSET_PATH" ]]; then
+  echo "No such file $ASSET_PATH"
   exit 1
 fi
 
@@ -19,16 +19,16 @@ if [[ -z "$GH_TOKEN" ]]; then
   exit 1
 fi
 
-if [[ -z "$TRAVIS_TAG" ]]; then
-  echo "Only uploading an asset on travis tags"
+if [[ -z "$GITHUB_EXTRA__TAG" ]]; then
+  echo "Only uploading an asset on releases"
   exit 0
 fi
 
-GITHUB_URL="https://api.github.com/repos/ErisVentures/js-image/releases/tags/$TRAVIS_TAG"
-echo "Determining release ID for $TRAVIS_TAG..."
+GITHUB_URL="https://api.github.com/repos/ErisVentures/js-image/releases/tags/$GITHUB_EXTRA__TAG"
+echo "Determining release ID for $GITHUB_EXTRA__TAG..."
 curl -u "patrickhulce:$GH_TOKEN" "$GITHUB_URL" > gh-result.json
 RELEASE_ID=$(node -e "console.log(JSON.parse(fs.readFileSync(\"gh-result.json\", \"utf8\")).id)")
-echo "$TRAVIS_TAG is release $RELEASE_ID"
+echo "$GITHUB_EXTRA__TAG is release $RELEASE_ID"
 
 BASENAME_TO_PUBLISH="image-cli-$(basename "$ASSET_PATH")"
 echo "Publishing $ASSET_PATH as $BASENAME_TO_PUBLISH..."

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [[ "$TRAVIS_BRANCH" != "master" ]]; then
+if [[ "$GITHUB_EXTRA__BRANCH" != "master" ]]; then
   echo "Can only publish from master"
   exit 0
 fi
@@ -9,10 +9,11 @@ fi
 export TRAVIS_NODE_VERSION=v8
 
 PRERELEASE_FLAGS="--prerelease"
-if git log "$TRAVIS_COMMIT_RANGE" | grep 'OFFICIAL RELEASE'; then
+if git log "$GITHUB_SHA" | grep 'OFFICIAL RELEASE'; then
   PRERELEASE_FLAGS=""
 fi
 
+npm install -g @patrickhulce/scripts
 git checkout -f master
 git status
 hulk npm-publish --lerna --yes $PRERELEASE_FLAGS

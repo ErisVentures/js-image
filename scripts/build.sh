@@ -10,7 +10,7 @@ if [[ -n "$ENABLE_WASM" ]]; then
   exit 0
 fi
 
-if [[ -n "$TRAVIS_TAG" ]]; then
+if [[ -n "$GITHUB_EXTRA__TAG" ]]; then
   # We have to prevent lerna from complaining about a detached HEAD
   # So we'll create a fake temporary branch
   git branch -D _tmp_branch || echo 'No _tmp_branch'
@@ -22,7 +22,7 @@ if [[ -n "$TRAVIS_TAG" ]]; then
     --no-git-remote \
     --no-git-tag-version \
     --no-commit-hooks \
-    "$TRAVIS_TAG"
+    "$GITHUB_EXTRA__TAG"
 
   git checkout lerna.json
 fi

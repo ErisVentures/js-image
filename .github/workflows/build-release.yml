@@ -1,0 +1,47 @@
+name: Build Release
+on:
+  push:
+    tags:
+      - 'v*'
+jobs:
+  build:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Windows
+            os: windows-latest
+            pkg-target: node10-win
+          - name: macOS
+            os: macos-latest
+            pkg-target: node10-mac
+    steps:
+      - name: Run git context
+        shell: bash
+        run: |
+          echo "GITHUB_EXTRA__REFNAME=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+          if [[ $GITHUB_REF = refs/heads/* ]]; then echo "GITHUB_EXTRA__BRANCH=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV ; fi
+          if [[ $GITHUB_REF = refs/tags/* ]]; then echo "GITHUB_EXTRA__TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV ; fi
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          lfs: false
+      - run: bash scripts/echo.sh
+      - uses: actions/setup-node@v2-beta
+        with:
+          node-version: '10.15.3'
+      - name: Patch node-gyp on windows
+        if: matrix.os == 'windows-latest'
+        shell: powershell
+        run: |
+          npm install --global node-gyp@latest
+          npm prefix -g | % {npm config set node_gyp "$_\node_modules\node-gyp\bin\node-gyp.js"}
+      - run: yarn install
+      - run: yarn build
+        env:
+          PKG_TARGET: ${{ matrix.pkg-target }}
+      - run: bash ./scripts/add-asset-to-github.sh ./packages/image-cli/out/${{ matrix.pkg-target }}.tar.gz
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
