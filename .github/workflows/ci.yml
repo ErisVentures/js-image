@@ -7,7 +7,7 @@ on:
   schedule:
     - cron: '0 12 * * *'
 jobs:
-  build:
+  test:
     name: ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
     strategy:
@@ -21,13 +21,6 @@ jobs:
             os: macos-latest
             pkg-target: node10-mac
     steps:
-      - name: Run git context
-        id: git
-        shell: bash
-        run: |
-          echo "GITHUB_EXTRA__REFNAME=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-          if [[ $GITHUB_REF = refs/heads/* ]]; then echo "GITHUB_EXTRA__BRANCH=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV ; fi
-          if [[ $GITHUB_REF = refs/tags/* ]]; then echo "GITHUB_EXTRA__TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV ; fi
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
@@ -45,7 +38,6 @@ jobs:
             ${{ runner.os }}-lfs-
       - name: Run git lfs pull
         run: git lfs pull && rm .lfs-assets-id
-      - run: bash scripts/echo.sh
       - uses: actions/setup-node@v2-beta
         with:
           node-version: '10.15.3'
@@ -62,6 +54,30 @@ jobs:
       - run: yarn test:lint
         if: matrix.os == 'macos-latest'
       - run: yarn test:unit:ci
+  publish:
+    name: Publish
+    needs: [test]
+    runs-on: macos-latest
+    if: github.ref == 'refs/heads/master'
+    steps:
+      - name: Run git context
+        id: git
+        shell: bash
+        run: |
+          echo "GITHUB_EXTRA__REFNAME=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+          if [[ $GITHUB_REF = refs/heads/* ]]; then echo "GITHUB_EXTRA__BRANCH=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV ; fi
+          if [[ $GITHUB_REF = refs/tags/* ]]; then echo "GITHUB_EXTRA__TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV ; fi
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          lfs: false
+      - uses: actions/setup-node@v2-beta
+        with:
+          node-version: '10.15.3'
+      - run: yarn install
+      - run: yarn build
+        env:
+          PKG_TARGET: node10-mac
       - run: bash ./scripts/publish.sh
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
