@@ -7,6 +7,7 @@ fi
 
 # Fake the Travis Node Version so npm-publish will work
 export TRAVIS_NODE_VERSION=v8
+export TRAVIS_BRANCH="$GITHUB_EXTRA__BRANCH"
 
 PRERELEASE_FLAGS="--prerelease"
 if git log "$GITHUB_SHA" | grep 'OFFICIAL RELEASE'; then

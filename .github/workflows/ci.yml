@@ -43,7 +43,8 @@ jobs:
           key: ${{ runner.os }}-lfs-${{ hashFiles('.lfs-assets-id') }}-v1
           restore-keys: |
             ${{ runner.os }}-lfs-
-      - run: git lfs pull
+      - name: Run git lfs pull
+        run: git lfs pull && rm .lfs-assets-id
       - run: bash scripts/echo.sh
       - uses: actions/setup-node@v2-beta
         with:
