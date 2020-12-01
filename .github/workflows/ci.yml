@@ -58,7 +58,7 @@ jobs:
     name: Publish
     needs: [test]
     runs-on: macos-latest
-    if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
     steps:
       - name: Run git context
         id: git

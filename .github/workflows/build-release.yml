@@ -1,8 +1,8 @@
 name: Build Release
 on:
   push:
-    tags:
-      - '**'
+    release:
+      types: [released, prereleased]
 jobs:
   build:
     name: ${{ matrix.name }}
