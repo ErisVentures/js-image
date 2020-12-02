@@ -1,7 +1,7 @@
 name: Build Release
 on:
   release:
-    types: [released, prereleased]
+    types: [published, created, released, prereleased]
 jobs:
   build:
     name: ${{ matrix.name }}
@@ -28,6 +28,7 @@ jobs:
           fetch-depth: 0
           lfs: false
       - run: bash scripts/echo.sh
+      - run: echo "${{ github.event }}"
       - uses: actions/setup-node@v2-beta
         with:
           node-version: '12.18.1'
