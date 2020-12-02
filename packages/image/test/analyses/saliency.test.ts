@@ -46,7 +46,7 @@ describe('#analyses/saliency', () => {
     const options = {}
     const {imageData, blocks} = await saliency(srcImageData, options)
 
-    await compareToFixture(imageData, 'saliency-yosemite.jpg', {strict: false})
+    await compareToFixture(imageData, 'saliency-yosemite.jpg', {strict: false, tolerance: 10})
     expect(blocks.reduce((a, b) => a + b.count, 0)).toBeCloseTo(1, 1)
   })
 

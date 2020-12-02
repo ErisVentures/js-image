@@ -3,7 +3,7 @@ import {fixtureDecode, compareToFixture, roundNumbersToHundredths} from '../util
 import {createPRNG} from '../../lib/third-party/alea'
 import {Colorspace} from '../../lib/types'
 
-describe('#effects/blockify', () => {
+describe.skip('#effects/blockify', () => {
   it('should blockify an portrait image', async () => {
     const options = {
       recolorAfterMerge: true,

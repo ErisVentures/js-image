@@ -33,13 +33,13 @@
     "@eris/exif": "^0.1.0-development",
     "@tensorflow/tfjs-automl": "^1.0.0",
     "@tensorflow/tfjs-node": "1.5.1",
-    "@types/sharp": "^0.22.0",
+    "@types/sharp": "^0.26.1",
     "buffer": "^5.2.0",
     "face-api.js": "^0.22.0",
     "file-type": "^7.0.1",
     "jpeg-js": "^0.4.0",
     "pngjs": "^3.3.0",
-    "sharp": "^0.22.0"
+    "sharp": "^0.26.3"
   },
   "devDependencies": {
     "@types/bluebird": "^3.5.3",

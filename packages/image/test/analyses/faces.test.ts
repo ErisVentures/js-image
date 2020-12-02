@@ -35,7 +35,7 @@ describe('analyses/faces', () => {
               },
               Object {
                 "height": 0.02,
-                "openConfidence": 0.66,
+                "openConfidence": 0.67,
                 "width": 0.04,
                 "x": 0.52,
                 "y": 0.3,
@@ -185,7 +185,7 @@ describe('analyses/faces', () => {
               },
               Object {
                 "height": 0.01,
-                "openConfidence": 0.95,
+                "openConfidence": 0.94,
                 "width": 0.03,
                 "x": 0.62,
                 "y": 0.32,
