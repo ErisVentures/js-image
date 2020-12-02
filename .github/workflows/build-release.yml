@@ -1,7 +1,7 @@
 name: Build Release
 on:
   release:
-    types: [published, created, released, prereleased]
+    types: [released, prereleased]
 jobs:
   build:
     name: ${{ matrix.name }}

@@ -80,5 +80,5 @@ jobs:
           PKG_TARGET: node12-mac
       - run: bash ./scripts/publish.sh
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
