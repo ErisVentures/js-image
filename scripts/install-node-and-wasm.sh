@@ -11,4 +11,4 @@ rustup target add wasm32-unknown-unknown
 which wasm-pack || cargo install wasm-pack
 curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh | bash
 source ~/.nvm/nvm.sh
-nvm install v10.15.3
+nvm install v12.18.1

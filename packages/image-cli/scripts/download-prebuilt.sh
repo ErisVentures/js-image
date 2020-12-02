@@ -11,11 +11,11 @@ VERSION=$(node -e 'console.log(require("./package.json").version)')
 
 PLATFORM_FILE=""
 if [[ "$PLATFORM" == "darwin" ]]; then
-  PLATFORM_FILE="node10-mac.tar.gz"
+  PLATFORM_FILE="node12-mac.tar.gz"
 elif [[ "$PLATFORM" == "linux" ]]; then
-  PLATFORM_FILE="node10-linux.tar.gz"
+  PLATFORM_FILE="node12-linux.tar.gz"
 elif [[ "$PLATFORM" == "win32" ]]; then
-  PLATFORM_FILE="node10-win.tar.gz"
+  PLATFORM_FILE="node12-win.tar.gz"
 else
   echo "Unsupported platform $PLATFORM"
   exit 1

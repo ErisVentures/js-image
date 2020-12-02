@@ -16,10 +16,10 @@ jobs:
         include:
           - name: Windows
             os: windows-latest
-            pkg-target: node10-win
+            pkg-target: node12-win
           - name: macOS
             os: macos-latest
-            pkg-target: node10-mac
+            pkg-target: node12-mac
     steps:
       - uses: actions/checkout@v2
         with:
@@ -40,7 +40,7 @@ jobs:
         run: git lfs pull && rm .lfs-assets-id
       - uses: actions/setup-node@v2-beta
         with:
-          node-version: '10.15.3'
+          node-version: '12.18.1'
       - name: Patch node-gyp on windows
         if: matrix.os == 'windows-latest'
         shell: powershell
@@ -73,11 +73,11 @@ jobs:
           lfs: false
       - uses: actions/setup-node@v2-beta
         with:
-          node-version: '10.15.3'
+          node-version: '12.18.1'
       - run: yarn install
       - run: yarn build
         env:
-          PKG_TARGET: node10-mac
+          PKG_TARGET: node12-mac
       - run: bash ./scripts/publish.sh
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -38,7 +38,7 @@
     "@eris/exif": "^0.1.0-development",
     "@eris/image": "^0.1.0-development",
     "execa": "^0.8.0",
-    "pkg": "^4.3.7"
+    "pkg": "^4.4.9"
   },
   "dependencies": {
     "yargs": "^9.0.1"
