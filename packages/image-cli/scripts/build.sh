@@ -5,12 +5,21 @@ IMAGE_CLI_ROOT="$DIRNAME/.."
 TARGET=${PKG_TARGET:-node12-mac}
 
 if [[ -n "$CI" ]]; then
+  set -e
   echo "Rebuilding tensorflow from source..."
   cd ../../
+
   npm rebuild @tensorflow/tfjs-node --build-from-source
-  ls -ali node_modules/@tensorflow/tfjs-node/lib/napi-v3/
+  ls -ali node_modules/@tensorflow/tfjs-node/lib/napi-v5/
+
+  if [ -e node_modules/@tensorflow/tfjs-node/deps/lib/tensorflow.dll ]; then
+    cp node_modules/@tensorflow/tfjs-node/deps/lib/tensorflow.dll node_modules/@tensorflow/tfjs-node/lib/napi-v5/
+  fi
+
+  ls -ali node_modules/@tensorflow/tfjs-node/lib/napi-v5/
   node -e "require('@tensorflow/tfjs-node')" || { echo "tfjs failed to build!"; exit 1; }
   cd packages/image-cli
+  set +e
 fi
 
 # Make sure the node version you're using locally is the same NAPI as the TARGET node version
