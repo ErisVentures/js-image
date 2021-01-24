@@ -10,13 +10,13 @@ if [[ -n "$CI" ]]; then
   cd ../../
 
   npm rebuild @tensorflow/tfjs-node --build-from-source
-  ls -ali node_modules/@tensorflow/tfjs-node/lib/napi-v5/
+  ls -ali node_modules/@tensorflow/tfjs-node/lib/napi-v6/
 
   if [ -e node_modules/@tensorflow/tfjs-node/deps/lib/tensorflow.dll ]; then
-    cp node_modules/@tensorflow/tfjs-node/deps/lib/tensorflow.dll node_modules/@tensorflow/tfjs-node/lib/napi-v5/
+    cp node_modules/@tensorflow/tfjs-node/deps/lib/tensorflow.dll node_modules/@tensorflow/tfjs-node/lib/napi-v6/
   fi
 
-  ls -ali node_modules/@tensorflow/tfjs-node/lib/napi-v5/
+  ls -ali node_modules/@tensorflow/tfjs-node/lib/napi-v6/
   node -e "require('@tensorflow/tfjs-node')" || { echo "tfjs failed to build!"; exit 1; }
   cd packages/image-cli
   set +e
