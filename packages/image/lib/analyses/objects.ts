@@ -228,13 +228,15 @@ function runCocoModel_(
   imageTensor: tf.Tensor3D,
   maxDetectionObjects: number,
 ): Promise<DetectedObject[]> {
-  return cocoSsdModel!.detect(imageTensor, maxDetectionObjects)
+  if (!cocoSsdModel) return Promise.resolve([])
+  return cocoSsdModel!.detect(imageTensor, maxDetectionObjects, 0.5)
 }
 
 function runOpenmlModel_(
   imageTensor: tf.Tensor3D,
   maxDetectionObjects: number,
 ): Promise<automl.PredictedObject[]> {
+  if (!openmlSsdModel) return Promise.resolve([])
   return openmlSsdModel!.detect(imageTensor, {score: 0.2, iou: 0.1, topk: maxDetectionObjects})
 }
 
@@ -286,7 +288,7 @@ export const detectObjects = instrumentation.wrapMethod('detectObjects', detectO
 ==========================================================================
 ==========================================================================
 ======= START OF MODIFIED CODE FROM @tensorflow-models/coco-ssd ==========
-======= https://github.com/tensorflow/tfjs-models/blob/471429d91ef9857e2d1b3825c74eaece1b6f4f39/coco-ssd/src/index.ts
+======= https://github.com/tensorflow/tfjs-models/blob/c1733d99eb3300fd9fb398f0bac298c61011c035/coco-ssd/src/index.ts
 ==========================================================================
 ==========================================================================
 */
@@ -408,6 +410,8 @@ const CLASSES: ObjectDetectionClass[] = [
 ]
 
 /**
+ * See https://github.com/tensorflow/tfjs-models/blob/c1733d99eb3300fd9fb398f0bac298c61011c035/coco-ssd/src/index.ts#L34
+ *
  * @license
  * Copyright 2018 Google LLC. All Rights Reserved.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -437,20 +441,22 @@ async function load(modelUrl: string): Promise<ObjectDetection> {
 }
 
 class ObjectDetection {
-  private readonly modelPath: string
+  private modelPath: string
   private model: tfconv.GraphModel
 
-  public constructor(modelUrl: string) {
+  constructor(modelUrl: string) {
     this.modelPath = modelUrl
   }
 
-  public async load(): Promise<void> {
+  async load() {
     this.model = await tfconv.loadGraphModel(this.modelPath)
 
+    const zeroTensor = tf.zeros([1, 300, 300, 3], 'int32')
     // Warmup the model.
-    const result = (await this.model.executeAsync(tf.zeros([1, 300, 300, 3]))) as tf.Tensor[]
+    const result = (await this.model.executeAsync(zeroTensor)) as tf.Tensor[]
     await Promise.all(result.map(t => t.data()))
     result.map(t => t.dispose())
+    zeroTensor.dispose()
   }
 
   /**
@@ -461,17 +467,20 @@ class ObjectDetection {
    * @param maxNumBoxes The maximum number of bounding boxes of detected
    * objects. There can be multiple objects of the same class, but at different
    * locations. Defaults to 20.
+   * @param minScore The minimum score of the returned bounding boxes
+   * of detected objects. Value between 0 and 1. Defaults to 0.5.
    */
   private async infer(
     img: tf.Tensor3D | ImageData | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement,
     maxNumBoxes: number,
+    minScore: number,
   ): Promise<DetectedObject[]> {
     const batched = tf.tidy(() => {
       if (!(img instanceof tf.Tensor)) {
         img = tf.browser.fromPixels(img)
       }
       // Reshape to a single-element batch so we can pass it to executeAsync.
-      return img.expandDims(0)
+      return tf.expandDims(img)
     })
     const height = batched.shape[1]!
     const width = batched.shape[2]!
@@ -498,20 +507,24 @@ class ObjectDetection {
 
     const prevBackend = tf.getBackend()
     // run post process in cpu
-    tf.setBackend('cpu')
+    if (tf.getBackend() === 'webgl') {
+      tf.setBackend('cpu')
+    }
     const indexTensor = tf.tidy(() => {
       const boxes2 = tf.tensor2d(new Float32Array(boxes), [
         result[1].shape[1]!,
         result[1].shape[3]!,
       ])
-      return tf.image.nonMaxSuppression(boxes2, maxScores, maxNumBoxes, 0.5, 0.5)
+      return tf.image.nonMaxSuppression(boxes2, maxScores, maxNumBoxes, minScore, minScore)
     })
 
     const indexes = indexTensor.dataSync() as Float32Array
     indexTensor.dispose()
 
     // restore previous backend
-    tf.setBackend(prevBackend)
+    if (prevBackend !== tf.getBackend()) {
+      tf.setBackend(prevBackend)
+    }
 
     return this.buildDetectedObjects(width, height, boxes, maxScores, indexes, classes)
   }
@@ -581,21 +594,23 @@ class ObjectDetection {
    * @param maxNumBoxes The maximum number of bounding boxes of detected
    * objects. There can be multiple objects of the same class, but at different
    * locations. Defaults to 20.
-   *
+   * @param minScore The minimum score of the returned bounding boxes
+   * of detected objects. Value between 0 and 1. Defaults to 0.5.
    */
-  public async detect(
+  async detect(
     img: tf.Tensor3D | ImageData | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement,
-    maxNumBoxes: number = 20,
+    maxNumBoxes = 20,
+    minScore = 0.5,
   ): Promise<DetectedObject[]> {
-    return this.infer(img, maxNumBoxes)
+    return this.infer(img, maxNumBoxes, minScore)
   }
 
   /**
    * Dispose the tensors allocated by the model. You should call this when you
    * are done with the model.
    */
-  public dispose(): void {
-    if (this.model) {
+  dispose() {
+    if (this.model != null) {
       this.model.dispose()
     }
   }
