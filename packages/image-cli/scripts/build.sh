@@ -12,7 +12,7 @@ if [[ -n "$CI" ]]; then
   npm rebuild @tensorflow/tfjs-node --build-from-source
   ls -ali node_modules/@tensorflow/tfjs-node/lib/napi-v6/
 
-  if [ -e node_modules/@tensorflow/tfjs-node/deps/lib/tensorflow.dll ]; then
+  if [ -e node_modules/@tensorflow/tfjs-node/deps/lib/tensorflow.dll ] && [ ! -e node_modules/@tensorflow/tfjs-node/lib/napi-v6/tensorflow.dll ]; then
     cp node_modules/@tensorflow/tfjs-node/deps/lib/tensorflow.dll node_modules/@tensorflow/tfjs-node/lib/napi-v6/
   fi
 
