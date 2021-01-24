@@ -967,11 +967,6 @@
     prettier "^1.13.7"
     yargs "^12.0.1"
 
-"@tensorflow-models/coco-ssd@^2.2.1":
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/@tensorflow-models/coco-ssd/-/coco-ssd-2.2.1.tgz#2fd5f778e4cc456e8c1da677a0d503d9245a7d5e"
-  integrity sha512-jhtG9O+9JRoliRwVwCbDURfrs+ibpqh5ClROZZiFRQz6P0d78b7tfyffCRFCwMTMuIEnSLVZO3I3XlwpWW0NFw==
-
 "@tensorflow/tfjs-automl@^1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@tensorflow/tfjs-automl/-/tfjs-automl-1.0.0.tgz#554e37c4ee25e2db6a24ba3c4acd9083e229e8da"
