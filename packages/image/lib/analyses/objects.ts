@@ -441,14 +441,14 @@ async function load(modelUrl: string): Promise<ObjectDetection> {
 }
 
 class ObjectDetection {
-  private modelPath: string
+  private readonly modelPath: string
   private model: tfconv.GraphModel
 
-  constructor(modelUrl: string) {
+  public constructor(modelUrl: string) {
     this.modelPath = modelUrl
   }
 
-  async load() {
+  public async load(): Promise<void> {
     this.model = await tfconv.loadGraphModel(this.modelPath)
 
     const zeroTensor = tf.zeros([1, 300, 300, 3], 'int32')
@@ -597,10 +597,10 @@ class ObjectDetection {
    * @param minScore The minimum score of the returned bounding boxes
    * of detected objects. Value between 0 and 1. Defaults to 0.5.
    */
-  async detect(
+  public async detect(
     img: tf.Tensor3D | ImageData | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement,
-    maxNumBoxes = 20,
-    minScore = 0.5,
+    maxNumBoxes: number = 20,
+    minScore: number = 0.5,
   ): Promise<DetectedObject[]> {
     return this.infer(img, maxNumBoxes, minScore)
   }
@@ -609,8 +609,8 @@ class ObjectDetection {
    * Dispose the tensors allocated by the model. You should call this when you
    * are done with the model.
    */
-  dispose() {
-    if (this.model != null) {
+  public dispose(): void {
+    if (this.model) {
       this.model.dispose()
     }
   }
