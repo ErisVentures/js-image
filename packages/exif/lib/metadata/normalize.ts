@@ -60,8 +60,9 @@ function getResultValue(item: PropertyDefn, results: IGenericMetadata): any {
 export function normalizeMetadata(results: IGenericMetadata): INormalizedMetadata {
   const output: INormalizedMetadata = {_raw: results}
 
-  for (const key of Object.keys(properties)) {
-    const candidates = properties[key as NormalizedKey]
+  for (const key_ of Object.keys(properties)) {
+    const key = key_ as NormalizedKey
+    const candidates = properties[key]
     let value = undefined
     for (const candidate of candidates) {
       value = getResultValue(candidate, results)
@@ -70,7 +71,7 @@ export function normalizeMetadata(results: IGenericMetadata): INormalizedMetadat
       }
     }
 
-    output[key as keyof INormalizedMetadata] = value
+    output[key] = value
   }
 
   if ((results.Orientation || 0) > 4) {
