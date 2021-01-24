@@ -3,7 +3,7 @@ import * as tf from '@tensorflow/tfjs-node'
 import * as path from 'path'
 import * as _ from 'lodash'
 
-import * as faceapi from 'face-api.js'
+import * as faceapi from '@vladmandic/face-api'
 import {IAnnotatedImageData, ImageData} from '../image-data'
 import {
   IFaceAnalysisEntry,
