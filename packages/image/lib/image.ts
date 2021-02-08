@@ -306,7 +306,7 @@ export abstract class Image {
 
   public abstract toBuffer(): Promise<types.BufferLike>
 
-  public toFile(path: string): Promise<{}> {
+  public toFile(path: string): Promise<void> {
     return this.toBuffer().then(buffer => writeFileAsync(path, buffer))
   }
 
