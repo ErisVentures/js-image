@@ -3,6 +3,7 @@
 DIRNAME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 IMAGE_CLI_ROOT="$DIRNAME/.."
 TARGET=${PKG_TARGET:-node12-mac}
+PLATFORM=$(node -p 'os.platform()')
 
 if [[ -n "$CI" ]]; then
   set -e
@@ -16,6 +17,11 @@ if [[ -n "$CI" ]]; then
     cp node_modules/@tensorflow/tfjs-node/deps/lib/tensorflow.dll node_modules/@tensorflow/tfjs-node/lib/napi-v6/
   fi
 
+  if [[ "$PLATFORM" == "darwin" ]]; then
+    bash scripts/replace-tf-deps.sh
+  fi
+
+  ls -ali node_modules/@tensorflow/tfjs-node/deps/lib/
   ls -ali node_modules/@tensorflow/tfjs-node/lib/napi-v6/
   node -e "require('@tensorflow/tfjs-node')" || { echo "tfjs failed to build!"; exit 1; }
   cd packages/image-cli
