@@ -60,6 +60,7 @@ function getResultValue(item: PropertyDefn, results: IGenericMetadata): any {
 export function normalizeMetadata(results: IGenericMetadata): INormalizedMetadata {
   const output: INormalizedMetadata = {_raw: results}
 
+  // tslint:disable-next-line
   for (const key_ of Object.keys(properties)) {
     const key = key_ as NormalizedKey
     const candidates = properties[key]
