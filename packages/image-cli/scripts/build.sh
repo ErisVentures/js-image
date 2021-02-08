@@ -11,18 +11,22 @@ if [[ -n "$CI" ]]; then
   cd ../../
 
   npm rebuild @tensorflow/tfjs-node --build-from-source
-  ls -ali node_modules/@tensorflow/tfjs-node/lib/napi-v6/
-
-  if [ -e node_modules/@tensorflow/tfjs-node/deps/lib/tensorflow.dll ] && [ ! -e node_modules/@tensorflow/tfjs-node/lib/napi-v6/tensorflow.dll ]; then
-    cp node_modules/@tensorflow/tfjs-node/deps/lib/tensorflow.dll node_modules/@tensorflow/tfjs-node/lib/napi-v6/
-  fi
 
   if [[ "$PLATFORM" == "darwin" ]]; then
     bash scripts/replace-tf-deps.sh
   fi
 
-  ls -ali node_modules/@tensorflow/tfjs-node/deps/lib/
-  ls -ali node_modules/@tensorflow/tfjs-node/lib/napi-v6/
+  cd node_modules/@tensorflow/tfjs-node
+  ls -ali lib/napi-v6/
+
+  if [ -e deps/lib/tensorflow.dll ] && [ ! -e lib/napi-v6/tensorflow.dll ]; then
+    cp deps/lib/tensorflow.dll lib/napi-v6/
+  fi
+
+  ls -ali deps/lib/
+  ls -ali lib/napi-v6/
+  cd ../../../
+
   node -e "require('@tensorflow/tfjs-node')" || { echo "tfjs failed to build!"; exit 1; }
   cd packages/image-cli
   set +e
