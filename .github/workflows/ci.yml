@@ -48,6 +48,7 @@ jobs:
           npm install --global node-gyp@latest
           npm prefix -g | % {npm config set node_gyp "$_\node_modules\node-gyp\bin\node-gyp.js"}
       - run: yarn install
+      - run: bash scripts/replace-tf-deps.sh
       - run: yarn build
         env:
           PKG_TARGET: ${{ matrix.pkg-target }}
