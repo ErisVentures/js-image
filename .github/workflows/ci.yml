@@ -76,6 +76,7 @@ jobs:
         with:
           node-version: '12.18.1'
       - run: yarn install
+      - run: bash scripts/replace-tf-deps.sh
       - run: yarn build
         env:
           PKG_TARGET: node12-mac
