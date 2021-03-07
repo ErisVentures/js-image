@@ -49,12 +49,24 @@ describe('lib/decoder/xmp-decoder.js', () => {
     })
 
     it('should work on XnView formatted XMP', () => {
-      const metadata = new XMPDecoder(fixture('xnview.xmp')).extractMetadata()
+      const buffer = fixture('xnview.xmp')
+      expect(XMPDecoder.isXMP(buffer)).toEqual(true)
+      const metadata = new XMPDecoder(buffer).extractMetadata()
       expect(metadata).toEqual({
         CreateDate: '2014-12-27T11:37:21.70',
         MetadataDate: '2019-04-10T20:43:14-05:00',
         ModifyDate: '2019-04-10T20:43:14-05:00',
         Rating: 5,
+      })
+    })
+
+    it('should work on Exempi formatted XMP', () => {
+      const buffer = fixture('exempi.xmp')
+      expect(XMPDecoder.isXMP(buffer)).toEqual(true)
+      const metadata = new XMPDecoder(buffer).extractMetadata()
+      expect(metadata).toEqual({
+        Label: 'Red',
+        Rating: 2,
       })
     })
   })
