@@ -39,6 +39,7 @@ async function runFreeform(): Promise<void> {
       '@eris/exif': require('@eris/exif'), // tslint:disable-line
       '@eris/image': require('@eris/image'), // tslint:disable-line
       sharp: require('sharp'), // tslint:disable-line
+      tf: require('@tensorflow/tfjs-node'), // tslint:disable-line
     }
 
     const unsafeGlobal = global as any
