@@ -26,6 +26,18 @@ const xmpLimitedBase = Buffer.from(
 `.trim(),
 )
 
+const xmpSelfClosing = Buffer.from(
+  `
+<x:xmpmeta xmlns:x="adobe:ns:meta/">
+  <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <rdf:Description rdf:about=""
+      xmlns:xmp="http://ns.adobe.com/xap/1.0/"
+      xmlns:MicrosoftPhoto="http://ns.microsoft.com/photo/1.0/"/>
+  </rdf:RDF>
+</x:xmpmeta>
+`.trim(),
+)
+
 describe('lib/encoders/xmp-encoder.js', () => {
   const DateTimeOriginal = '2019-12-04T12:01:48.291'
   const DCSubjectBagOfWords = JSON.stringify(['foo', 'spaced-key word'])
@@ -117,6 +129,24 @@ describe('lib/encoders/xmp-encoder.js', () => {
         Label: 'Red',
         DateTimeOriginal,
         DCSubjectBagOfWords,
+      })
+    })
+
+    it('should augment an existing self-closing attribute-based XMP file', () => {
+      const xmp = XMPEncoder.encode({Rating: 3, DateTimeOriginal}, xmpSelfClosing)
+      const xmpAugmented = XMPEncoder.encode({Label: 'Red'}, xmp)
+
+      console.log(xmpAugmented.toString())
+      expect(xmlParser.validate(xmpAugmented.toString())).toBe(true)
+      expect(xmpAugmented.toString()).toContain('xmp:Rating=')
+      expect(xmpAugmented.toString()).toContain('xmp:Label=')
+      expect(xmpAugmented.toString()).toContain('exif:DateTimeOriginal=')
+
+      const decoder = new XMPDecoder(xmpAugmented)
+      expect(decoder.extractMetadata()).toEqual({
+        Rating: 3,
+        Label: 'Red',
+        DateTimeOriginal,
       })
     })
 

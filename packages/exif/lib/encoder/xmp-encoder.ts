@@ -216,8 +216,17 @@ export class XMPEncoder {
     const match = xmp.match(regex)
     if (!match) throw new Error('Unable to find end of rdf:description')
     const rdfDescription = match[0]
+    const isSelfClosing = rdfDescription.endsWith('/>')
     const rdfDescriptionEndIndex = xmp.indexOf(rdfDescription) + rdfDescription.length - 1
-    const start = rdfDescriptionEndIndex + (tagName === 'DCSubjectBagOfWords' ? 1 : 0)
+    let start = rdfDescriptionEndIndex + (tagName === 'DCSubjectBagOfWords' ? 1 : 0)
+    if (isSelfClosing) {
+      if (tagName === 'DCSubjectBagOfWords') {
+        throw new Error('Keywords not supported in self-closing XMP tag')
+      }
+
+      start -= 1
+    }
+
     return {start}
   }
 
