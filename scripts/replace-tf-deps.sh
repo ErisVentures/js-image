@@ -25,6 +25,7 @@ mkdir deps/
 cd deps/
 tar -xzf ../libtensorflow.tar.gz
 
+cd lib/
 rm libtensorflow.dylib libtensorflow.2.dylib
 rm libtensorflow_framework.dylib libtensorflow_framework.2.dylib
 mv libtensorflow.2.3.2.dylib libtensorflow.dylib
