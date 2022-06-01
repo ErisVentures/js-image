@@ -40,7 +40,7 @@
     "file-type": "^7.0.1",
     "jpeg-js": "^0.4.0",
     "pngjs": "^3.3.0",
-    "sharp": "^0.26.3"
+    "sharp": "^0.30.5"
   },
   "devDependencies": {
     "@types/bluebird": "^3.5.3",
