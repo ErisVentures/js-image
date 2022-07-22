@@ -37,7 +37,7 @@
     "@types/sharp": "^0.26.1",
     "@vladmandic/face-api": "^0.11.5",
     "buffer": "^5.2.0",
-    "file-type": "^7.0.1",
+    "file-type": "^16.5.4",
     "jpeg-js": "^0.4.0",
     "pngjs": "^3.3.0",
     "sharp": "^0.26.3"
